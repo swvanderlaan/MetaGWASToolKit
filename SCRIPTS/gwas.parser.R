@@ -1,9 +1,13 @@
 #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
-# Alternative shebang for local Mac OS X: #!/usr/local/bin/Rscript --vanilla
-# Linux version for HPC: #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+### Mac OS X version
+### #!/usr/local/bin/Rscript --vanilla
+
+### Linux version
+### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser v1
+    GWAS Parser v1.1.0
     \n
     * Version: v1.1.0
     * Last edit: 2016-12-05
@@ -13,10 +17,9 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./gwas.parser.R -p projectdir -d datagwas -o outputdir [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./gwas.parser.R --projectdir projectdir --datagwas datagwas --outputdir outputdir [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+### Usage: ./gwas.parser.R -p projectdir -d datagwas -o outputdir [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+###        ./gwas.parser.R --projectdir projectdir --datagwas datagwas --outputdir outputdir [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
-#--------------------------------------------------------------------------
 cat("\n* Clearing the environment...\n\n")
 ### CLEAR THE BOARD
 rm(list=ls())
@@ -40,7 +43,7 @@ install.packages.auto <- function(x) {
     # Update installed packages - this may mean a full upgrade of R, which in turn
     # may not be warrented. 
     #update.packages(ask = FALSE) 
-    eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE)", x)))
+    eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
   }
   if(isTRUE(x %in% .packages(all.available = TRUE))) { 
     eval(parse(text = sprintf("require(\"%s\")", x)))
@@ -66,15 +69,6 @@ cat("\nDone! Required packages installed and loaded.\n\n")
 
 cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-cat("\n* Setting colours...\n\n")
-uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
-               "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
-               "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
-               "#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D",
-               "#595A5C","#A2A3A4")
-#--------------------------------------------------------------------------
-
-#--------------------------------------------------------------------------
 ### OPTION LISTING
 option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
@@ -84,7 +78,7 @@ option_list = list(
   make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',
               help="Path to the output directory."),
   make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
-              help="Should the program print extra stuff out? [default %default]"),
+              help="Should the program print extra stuff out? [logical (FALSE or TRUE); default %default]"),
   make_option(c("-s", "--silent"), action="store_false", dest="verbose",
               help="Make the program not be verbose.")
   #make_option(c("-c", "--cvar"), action="store", default="this is c",
@@ -110,12 +104,12 @@ opt = parse_args(OptionParser(option_list=option_list))
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
 # 
-# opt$outputdir="MANTEL_1000G/RAW"
+# opt$outputdir="METAFABP4_1000G/RAW"
 # ### OPTIONLIST | FOR LOCAL DEBUGGING
 
 if (opt$verbose) {
-  # You can use either the long or short name; so opt$a and opt$avar are the same.
-  # Show the user what the variables are.
+  ### You can use either the long or short name; so opt$a and opt$avar are the same.
+  ### Show the user what the variables are.
   cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("* Checking the settings as given through the flags.")
   cat("\n - The project directory....................: ")
@@ -129,20 +123,18 @@ if (opt$verbose) {
 }
 cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 cat("Starting \"GWAS Parser\".")
-#--------------------------------------------------------------------------
+
 ### START OF THE PROGRAM
-# main point of program is here, do this whether or not "verbose" is set
+### main point of program is here, do this whether or not "verbose" is set
 if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat(paste("\n\nWe are going to parse the GWAS data, by parsing and doing some initial quality control of the data.
 \nAnalysing these results...............: '",basename(opt$datagwas),"'
 Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   
-  #--------------------------------------------------------------------------
   ### GENERAL SETUP
   Today=format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
-  #--------------------------------------------------------------------------
   #### DEFINE THE LOCATIONS OF DATA
   ROOT_loc = opt$projectdir # argument 1
   
@@ -167,11 +159,8 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
     # Handle this error as appropriate
   }
   
-  #METAGWASTOOLKIT = "/Users/swvanderlaan/Library/Mobile Documents/com~apple~CloudDocs/SNP_suites/MetaGWASToolKit"
-  #METAGWASTOOLKIT_RESOURCES = paste0(METAGWASTOOLKIT,"/RESOURCES")
-  
   cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-  #--------------------------------------------------------------------------
+  
   ### LOADING GWAS RESULTS FILES
 
   cat("\nLoading GWAS data.\n")
@@ -309,121 +298,122 @@ of the GWAS data. Double back, please.\n\n",
   names(GWASDATA_RAWSELECTION) <- tolower(names(GWASDATA_RAWSELECTION))
 
   cat("\n* renaming columns where necessary...")
-  # Rename columns
-  # - variant column will become "Marker"
-  # - chromosome & bp columns will become "CHR" and "BP"
-  # - if MAF/minor/major available, thus effect size must be relative to minor, so:
-  #   - MAF = CAF = RAF = EAF -- will be coded as "MAF"
-  #   - minor = coded = effect = risk -- will be coded as "MinorAllele"
-  #   - major = noncoded = noneffect = nonrisk = other -- will be coded as "MajorAllele"
-  # - if MAF/[coded/effect/risk]/[noncoded/noneffect/nonrisk/other], thus the effect 
-  #   size must be relative to [coded/effect/risk], so:
-  #   - MAF = CAF = RAF = EAF -- will be coded as "MAF"
-  #   - coded = effect = risk -- will be coded as "[Coded/Effect/Risk]Allele"
-  #   - noncoded = noneffect = nonrisk = other -- will be coded as "OtherAllele"
-  #   Set these three accordingly, other wise set these to CAF/coded/other
-  #
+  ### Rename columns
+  ### - variant column will become "Marker"
+  ### - chromosome & bp columns will become "CHR" and "BP"
+  ### - if MAF/minor/major available, thus effect size must be relative to minor, so:
+  ###   - MAF = CAF = RAF = EAF -- will be coded as "MAF"
+  ###   - minor = coded = effect = risk -- will be coded as "MinorAllele"
+  ###   - major = noncoded = noneffect = nonrisk = other -- will be coded as "MajorAllele"
+  ### - if MAF/[coded/effect/risk]/[noncoded/noneffect/nonrisk/other], thus the effect 
+  ###   size must be relative to [coded/effect/risk], so:
+  ###   - MAF = CAF = RAF = EAF -- will be coded as "MAF"
+  ###   - coded = effect = risk -- will be coded as "[Coded/Effect/Risk]Allele"
+  ###   - noncoded = noneffect = nonrisk = other -- will be coded as "OtherAllele"
+  ###   Set these three accordingly, other wise set these to CAF/coded/other
+  ###
 
-  # strand
+  ### Rename columns -- strand
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Strand = matches("^strand$"), everything())
   
-  # imputation
+  ### Rename columns -- imputation
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^info$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Imputed = matches("^imputed$"), everything())
   
-  # n cases and controls
+  ### Rename columns -- n cases and controls
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_controls = matches("^n_control.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_controls = matches("^n_ctrl.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_cases = matches("^n_case.$"), everything())
   
-  # sample size
+  ### Rename columns -- sample size
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^n$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^samplesize$"), everything())
   
-  # HWE p-value
+  ### Rename columns -- HWE p-value
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, HWE_P = matches("^hwe.value$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, HWE_P = matches("^hwe$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, HWE_P = matches("^hwe.val$"), everything())
   
-  # p-value
+  ### Rename columns -- p-value
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p.value$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p.val$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pvalue$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pval$"), everything())
   
-  # standard error
+  ### Rename columns -- standard error
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se$"), everything())
   
-  # beta/effect size
+  ### Rename columns -- beta/effect size
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^beta$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^effect[_]size$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^effectsize$"), everything())
   
-  # allele frequency
+  ### Rename columns -- allele frequency
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RAF = matches("^raf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^eaf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MAF = matches("^maf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CAF = matches("^caf$"), everything())
 
-  # non effect allele
+  ### Rename columns -- non effect allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^non[_]effect[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^noneffectallele$"), everything())
   
-  # other allele
+  ### Rename columns -- other allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^other[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^otherallele$"), everything())
   
-  # non coded allele
+  ### Rename columns -- non coded allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^non[_]coded[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^noncodedallele$"), everything())
   
-  # major allele
+  ### Rename columns -- major allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MajorAllele = matches("^major[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MajorAllele = matches("^majorallele$"), everything())
 
-  #coded allele
+  #### Rename columns -- coded allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CodedAllele = matches("^coded[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CodedAllele = matches("^codedallele$"), everything())
   
-  # effect allele
+  ### Rename columns -- effect allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EffectAllele = matches("^effect[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EffectAllele = matches("^effectallele$"), everything())
   
-  # risk allele
+  ### Rename columns -- risk allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RiskAllele = matches("^risk[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RiskAllele = matches("^riskallele$"), everything())
   
-  # minor allele
+  ### Rename columns -- minor allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MinorAllele = matches("^minor[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MinorAllele = matches("^minorallele$"), everything())
   
-  # base pair position
+  ### Rename columns -- base pair position
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^position$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^bp$"), everything())
 
-  # chromosome
+  ### Rename columns -- chromosome
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chr$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chrom$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chromosome$"), everything())
   
-  # marker name
+  ### Rename columns -- marker name
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^marker$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^snp$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^rsid$"), everything())
   
-  # removing leading 'zeros'
+  ### Rename columns -- removing leading 'zeros'
   cat("\n* removing leading 'zeros' from chromosome number...")
   GWASDATA_RAWSELECTION$CHR <- gsub("(?<![0-9])0+", "", GWASDATA_RAWSELECTION$CHR, perl = TRUE)
 
   cat("\n* changing X to 23, Y to 24, XY to 25, and MT to 26...")
-  # X    X chromosome                    -> 23
-  # Y    Y chromosome                    -> 24
-  # XY   Pseudo-autosomal region of X    -> 25
-  # MT   Mitochondrial                   -> 26
+  ### Renaming chromosomes -- 'PLINK' standard: 
+  ### X    X chromosome                    -> 23
+  ### Y    Y chromosome                    -> 24
+  ### XY   Pseudo-autosomal region of X    -> 25
+  ### MT   Mitochondrial                   -> 26
   
-  # rename chromosomes
+  ### Rename chromosomes
   GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "X" | GWASDATA_RAWSELECTION$CHR == "x"] <- 23
   GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "Y" | GWASDATA_RAWSELECTION$CHR == "y"] <- 24
   GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "XY" | 
@@ -434,20 +424,23 @@ of the GWAS data. Double back, please.\n\n",
                               GWASDATA_RAWSELECTION$CHR == "Mt" | 
                               GWASDATA_RAWSELECTION$CHR == "mT" | GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
   
-  # set 'chromosome' column to integer
+  ### set 'chromosome' column to integer
   GWASDATA_RAWSELECTION <- mutate(
     GWASDATA_RAWSELECTION, 
     CHR      = as.integer(CHR)) # convert to numeric
   
-  #cat("\n* arranging based on chromosomal base pair position...") # if you are batching the data, this may not be that useful...
-  #GWASDATA_RAWSELECTION <- arrange(GWASDATA_RAWSELECTION, CHR, BP) # first by chr, then by bp
-  
-  # Calculating general statistics if not available
+  ### OBSOLETE -- if you feeding 1 file, this may be useful, if you are batching the data, 
+  ### this may not be that useful (the data will be ordered per batch!)
+  ###cat("\n* arranging based on chromosomal base pair position...") 
+  ###GWASDATA_RAWSELECTION <- arrange(GWASDATA_RAWSELECTION, CHR, BP) # first by chr, then by bp
+  ### OBSOLETE
+
+  ### Calculating general statistics if not available
   cat("\n* calculating 'allele frequencies'...")
-  # calculate MAF -- *only* if MAF/minor allele/major allele *not* present
-  #                  the effect size must be relative to the effect/coded allele and EAF
-  # calculate EAF -- *only* if MAF/minor allele/major allele *is* present - 
-  #                  if they are, the effect size must be relative to the minor
+  ### calculate MAF -- *only* if MAF/minor allele/major allele *not* present
+  ###                  the effect size must be relative to the effect/coded allele and EAF
+  ### calculate EAF -- *only* if MAF/minor allele/major allele *is* present - 
+  ###                  if they are, the effect size must be relative to the minor
 
   if("MAF" %in% colnames(GWASDATA_RAWSELECTION)) {
   	cat("\n- minor allele frequency is present, checking for minor/major allele...")
@@ -494,8 +487,8 @@ of the GWAS data. Double back, please.\n\n",
           
           } 
     
+  ### Calculate MAC
   cat("\n* calculating 'minor allele count' (MAC)...")
-  # calculate MAC
   GWASDATA_RAWSELECTION$MAC <- (GWASDATA_RAWSELECTION$MAF*GWASDATA_RAWSELECTION$N*2)
 
   cat("\nCreating the final parsed dataset.")
@@ -516,7 +509,7 @@ of the GWAS data. Double back, please.\n\n",
   num_rows = length(GWASDATA_RAWSELECTION$Marker)
   num_cols = length(col.Names)
   
-  # function to create empty table
+  ### Function to create empty table
   create_empty_table <- function(num_rows, num_cols) {
     GWASDATA_PARSED <- data.frame(matrix(NA, nrow = num_rows, ncol = num_cols))
     
@@ -556,7 +549,6 @@ of the GWAS data. Double back, please.\n\n",
   GWASDATA_PARSED$Imputed <- ifelse(("Imputed" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
                                     GWASDATA_RAWSELECTION$Imputed, "0") # 1 = imputed, 0 = genotyped
   
-  #--------------------------------------------------------------------------
   ### SAVE NEW DATA ###
   cat("\n\nSaving parsed data...\n")
   write.table(GWASDATA_PARSED, 
@@ -566,7 +558,6 @@ of the GWAS data. Double back, please.\n\n",
               quote = FALSE , row.names = FALSE, col.names = TRUE, 
               sep = " ", na = "NA", dec = ".")
   
-  #--------------------------------------------------------------------------
   ### CLOSING MESSAGE
   cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$datagwas), compression = TRUE),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
@@ -583,52 +574,8 @@ of the GWAS data. Double back, please.\n\n",
 
 cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# #--------------------------------------------------------------------------
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
 # save.image(paste0(ROOT_loc, "/", OUT_loc, "/",
 #                   Today,"_",
 #                   basename(opt$datagwas),
 #                   "_DEBUG_GWAS_Parser.RData"))
-
-
-###	UtrechtSciencePark Colours Scheme
-###
-### Website to convert HEX to RGB: http://hex.colorrrs.com.
-### For some functions you should divide these numbers by 255.
-###
-###	No.	Color				HEX		RGB							CMYK					CHR		MAF/INFO
-### --------------------------------------------------------------------------------------------------------------------
-###	1	yellow				#FBB820 (251,184,32)				(0,26.69,87.25,1.57) 	=>	1 		or 1.0 > INFO
-###	2	gold				#F59D10 (245,157,16)				(0,35.92,93.47,3.92) 	=>	2		
-###	3	salmon				#E55738 (229,87,56) 				(0,62.01,75.55,10.2) 	=>	3 		or 0.05 < MAF < 0.2 or 0.4 < INFO < 0.6
-###	4	darkpink			#DB003F ((219,0,63)					(0,100,71.23,14.12) 	=>	4		
-###	5	lightpink			#E35493 (227,84,147)				(0,63,35.24,10.98) 		=>	5 		or 0.8 < INFO < 1.0
-###	6	pink				#D5267B (213,38,123)				(0,82.16,42.25,16.47) 	=>	6		
-###	7	hardpink			#CC0071 (204,0,113)					(0,0,0,0) 	=>	7		
-###	8	lightpurple			#A8448A (168,68,138)				(0,0,0,0) 	=>	8		
-###	9	purple				#9A3480 (154,52,128)				(0,0,0,0) 	=>	9		
-###	10	lavendel			#8D5B9A (141,91,154)				(0,0,0,0) 	=>	10		
-###	11	bluepurple			#705296 (112,82,150)				(0,0,0,0) 	=>	11		
-###	12	purpleblue			#686AA9 (104,106,169)				(0,0,0,0) 	=>	12		
-###	13	lightpurpleblue		#6173AD (97,115,173/101,120,180)	(0,0,0,0) 	=>	13		
-###	14	seablue				#4C81BF (76,129,191)				(0,0,0,0) 	=>	14		
-###	15	skyblue				#2F8BC9 (47,139,201)				(0,0,0,0) 	=>	15		
-###	16	azurblue			#1290D9 (18,144,217)				(0,0,0,0) 	=>	16		 or 0.01 < MAF < 0.05 or 0.2 < INFO < 0.4
-###	17	lightazurblue		#1396D8 (19,150,216)				(0,0,0,0) 	=>	17		
-###	18	greenblue			#15A6C1 (21,166,193)				(0,0,0,0) 	=>	18		
-###	19	seaweedgreen		#5EB17F (94,177,127)				(0,0,0,0) 	=>	19		
-###	20	yellowgreen			#86B833 (134,184,51)				(0,0,0,0) 	=>	20		
-###	21	lightmossgreen		#C5D220 (197,210,32)				(0,0,0,0) 	=>	21		
-###	22	mossgreen			#9FC228 (159,194,40)				(0,0,0,0) 	=>	22		or MAF > 0.20 or 0.6 < INFO < 0.8
-###	23	lightgreen			#78B113 (120,177,19)				(0,0,0,0) 	=>	23/X
-###	24	green				#49A01D (73,160,29)					(0,0,0,0) 	=>	24/Y
-###	25	grey				#595A5C (89,90,92)					(0,0,0,0) 	=>	25/XY	or MAF < 0.01 or 0.0 < INFO < 0.2
-###	26	lightgrey			#A2A3A4	(162,163,164)				(0,0,0,0) 	=> 	26/MT
-### 
-### ADDITIONAL COLORS
-### 27	midgrey				#D7D8D7
-### 28	very lightgrey		#ECECEC
-### 29	white				#FFFFFF
-### 30	black				#000000
-### --------------------------------------------------------------------------------------------------------------------
-

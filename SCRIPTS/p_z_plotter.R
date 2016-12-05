@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    P-Z PLOTTER v1
+    P-Z PLOTTER v1.1.1
     \n
-    * Version: p_z_plotter_v1.1
-    * Last edit: 2016-07-13
+    * Version: v1.1.1
+    * Last edit: 2016-12-05
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  P-Z-plotter for GWAS (meta-analysis) results. Will plot the
@@ -19,26 +19,27 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     1) beta
     2) se
     3) p-value.
-    NO HEADER.
-    The script should be usuable on both any Linux distribution with 
-    R 3+ installed, Mac OS X and Windows.
+    There should be NO HEADER!
+    The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 # usage: ./p_z_plotter.R -p projectdir -r resultfile -o outputdir -s random_sample -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
 #        ./p_z_plotter.R --projectdir projectdir --resultfile resultfile --outputdir outputdir -randomsample random_sample--imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
-# using optparse-library
-# manual: http://cran.r-project.org/web/packages/optparse/optparse.pdf
-# vignette: http://www.icesi.edu.co/CRAN/web/packages/optparse/vignettes/optparse.pdf
-# don't say "Loading required package: optparse"
-#suppressPackageStartupMessages(require(optparse))
-
-cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-cat("\nClearing the board, and checking availability of prerequisite packages. We will install packages 
-    if needed.\n\n")
+cat("\n* Clearing the environment...\n\n")
 ### CLEAR THE BOARD
 rm(list=ls())
+
+cat("\n* Loading function to install packages...\n\n")
+### Prerequisite: 'optparse'-library
+### * Manual: http://cran.r-project.org/web/packages/optparse/optparse.pdf
+### * Vignette: http://www.icesi.edu.co/CRAN/web/packages/optparse/vignettes/optparse.pdf
+
+### Don't say "Loading required package: optparse"...
+###suppressPackageStartupMessages(require(optparse))
+###require(optparse)
+
 ### The part of installing (and loading) packages via Rscript doesn't properly work.
 ### FUNCTION TO INSTALL PACKAGES
 install.packages.auto <- function(x) { 
@@ -66,40 +67,6 @@ install.packages.auto <- function(x) {
 install.packages.auto("optparse")
 install.packages.auto("tools")
 
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-###  UtrechtSciencePark Colours Scheme
-###
-### Website to convert HEX to RGB: http://hex.colorrrs.com.
-### For some functions you should divide these numbers by 255.
-### 
-###	No.	Color				HEX		RGB					CHR		MAF/INFO
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-###	1	yellow					    #FBB820 (251,184,32)	=>	1 		or 1.0 > INFO
-###	2	gold				        #F59D10 (245,157,16)	=>	2		
-###	3	salmon					    #E55738 (229,87,56) 	=>	3 		or 0.05 < MAF < 0.2 or 0.4 < INFO < 0.6
-###	4	darkpink				    #DB003F ((219,0,63)		=>	4		
-###	5	lightpink				    #E35493 (227,84,147)	=>	5 		or 0.8 < INFO < 1.0
-###	6	pink					      #D5267B (213,38,123)	=>	6		
-###	7	hardpink				    #CC0071 (204,0,113)		=>	7		
-###	8	lightpurple			    #A8448A (168,68,138)	=>	8		
-###	9	purple				      #9A3480 (154,52,128)	=>	9		
-###	10	lavendel			    #8D5B9A (141,91,154)	=>	10		
-###	11	bluepurple			  #705296 (112,82,150)	=>	11		
-###	12	purpleblue			  #686AA9 (104,106,169)	=>	12		
-###	13	lightpurpleblue		#6173AD (97,115,173/101,120,180)	=>	13		
-###	14	seablue				    #4C81BF (76,129,191)	=>	14		
-###	15	skyblue				    #2F8BC9 (47,139,201)	=>	15		
-###	16	azurblue			    #1290D9 (18,144,217)	=>	16		 or 0.01 < MAF < 0.05 or 0.2 < INFO < 0.4
-###	17	lightazurblue		  #1396D8 (19,150,216)	=>	17		
-###	18	greenblue			    #15A6C1 (21,166,193)	=>	18		
-###	19	seaweedgreen	  	#5EB17F (94,177,127)	=>	19		
-###	20	yellowgreen			  #86B833 (134,184,51)	=>	20		
-###	21	lightmossgreen		#C5D220 (197,210,32)	=>	21		
-###	22	mossgreen			    #9FC228 (159,194,40)	=>	22		or MAF > 0.20 or 0.6 < INFO < 0.8
-###	23	lightgreen			  #78B113 (120,177,19)	=>	23/X
-###	24	green				      #49A01D (73,160,29)		=>	24/Y
-###	25	grey				      #595A5C (89,90,92)		=>	25/XY	or MAF < 0.01 or 0.0 < INFO < 0.2
-###	26	lightgrey			    #A2A3A4	(162,163,164)	=> 	26/MT
 uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
@@ -248,7 +215,43 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ###save.image(paste0(opt$outputdir,"/",Today,"_",study,"_P_Z_PLOTTER.RData"))
 
 
-
-
-
-
+###	UtrechtSciencePark Colours Scheme
+###
+### Website to convert HEX to RGB: http://hex.colorrrs.com.
+### For some functions you should divide these numbers by 255.
+###
+###	No.	Color				HEX		RGB							CMYK					CHR		MAF/INFO
+### --------------------------------------------------------------------------------------------------------------------
+###	1	yellow				#FBB820 (251,184,32)				(0,26.69,87.25,1.57) 	=>	1 		or 1.0 > INFO
+###	2	gold				#F59D10 (245,157,16)				(0,35.92,93.47,3.92) 	=>	2		
+###	3	salmon				#E55738 (229,87,56) 				(0,62.01,75.55,10.2) 	=>	3 		or 0.05 < MAF < 0.2 or 0.4 < INFO < 0.6
+###	4	darkpink			#DB003F ((219,0,63)					(0,100,71.23,14.12) 	=>	4		
+###	5	lightpink			#E35493 (227,84,147)				(0,63,35.24,10.98) 		=>	5 		or 0.8 < INFO < 1.0
+###	6	pink				#D5267B (213,38,123)				(0,82.16,42.25,16.47) 	=>	6		
+###	7	hardpink			#CC0071 (204,0,113)					(0,0,0,0) 	=>	7		
+###	8	lightpurple			#A8448A (168,68,138)				(0,0,0,0) 	=>	8		
+###	9	purple				#9A3480 (154,52,128)				(0,0,0,0) 	=>	9		
+###	10	lavendel			#8D5B9A (141,91,154)				(0,0,0,0) 	=>	10		
+###	11	bluepurple			#705296 (112,82,150)				(0,0,0,0) 	=>	11		
+###	12	purpleblue			#686AA9 (104,106,169)				(0,0,0,0) 	=>	12		
+###	13	lightpurpleblue		#6173AD (97,115,173/101,120,180)	(0,0,0,0) 	=>	13		
+###	14	seablue				#4C81BF (76,129,191)				(0,0,0,0) 	=>	14		
+###	15	skyblue				#2F8BC9 (47,139,201)				(0,0,0,0) 	=>	15		
+###	16	azurblue			#1290D9 (18,144,217)				(0,0,0,0) 	=>	16		 or 0.01 < MAF < 0.05 or 0.2 < INFO < 0.4
+###	17	lightazurblue		#1396D8 (19,150,216)				(0,0,0,0) 	=>	17		
+###	18	greenblue			#15A6C1 (21,166,193)				(0,0,0,0) 	=>	18		
+###	19	seaweedgreen		#5EB17F (94,177,127)				(0,0,0,0) 	=>	19		
+###	20	yellowgreen			#86B833 (134,184,51)				(0,0,0,0) 	=>	20		
+###	21	lightmossgreen		#C5D220 (197,210,32)				(0,0,0,0) 	=>	21		
+###	22	mossgreen			#9FC228 (159,194,40)				(0,0,0,0) 	=>	22		or MAF > 0.20 or 0.6 < INFO < 0.8
+###	23	lightgreen			#78B113 (120,177,19)				(0,0,0,0) 	=>	23/X
+###	24	green				#49A01D (73,160,29)					(0,0,0,0) 	=>	24/Y
+###	25	grey				#595A5C (89,90,92)					(0,0,0,0) 	=>	25/XY	or MAF < 0.01 or 0.0 < INFO < 0.2
+###	26	lightgrey			#A2A3A4	(162,163,164)				(0,0,0,0) 	=> 	26/MT
+### 
+### ADDITIONAL COLORS
+### 27	midgrey				#D7D8D7
+### 28	very lightgrey		#ECECEC
+### 29	white				#FFFFFF
+### 30	black				#000000
+### --------------------------------------------------------------------------------------------------------------------

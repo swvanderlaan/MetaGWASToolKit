@@ -8,9 +8,9 @@
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "                               GWAS TO REFERENCE HARMONIZER "
 print ""
-print "* Version: GWAS2REF.HARMONIZER.v1.2.1"
+print "* Version: GWAS2REF.HARMONIZER.v1.2.2"
 print ""
-print "* Last update      : 2016-12-03"
+print "* Last update      : 2016-12-05"
 print "* Written by       : Tim Bezemer (t.bezemer-2@umcutrecht.nl)."
 print "* Suggested for by : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print ""
@@ -71,30 +71,11 @@ print "".join(["-"] * len(msg))
 #This speeds up loading and parsing, and conserves memory
 [load_columns.remove(alt_id) for alt_id in alt_ids]
 
-# print "\t ..." + strftime("%a, %H:%M:%S") + " Loading reference: " + args.reference 
-# thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns, 
-# dtype = {"VariantID" : pd.Categorical, "VariantID_alt1" : pd.Categorical, "VariantID_alt2" : pd.Categorical, "VariantID_alt3" : pd.Categorical, 
-# "VariantID_alt4" : pd.Categorical, "VariantID_alt5" : pd.Categorical, "VariantID_alt6" : pd.Categorical, "VariantID_alt7" : pd.Categorical, "VariantID_alt8" : pd.Categorical, 
-# "VariantID_alt9" : pd.Categorical, "VariantID_alt10" : pd.Categorical, "VariantID_alt11" : pd.Categorical, "VariantID_alt12" : pd.Categorical, "VariantID_alt13" : pd.Categorical,
-# "CHR" : "int32", "BP" : "int32",
-# "REF" : pd.Categorical, "ALT" : pd.Categorical, "AlleleA" : pd.Categorical, "AlleleB" : pd.Categorical, "VT" : pd.Categorical,
-# "AF" : "float32", "EURAF" : "float32", "AFRAF" : "float32", "AMRAF" : "float32", "ASNAF" : "float32", "EASAF" : "float32", "SASAF" : "float32"})
-# 
-# print "\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS dataset: " + args.gwasdata
-# GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep=' ', na_values = ["NA", "NaN", "."], 
-# dtype = {"Marker" : pd.Categorical, "CHR" : "int32", "BP" : "int32", "Strand" : pd.Categorical,
-# "EffectAllele" : pd.Categorical, "OtherAllele" : pd.Categorical,
-# "EAF" : "float32", "MAF" : "float32", "MAC" : "float32", "HWE_P" : "float32", "Info" : "float32",
-# "Beta" : "float32", "SE" : "float32", "P" : "float32",
-# "N" : "int32", "N_cases" : "int32", "N_controls" : "int32", "Imputed" : pd.Categorical})
-
 print "\t ..." + strftime("%a, %H:%M:%S") + " Loading reference: " + args.reference 
-#thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns)
 thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns, 
 dtype = {"BP" : "int32"})
 
 print "\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS dataset: " + args.gwasdata
-#GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep=' ', na_values = ["NA", "NaN", "."])
 GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep=' ', na_values = ["NA", "NaN", "."], 
 dtype = {"CHR" : "int32", "BP" : "int32"})
 
