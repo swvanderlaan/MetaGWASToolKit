@@ -1,7 +1,7 @@
-# MetaGWASToolKit
+MetaGWASToolKit
 ============
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies.
-This repository contains various scripts in Perl, BASH, and Python scripts to use in genome-wide association studies, single variant analyses, regional analyses, and gene-centered analyses using data of the Athero-Express Genomics Studies 1 and 2 (AEGS), AAA-Express Genomics Study (AAAGS), or CTMM Genomics Study (CTMM).
+This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (MetaGWASToolKit): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
 
 Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). 
 
@@ -23,14 +23,14 @@ Multiline commands end with a dash \
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so. 
 
-We have tested GWASToolKit on CentOS6.6, CentOS7, and OS X El Capitan (version 10.11.[x]). 
+We have tested MetaGWASToolKit on CentOS7, and OS X Sierra (version 10.11.[x]). 
 
 
 --------------
 
 #### Installing the scripts locally
 
-You can use the scripts locally to run analyses on a Unix-based system, like Mac OS X (Mountain Lion+). We need to make an appropriate directory to download 'gits' to, and install this 'git'.
+You can use the scripts locally to run analyses on a Unix-based system, like Mac OS X (Sierra+). We need to make an appropriate directory to download 'gits' to, and install this 'git'.
 
 ##### Step 1: make a directory, and go there.
 
@@ -41,29 +41,50 @@ mkdir -p ~/git/ && cd ~/git
 ##### Step 2: clone this git, unless it already exists.
 
 ```
-if [ -d ~/git/GWASToolKit/.git ]; then \
-		cd ~/git/GWASToolKit && git pull; \
+if [ -d ~/git/MetaGWASToolKit/.git ]; then \
+		cd ~/git/MetaGWASToolKit && git pull; \
 	else \
-		cd ~/git/ && git clone https://github.com/swvanderlaan/GWASToolKit.git; \
+		cd ~/git/ && git clone https://github.com/swvanderlaan/MetaGWASToolKit.git; \
 	fi
 ```
 
 
 --------------
 
-#### GWAS 
-A GWAS will be run on the selected dataset. LocusZoom style figures, Manhattan plots, QQ-plots and other informative plots will be made automatically made. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. 
+#### Meta-analysis of GWAS
+This ToolKit will (semi-)automatically perform a meta-analysis of GWAS. It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
+
+##### Reformatting summary statistics GWAS data
+[Some text here]
+
+##### Plotting reformatted GWAS data
+[Some text here]
+
+##### Cleaning reformatted GWAS data
+[Some text here]
+
+##### Plotting cleaned GWAS data
+[Some text here]
+
+##### Perform meta-analysis
+[Some text here]
+- random effects model
+- fixed effects model
+- Z-score based model
+
+##### Plotting meta-analysis results
+[Some text here]
+- QQ plots
+- Manhattan
+- LocusZoom
+- Effective Sample Size
+- SE-N lambda
 
 --------------
 
 #### TO DO
 
-- add proper `--help` flag
-- clean up codes further, especially with respect to the various error-flags
-- add in checks of the environment, similar to `slideToolkit` scripts
-- add in methylation QTL analysis option for Athero-Express data
-- add in expression QTL analysis option for CTMM data
-- add in some code to produce a simple report
+- [some text here]
 
 --------------
 
