@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser v1.1.0
+    GWAS Parser v1.1.1
     \n
-    * Version: v1.1.0
-    * Last edit: 2016-12-05
+    * Version: v1.1.1
+    * Last edit: 2016-12-07
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -94,13 +94,14 @@ opt = parse_args(OptionParser(option_list=option_list))
 # 
 # opt$outputdir="METAFABP4_1000G/RAW"
 # ### OPTIONLIST | FOR LOCAL DEBUGGING
-
+# 
 # ### OPTIONLIST | FOR LOCAL DEBUGGING -- Mac Pro
 # opt$projectdir="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4"
 # # original
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.txt"
 # # different header
-# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
+# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
+# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
 # 
@@ -126,7 +127,7 @@ cat("Starting \"GWAS Parser\".")
 
 ### START OF THE PROGRAM
 ### main point of program is here, do this whether or not "verbose" is set
-if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
+#if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat(paste("\n\nWe are going to parse the GWAS data, by parsing and doing some initial quality control of the data.
 \nAnalysing these results...............: '",basename(opt$datagwas),"'
 Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
@@ -168,6 +169,7 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   ### Checking file type -- is it gzipped or not?
   filetype = summary(file(opt$datagwas))$class
   if(filetype == "gzfile"){
+    cat("\n* The file appears to be gzipped, checking delimiter now...")
     TESTDELIMITER = readLines(opt$datagwas, n = 1)
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
@@ -213,10 +215,11 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
       
     } else {
       cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. The GWAS data is neither comma,
-           tab, space, nor semicolon delimited. Double back, please.\n\n", 
+tab, space, nor semicolon delimited. Double back, please.\n\n", 
            file=stderr()) # print error messages to stder
     }
   } else if(filetype != "gzfile") {
+    cat("\n* The file appears not to be gezipped, checking delimiter now...")
     TESTDELIMITER = readLines(opt$datagwas, n = 1)
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
@@ -262,16 +265,17 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
       
     } else {
       cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. The GWAS data is neither comma,
-           tab, space, nor semicolon delimited. Double back, please.\n\n", 
+tab, space, nor semicolon delimited. Double back, please.\n\n", 
            file=stderr()) # print error messages to stder
     }
   } else {
     cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
 of the GWAS data. Double back, please.\n\n", 
          file=stderr()) # print error messages to stder
-  }
+    closeAllConnections()
+    }
   
-  
+
   ### Selecting the columns we want
   cat("\n* selecting required columns, and creating them if not present...")
   VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", 
@@ -422,7 +426,8 @@ of the GWAS data. Double back, please.\n\n",
                               GWASDATA_RAWSELECTION$CHR == "xy"] <- 25
   GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "MT" | 
                               GWASDATA_RAWSELECTION$CHR == "Mt" | 
-                              GWASDATA_RAWSELECTION$CHR == "mT" | GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
+                              GWASDATA_RAWSELECTION$CHR == "mT" | 
+                              GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
   
   ### set 'chromosome' column to integer
   GWASDATA_RAWSELECTION <- mutate(
@@ -562,15 +567,15 @@ of the GWAS data. Double back, please.\n\n",
   cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$datagwas), compression = TRUE),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
-} else {
-  cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-  cat("\n*** ERROR *** You didn't specify all variables:\n
-      - --p/projectdir    : Path to the project directory.
-      - --d/datagwas      : Path to the GWAS data, relative to the project directory;
-                            can be tab, comma, space or semicolon delimited, as well as gzipped.
-      - --o/outputdir     : Path to output directory.",
-      file=stderr()) # print error messages to stderr
-}
+# } else {
+#   cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#   cat("\n*** ERROR *** You didn't specify all variables:\n
+#       - --p/projectdir    : Path to the project directory.
+#       - --d/datagwas      : Path to the GWAS data, relative to the project directory;
+#                             can be tab, comma, space or semicolon delimited, as well as gzipped.
+#       - --o/outputdir     : Path to output directory.",
+#       file=stderr()) # print error messages to stderr
+# }
 
 cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
