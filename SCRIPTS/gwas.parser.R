@@ -100,8 +100,8 @@ opt = parse_args(OptionParser(option_list=option_list))
 # # original
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.txt"
 # # different header
-# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
-# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
+# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
+# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
 # 
@@ -127,7 +127,7 @@ cat("Starting \"GWAS Parser\".")
 
 ### START OF THE PROGRAM
 ### main point of program is here, do this whether or not "verbose" is set
-#if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
+if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat(paste("\n\nWe are going to parse the GWAS data, by parsing and doing some initial quality control of the data.
 \nAnalysing these results...............: '",basename(opt$datagwas),"'
 Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
@@ -167,10 +167,12 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\nLoading GWAS data.\n")
   ### Location of is set by 'opt$datagwas' # argument 2
   ### Checking file type -- is it gzipped or not?
-  filetype = summary(file(opt$datagwas))$class
+  datagwas_connection <- file(opt$datagwas)
+  filetype <- summary(datagwas_connection)$class
+  TESTDELIMITER <- readLines(datagwas_connection, n = 1)
+  close(datagwas_connection)
   if(filetype == "gzfile"){
     cat("\n* The file appears to be gzipped, checking delimiter now...")
-    TESTDELIMITER = readLines(opt$datagwas, n = 1)
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
     if(grepl(",", TESTDELIMITER) == TRUE){
@@ -220,7 +222,6 @@ tab, space, nor semicolon delimited. Double back, please.\n\n",
     }
   } else if(filetype != "gzfile") {
     cat("\n* The file appears not to be gezipped, checking delimiter now...")
-    TESTDELIMITER = readLines(opt$datagwas, n = 1)
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
     if(grepl(",", TESTDELIMITER) == TRUE){
@@ -272,7 +273,6 @@ tab, space, nor semicolon delimited. Double back, please.\n\n",
     cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
 of the GWAS data. Double back, please.\n\n", 
          file=stderr()) # print error messages to stder
-    closeAllConnections()
     }
   
 
@@ -567,15 +567,15 @@ of the GWAS data. Double back, please.\n\n",
   cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$datagwas), compression = TRUE),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
-# } else {
-#   cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-#   cat("\n*** ERROR *** You didn't specify all variables:\n
-#       - --p/projectdir    : Path to the project directory.
-#       - --d/datagwas      : Path to the GWAS data, relative to the project directory;
-#                             can be tab, comma, space or semicolon delimited, as well as gzipped.
-#       - --o/outputdir     : Path to output directory.",
-#       file=stderr()) # print error messages to stderr
-# }
+} else {
+  cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n*** ERROR *** You didn't specify all variables:\n
+      - --p/projectdir    : Path to the project directory.
+      - --d/datagwas      : Path to the GWAS data, relative to the project directory;
+                            can be tab, comma, space or semicolon delimited, as well as gzipped.
+      - --o/outputdir     : Path to output directory.",
+      file=stderr()) # print error messages to stderr
+}
 
 cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 

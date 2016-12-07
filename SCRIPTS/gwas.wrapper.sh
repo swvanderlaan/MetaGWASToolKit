@@ -1,11 +1,11 @@
 #!/bin/bash
 
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "                GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION STUDIES"
+echo "   GWASWRAPPER: WRAPPER FOR PARSED AND HARMONIZED GENOME-WIDE ASSOCIATION STUDIES"
 echo ""
-echo " Version: GWAS.PLOTTER.v1.0.0"
+echo " Version: GWAS.WRAPPER.v1.0.0"
 echo ""
-echo " Last update: 2016-12-02"
+echo " Last update: 2016-12-05"
 echo " Written by:  Sander W. van der Laan (s.w.vanderlaan-2@umcutrecht.nl)."
 echo "			    Sara Pulit | s.l.pulit@umcutrecht.nl; "
 echo "			    Jessica van Setten | j.vansetten@umcutrecht.nl; "
@@ -13,7 +13,7 @@ echo "			    Paul I.W. de Bakker | p.i.w.debakker-2@umcutrecht.nl"
 echo ""
 echo " Testers:     - Jessica van Setten (j.vansetten@umcutrecht.nl)"
 echo ""
-echo " Description: Produce plots (PDF and PNG) for quick inspection and publication."
+echo " Description: Produce concatenated parsed and harmonized GWAS data."
 echo ""
 echo " REQUIRED: "
 echo " * A high-performance computer cluster with a qsub system"
@@ -39,16 +39,7 @@ script_arguments_error() {
 echo ""
 echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "The following directories are set."
-PROJECTDIR=/hpc/dhl_ec/svanderlaan/projects/megastroke
-QCEDDATA=/hpc/dhl_ec/svanderlaan/projects/megastroke/qced_ganesh
-SOFTWARE=/hpc/local/CentOS7/dhl_ec/software
-QCTOOL=$SOFTWARE/qctool_v1.5-linux-x86_64-static/qctool
-
-echo "Project directory________________ ${PROJECTDIR}"
-echo "Original qc'ed data directory____ ${QCEDDATA}"
-echo "Software directory_______________ ${SOFTWARE}"
-echo "Where \"qctool\" resides___________ ${QCTOOL}"
-echo ""
+PROJECTDIR=#ARGUMENT
 
 ### Make directories for script if they do not exist yet (!!!PREREQUISITE!!!)
 if [ ! -d ${QCEDDATA}/_plots ]; then
@@ -57,8 +48,6 @@ fi
 PLOTTED=${QCEDDATA}/_plots
 
 # Setting some other parameters
-RANDOMSAMPLE="1000000" # for P-Z plot
-PVALUE="PVAL" # for QQ-plots
 QMEM="32G"
 QTIME="00:20:00"
 
@@ -66,46 +55,122 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo "Processing files for each study, and plotting for QC."
 echo ""
 
-# echo ""
-# 
-# while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-# 		
-# 	LINE=${GWASCOHORT}
-# 	COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-# 	FILE=$(echo "${LINE}" | awk '{ print $2 }')
-# 	VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
-# 	
-# 	BASEFILE=$(basename ${FILE} .txt.gz)
-# 	
-# 	RAWDATACOHORT=${RAWDATA}/${COHORT}
-# 	echo "Checking output."
-# 
-# 	### Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
-# 	for ERRORFILE in ${RAWDATACOHORT}/${BASEFILE}.errors; do
-# 		### determine basename of the splitfile
-# 		BASEERRORFILE=$(basename ${ERRORFILE}, .errors)
-# 		echo ""
-# 		echo " * checking split chunk: [ ${BASEERRORFILE} ]..."
-# 		
-# 		PARSEDDONE=$(cat ${ERRORFILE} | grep "All done parsing")
-# 		HARMONIZEDDONE=$(cat ${ERRORFILE} | grep "All done! 🍺")
-# 
-# 		echo ""
-# 		echo "- checking parsed and harmonised files..."
-# 		if [[ ${PARSEDDONE} = "All done parsing" ]]; then
-# 			echo "No errors for [ ${BASEERRORFILE} ]; mr. Bourne will remove it for you."
-# 			rm -v ${ERRORFILE}
-# 		elif [[ ${HARMONIZEDDONE} = "All done! 🍺" ]]; then
-# 			echo "No errors for [ ${BASEERRORFILE} ]; mr. Bourne will remove it for you."
-# 			rm -v ${ERRORFILE}
-# 		else
-# 			echo "There is an issue with [ ${BASEERRORFILE} ]."		
-# 		fi
-# 		
-# 		echo ""
-# 	done
-# 
-# done < ${GWASFILES}
+
+### MAKE A WRAPPER SCRIPT FOR THIS
+###- separate wrapper script
+###- arg: inputdir, outputdir, basename
+
+echo ""
+echo "Check parsing of GWAS datasets."
+	
+while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	LINE=${GWASCOHORT}
+	COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	FILE=$(echo "${LINE}" | awk '{ print $2 }')
+	VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
+	
+	BASEFILE=$(basename ${FILE} .txt.gz)
+	
+	RAWDATACOHORT=${RAWDATA}/${COHORT}
+	
+	echo "Cohort File VariantType Parsing ParsingErrorFile" > ${RAWDATACOHORT}/${COHORT}.wrap.parsed.readme
+	echo "Cohort File VariantType Harmonizing HarmonizingErrorFile" > ${RAWDATACOHORT}/${COHORT}.wrap.harmonized.readme
+	echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${RAWDATACOHORT}/${COHORT}.pdat
+	echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${RAWDATACOHORT}/${COHORT}.rdat
+	
+	
+done < ${GWASFILES}
+
+### Setting the patterns to look for
+PARSEDPATTERN="All done parsing"
+HARMONIZEDPATTERN="All done! 🍺"
+
+while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+		
+	LINE=${GWASCOHORT}
+	COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	FILE=$(echo "${LINE}" | awk '{ print $2 }')
+	VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
+	
+	BASEFILE=$(basename ${FILE} .txt.gz)
+	
+	RAWDATACOHORT=${RAWDATA}/${COHORT}
+	
+	for ERRORFILE in ${RAWDATACOHORT}/gwas.parser.${BASEFILE}.*.log; do
+		### determine basename of the ERRORFILE
+		BASENAMEERRORFILE=$(basename ${ERRORFILE})
+		BASEERRORFILE=$(basename ${ERRORFILE} .log)
+		prefix_parsed='gwas.parser.' # removing the 'gwas.parser.'-part from the ERRORFILE
+		BASEPARSEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_parsed//")
+		echo ""
+		echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
+
+		echo "Error file...........................:" ${BASENAMEERRORFILE}
+		if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
+			PARSEDMESSAGE="success"
+			echo "Parsing report.......................:" ${PARSEDMESSAGE}
+			echo "${COHORT} ${FILE} ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.parsed.readme
+			echo "- concatenating data to [ ${RAWDATACOHORT}/${COHORT}.pdat ]..."
+			cat ${RAWDATACOHORT}/${BASEPARSEDFILE}.pdat | tail -n +2 >> ${RAWDATACOHORT}/${COHORT}.pdat
+			echo "- removing files [ ${RAWDATACOHORT}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
+			rm -v ${RAWDATACOHORT}/${BASEPARSEDFILE}.pdat
+			rm -v ${RAWDATACOHORT}/${prefix_parsed}${BASEPARSEDFILE}.errors
+			rm -v ${RAWDATACOHORT}/${prefix_parsed}${BASEPARSEDFILE}.log
+			rm -v ${RAWDATACOHORT}/${prefix_parsed}${BASEPARSEDFILE}.sh
+			rm -v ${RAWDATACOHORT}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
+			rm -v ${RAWDATACOHORT}/${BASEPARSEDFILE}
+		else
+			echo "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+			echo "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+			echo "####################################################################################"
+			cat ${ERRORFILE}
+			echo "####################################################################################"
+			PARSEDMESSAGE="failure"
+			echo "Parsing report.......................:" ${PARSEDMESSAGE}
+			echo "${COHORT} ${FILE} ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.parsed.readme
+		fi
+		
+		echo ""
+	done
+
+	
+	for ERRORFILE in ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASEFILE}.*.log; do
+		### determine basename of the ERRORFILE
+		BASENAMEERRORFILE=$(basename ${ERRORFILE})
+		BASEERRORFILE=$(basename ${ERRORFILE} .log)
+		prefix_harmonized='gwas2ref.harmonizer.' # removing the 'gwas2ref.harmonizer.'-part from the ERRORFILE
+		BASEHARMONIZEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_harmonized//")
+		echo ""
+		echo "* checking split chunk: [ ${BASEHARMONIZEDFILE} ] for pattern \"${HARMONIZEDPATTERN}\"..."
+
+		echo "Error file...........................:" ${BASENAMEERRORFILE}
+		if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
+			HARMONIZEDMESSAGE="success"
+			echo "Harmonizing report...................:" ${HARMONIZEDMESSAGE}
+			echo "- concatenating data to [ ${RAWDATACOHORT}/${COHORT}.rdat ]..."
+			echo "${COHORT} ${FILE} ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.harmonized.readme
+			cat ${RAWDATACOHORT}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2 >> ${RAWDATACOHORT}/${COHORT}.rdat
+			echo "- removing files [ ${RAWDATACOHORT}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
+			rm -v ${RAWDATACOHORT}/${BASEHARMONIZEDFILE}.ref.pdat
+			rm -v ${RAWDATACOHORT}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
+			rm -v ${RAWDATACOHORT}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
+			rm -v ${RAWDATACOHORT}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
+		else
+			echo "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+			echo "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+			echo "####################################################################################"
+			cat ${ERRORFILE}
+			echo "####################################################################################"
+			HARMONIZEDMESSAGE="failure"
+			echo "Harmonizing report...................:" ${HARMONIZEDMESSAGE}
+			echo "${COHORT} ${FILE} ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.harmonized.readme
+		fi
+		
+		echo ""
+	done
+	
+done < ${GWASFILES}
+ 
 
 THISYEAR=$(date +'%Y')
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"

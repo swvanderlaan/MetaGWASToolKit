@@ -72,12 +72,14 @@ print "".join(["-"] * len(msg))
 [load_columns.remove(alt_id) for alt_id in alt_ids]
 
 print "\t ..." + strftime("%a, %H:%M:%S") + " Loading reference: " + args.reference 
-thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns, 
-dtype = {"BP" : "int32"})
+thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns)
+#thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns, 
+#dtype = {"BP" : "int32"})
 
 print "\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS dataset: " + args.gwasdata
-GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep=' ', na_values = ["NA", "NaN", "."], 
-dtype = {"CHR" : "int32", "BP" : "int32"})
+GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep=' ', na_values = ["NA", "NaN", "."])
+#GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep=' ', na_values = ["NA", "NaN", "."], 
+#dtype = {"CHR" : "int32", "BP" : "int32"})
 
 print "\t ..." + strftime("%a, %H:%M:%S") + " Performing Left Join 'Marker' -> '" + args.identifier + "': "
 #Do the join on 'Marker' column in GWASDATA and args.identifier
