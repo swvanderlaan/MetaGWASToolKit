@@ -1,199 +1,231 @@
 #!/bin/bash
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "   GWASWRAPPER: WRAPPER FOR PARSED AND HARMONIZED GENOME-WIDE ASSOCIATION STUDIES"
-echo ""
-echo " Version: GWAS.WRAPPER.v1.0.0"
-echo ""
-echo " Last update: 2016-12-05"
-echo " Written by:  Sander W. van der Laan (s.w.vanderlaan-2@umcutrecht.nl)."
-echo "			    Sara Pulit | s.l.pulit@umcutrecht.nl; "
-echo "			    Jessica van Setten | j.vansetten@umcutrecht.nl; "
-echo "			    Paul I.W. de Bakker | p.i.w.debakker-2@umcutrecht.nl"
-echo ""
-echo " Testers:     - Jessica van Setten (j.vansetten@umcutrecht.nl)"
-echo ""
-echo " Description: Produce concatenated parsed and harmonized GWAS data."
-echo ""
-echo " REQUIRED: "
-echo " * A high-performance computer cluster with a qsub system"
-echo " * R v3.2+, Python 2.7+"
-echo " * Note: it will also work on a Mac OS X system with R and Python installed."
-### ADD-IN: function to check requirements...
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
 
-script_arguments_error() {
-	echo "$1" # Additional message
-	echo "- Argument #1 is path_to/filename of the configuration file."
-	echo "- Argument #2 is path_to/filename of the list of GWAS files with names."
-	echo "- Argument #3 is reference to use [HM2/1Gp1/1Gp3] for the QC and analysis."
-	echo "An example command would be: run_meta.sh [arg1: path_to/configuration_file] [arg2: path_to/gwas_files_list] [arg3: HM2/1Gp1/1Gp3]"
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  	# The wrong arguments are passed, so we'll exit the script now!
-  	date
-  	exit 1
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+function echosucces { 
+    echo -e "${YELLOW}${1}${NONE}"
 }
 
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2015-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
 
+script_arguments_error() {
+	echoerror "$1" # Additional message
+	echoerror "- Argument #1 is path_to/ the raw, parsed and harmonized GWAS data."
+	echoerror "- Argument #2 is the cohort name."
+	echoerror "- Argument #3 is 'basename' of the cohort data file."
+	echoerror "- Argument #4 is the variant type used in the GWAS data."
+	echoerror "An example command would be: gwas.wrapper.sh [arg1] [arg2] [arg3] [arg4]"
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  	# The wrong arguments are passed, so we'll exit the script now!
+ 	echo ""
+	script_copyright_message
+	exit 1
+}
+
+echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "            GWASWRAPPER: WRAPPER FOR PARSED AND HARMONIZED GENOME-WIDE ASSOCIATION STUDIES"
+echobold ""
+echobold "* Version:      v1.0.0"
+echobold ""
+echobold "* Last update:  2016-12-07"
+echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
+echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
+echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
+echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
+echobold "                Paul I.W. de Bakker | UMC Utrecht | p.i.w.debakker-2@umcutrecht.nl."
+echobold "* Testers:      Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl."
+echobold "* Description:  Produce concatenated parsed and harmonized GWAS data."
+echobold ""
+echobold "* REQUIRED: "
+echobold "  - A high-performance computer cluster with a qsub system"
+echobold "  - R v3.2+, Python 2.7+"
+echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
+### ADD-IN: function to check requirements...
 echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "The following directories are set."
-PROJECTDIR=#ARGUMENT
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-### Make directories for script if they do not exist yet (!!!PREREQUISITE!!!)
-if [ ! -d ${QCEDDATA}/_plots ]; then
-  mkdir -v ${QCEDDATA}/_plots
-fi
-PLOTTED=${QCEDDATA}/_plots
+##########################################################################################
+### SET THE SCENE FOR THE SCRIPT
+##########################################################################################
 
-# Setting some other parameters
-QMEM="32G"
-QTIME="00:20:00"
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 4 ]]; then 
+	echo ""
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
+	echoerror "You must supply [4] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
+	script_arguments_error
+else
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Processing arguments..."
+	PROJECTDIR=${1} # depends on arg1
+	COHORTNAME=${2} # depends on arg2
+	BASEFILENAME=${3} # depends on arg3
+	VARIANTTYPE=${4} # depends on arg4
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "Processing files for each study, and plotting for QC."
+	echo ""
+	echo "All arguments are passed. These are the settings:"
+	echo "Project directory.......................: "${PROJECTDIR}
+	echo "Cohort name.............................: "${COHORTNAME}
+	echo "Cohort's raw file name..................: "${BASEFILENAME}.txt.gz
+	echo "The basename of the cohort is...........: "${BASEFILENAME}
+	echo "Variant type in cohort's data...........: "${VARIANTTYPE}
+	
 echo ""
-
-
-### MAKE A WRAPPER SCRIPT FOR THIS
-###- separate wrapper script
-###- arg: inputdir, outputdir, basename
-
+echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "Wrapping up split files and checking parsing and harmonizing..."
 echo ""
-echo "Check parsing of GWAS datasets."
-	
-while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-	LINE=${GWASCOHORT}
-	COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-	FILE=$(echo "${LINE}" | awk '{ print $2 }')
-	VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
-	
-	BASEFILE=$(basename ${FILE} .txt.gz)
-	
-	RAWDATACOHORT=${RAWDATA}/${COHORT}
-	
-	echo "Cohort File VariantType Parsing ParsingErrorFile" > ${RAWDATACOHORT}/${COHORT}.wrap.parsed.readme
-	echo "Cohort File VariantType Harmonizing HarmonizingErrorFile" > ${RAWDATACOHORT}/${COHORT}.wrap.harmonized.readme
-	echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${RAWDATACOHORT}/${COHORT}.pdat
-	echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${RAWDATACOHORT}/${COHORT}.rdat
-	
-	
-done < ${GWASFILES}
+echo "* Making necessary 'readme' files..."
+echo "Cohort File VariantType Parsing ParsingErrorFile" > ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+echo "Cohort File VariantType Harmonizing HarmonizingErrorFile" > ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
 
-### Setting the patterns to look for
+### HEADER .pdat-file
+### Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P  N  N_cases N_controls Imputed
+### 1	   2   3  4      5            6           7   8   9   10    11   12   13 14 15 16      17         18
+
+### HEADER .rdat-file
+### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
+
+echo ""	
+echo "* Making necessary 'summarized' files..."
+echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
+echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
+	
+### Setting the patterns to look for -- never change this
 PARSEDPATTERN="All done parsing"
 HARMONIZEDPATTERN="All done! 🍺"
 
-while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-		
-	LINE=${GWASCOHORT}
-	COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-	FILE=$(echo "${LINE}" | awk '{ print $2 }')
-	VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
-	
-	BASEFILE=$(basename ${FILE} .txt.gz)
-	
-	RAWDATACOHORT=${RAWDATA}/${COHORT}
-	
-	for ERRORFILE in ${RAWDATACOHORT}/gwas.parser.${BASEFILE}.*.log; do
-		### determine basename of the ERRORFILE
-		BASENAMEERRORFILE=$(basename ${ERRORFILE})
-		BASEERRORFILE=$(basename ${ERRORFILE} .log)
-		prefix_parsed='gwas.parser.' # removing the 'gwas.parser.'-part from the ERRORFILE
-		BASEPARSEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_parsed//")
-		echo ""
-		echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
-
-		echo "Error file...........................:" ${BASENAMEERRORFILE}
-		if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
-			PARSEDMESSAGE="success"
-			echo "Parsing report.......................:" ${PARSEDMESSAGE}
-			echo "${COHORT} ${FILE} ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.parsed.readme
-			echo "- concatenating data to [ ${RAWDATACOHORT}/${COHORT}.pdat ]..."
-			cat ${RAWDATACOHORT}/${BASEPARSEDFILE}.pdat | tail -n +2 >> ${RAWDATACOHORT}/${COHORT}.pdat
-			echo "- removing files [ ${RAWDATACOHORT}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
-			rm -v ${RAWDATACOHORT}/${BASEPARSEDFILE}.pdat
-			rm -v ${RAWDATACOHORT}/${prefix_parsed}${BASEPARSEDFILE}.errors
-			rm -v ${RAWDATACOHORT}/${prefix_parsed}${BASEPARSEDFILE}.log
-			rm -v ${RAWDATACOHORT}/${prefix_parsed}${BASEPARSEDFILE}.sh
-			rm -v ${RAWDATACOHORT}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
-			rm -v ${RAWDATACOHORT}/${BASEPARSEDFILE}
-		else
-			echo "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-			echo "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-			echo "####################################################################################"
-			cat ${ERRORFILE}
-			echo "####################################################################################"
-			PARSEDMESSAGE="failure"
-			echo "Parsing report.......................:" ${PARSEDMESSAGE}
-			echo "${COHORT} ${FILE} ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.parsed.readme
-		fi
-		
-		echo ""
-	done
-
-	
-	for ERRORFILE in ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASEFILE}.*.log; do
-		### determine basename of the ERRORFILE
-		BASENAMEERRORFILE=$(basename ${ERRORFILE})
-		BASEERRORFILE=$(basename ${ERRORFILE} .log)
-		prefix_harmonized='gwas2ref.harmonizer.' # removing the 'gwas2ref.harmonizer.'-part from the ERRORFILE
-		BASEHARMONIZEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_harmonized//")
-		echo ""
-		echo "* checking split chunk: [ ${BASEHARMONIZEDFILE} ] for pattern \"${HARMONIZEDPATTERN}\"..."
-
-		echo "Error file...........................:" ${BASENAMEERRORFILE}
-		if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
-			HARMONIZEDMESSAGE="success"
-			echo "Harmonizing report...................:" ${HARMONIZEDMESSAGE}
-			echo "- concatenating data to [ ${RAWDATACOHORT}/${COHORT}.rdat ]..."
-			echo "${COHORT} ${FILE} ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.harmonized.readme
-			cat ${RAWDATACOHORT}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2 >> ${RAWDATACOHORT}/${COHORT}.rdat
-			echo "- removing files [ ${RAWDATACOHORT}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
-			rm -v ${RAWDATACOHORT}/${BASEHARMONIZEDFILE}.ref.pdat
-			rm -v ${RAWDATACOHORT}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
-			rm -v ${RAWDATACOHORT}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
-			rm -v ${RAWDATACOHORT}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
-		else
-			echo "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-			echo "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-			echo "####################################################################################"
-			cat ${ERRORFILE}
-			echo "####################################################################################"
-			HARMONIZEDMESSAGE="failure"
-			echo "Harmonizing report...................:" ${HARMONIZEDMESSAGE}
-			echo "${COHORT} ${FILE} ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${RAWDATACOHORT}/${COHORT}.wrap.harmonized.readme
-		fi
-		
-		echo ""
-	done
-	
-done < ${GWASFILES}
- 
-
-THISYEAR=$(date +'%Y')
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo ""
+echo "We will look for the following pattern in the ..."
+echo "...parsed log file...........: [ ${PARSEDPATTERN} ]"
+echo "...harmonized log file 🙊 ...: [ ${HARMONIZEDPATTERN} ]"
+
 echo ""
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "+ The MIT License (MIT)                                                                                 +"
-echo "+ Copyright (c) 2015-${THISYEAR} Sander W. van der Laan                                                             +"
-echo "+                                                                                                       +"
-echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
-echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
-echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
-echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
-echo "+ subject to the following conditions:                                                                  +"
-echo "+                                                                                                       +"
-echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
-echo "+ portions of the Software.                                                                             +"
-echo "+                                                                                                       +"
-echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
-echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
-echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
-echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
-echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
-echo "+                                                                                                       +"
-echo "+ Reference: http://opensource.org.                                                                     +"
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echo "* Check parsing of GWAS datasets."
+for ERRORFILE in ${PROJECTDIR}/gwas.parser.${BASEFILENAME}.*.log; do
+	### determine basename of the ERRORFILE
+	echo $ERRORFILE
+	BASENAMEERRORFILE=$(basename ${ERRORFILE})
+	BASEERRORFILE=$(basename ${ERRORFILE} .log)
+	prefix_parsed='gwas.parser.' # removing the 'gwas.parser.'-part from the ERRORFILE
+	BASEPARSEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_parsed//")
+	echo ""
+	echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
+
+	echo "Error file...........................:" ${BASENAMEERRORFILE}
+	if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
+		PARSEDMESSAGE=$(echosucces "success")
+		echo "Parsing report.......................: ${PARSEDMESSAGE}"
+		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+		echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
+		cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
+		echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
+		#rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
+		#rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
+		#rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
+		#rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
+		#rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
+		#rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
+	else
+		echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+		echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+		echoerror "####################################################################################"
+		cat ${ERRORFILE}
+		echoerror "####################################################################################"
+		PARSEDMESSAGE="failure"
+		echoerror "Parsing report.......................: ${PARSEDMESSAGE}"
+		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+	fi
+	
+	echo ""
+done
+
+echo ""
+echo "* Check harmonized of GWAS datasets."
+for ERRORFILE in ${PROJECTDIR}/gwas2ref.harmonizer.${BASEFILENAME}.*.log; do
+	### determine basename of the ERRORFILE
+	BASENAMEERRORFILE=$(basename ${ERRORFILE})
+	BASEERRORFILE=$(basename ${ERRORFILE} .log)
+	prefix_harmonized='gwas2ref.harmonizer.' # removing the 'gwas2ref.harmonizer.'-part from the ERRORFILE
+	BASEHARMONIZEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_harmonized//")
+	echo ""
+	echo "* checking split chunk: [ ${BASEHARMONIZEDFILE} ] for pattern \"${HARMONIZEDPATTERN}\"..."
+
+	echo "Error file...........................:" ${BASENAMEERRORFILE}
+	if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
+		HARMONIZEDMESSAGE=$(echosucces "success")
+		echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
+		echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.rdat ]..."
+		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
+		cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
+		echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
+		#rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
+		#rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
+		#rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
+		#rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
+		#rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
+	else
+		echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+		echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+		echoerror "####################################################################################"
+		cat ${ERRORFILE}
+		echoerror "####################################################################################"
+		HARMONIZEDMESSAGE="failure"
+		echoerror "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
+		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
+	fi
+	
+	echo ""
+done
+
+### END of if-else statement for the number of command-line arguments passed ###
+fi 
+
+script_copyright_message
