@@ -7,10 +7,17 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+<<<<<<< HEAD
     GWAS Parser v1.1.3
     \n
     * Version: v1.1.3
     * Last edit: 2016-12-11
+=======
+    GWAS Parser v1.1.1
+    \n
+    * Version: v1.1.1
+    * Last edit: 2016-12-07
+>>>>>>> origin/master
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
