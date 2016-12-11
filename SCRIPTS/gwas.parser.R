@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser v1.1.0
+    GWAS Parser v1.1.3
     \n
-    * Version: v1.1.0
-    * Last edit: 2016-12-05
+    * Version: v1.1.3
+    * Last edit: 2016-12-11
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -94,13 +94,14 @@ opt = parse_args(OptionParser(option_list=option_list))
 # 
 # opt$outputdir="METAFABP4_1000G/RAW"
 # ### OPTIONLIST | FOR LOCAL DEBUGGING
-
+# 
 # ### OPTIONLIST | FOR LOCAL DEBUGGING -- Mac Pro
 # opt$projectdir="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4"
 # # original
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.txt"
 # # different header
-# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
+# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
+# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
 # #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
 # 
@@ -166,9 +167,12 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\nLoading GWAS data.\n")
   ### Location of is set by 'opt$datagwas' # argument 2
   ### Checking file type -- is it gzipped or not?
-  filetype = summary(file(opt$datagwas))$class
+  datagwas_connection <- file(opt$datagwas)
+  filetype <- summary(datagwas_connection)$class
+  TESTDELIMITER <- readLines(datagwas_connection, n = 1)
+  close(datagwas_connection)
   if(filetype == "gzfile"){
-    TESTDELIMITER = readLines(opt$datagwas, n = 1)
+    cat("\n* The file appears to be gzipped, checking delimiter now...")
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
     if(grepl(",", TESTDELIMITER) == TRUE){
@@ -213,11 +217,11 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
       
     } else {
       cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. The GWAS data is neither comma,
-           tab, space, nor semicolon delimited. Double back, please.\n\n", 
+tab, space, nor semicolon delimited. Double back, please.\n\n", 
            file=stderr()) # print error messages to stder
     }
   } else if(filetype != "gzfile") {
-    TESTDELIMITER = readLines(opt$datagwas, n = 1)
+    cat("\n* The file appears not to be gezipped, checking delimiter now...")
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
     if(grepl(",", TESTDELIMITER) == TRUE){
@@ -262,16 +266,16 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
       
     } else {
       cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. The GWAS data is neither comma,
-           tab, space, nor semicolon delimited. Double back, please.\n\n", 
+tab, space, nor semicolon delimited. Double back, please.\n\n", 
            file=stderr()) # print error messages to stder
     }
   } else {
     cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
 of the GWAS data. Double back, please.\n\n", 
          file=stderr()) # print error messages to stder
-  }
+    }
   
-  
+
   ### Selecting the columns we want
   cat("\n* selecting required columns, and creating them if not present...")
   VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", 
@@ -422,7 +426,8 @@ of the GWAS data. Double back, please.\n\n",
                               GWASDATA_RAWSELECTION$CHR == "xy"] <- 25
   GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "MT" | 
                               GWASDATA_RAWSELECTION$CHR == "Mt" | 
-                              GWASDATA_RAWSELECTION$CHR == "mT" | GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
+                              GWASDATA_RAWSELECTION$CHR == "mT" | 
+                              GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
   
   ### set 'chromosome' column to integer
   GWASDATA_RAWSELECTION <- mutate(
@@ -519,15 +524,26 @@ of the GWAS data. Double back, please.\n\n",
   colnames(GWASDATA_PARSED) <- col.Names
   
   cat("\n- adding data to dataframe...")
+  cat("\n  > adding the markers...")
   GWASDATA_PARSED$Marker <- GWASDATA_RAWSELECTION$Marker
-  GWASDATA_PARSED$CHR <- ifelse(GWASDATA_RAWSELECTION$CHR != "NA", GWASDATA_RAWSELECTION$CHR, "NA")
-  GWASDATA_PARSED$BP <- ifelse(GWASDATA_RAWSELECTION$BP != "NA", GWASDATA_RAWSELECTION$BP, "NA")
+  
+  cat("\n  > changing NA to '0' for Chr...")
+  GWASDATA_PARSED$CHR <- GWASDATA_RAWSELECTION$CHR
+  GWASDATA_PARSED <- GWASDATA_PARSED %>% mutate(CHR = ifelse(is.na(CHR),0,CHR)) # unknown chromosomes are set to '0'
+  
+  cat("\n  > changing NA to '0' for BP...")
+  GWASDATA_PARSED$BP <- GWASDATA_RAWSELECTION$BP
+  GWASDATA_PARSED <- GWASDATA_PARSED %>% mutate(BP = ifelse(is.na(BP),0,CHR))# unknown base pair positions are set to '0'
+  
+  cat("\n  > adding strand information...")
   GWASDATA_PARSED$Strand <- ifelse(("Strand" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
                                    GWASDATA_RAWSELECTION$Strand, "+") # we always assume that the +-strand was used
-  
+
+  cat("\n  > adding alleles...")
   GWASDATA_PARSED$EffectAllele <- ifelse(GWASDATA_RAWSELECTION$EffectAllele != "NA", GWASDATA_RAWSELECTION$EffectAllele, "NA")
   GWASDATA_PARSED$OtherAllele <- ifelse(GWASDATA_RAWSELECTION$OtherAllele != "NA", GWASDATA_RAWSELECTION$OtherAllele, "NA")
   
+  cat("\n  > adding allele statistics...")
   GWASDATA_PARSED$EAF <- ifelse(GWASDATA_RAWSELECTION$EAF != "NA", GWASDATA_RAWSELECTION$EAF, "NA")
   GWASDATA_PARSED$MAF <- ifelse(GWASDATA_RAWSELECTION$MAF != "NA", GWASDATA_RAWSELECTION$MAF, "NA")
   GWASDATA_PARSED$MAC <- ifelse(GWASDATA_RAWSELECTION$MAC != "NA", GWASDATA_RAWSELECTION$MAC, "NA")
@@ -535,11 +551,13 @@ of the GWAS data. Double back, please.\n\n",
                                   GWASDATA_RAWSELECTION$HWE_P, "NA") # this is not always present
   GWASDATA_PARSED$Info <- ifelse(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
                                  GWASDATA_RAWSELECTION$Info, "1") # in case of genotyped data
-  
+
+  cat("\n  > adding test statistics...")  
   GWASDATA_PARSED$Beta <- ifelse(GWASDATA_RAWSELECTION$Beta != "NA", GWASDATA_RAWSELECTION$Beta, "NA")
   GWASDATA_PARSED$SE <- ifelse(GWASDATA_RAWSELECTION$SE != "NA", GWASDATA_RAWSELECTION$SE, "NA")
   GWASDATA_PARSED$P <- ifelse(GWASDATA_RAWSELECTION$P != "NA", GWASDATA_RAWSELECTION$P, "NA")
-  
+
+  cat("\n  > adding sample information statistics...")  
   GWASDATA_PARSED$N <- ifelse(GWASDATA_RAWSELECTION$N != "NA", GWASDATA_RAWSELECTION$N, "NA")
   GWASDATA_PARSED$N_cases <- ifelse(("N_cases" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
                                     GWASDATA_RAWSELECTION$N_cases, "NA") # in case of quantitative trait analyses
@@ -548,7 +566,7 @@ of the GWAS data. Double back, please.\n\n",
   
   GWASDATA_PARSED$Imputed <- ifelse(("Imputed" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
                                     GWASDATA_RAWSELECTION$Imputed, "0") # 1 = imputed, 0 = genotyped
-  
+  cat("\nAll done creating the final parsed dataset.")
   ### SAVE NEW DATA ###
   cat("\n\nSaving parsed data...\n")
   write.table(GWASDATA_PARSED, 
@@ -556,7 +574,7 @@ of the GWAS data. Double back, please.\n\n",
                      basename(opt$datagwas), 
                      ".pdat"),
               quote = FALSE , row.names = FALSE, col.names = TRUE, 
-              sep = " ", na = "NA", dec = ".")
+              sep = "\t", na = "NA", dec = ".")
   
   ### CLOSING MESSAGE
   cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$datagwas), compression = TRUE),"].\n"))
