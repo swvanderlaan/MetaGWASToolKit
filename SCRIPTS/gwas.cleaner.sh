@@ -145,14 +145,7 @@ else
 	echo " - HWE p-value..........................: "${HWE}
 	echo ""
 	echo " Data to be cleaned.....................: "${COHORTNAME}.[rdat/pdat]
-	
-	#### REMOVE THIS PART -- ONLY FOR DEBUGGING!!!!
-	rm -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
-	rm -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
-	gzip -dv ${PROJECTDIR}/${COHORTNAME}.pdat
-	gzip -dv ${PROJECTDIR}/${COHORTNAME}.rdat
-	rm -v ${PROJECTDIR}/${COHORTNAME}.cdat
-	
+		
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Cleaning parsed and harmonized GWAS datasets."
@@ -269,12 +262,12 @@ else
 	
 	echo ""
 	echo "Gzipping (intermediate) and removing temporary files..."
-	rm -v ${PROJECTDIR}/${COHORTNAME}.cdat.temp
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
+	#rm -v ${PROJECTDIR}/${COHORTNAME}.cdat.temp
+	#gzip -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
+	#gzip -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
+	#gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
+	#gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
+	#gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
 	
 	echo "" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme

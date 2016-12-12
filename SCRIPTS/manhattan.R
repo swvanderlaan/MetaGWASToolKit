@@ -1,4 +1,4 @@
-#!/usr/local/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -119,11 +119,11 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 #--------------------------------------------------------------------------
 ### FOR LOCAL DEBUGGING
-opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/"
-opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/" 
-opt$colorstyle="FULL"
-opt$imageformat="PNG"
-opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt"
+# opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/"
+# opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/" 
+# opt$colorstyle="FULL"
+# opt$imageformat="PNG"
+# opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt"
 
 if (opt$verbose) {
      # if (opt$verbose) {

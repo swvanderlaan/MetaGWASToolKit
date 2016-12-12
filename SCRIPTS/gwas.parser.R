@@ -592,8 +592,8 @@ of the GWAS data. Double back, please.\n\n",
 
 cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# ### SAVE ENVIRONMENT | FOR DEBUGGING
-# save.image(paste0(ROOT_loc, "/", OUT_loc, "/",
-#                   Today,"_",
-#                   basename(opt$datagwas),
-#                   "_DEBUG_GWAS_Parser.RData"))
+### SAVE ENVIRONMENT | FOR DEBUGGING
+save.image(paste0(ROOT_loc, "/", OUT_loc, "/",
+                  Today,"_",
+                  basename(opt$datagwas),
+                  "_DEBUG_GWAS_Parser.RData"))
