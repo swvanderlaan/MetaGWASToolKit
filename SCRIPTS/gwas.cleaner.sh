@@ -146,6 +146,13 @@ else
 	echo ""
 	echo " Data to be cleaned.....................: "${COHORTNAME}.[rdat/pdat]
 	
+	#### REMOVE THIS PART -- ONLY FOR DEBUGGING!!!!
+	rm -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
+	rm -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
+	gzip -dv ${PROJECTDIR}/${COHORTNAME}.pdat
+	gzip -dv ${PROJECTDIR}/${COHORTNAME}.rdat
+	rm -v ${PROJECTDIR}/${COHORTNAME}.cdat
+	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Cleaning parsed and harmonized GWAS datasets."
@@ -243,12 +250,13 @@ else
 	
 	echo ""
 	echo "Applying filters..."
+	### $12 == "NA" -- to prevent cohorts that did not do imputation to be filtered out
 	cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( ($13 < '$BETA' && $13 > -'$BETA' && $13 != "NA") && ($14 < '$SE' && $14 > -'$SE' && $14 != "NA") && ($15 > 0 && $15 < 1 && $15 != "NA") && ($9 != 0 && $9 != 1 && $9 > '$MAF' && $9 < (1-'$MAF')) && ($10 > '$MAC') && ($12 < 1.1 && $12 > '$INFO' || $12 == "NA" ) )' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp
 	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 	echo "Making cleaned dataset..."
-	echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed REF ALT VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
+	echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
+	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
 	echo ""
 	echo "GWAS dataset is parsed, harmonized, and cleaned."
 	QC_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.cdat | tail -n +2 | wc -l | awk '{printf ("%'\''d\n", $0)}')
