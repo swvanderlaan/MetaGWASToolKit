@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+#!/usr/local/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -119,11 +119,11 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 #--------------------------------------------------------------------------
 ### FOR LOCAL DEBUGGING
-opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1"
-opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1" 
+opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/"
+opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/" 
 opt$colorstyle="FULL"
 opt$imageformat="PNG"
-opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.QC.MANHATTAN.txt"
+opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt"
 
 
 if (opt$verbose) {
@@ -169,21 +169,19 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      #--------------------------------------------------------------------------
      ### LOADING RESULTS FILE
      ### Location of is set by 'opt$resultfile' # argument 2
-     cat("\n\nLoading results file and removing NA's...")
+     cat("\n\nLoading results file and removing NA's.")
    
      ### Checking file type -- is it gzipped or not?
      data_connection <- file(opt$resultfile)
-     data_connection
      filetype <- summary(data_connection)$class
-     filetype
      close(data_connection)
     
      ### Loading the data
      if(filetype == "gzfile"){
-     cat("\n* The file appears to be gzipped, now loading...")
+     cat("\n* The file appears to be gzipped, now loading...\n")
        rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
      } else if(filetype != "gzfile") {
-     cat("\n* The file appears not to be gezipped, now loading...")
+     cat("\n* The file appears not to be gezipped, now loading...\n")
        rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
      } else {
      cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
@@ -193,8 +191,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      cat("\n* Removing NA's...")
      data <- na.omit(rawdata)
      
-     cat("\nClean data from NAs and formatting chromosomes...")
-     #data = data[complete.cases(data),]
+     cat("\n\nClean data from NAs and formatting chromosomes.")
+     data = data[complete.cases(data),]
      data$V1 = toupper(data$V1) #convert to upper case
      data$V1[data$V1 == "0X"] = "23"
      data$V1[data$V1 == "X"] = "23"
@@ -202,98 +200,108 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      data$V1[data$V1 == "Y"] = "24"
      data$V1[data$V1 == "XY"] = "25"
      data$V1[data$V1 == "MT"] = "26"
-     data$V1 = as.integer(data$V1)
-     #data$V2 = as.integer(data$V2)
-     
-     cat("\nReordering data...\n")
-     setorder(data, V1, V2)
+     data$V1 = as.numeric(data$V1)
+     data$V2 = as.numeric(data$V2)
 
-     cat("\nLoad in a subset of the data based on p<=0.50...")
-     if (opt$colorstyle == "FULL") {
-     cat(paste0("\n* color style is '",opt$colorstyle,"'..."))
-          data <- data[V3 <= "0.50"]
-          sig <- data[V3 < "0.05"]
-          nonsig <- data[V3 >= "0.05"]
+     cat("\n\nReordering data.")
+     # V1 = chromosome
+     # V2 = base pair position
+     setkey(data, V1, V2)
+
+     cat("\n\nLoad in a subset of the data based on the p-values.")
+     if (opt$colorstyle == "QC") {
+     cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
+          data <- data[ which(data$V3 <= 0.50), ]
+          sig <- data[ which(data$V3 <= 0.50), ]
+          nonsig <- data[ which(data$V3 > 0.50), ]
+          size <- sum(nonsig$V1 > 0)
+          p <- sig
+     } else if (opt$colorstyle == "FULL" || opt$colorstyle == "TWOCOLOR") {
+     cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
+          data <- data[ which(data$V3 <= 1), ]
+          sig <- data[ which(data$V3 <= 1), ]
+          nonsig <- data[ which(data$V3 > 0.50), ]
           size <- sum(nonsig$V1 > 0)
           p <- sig
      } else {
-     cat(paste0("\n* color style is '",opt$colorstyle,"'..."))
-          data <- data[V3 <= "0.50"]
-          sig <- data[V3 < "0.05"]
-          nonsig <- data[V3 >= "0.05"]
-          size <- sum(nonsig$V1 > 0)
-          p <- sig
+     cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
+     You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"), 
+           file=stderr()) # print error messages to stder
      }
+     
      cat("...and make a list of colors.")
      uithof_color_full=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B","#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9","#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1","#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D","#595A5C","#A2A3A4")
      uithof_color_two=c("#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738")
      uithof_color_qc=c("#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4")
      
-     cat("\nSetting X- and Y-axes and counting chromosomes.")
-     maxY <- round(max(-log10(p[,3])))
-     cat(paste0("\n   * The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
+     cat("\n\nSetting X- and Y-axes and counting chromosomes.")
+     maxY <- round(max(-log10(data$V3)))
+     cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
      # maxX is calculated a bit below, in uniq chr loop
      
      # Let's count the number of chromosomes to plot
      nchr = length(unique(data$V1))
-     cat(paste0("\n   * The number of chromosomes to plot: ", nchr,"; these are:\n"))
+     cat(paste0("\n* The number of chromosomes to plot: ", nchr,"; these are:"))
      
      # Take into account unique chrs
      uniq_chr = unique(data$V1)
-     cat(paste0("   - chromosome ", uniq_chr,"\n"))
+     cat(paste0("\n...chromosome [ ", uniq_chr," ]..."))
      
+     cat("\n\nDetermining the positions and p-values per chromosomes, and finally 'maxX'.
+Assigning positions and p-values for...\n")
      # We have determined the number of chromosomes (1-22 plus optionally x, y, etc.),
      # and will plot accordingly. This includes the maximum number of chromosomes.
-     maxX=0 # setting maxX at 'zero'
+     maxX = 0 # setting maxX at 'zero'
      #changed to uniq_chr loop
      for (i in 1:length(uniq_chr)){
+          cat(paste0("...chromosome [ ",i," ]...\n"))
           # getting a list of positions per chromosome
-          assign((paste("pos_",i,sep="")), (subset(p$V1, p$V1==uniq_chr[i])))
+          assign((paste("pos_", i, sep= "")), (subset(p$V2, p$V1 == uniq_chr[i])))
           # getting a list of p-values per chromosome
-          assign((paste("p_",i,sep="")), (subset(p$V3, p$V1==uniq_chr[i])))  
+          assign((paste("p_", i, sep= "")), (subset(p$V3, p$V1 == uniq_chr[i])))  
           # calculating the maxX based on the input-data
-          maxX=maxX+max(subset(p$V2, p$V1==uniq_chr[i]))  
+          maxX = maxX + max(subset(p$V2, p$V1 == uniq_chr[i]))  
      }
-     cat(paste0("\n\n   * The maximum on the X-axis: ", format(maxX, big.mark = ","),"."))
+     cat(paste0("\n\n* The maximum on the X-axis: ", format(maxX, big.mark = ","),"."))
      
+     cat("\n\nSetting the positions to match...")
      # Determine how many chromosomes to plot than for each pos_i and p_i a list_pos and list_p, 
      # respectively, has to be made.
      
      # 22 chromosomes
-     if(nchr==22)
+     if(nchr==22) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
           list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22)
-     # 23 chromosomes (X)
-     if(nchr==23)
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23)
-     # 24 chromosomes (X/Y)
-     if(nchr==24)
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24)
-     #25 chromosomes (X/Y/XY)
-     if(nchr==25)
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24,pos_25=pos_25)
-     # 26 chromosomes (X/Y/XY/MT)
-     if(nchr==26)
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24,pos_25=pos_25,pos_26=pos_26)
-     
-     # 22 chromosomes
-     if(nchr==22)
           list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22)
      # 23 chromosomes (X)
-     if(nchr==23)
+     } else if(nchr==23) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
+          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23)
           list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23)
      # 24 chromosomes (X/Y)
-     if(nchr==24)
+     } else if(nchr==24) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
+          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24)
           list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23,p_24=p_24)
-     # 25 chromosomes (X/Y/XY)
-     if(nchr==25)
+     #25 chromosomes (X/Y/XY)
+     } else if(nchr==25) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
+          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24,pos_25=pos_25)
           list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23,p_24=p_24,p_25=p_25)
      # 26 chromosomes (X/Y/XY/MT)
-     if(nchr==26)
+     } else if(nchr==26) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
+          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24,pos_25=pos_25,pos_26=pos_26)
           list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23,p_24=p_24,p_25=p_25,p_26=p_26)
-     
+     } else {
+       cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the number 
+   of chromosomes in the data. Double back, please.\n\n", 
+           file=stderr()) # print error messages to stder
+     }
+
      ### PLOT MANHATTAN ###
      cat("\n\nDetermining what type of image should be produced and plotting axes.")
-     if (opt$imageformat == "PNG") 
+     if (opt$imageformat == "PNG")
           if (opt$colorstyle == "FULL") {
           	png(paste0(opt$outputdir,"/",study,".FULL.png"), width=1280, height=720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
@@ -301,7 +309,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           	} else {
           	png(paste0(opt$outputdir,"/",study,".QC.png"), width=1280, height=720)
      		}
-     if (opt$imageformat == "TIFF") 
+     if (opt$imageformat == "TIFF")
           if (opt$colorstyle == "FULL") {
           	tiff(paste0(opt$outputdir,"/",study,".FULL.tiff"), width=1280, height=720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
@@ -309,19 +317,19 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           	} else {
           	tiff(paste0(opt$outputdir,"/",study,".QC.tiff"), width=1280, height=720)
      		}
-     
-     if (opt$imageformat == "EPS") 
+
+     if (opt$imageformat == "EPS")
      	  if (opt$colorstyle == "FULL") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".FULL.eps"), 
+          	postscript(file = paste0(opt$outputdir,"/",study,".FULL.eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".TWOCOLOR.eps"), 
+          	postscript(file = paste0(opt$outputdir,"/",study,".TWOCOLOR.eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else {
-          	postscript(file = paste0(opt$outputdir,"/",study,".QC.eps"), 
+          	postscript(file = paste0(opt$outputdir,"/",study,".QC.eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
      		}
-     if (opt$imageformat == "PDF") 
+     if (opt$imageformat == "PDF")
           if (opt$colorstyle == "FULL") {
           	pdf(paste0(opt$outputdir,"/",study,".FULL.pdf"), width=10, height=5)
           	} else if (opt$colorstyle == "TWOCOLOR") {
@@ -333,6 +341,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      ### START PLOTTING ###
      
      cat("\n\nSet up the plot.")
+     cat("\n* plotting chromosome 1...")
      if (opt$colorstyle == "FULL") {
           plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#FBB820", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
      } else if (opt$colorstyle == "TWOCOLOR") {
@@ -345,27 +354,34 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      # Plot the actual points	
      offset <- 0
      for (i in 2:length(uniq_chr)){
-          
+     cat(paste0("\n* plotting chromosome [ ",i," ]; "))
           x=ifelse(i==1,0,1) #?i is never 1
           offset <- offset + max(list_pos[[i-x]])
-          
+          cat(paste0("the offset is [ ",offset," ]..."))
           if (opt$colorstyle == "FULL") {
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_full[i])
           } else if (opt$colorstyle == "TWOCOLOR") {
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_two[i])
-          } else {
+          } else if (opt$colorstyle == "QC") {
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_qc[i])
+          } else {
+            cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
+You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"), 
+                file=stderr()) # print error messages to stder
           }
      }
-     #Setting the scene for the chromosome labels and ticks
+     
+     cat("\n* creating the labels and ticks...")
+     ###Setting the scene for the chromosome labels and ticks
      xtix <- rep(0,nchr+1)
      xCHR <- c()
-     sz <- seq(1, 0.8, length.out=nchr)
+     sz <- seq(1, 0.9, length.out=nchr)
      offset <- 0
-     
+     cat("\n* plotting labels and ticks...")
      #Plot chromosome labels and ticks
      for (i in 1:length(uniq_chr)){  
           chr=uniq_chr[i]
+          cat(paste0("\n...for chromosome [ ",i," ]..."))
           
           # plotting the first label
           x=ifelse(i==1,0,1)
@@ -373,29 +389,44 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           xtix[i] <- max_pos_chr + xtix[i-x];
           
           # putting the labels in the middle
-          xCHR[i] <- (max_pos_chr +min(subset(p$V2, p$V1==chr)))/2 + offset;
+          xCHR[i] <- (max_pos_chr + min(subset(p$V2, p$V1==chr)))/2 + offset;
           
-          # drawing the labels	
-          axis(1, at=xCHR[i], labels=c(uniq_chr[i]), cex.axis=sz[i], tick=FALSE);
-          
+          # drawing the labels
+          if (i == 23) {
+            axis(1, at=xCHR[i], labels="X", cex.axis=sz[i], tick=FALSE);
+          } else if (i == 24) {
+            axis(1, at=xCHR[i], labels="Y", cex.axis=sz[i], tick=FALSE);
+          } else if (i == 25) {
+            axis(1, at=xCHR[i], labels="XY", cex.axis=sz[i], tick=FALSE);
+          } else if (i == 26) {
+            axis(1, at=xCHR[i], labels="MT", cex.axis=sz[i], tick=FALSE);
+          } else
+            axis(1, at=xCHR[i], labels=c(uniq_chr[i]), cex.axis=sz[i], tick=FALSE);
           offset <- offset + max(list_pos[[i]])
      }
      
+     cat("\n* plotting the X-axis...")
      #Plot the X-axis
-     if(nchr==22)
+     if(nchr==22) {
           axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==23)
+     } else if(nchr==23) {
           axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==24)
+     } else if(nchr==24) {
           axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==25)
+     } else if(nchr==25) {
           axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==26)
+     } else if(nchr==26) {
           axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","","",""))
+     } else {
+         cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the number of
+chromosomes, so we can't plot the labels. Double back, please.\n\n"), 
+             file=stderr()) # print error messages to stder
+       }
+     cat("\n* plotting the Y-axis...")
      axis(2, ylim=c(0, (maxY+2)))
      #axis(2) # this should work as well
      
-     cat("\n\nPlot the genome-wide significance threshold.\n")
+     cat("\n* plotting the genome-wide significance threshold.\n")
      lines(c(0, maxX), c(-log10(5e-08), -log10(5e-08)), lty="dotted", col="#595A5C")
      
      dev.off()
@@ -412,14 +443,14 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
 
 #--------------------------------------------------------------------------
 ### CLOSING MESSAGE
-cat(paste("All done plotting a Manhattan-plot of",study,".\n"))
+cat(paste("\nAll done plotting a Manhattan-plot of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 
 #--------------------------------------------------------------------------
 ### SAVE ENVIRONMENT | FOR DEBUGGING
-###save.image(paste0(opt$outputdir,"/",Today,"_",study,"_MANHATTANPLOTTER.RData"))
+save.image(paste0(opt$outputdir,"/",Today,"_",study,"_MANHATTANPLOTTER.RData"))
 
 
 ###	UtrechtSciencePark Colours Scheme
