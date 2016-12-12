@@ -55,12 +55,16 @@ script_copyright_message() {
 
 script_arguments_error() {
 	echoerror "$1" # Additional message
-	echoerror "- Argument #1 is path_to/ the raw, parsed and harmonized GWAS data."
-	echoerror "- Argument #2 is the cohort name."
-	echoerror "- Argument #3 is 'basename' of the cohort data file."
-	echoerror "- Argument #4 is the variant type used in the GWAS data."
+	echoerror "- Argument #1 is path_to/file to the source file."
+	echoerror "- Argument #2 is path_to/ the raw, parsed and harmonized GWAS data."
+	echoerror "- Argument #3 is the cohort name."
+	echoerror "- Argument #4 is the 'dataformat' of the GWAS data [QC/RAW/META]."
+	echoerror "- Argument #5 is 'imageformat' you require for the plots of the GWAS data."
+	echoerror "- Argument #6 is taken from the source-file and should be the qsub-runtime for plots."
+	echoerror "- Argument #7 is taken from the source-file and should be the qsub-memory for plots."
+	echoerror "- Argument #8 is 'random sample' taken from the GWAS data required for the P-Z plot."
 	echoerror ""
-	echoerror "An example command would be: gwas.wrapper.sh [arg1] [arg2] [arg3] [arg4]"
+	echoerror "An example command would be: gwas.plotter.sh [arg1] [arg2] [arg3] [arg4] [arg5] [arg6] [arg7] [arg8]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
  	echo ""
@@ -73,7 +77,7 @@ echobold "                     GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION ST
 echobold ""
 echobold "* Version:      v1.0.0"
 echobold ""
-echobold "* Last update:  2016-12-11"
+echobold "* Last update:  2016-12-12"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
 echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
@@ -102,7 +106,7 @@ if [[ $# -lt 7 ]]; then
 	echo ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
-	echoerror "You must supply [5] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
+	echoerror "You must supply [7] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
 	script_arguments_error
 else
 	echo ""
@@ -120,7 +124,10 @@ else
 	IMAGEFORMAT=${5} # depends on arg5
 	QRUNTIMEPLOTTER=${6} # depends on arg6
 	QMEMPLOTTER=${7} # depends on arg7
-	RANDOMSAMPLE="50000" # depends on arg8
+	QRUNTIME="00:05:00" # to remove the intermediate data
+	QMEM="4Gb" # to remove the intermediate data
+	RANDOMSAMPLE=${RANDOMSAMPLE} # depends on arg1, setting in the source file
+	STATTYPE=${STATTYPE} # depends on arg1, setting in the source file
 
 	echo ""
 	echo "All arguments are passed. These are the settings:"
@@ -133,6 +140,39 @@ else
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Plotting original, cleaned, or meta-analyzed harmonized GWAS data."
+	echo ""
+	### PREPARING FILES -- ARGUMENT DEPENDENT
+	echo "* Setting proper extension..."
+	if [[ ${DATAFORMAT} == "QC" ]]; then
+		echo "...for 'cleaned harmonized' data..."
+		DATAEXT="cdat"
+		DATAPLOTID="QC"
+		VT="22" # column that holds the variant type information, should be 'SNP' or 'INDEL'
+	elif [[ ${DATAFORMAT} == "RAW" ]]; then
+		echo "...for 'original harmonized' data..."
+		DATAEXT="rdat"
+		DATAPLOTID="RAW"
+		VT="26" # column that holds the variant type information, should be 'SNP' or 'INDEL'
+	elif [[ ${DATAFORMAT} == "META" ]]; then
+		echo "...for 'meta-analyzed, cleaned, and harmonized' data..."
+		DATAEXT="mdat"
+		DATAPLOTID="META"
+		VT="22" # column that holds the variant type information, should be 'SNP' or 'INDEL'
+	else
+		echo ""
+		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echoerrorflash "                 *** Oh, computer says no! DATAFORMAT [${DATAFORMAT}] does not exist! ***"
+		echoerror ""
+		echoerror "You must supply [8] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
+		echoerror "Specifically: you should set the [DATAFORMAT] of your (meta-)GWAS data to [QC/RAW/META]."
+		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  		# The wrong arguments are passed, so we'll exit the script now!
+		echo ""
+		script_copyright_message
+		exit 1
+	fi
+	
 	### HEADER .pdat-file
 	### Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P  N  N_cases N_controls Imputed
 	### 1	   2   3  4      5            6           7   8   9   10    11   12   13 14 15 16      17         18
@@ -146,252 +186,96 @@ else
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20  21  22 23 24    25    26    27    28    29    30
 	
 	### PREPARING FILES -- ARGUMENT DEPENDENT
-	if [[ ${DATAFORMAT} == "QC" || ${DATAFORMAT} == "RAW" ]]; then # OPTION: RAW, QC, META
+	if [[ ${DATAFORMAT} == "QC" || ${DATAFORMAT} == "RAW" ]]; then # OPTION: RAW, or QC
 		echosucces "Plotting original harmonized data."
+		echo "* Making necessary intermediate 'plotting'-files."
 		echo ""
-		echo "* Setting proper extension..."
-		if [[ ${DATAFORMAT} == "QC" ]]; then
-			echo "...for 'cleaned harmonized' data..."
-			DATAEXT="cdat"
-			DATAPLOTID="QC"
-			VT="22"
-		elif [[ ${DATAFORMAT} == "RAW" ]]; then
-			echo "...for 'original harmonized' data..."
-			DATAEXT="rdat"
-			DATAPLOTID="RAW"
-			VT="26"
-		elif [[ ${DATAFORMAT} == "META" ]]; then
-			echo "...for 'original harmonized' data..."
-			DATAEXT="rdat"
-			DATAPLOTID="RAW"
-			VT="26"
-		else
-			echoerrorflash "This is not an option! Double back, please."
-			echo ""
-		fi
+		echo "- producing Manhattan-plots..." # CHR, BP, P-value
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $3, $4, $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt
+		echo "${SCRIPTS}/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
+		echo "${SCRIPTS}/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle QC --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
+		echo "${SCRIPTS}/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle TWOCOLOR --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.remover.sh
 
-		echo ""
-		echo "* Making necessary intermediate 'plotting'-files and plotting..."
-		echo "- ...Manhattan-plots..." # CHR, BP, P-value
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $3, $4, $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle QC --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle TWOCOLOR --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
+		echo "- producing normal QQ-plots..." # P-value
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt
+		echo "${SCRIPTS}/qqplot.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.sh
 
-		echo ""
-		echo "- ...normal QQ-plots..." # P-value
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.QQ -o ${PROJECTDIR}/${COHORTNAME}.QQ.log -e ${PROJECTDIR}/${COHORTNAME}.QQ.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ.sh
+		echo "- producing QQ-plots stratified by imputation quality..." # P-value, INFO
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $15, $12 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt
+		echo "${SCRIPTS}/qqplot_by_info.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.remover.sh
 
-		echo ""
-		echo "- ...QQ-plots stratified by imputation quality..." # P-value, INFO
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15, $12 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_info.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.QQ_by_INFO -o ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.log -e ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.sh
-
-		echo ""
-		echo "- ...QQ-plots stratified by minor allele frequency..." # P-value, MAF
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15, $9 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_caf.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.log -e ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.sh
+		echo "- producing QQ-plots stratified by minor allele frequency..." # P-value, MAF
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $15, $9 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt
+		echo "${SCRIPTS}/qqplot_by_caf.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.sh
 	
-		echo ""
-		echo "- ...QQ-plots stratified by variant type..." # P-value, VT
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15, '$VT' }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_type.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.log -e ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.sh
+		echo "- producing QQ-plots stratified by variant type..." # P-value, VT
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $15, $'$VT' }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt
+		echo "${SCRIPTS}/qqplot_by_type.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.sh
 	
-		echo ""
-		echo "- ...histograms of the beta (effect size)..." # BETA
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $13 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/effectsize_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.txt.gz --outputdir ${PROJECTDIR} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.HISTOGRAM_BETA -o ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.log -e ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.sh
+		echo "- producing histograms of the beta (effect size)..." # BETA
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $13 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt
+		echo "${SCRIPTS}/effectsize_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.sh
 
-		echo ""
-		echo "- ...a correlation plot of the observed p-value and the p-value based on beta and standard error..." # BETA, SE, P-value
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $13, $14, $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/p_z_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.P_Z.txt.gz --outputdir ${PROJECTDIR} --randomsample ${RANDOMSAMPLE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.P_Z.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.P_Z -o ${PROJECTDIR}/${COHORTNAME}.P_Z.log -e ${PROJECTDIR}/${COHORTNAME}.P_Z.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.P_Z.sh
+		echo "- producing a correlation plot of the observed p-value and the p-value based on beta and standard error..." # BETA, SE, P-value
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $13, $14, $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt
+		echo "${SCRIPTS}/p_z_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt --outputdir ${PROJECTDIR} --randomsample ${RANDOMSAMPLE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.P_Z -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.P_Z.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.P_Z -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.remover.sh
 
-		echo ""
-		echo "- ...histograms of the imputation quality..." # INFO
-		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $12 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt
-		echo "${SOFTWARE}/MANTEL/SCRIPTS/info_score_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.INFO.txt.gz --outputdir ${PROJECTDIR} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.INFO.sh
-		#qsub -S /bin/bash -N ${COHORTNAME}.INFO -o ${PROJECTDIR}/${COHORTNAME}.INFO.log -e ${PROJECTDIR}/${COHORTNAME}.INFO.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.INFO.sh
+		echo "- producing histograms of the imputation quality..." # INFO
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | awk '{ print $12 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt
+		echo "${SCRIPTS}/info_score_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.sh
+		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.INFO -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.sh
+		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh		
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.INFO.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.INFO -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh
 	
 
-	elif 
+	elif [[ ${DATAFORMAT} == "META" ]]; then # OPTION: META
 		echosucces "Plotting meta-analysis results."
 		echo ""
 
 	else 
-		echoerrorflash "This is not an option! Double back, please."
 		echo ""
+		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echoerrorflash "                 *** Oh, computer says no! DATAFORMAT [${DATAFORMAT}] does not exist! ***"
+		echoerror ""
+		echoerror "You must supply [8] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
+		echoerror "Specifically: you should set the [DATAFORMAT] of your (meta-)GWAS data to [QC/RAW/META]."
+		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  		# The wrong arguments are passed, so we'll exit the script now!
+		echo ""
+		script_copyright_message
+		exit 1
 
 	fi
-
-
-	#	echo "- cleaning up input data for ${FILE}"
-	#	rm -v ${PLOTTED}/${FILENAME}.MANHATTAN.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.QQ.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_INFO.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_CAF.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_TYPE.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.P_Z.txt.gz
-	#	rm -v ${PLOTTED}/${FILENAME}.INFO.txt.gz
-		
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
 script_copyright_message
 
 
-
-
-### Header example
-###	1	   2   3  4		 5			  6			  7	  8	  9	  10	11	 12	  13 14	15 16	 17		    18
-###	Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed
-###	rs1921 1 939471 1 2 4 0.408 0.408 322.32 0.375511637486551 NA 0.0451 0.04283 0.293 395 NA NA 0
-###	rs3128126 1 952073 1 4 1 0.4208 0.4208 332.432 0.375511637486551 NA 0.06069 0.04304 0.1593 395 NA NA 0
-###	rs10907175 1 1120590 1 3 1 0.08571 0.08571 67.7109 0.375511637486551 NA 0.008913 0.04301 0.836 395 NA NA 0
-
-#echo "Make a new directory for the original data, and move it there."
-#### Make directories for script if they do not exist yet (!!!PREREQUISITE!!!)
-#if [ ! -d ${QCEDDATA}/_original_hisayama ]; then
-#  mkdir -v ${QCEDDATA}/_original_hisayama
-#fi
-#HISAYAMADATA=${QCEDDATA}/_original_hisayama
-#mv -v ${QCEDDATA}/HISAYAMA.*.meta.gz ${HISAYAMADATA}
-#
-#echo ""
-#echo "Gzip the new stuff"
-#gzip -v ${QCEDDATA}/HISAYAMA.*.COMBINED.21C.meta
-#chmod -v 0775 ${QCEDDATA}/HISAYAMA.*
-
-#for FILE in $(ls ${QCEDDATA}/*.gz ); do
-#	### PREPARING FILES
-#	FILENAME=$(basename ${FILE} .gz)
-#	echo "*** Processing file ${FILENAME} ***"
-#	echo ""
-#	echo "- found file: ${FILE}"
-#	echo "- creating files for plotting..." 
-#	zcat ${FILE} | awk '{ print $6, $7, $13 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.MANHATTAN.txt
-#	zcat ${FILE} | awk '{ print $13 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.QQ.txt
-#	zcat ${FILE} | awk '{ print $13, $14 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.QQ_by_INFO.txt
-#	zcat ${FILE} | awk '{ print $13, $10 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.QQ_by_CAF.txt
-#	zcat ${FILE} | awk '{ print $13, $17 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.QQ_by_TYPE.txt
-#	zcat ${FILE} | awk '{ print $11 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.txt
-#	zcat ${FILE} | awk '{ print $11, $12, $13 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.P_Z.txt
-#	zcat ${FILE} | awk '{ print $14 }' | tail -n +2 > ${PLOTTED}/${FILENAME}.INFO.txt
-#	
-#	echo ""
-#	echo "- gzipping..."
-#	gzip -v ${PLOTTED}/${FILENAME}.MANHATTAN.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.QQ.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.QQ_by_INFO.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.QQ_by_CAF.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.QQ_by_TYPE.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.P_Z.txt
-#	gzip -v ${PLOTTED}/${FILENAME}.INFO.txt
-#	
-#	chmod -v 0775 ${PLOTTED}/${FILENAME}.*
-#	
-#	### REPORTING
-#	echo ""
-#	echo "- reporting some basics on the file..."
-#	
-#	echo "*** Processing file: ${FILENAME} ***" > ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "================================================================================" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	ls -l ${FILE} >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "--------------------------------------------------------------------------------" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "*** HEADER & TAIL ***" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "--------------------------------------------------------------------------------" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	zcat ${FILE} | head >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	zcat ${FILE} | tail >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "--------------------------------------------------------------------------------" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "--------------------------------------------------------------------------------" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "*** SOME STATS ***" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "Number of lines:" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	zcat ${FILE} | tail -n +2 | wc -l >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "Number of unique fields:" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	zcat ${FILE} | tail -n +2 | awk '{ print NF }' | sort -nu >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "--------------------------------------------------------------------------------" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "================================================================================" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	echo "${TODAY}" >> ${PLOTTED}/${FILENAME}.REPORT.txt
-#	
-#	
-#	### PLOTTING
-#	###for FORMAT in PNG TIFF EPS PDF; do
-#	for FORMAT in PNG; do
-#		echo ""
-#		echo "- plotting Manhattan..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.MANHATTAN.txt.gz --outputdir ${PLOTTED} --colorstyle FULL --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.MANHATTAN.FULL.sh
-#		qsub -S /bin/bash -N ${FILENAME}.MANHATTAN.FULL -o ${PLOTTED}/${FILENAME}.MANHATTAN.FULL.log -e ${PLOTTED}/${FILENAME}.MANHATTAN.FULL.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.MANHATTAN.FULL.sh
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.MANHATTAN.txt.gz --outputdir ${PLOTTED} --colorstyle QC --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.MANHATTAN.QC.sh
-#		qsub -S /bin/bash -N ${FILENAME}.MANHATTAN.QC -o ${PLOTTED}/${FILENAME}.MANHATTAN.QC.log -e ${PLOTTED}/${FILENAME}.MANHATTAN.QC.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.MANHATTAN.QC.sh
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.MANHATTAN.txt.gz --outputdir ${PLOTTED} --colorstyle TWOCOLOR --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.MANHATTAN.TWOCOLOR.sh
-#		qsub -S /bin/bash -N ${FILENAME}.MANHATTAN.TWOCOLOR -o ${PLOTTED}/${FILENAME}.MANHATTAN.TWOCOLOR.log -e ${PLOTTED}/${FILENAME}.MANHATTAN.TWOCOLOR.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.MANHATTAN.TWOCOLOR.sh
-#		
-#		echo ""
-#		echo "- plotting QQ-plot..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.QQ.txt.gz --outputdir ${PLOTTED} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.QQ.sh
-#		qsub -S /bin/bash -N ${FILENAME}.QQ -o ${PLOTTED}/${FILENAME}.QQ.log -e ${PLOTTED}/${FILENAME}.QQ.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.QQ.sh
-#		
-#		echo ""
-#		echo "- plotting QQ-plot by INFO..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_info.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.QQ_by_INFO.txt.gz --outputdir ${PLOTTED} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.QQ_by_INFO.sh
-#		qsub -S /bin/bash -N ${FILENAME}.QQ_by_INFO -o ${PLOTTED}/${FILENAME}.QQ_by_INFO.log -e ${PLOTTED}/${FILENAME}.QQ_by_INFO.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.QQ_by_INFO.sh
-#		
-#		echo ""
-#		echo "- plotting QQ-plot by CAF..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_caf.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.QQ_by_CAF.txt.gz --outputdir ${PLOTTED} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.QQ_by_CAF.sh
-#		qsub -S /bin/bash -N ${FILENAME}.QQ_by_CAF -o ${PLOTTED}/${FILENAME}.QQ_by_CAF.log -e ${PLOTTED}/${FILENAME}.QQ_by_CAF.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.QQ_by_CAF.sh
-#		
-#		echo ""
-#		echo "- plotting QQ-plot by TYPE..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_type.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.QQ_by_TYPE.txt.gz --outputdir ${PLOTTED} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.QQ_by_TYPE.sh
-#		qsub -S /bin/bash -N ${FILENAME}.QQ_by_TYPE -o ${PLOTTED}/${FILENAME}.QQ_by_TYPE.log -e ${PLOTTED}/${FILENAME}.QQ_by_TYPE.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.QQ_by_TYPE.sh
-#		
-#		echo ""
-#		echo "- plotting EffectSize-plot..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/effectsize_plotter.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.txt.gz --outputdir ${PLOTTED} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.sh
-#		qsub -S /bin/bash -N ${FILENAME}.HISTOGRAM_BETA -o ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.log -e ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.sh
-#		
-#		echo ""
-#		echo "- plotting P-Z-plot..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/p_z_plotter.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.P_Z.txt.gz --outputdir ${PLOTTED} --randomsample ${RANDOMSAMPLE} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.P_Z.sh
-#		qsub -S /bin/bash -N ${FILENAME}.P_Z -o ${PLOTTED}/${FILENAME}.P_Z.log -e ${PLOTTED}/${FILENAME}.P_Z.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.P_Z.sh
-#		
-#		echo ""
-#		echo "- plotting INFO-score-plot..."
-#		echo "${SOFTWARE}/MANTEL/SCRIPTS/info_score_plotter.R --projectdir ${PLOTTED} --resultfile ${PLOTTED}/${FILENAME}.INFO.txt.gz --outputdir ${PLOTTED} --imageformat ${FORMAT}" > ${PLOTTED}/${FILENAME}.INFO.sh
-#		qsub -S /bin/bash -N ${FILENAME}.INFO -o ${PLOTTED}/${FILENAME}.INFO.log -e ${PLOTTED}/${FILENAME}.INFO.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.INFO.sh
-#		
-#	done
-#	
-#	echo "================================================================================"
-#	echo ""
-#
-#	echo "- cleaning up input data for ${FILE}"
-#	rm -v ${PLOTTED}/${FILENAME}.MANHATTAN.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.QQ.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_INFO.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_CAF.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_TYPE.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.P_Z.txt.gz
-#	rm -v ${PLOTTED}/${FILENAME}.INFO.txt.gz
-#done
 #echo ""
 #echo "================================================================================"
 #echo "*** FREQUENCY PLOTTING ***"
@@ -433,7 +317,6 @@ script_copyright_message
 #	qsub -S /bin/bash -N ${FILENAME}.FREQ -o ${PLOTTED}/${FILENAME}.FREQ.log -e ${PLOTTED}/${FILENAME}.FREQ.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.FREQ.sh
 #done
 
-echo ""
 #echo "* Plotting EUROPEAN ancestral populations..."
 #for FILE in $(echo `ls ${PLOTTED}/*.EUR.*.FREQ.txt`); do # weirdly this doesn't work when submitting a job...
 #	### PREPARING FILES

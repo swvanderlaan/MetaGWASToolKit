@@ -10,7 +10,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-Z PLOTTER v1.1.1
     \n
     * Version: v1.1.1
-    * Last edit: 2016-12-05
+    * Last edit: 2016-12-12
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  P-Z-plotter for GWAS (meta-analysis) results. Will plot the
@@ -28,6 +28,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #        ./p_z_plotter.R --projectdir projectdir --resultfile resultfile --outputdir outputdir -randomsample random_sample--imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
+#--------------------------------------------------------------------------
 ### CLEAR THE BOARD
 rm(list=ls())
 
@@ -43,36 +44,43 @@ cat("\n* Loading function to install packages...\n\n")
 ### The part of installing (and loading) packages via Rscript doesn't properly work.
 ### FUNCTION TO INSTALL PACKAGES
 install.packages.auto <- function(x) { 
-     x <- as.character(substitute(x)) 
-     if(isTRUE(x %in% .packages(all.available = TRUE))) { 
-          eval(parse(text = sprintf("require(\"%s\")", x)))
-     } else { 
-          # Update installed packages - this may mean a full upgrade of R, which in turn
-          # may not be warrented. 
-          #update.packages(ask = FALSE) 
-          eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
-     }
-     if(isTRUE(x %in% .packages(all.available = TRUE))) { 
-          eval(parse(text = sprintf("require(\"%s\")", x)))
-     } else {
-          source("http://bioconductor.org/biocLite.R")
-          # Update installed packages - this may mean a full upgrade of R, which in turn
-          # may not be warrented.
-          #biocLite(character(), ask = FALSE) 
-          eval(parse(text = sprintf("biocLite(\"%s\")", x)))
-          eval(parse(text = sprintf("require(\"%s\")", x)))
-     }
+  x <- as.character(substitute(x)) 
+  if(isTRUE(x %in% .packages(all.available = TRUE))) { 
+    eval(parse(text = sprintf("require(\"%s\")", x)))
+  } else { 
+    # Update installed packages - this may mean a full upgrade of R, which in turn
+    # may not be warrented. 
+    #update.packages(ask = FALSE) 
+    eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
+  }
+  if(isTRUE(x %in% .packages(all.available = TRUE))) { 
+    eval(parse(text = sprintf("require(\"%s\")", x)))
+  } else {
+    source("http://bioconductor.org/biocLite.R")
+    # Update installed packages - this may mean a full upgrade of R, which in turn
+    # may not be warrented.
+    #biocLite(character(), ask = FALSE) 
+    eval(parse(text = sprintf("biocLite(\"%s\")", x)))
+    eval(parse(text = sprintf("require(\"%s\")", x)))
+  }
 }
+
+cat("\n* Checking availability of required packages and installing if needed...\n\n")
 ### INSTALL PACKAGES WE NEED
 install.packages.auto("optparse")
 install.packages.auto("tools")
+install.packages.auto("dplyr")
+install.packages.auto("tidyr")
+install.packages.auto("data.table")
 
+cat("\nDone! Required packages installed and loaded.\n\n")
+
+cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
                "#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D",
-               "#595A5C","#A2A3A4")
-#--------------------------------------------------------------------------
+               "#595A5C","#A2A3A4", "#D7D8D7", "#ECECEC", "#FFFFFF", "#000000")
 
 #--------------------------------------------------------------------------
 ### OPTION LISTING
@@ -96,6 +104,7 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
+#--------------------------------------------------------------------------
 ### FOR LOCAL DEBUGGING
 #opt$projectdir="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/"
 #opt$outputdir="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/" 
@@ -113,11 +122,11 @@ if (opt$verbose) {
   cat("Checking the settings.")
   cat("\nThe project directory....................: ")
   cat(opt$projectdir)
-  cat("\n\nThe results file.........................: ")
+  cat("\nThe results file.........................: ")
   cat(opt$resultfile)
-  cat("\n\nThe output directory.....................: ")
+  cat("\nThe output directory.....................: ")
   cat(opt$outputdir)
-  cat("\n\nThe color style..........................: ")
+  cat("\nThe color style..........................: ")
   cat(opt$imageformat)
   cat("\n\n")
   
@@ -129,7 +138,7 @@ cat("Wow. We are finally starting \"P-Z Plotter\". ")
 # main point of program is here, do this whether or not "verbose" is set
 if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$randomsample) & !is.na(opt$imageformat)) {
   ### set studyname
-  study <- sub("\\.[[:alnum:]]+$", "", as.character(file_path_sans_ext(basename(opt$resultfile)))) # argument 2
+  study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
   cat(paste("We are going to \nmake P-Z-plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\n\n")
   
@@ -139,52 +148,82 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   cat(paste("Today's date is: ", Today, ".\n", sep = ''))
   
   #--------------------------------------------------------------------------
-  #### DEFINE THE LOCATIONS OF DATA
+  ### DEFINE THE LOCATIONS OF DATA
   ROOT_loc = opt$projectdir # argument 1
   OUT_loc = opt$outputdir # argument 4
   
   #--------------------------------------------------------------------------
   ### LOADING RESULTS FILE
-  cat("Loading results file, removing NA's, and random sampling...\n")
   ### Location of is set by 'opt$resultfile' # argument 2
-  # loading
-  rawdata_pz <- read.table(opt$resultfile, header = FALSE)
-  # removing NA's
-  data_pz <- na.omit(rawdata_pz)
+  cat("\n\nLoading results file and removing NA's...")
+
+  ### Checking file type -- is it gzipped or not?
+  data_connection <- file(opt$resultfile)
+  data_connection
+  filetype <- summary(data_connection)$class
+  filetype
+  close(data_connection)
+ 
+  ### Loading the data
+  if(filetype == "gzfile"){
+  cat("\n* The file appears to be gzipped, now loading...")
+    rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+  } else if(filetype != "gzfile") {
+  cat("\n* The file appears not to be gezipped, now loading...")
+    rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
+  } else {
+  cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
+of the data. Double back, please.\n\n", 
+         file=stderr()) # print error messages to stder
+  }
+  cat("\n* Removing NA's...")
+  data_pz <- na.omit(rawdata)
+    
   # calculating Z -- beta and SE are required!!!
-  data_pz[,4] <- 2*pnorm(-abs((data_pz[,1]/data_pz[,2])))
+  data_pz$V4 <- 2*pnorm(-abs((data_pz$V1/data_pz$V2)))
   
   # Function to get random sample from dataframe
   randomSample = function(df,n) { 
     return (df[sample(nrow(df), n),])
   }
+
   # Get random sample from data, default should be 500000 points. 
-  # This corresponds to ~5% of a cleaned GWAS dataset based on 
-  # 1000G imputed data. For ExomeChip or Metabochip data you'll 
-  # probably need to set this number lower. This number should 
-  # be given as the option "random_sample"
-  data_pz.random<-randomSample(data_pz, as.numeric(opt$randomsample))
+  # This corresponds to ~5% of a cleaned GWAS dataset based on 1000G imputed data. For 
+  # ExomeChip or Metabochip data you'll probably need to set this number lower. 
+  # This number should be given as the option "random_sample".
+
+  size_data <- length(data_pz[,1])
   
-  ### PLOT INFO-SCORE PLOT ###
+  cat("\n\nDetermining size of the data and setting the random sample size...\n")
+  if (size_data-1 > opt$randomsample) {
+  cat(paste0("* Data size is larger [ ",size_data," ] than proposed random sampling size [ ", opt$randomsample, " ], taking random sample...\n"))
+	data_pz.random <- randomSample(data_pz, as.numeric(opt$randomsample))
+  } else {
+  cat(paste0("* Data size smaller [ ",size_data," ] than proposed random sampling size [ ", opt$randomsample, " ], setting random sample to size of data...\n"))
+  	data_pz.random <- randomSample(data_pz, size_data)
+  }
+  
+  #--------------------------------------------------------------------------
+  ### PLOT INFO-SCORE PLOT
   cat("\n\nDetermining what type of image should be produced...")
   if (opt$imageformat == "PNG") 
-    png(paste0(opt$outputdir,"/",Today,"_",study,".png"), width = 800, height = 800)
+    png(paste0(opt$outputdir,"/",study,".png"), width = 800, height = 800)
   
   if (opt$imageformat == "TIFF") 
-    tiff(paste0(opt$outputdir,"/",Today,"_",study,".tiff"), width = 800, height = 800)
+    tiff(paste0(opt$outputdir,"/",study,".tiff"), width = 800, height = 800)
   
   if (opt$imageformat == "EPS") 
-    postscript(file = paste0(opt$outputdir,"/",Today,"_",study,".eps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript(file = paste0(opt$outputdir,"/",study,".eps"), horizontal = FALSE, onefile = FALSE, paper = "special")
   
   if (opt$imageformat == "PDF") 
-    pdf(paste0(opt$outputdir,"/",Today,"_",study,".pdf"), width = 10, height = 10)
+    pdf(paste0(opt$outputdir,"/",study,".pdf"), width = 10, height = 10)
   
-  ### START PLOTTING ###
-  
+  #--------------------------------------------------------------------------
+  ### START PLOTTING
   cat("\n\nPlotting...")
   #?plot
   # plot (random sample of) data 
-  plot(data_pz.random[,3], data_pz.random[,4], 
+  plot(data_pz.random$V3, data_pz.random$V4, 
        xlab = "Observed p-value", ylab = "Z-score based p-value", 
        main = "P-Z", col = "#1290D9", bty="n",
        xaxs="i", yaxs="i")
@@ -205,7 +244,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
 
 #--------------------------------------------------------------------------
 ### CLOSING MESSAGE
-cat(paste("All done making the P-Z-plot of",study,".\n"))
+cat(paste("\n\nAll done making the P-Z-plot of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 

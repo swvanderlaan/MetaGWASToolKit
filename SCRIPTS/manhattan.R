@@ -11,6 +11,7 @@
 ### - add in a gene name at the most significant peaks (previous/novel loci)
 ### - add in option on test-statistics (Z-score, Chi^2, or P-value)
 ### - add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female)
+### - add in option to make it horizontal, vertical or circular
 ### - better outline chr X, XY, Y, MT
 ### - change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes
 
@@ -18,7 +19,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     MANHATTAN PLOTTER v1.1.1
     \n
     * Version: v1.1.1
-    * Last edit: 2016-12-05
+    * Last edit: 2016-12-12
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -36,6 +37,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #        ./manhattan.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --colorstyle colorstyle --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
+#--------------------------------------------------------------------------
 ### CLEAR THE BOARD
 rm(list=ls())
 
@@ -51,36 +53,43 @@ cat("\n* Loading function to install packages...\n\n")
 ### The part of installing (and loading) packages via Rscript doesn't properly work.
 ### FUNCTION TO INSTALL PACKAGES
 install.packages.auto <- function(x) { 
-     x <- as.character(substitute(x)) 
-     if(isTRUE(x %in% .packages(all.available = TRUE))) { 
-          eval(parse(text = sprintf("require(\"%s\")", x)))
-     } else { 
-          # Update installed packages - this may mean a full upgrade of R, which in turn
-          # may not be warrented. 
-          #update.packages(ask = FALSE) 
-          eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
-     }
-     if(isTRUE(x %in% .packages(all.available = TRUE))) { 
-          eval(parse(text = sprintf("require(\"%s\")", x)))
-     } else {
-          source("http://bioconductor.org/biocLite.R")
-          # Update installed packages - this may mean a full upgrade of R, which in turn
-          # may not be warrented.
-          #biocLite(character(), ask = FALSE) 
-          eval(parse(text = sprintf("biocLite(\"%s\")", x)))
-          eval(parse(text = sprintf("require(\"%s\")", x)))
-     }
+  x <- as.character(substitute(x)) 
+  if(isTRUE(x %in% .packages(all.available = TRUE))) { 
+    eval(parse(text = sprintf("require(\"%s\")", x)))
+  } else { 
+    # Update installed packages - this may mean a full upgrade of R, which in turn
+    # may not be warrented. 
+    #update.packages(ask = FALSE) 
+    eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
+  }
+  if(isTRUE(x %in% .packages(all.available = TRUE))) { 
+    eval(parse(text = sprintf("require(\"%s\")", x)))
+  } else {
+    source("http://bioconductor.org/biocLite.R")
+    # Update installed packages - this may mean a full upgrade of R, which in turn
+    # may not be warrented.
+    #biocLite(character(), ask = FALSE) 
+    eval(parse(text = sprintf("biocLite(\"%s\")", x)))
+    eval(parse(text = sprintf("require(\"%s\")", x)))
+  }
 }
+
+cat("\n* Checking availability of required packages and installing if needed...\n\n")
 ### INSTALL PACKAGES WE NEED
 install.packages.auto("optparse")
 install.packages.auto("tools")
+install.packages.auto("dplyr")
+install.packages.auto("tidyr")
+install.packages.auto("data.table")
 
+cat("\nDone! Required packages installed and loaded.\n\n")
+
+cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
                "#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D",
-               "#595A5C","#A2A3A4")
-#--------------------------------------------------------------------------
+               "#595A5C","#A2A3A4", "#D7D8D7", "#ECECEC", "#FFFFFF", "#000000")
 
 #--------------------------------------------------------------------------
 ### OPTION LISTING
@@ -108,12 +117,13 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
+#--------------------------------------------------------------------------
 ### FOR LOCAL DEBUGGING
-#opt$projectdir="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/"
-#opt$outputdir="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/" 
-#opt$colorstyle="FULL"
-#opt$imageformat="PNG"
-#opt$resultfile="/Users/swvanderlaan/r/scripts_flip/aexos_eclas_m2.Symptoms_Stroke_LRGP.Manhattan.txt"
+opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1"
+opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1" 
+opt$colorstyle="FULL"
+opt$imageformat="PNG"
+opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.QC.MANHATTAN.txt"
 
 
 if (opt$verbose) {
@@ -125,13 +135,13 @@ if (opt$verbose) {
      cat("Checking the settings.")
      cat("\nThe project directory....................: ")
      cat(opt$projectdir)
-     cat("\n\nThe results file.........................: ")
+     cat("\nThe results file.........................: ")
      cat(opt$resultfile)
-     cat("\n\nThe output directory.....................: ")
+     cat("\nThe output directory.....................: ")
      cat(opt$outputdir)
-     cat("\n\nThe color style..........................: ")
+     cat("\nThe color style..........................: ")
      cat(opt$colorstyle)
-     cat("\n\nThe image format.........................: ")
+     cat("\nThe image format.........................: ")
      cat(opt$imageformat)
      cat("\n\n")
      
@@ -142,9 +152,8 @@ cat("Wow. We are finally starting \"Mahattan Plotter\". ")
 ### START OF THE PROGRAM
 # main point of program is here, do this whether or not "verbose" is set
 if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$colorstyle) & !is.na(opt$imageformat)) {
-     ### set studyname
-     study <- sub("\\.[[:alnum:]]+$", "", as.character(file_path_sans_ext(basename(opt$resultfile)))) # argument 2
-     cat(paste("We are going to \nmake the Manhattan plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
+     study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
+     cat(paste("We are going to \nmake P-Z-plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
      cat("\n\n")
      
      #--------------------------------------------------------------------------
@@ -153,39 +162,66 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      cat(paste("Today's date is: ", Today, ".\n", sep = ''))
      
      #--------------------------------------------------------------------------
-     #### DEFINE THE LOCATIONS OF DATA
+     ### DEFINE THE LOCATIONS OF DATA
      ROOT_loc = opt$projectdir # argument 1
      OUT_loc = opt$outputdir # argument 4
      
      #--------------------------------------------------------------------------
      ### LOADING RESULTS FILE
-     cat("Loading results file...\n")
      ### Location of is set by 'opt$resultfile' # argument 2
-     rawdata = read.table(opt$resultfile, header = FALSE)
+     cat("\n\nLoading results file and removing NA's...")
+   
+     ### Checking file type -- is it gzipped or not?
+     data_connection <- file(opt$resultfile)
+     data_connection
+     filetype <- summary(data_connection)$class
+     filetype
+     close(data_connection)
+    
+     ### Loading the data
+     if(filetype == "gzfile"){
+     cat("\n* The file appears to be gzipped, now loading...")
+       rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+     } else if(filetype != "gzfile") {
+     cat("\n* The file appears not to be gezipped, now loading...")
+       rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
+     } else {
+     cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
+   of the data. Double back, please.\n\n", 
+            file=stderr()) # print error messages to stder
+     }
+     cat("\n* Removing NA's...")
      data <- na.omit(rawdata)
-     cat("\nClean data from NAs and formatting chromosomes...\n")
-     data = data[complete.cases(data),]
-     data[,1] = toupper(data[,1]) #convert to upper case
-     data[,1][data[,1] == "0X"] = "23"
-     data[,1][data[,1] == "X"] = "23"
-     data[,1][data[,1] == "0Y"] = "24"
-     data[,1][data[,1] == "Y"] = "24"
-     data[,1][data[,1] == "XY"] = "25"
-     data[,1][data[,1] == "MT"] = "26"
-     data[,1] = as.integer(data[,1])
      
+     cat("\nClean data from NAs and formatting chromosomes...")
+     #data = data[complete.cases(data),]
+     data$V1 = toupper(data$V1) #convert to upper case
+     data$V1[data$V1 == "0X"] = "23"
+     data$V1[data$V1 == "X"] = "23"
+     data$V1[data$V1 == "0Y"] = "24"
+     data$V1[data$V1 == "Y"] = "24"
+     data$V1[data$V1 == "XY"] = "25"
+     data$V1[data$V1 == "MT"] = "26"
+     data$V1 = as.integer(data$V1)
+     #data$V2 = as.integer(data$V2)
+     
+     cat("\nReordering data...\n")
+     setorder(data, V1, V2)
+
      cat("\nLoad in a subset of the data based on p<=0.50...")
-     if (opt$colorstyle == "QC") {
-          data <- subset(data,data[,3]<=0.50)
-          sig <- subset(data,data[,3]<0.05)
-          nonsig <- subset(data,data[,3]>=0.05) 
-          size <- sum(nonsig[,1] > 0)
+     if (opt$colorstyle == "FULL") {
+     cat(paste0("\n* color style is '",opt$colorstyle,"'..."))
+          data <- data[V3 <= "0.50"]
+          sig <- data[V3 < "0.05"]
+          nonsig <- data[V3 >= "0.05"]
+          size <- sum(nonsig$V1 > 0)
           p <- sig
      } else {
-          data <- subset(data,data[,3]<=0.50)
-          sig <- subset(data,data[,3]<0.50)
-          nonsig <- subset(data,data[,3]>=0.50) 
-          size <- sum(nonsig[,1] > 0)
+     cat(paste0("\n* color style is '",opt$colorstyle,"'..."))
+          data <- data[V3 <= "0.50"]
+          sig <- data[V3 < "0.05"]
+          nonsig <- data[V3 >= "0.05"]
+          size <- sum(nonsig$V1 > 0)
           p <- sig
      }
      cat("...and make a list of colors.")
@@ -199,12 +235,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      # maxX is calculated a bit below, in uniq chr loop
      
      # Let's count the number of chromosomes to plot
-     nchr = length(unique(data[,1]))
+     nchr = length(unique(data$V1))
      cat(paste0("\n   * The number of chromosomes to plot: ", nchr,"; these are:\n"))
      
      # Take into account unique chrs
-     uniq_chr = unique(data[,1])
-     cat(paste0("   - chromosome ", uniq_chr,".\n"))
+     uniq_chr = unique(data$V1)
+     cat(paste0("   - chromosome ", uniq_chr,"\n"))
      
      # We have determined the number of chromosomes (1-22 plus optionally x, y, etc.),
      # and will plot accordingly. This includes the maximum number of chromosomes.
@@ -212,11 +248,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      #changed to uniq_chr loop
      for (i in 1:length(uniq_chr)){
           # getting a list of positions per chromosome
-          assign((paste("pos_",i,sep="")), (subset(p[,2], p[,1]==uniq_chr[i])))
+          assign((paste("pos_",i,sep="")), (subset(p$V1, p$V1==uniq_chr[i])))
           # getting a list of p-values per chromosome
-          assign((paste("p_",i,sep="")), (subset(p[,3], p[,1]==uniq_chr[i])))  
+          assign((paste("p_",i,sep="")), (subset(p$V3, p$V1==uniq_chr[i])))  
           # calculating the maxX based on the input-data
-          maxX=maxX+max(subset(p[,2], p[,1]==uniq_chr[i]))  
+          maxX=maxX+max(subset(p$V2, p$V1==uniq_chr[i]))  
      }
      cat(paste0("\n\n   * The maximum on the X-axis: ", format(maxX, big.mark = ","),"."))
      
@@ -259,54 +295,54 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      cat("\n\nDetermining what type of image should be produced and plotting axes.")
      if (opt$imageformat == "PNG") 
           if (opt$colorstyle == "FULL") {
-          	png(paste0(opt$outputdir,"/",Today,"_",study,".FULL.png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".FULL.png"), width=1280, height=720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	png(paste0(opt$outputdir,"/",Today,"_",study,".TWOCOLOR.png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".TWOCOLOR.png"), width=1280, height=720)
           	} else {
-          	png(paste0(opt$outputdir,"/",Today,"_",study,".QC.png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".QC.png"), width=1280, height=720)
      		}
      if (opt$imageformat == "TIFF") 
           if (opt$colorstyle == "FULL") {
-          	tiff(paste0(opt$outputdir,"/",Today,"_",study,".FULL.tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".FULL.tiff"), width=1280, height=720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	tiff(paste0(opt$outputdir,"/",Today,"_",study,".TWOCOLOR.tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".TWOCOLOR.tiff"), width=1280, height=720)
           	} else {
-          	tiff(paste0(opt$outputdir,"/",Today,"_",study,".QC.tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".QC.tiff"), width=1280, height=720)
      		}
      
      if (opt$imageformat == "EPS") 
      	  if (opt$colorstyle == "FULL") {
-          	postscript(file = paste0(opt$outputdir,"/",Today,"_",study,".FULL.eps"), 
+          	postscript(file = paste0(opt$outputdir,"/",study,".FULL.eps"), 
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	postscript(file = paste0(opt$outputdir,"/",Today,"_",study,".TWOCOLOR.eps"), 
+          	postscript(file = paste0(opt$outputdir,"/",study,".TWOCOLOR.eps"), 
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else {
-          	postscript(file = paste0(opt$outputdir,"/",Today,"_",study,".QC.eps"), 
+          	postscript(file = paste0(opt$outputdir,"/",study,".QC.eps"), 
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
      		}
      if (opt$imageformat == "PDF") 
           if (opt$colorstyle == "FULL") {
-          	pdf(paste0(opt$outputdir,"/",Today,"_",study,".FULL.pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".FULL.pdf"), width=10, height=5)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	pdf(paste0(opt$outputdir,"/",Today,"_",study,".TWOCOLOR.pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".TWOCOLOR.pdf"), width=10, height=5)
           	} else {
-          	pdf(paste0(opt$outputdir,"/",Today,"_",study,".QC.pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".QC.pdf"), width=10, height=5)
      		}
      
      ### START PLOTTING ###
      
      cat("\n\nSet up the plot.")
      if (opt$colorstyle == "FULL") {
-          plot(pos_1,-log10(p_1), pch = 20, cex = 1.0, col = "#FBB820", xlim = c(0,maxX), ylim = c(0,(maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
+          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#FBB820", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
      } else if (opt$colorstyle == "TWOCOLOR") {
-          plot(pos_1,-log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", xlim = c(0,maxX), ylim = c(0,(maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
+          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
      } else {
-          plot(pos_1,-log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", xlim = c(0,maxX), ylim = c(0,(maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
+          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
      }
-     ### Add in results per chromosome, with offset to the right starting after chromosome 1
      
-     #Plot the actual points	
+     ### Add in results per chromosome, with offset to the right starting after chromosome 1
+     # Plot the actual points	
      offset <- 0
      for (i in 2:length(uniq_chr)){
           
@@ -314,11 +350,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           offset <- offset + max(list_pos[[i-x]])
           
           if (opt$colorstyle == "FULL") {
-               points((subset(p[,2], p[,1]==uniq_chr[i])) + offset,-log10(subset(p[,3], p[,1]==uniq_chr[i])),pch=20,cex=1.0,col=uithof_color_full[i])
+               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_full[i])
           } else if (opt$colorstyle == "TWOCOLOR") {
-               points((subset(p[,2], p[,1]==uniq_chr[i])) + offset,-log10(subset(p[,3], p[,1]==uniq_chr[i])),pch=20,cex=1.0,col=uithof_color_two[i])
+               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_two[i])
           } else {
-               points((subset(p[,2], p[,1]==uniq_chr[i])) + offset,-log10(subset(p[,3], p[,1]==uniq_chr[i])),pch=20,cex=1.0,col=uithof_color_qc[i])
+               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_qc[i])
           }
      }
      #Setting the scene for the chromosome labels and ticks
@@ -333,11 +369,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           
           # plotting the first label
           x=ifelse(i==1,0,1)
-          max_pos_chr=max(subset(p[,2], p[,1]==chr));
+          max_pos_chr=max(subset(p$V2, p$V1==chr));
           xtix[i] <- max_pos_chr + xtix[i-x];
           
           # putting the labels in the middle
-          xCHR[i] <- (max_pos_chr +min(subset(p[,2], p[,1]==chr)))/2 + offset;
+          xCHR[i] <- (max_pos_chr +min(subset(p$V2, p$V1==chr)))/2 + offset;
           
           # drawing the labels	
           axis(1, at=xCHR[i], labels=c(uniq_chr[i]), cex.axis=sz[i], tick=FALSE);
@@ -347,20 +383,20 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      
      #Plot the X-axis
      if(nchr==22)
-          axis(1,at=xtix,labels=c("","","","","","","","","","","","","","","","","","","","","","",""))
+          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","",""))
      if(nchr==23)
-          axis(1,at=xtix,labels=c("","","","","","","","","","","","","","","","","","","","","","","",""))
+          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","",""))
      if(nchr==24)
-          axis(1,at=xtix,labels=c("","","","","","","","","","","","","","","","","","","","","","","","",""))
+          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","",""))
      if(nchr==25)
-          axis(1,at=xtix,labels=c("","","","","","","","","","","","","","","","","","","","","","","","","",""))
+          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","",""))
      if(nchr==26)
-          axis(1,at=xtix,labels=c("","","","","","","","","","","","","","","","","","","","","","","","","","",""))
-     axis(2,ylim=c(0,(maxY+2)))
+          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","","",""))
+     axis(2, ylim=c(0, (maxY+2)))
      #axis(2) # this should work as well
      
      cat("\n\nPlot the genome-wide significance threshold.\n")
-     lines(c(0,maxX), c(-log10(5e-08), -log10(5e-08)), lty="dotted", col="#595A5C")
+     lines(c(0, maxX), c(-log10(5e-08), -log10(5e-08)), lty="dotted", col="#595A5C")
      
      dev.off()
      
@@ -384,6 +420,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #--------------------------------------------------------------------------
 ### SAVE ENVIRONMENT | FOR DEBUGGING
 ###save.image(paste0(opt$outputdir,"/",Today,"_",study,"_MANHATTANPLOTTER.RData"))
+
 
 ###	UtrechtSciencePark Colours Scheme
 ###
