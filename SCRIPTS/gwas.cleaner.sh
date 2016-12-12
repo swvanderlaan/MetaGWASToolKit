@@ -248,7 +248,7 @@ else
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 	echo "Making cleaned dataset..."
 	echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed REF ALT VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $20, $21, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
+	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
 	echo ""
 	echo "GWAS dataset is parsed, harmonized, and cleaned."
 	QC_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.cdat | tail -n +2 | wc -l | awk '{printf ("%'\''d\n", $0)}')

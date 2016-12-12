@@ -123,7 +123,7 @@ opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000
 opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/" 
 opt$colorstyle="FULL"
 opt$imageformat="PNG"
-opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt"
+opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt"
 
 
 if (opt$verbose) {

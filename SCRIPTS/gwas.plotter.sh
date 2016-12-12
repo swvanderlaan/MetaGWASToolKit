@@ -148,7 +148,7 @@ else
 		echo "...for 'cleaned harmonized' data..."
 		DATAEXT="cdat"
 		DATAPLOTID="QC"
-		VT="22" # column that holds the variant type information, should be 'SNP' or 'INDEL'
+		VT="26" # column that holds the variant type information, should be 'SNP' or 'INDEL'
 	elif [[ ${DATAFORMAT} == "RAW" ]]; then
 		echo "...for 'original harmonized' data..."
 		DATAEXT="rdat"
@@ -164,7 +164,7 @@ else
 		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		echoerrorflash "                 *** Oh, computer says no! DATAFORMAT [${DATAFORMAT}] does not exist! ***"
 		echoerror ""
-		echoerror "You must supply [8] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
+		echoerror "You must supply [7] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
 		echoerror "Specifically: you should set the [DATAFORMAT] of your (meta-)GWAS data to [QC/RAW/META]."
 		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   		# The wrong arguments are passed, so we'll exit the script now!
@@ -182,8 +182,8 @@ else
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 	
 	### HEADER .cdat-file
-	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P    N   N_cases N_controls Imputed REF ALT VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
-	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20  21  22 23 24    25    26    27    28    29    30
+	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P    N   N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 	
 	### PREPARING FILES -- ARGUMENT DEPENDENT
 	if [[ ${DATAFORMAT} == "QC" || ${DATAFORMAT} == "RAW" ]]; then # OPTION: RAW, or QC
@@ -260,7 +260,7 @@ else
 		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		echoerrorflash "                 *** Oh, computer says no! DATAFORMAT [${DATAFORMAT}] does not exist! ***"
 		echoerror ""
-		echoerror "You must supply [8] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
+		echoerror "You must supply [7] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
 		echoerror "Specifically: you should set the [DATAFORMAT] of your (meta-)GWAS data to [QC/RAW/META]."
 		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   		# The wrong arguments are passed, so we'll exit the script now!
