@@ -1,70 +1,257 @@
 #!/bin/bash
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "                GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION STUDIES"
-echo ""
-echo " Version: GWAS.PLOTTER.v1.0.0"
-echo ""
-echo " Last update: 2016-12-02"
-echo " Written by:  Sander W. van der Laan (s.w.vanderlaan-2@umcutrecht.nl)."
-echo "			    Sara Pulit | s.l.pulit@umcutrecht.nl; "
-echo "			    Jessica van Setten | j.vansetten@umcutrecht.nl; "
-echo "			    Paul I.W. de Bakker | p.i.w.debakker-2@umcutrecht.nl"
-echo ""
-echo " Testers:     - Jessica van Setten (j.vansetten@umcutrecht.nl)"
-echo ""
-echo " Description: Produce plots (PDF and PNG) for quick inspection and publication."
-echo ""
-echo " REQUIRED: "
-echo " * A high-performance computer cluster with a qsub system"
-echo " * R v3.2+, Python 2.7+"
-echo " * Note: it will also work on a Mac OS X system with R and Python installed."
-### ADD-IN: function to check requirements...
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
 
-script_arguments_error() {
-	echo "$1" # Additional message
-	echo "- Argument #1 is path_to/filename of the configuration file."
-	echo "- Argument #2 is path_to/filename of the list of GWAS files with names."
-	echo "- Argument #3 is reference to use [HM2/1Gp1/1Gp3] for the QC and analysis."
-	echo "An example command would be: run_meta.sh [arg1: path_to/configuration_file] [arg2: path_to/gwas_files_list] [arg3: HM2/1Gp1/1Gp3]"
-	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  	# The wrong arguments are passed, so we'll exit the script now!
-  	date
-  	exit 1
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+function echosucces { 
+    echo -e "${YELLOW}${1}${NONE}"
 }
 
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2015-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
 
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "The following directories are set."
-PROJECTDIR=/hpc/dhl_ec/svanderlaan/projects/megastroke
-QCEDDATA=/hpc/dhl_ec/svanderlaan/projects/megastroke/qced_ganesh
-SOFTWARE=/hpc/local/CentOS7/dhl_ec/software
-QCTOOL=$SOFTWARE/qctool_v1.5-linux-x86_64-static/qctool
+script_arguments_error() {
+	echoerror "$1" # Additional message
+	echoerror "- Argument #1 is path_to/ the raw, parsed and harmonized GWAS data."
+	echoerror "- Argument #2 is the cohort name."
+	echoerror "- Argument #3 is 'basename' of the cohort data file."
+	echoerror "- Argument #4 is the variant type used in the GWAS data."
+	echoerror ""
+	echoerror "An example command would be: gwas.wrapper.sh [arg1] [arg2] [arg3] [arg4]"
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  	# The wrong arguments are passed, so we'll exit the script now!
+ 	echo ""
+	script_copyright_message
+	exit 1
+}
 
-echo "Project directory________________ ${PROJECTDIR}"
-echo "Original qc'ed data directory____ ${QCEDDATA}"
-echo "Software directory_______________ ${SOFTWARE}"
-echo "Where \"qctool\" resides___________ ${QCTOOL}"
-echo ""
+echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "                     GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION STUDIES"
+echobold ""
+echobold "* Version:      v1.0.0"
+echobold ""
+echobold "* Last update:  2016-12-11"
+echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
+echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
+echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
+echobold "                Paul I.W. de Bakker | UMC Utrecht | p.i.w.debakker-2@umcutrecht.nl."
+echobold "* Testers:      Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl."
+echobold "* Description:  Produce plots (PDF and PNG) for quick inspection and publication."
+echobold ""
+echobold "* REQUIRED: "
+echobold "  - A high-performance computer cluster with a qsub system"
+echobold "  - R v3.2+, Python 2.7+, Perl."
+echobold "  - Required Python 2.7+ modules: [pandas], [scipy], [numpy]."
+echobold "  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long]."
+echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
+### ADD-IN: function to check requirements...
+### This might be a viable option! https://gist.github.com/JamieMason/4761049
+echobold ""
+echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-### Make directories for script if they do not exist yet (!!!PREREQUISITE!!!)
-if [ ! -d ${QCEDDATA}/_plots ]; then
-  mkdir -v ${QCEDDATA}/_plots
-fi
-PLOTTED=${QCEDDATA}/_plots
 
-# Setting some other parameters
-RANDOMSAMPLE="1000000" # for P-Z plot
-PVALUE="PVAL" # for QQ-plots
-QMEM="32G"
-QTIME="00:20:00"
+##########################################################################################
+### SET THE SCENE FOR THE SCRIPT
+##########################################################################################
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "Processing files for each study, and plotting for QC."
-echo ""
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 7 ]]; then 
+	echo ""
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
+	echoerror "You must supply [5] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
+	script_arguments_error
+else
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Processing arguments..."
+	source ${1} # depends on arg1
+	
+	# Where MetaGWASToolKit resides
+	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
+	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
+	
+	PROJECTDIR=${2} # depends on arg2
+	COHORTNAME=${3} # depends on arg3
+	DATAFORMAT=${4} # depends on arg4
+	IMAGEFORMAT=${5} # depends on arg5
+	QRUNTIMEPLOTTER=${6} # depends on arg6
+	QMEMPLOTTER=${7} # depends on arg7
+	RANDOMSAMPLE="50000" # depends on arg8
+
+	echo ""
+	echo "All arguments are passed. These are the settings:"
+	echo "MetaGWASToolKit program.......: "${METAGWASTOOLKIT}
+  	echo "MetaGWASToolKit scripts.......: "${SCRIPTS}
+	echo "Project directory.............: "${PROJECTDIR}
+	echo "Cohort name...................: "${COHORTNAME}
+	echo "Data style....................: "${DATAFORMAT}
+	echo "Plotting format...............: "${IMAGEFORMAT}
+	
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	### HEADER .pdat-file
+	### Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P  N  N_cases N_controls Imputed
+	### 1	   2   3  4      5            6           7   8   9   10    11   12   13 14 15 16      17         18
+	
+	### HEADER .rdat-file
+	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
+	
+	### HEADER .cdat-file
+	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P    N   N_cases N_controls Imputed REF ALT VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20  21  22 23 24    25    26    27    28    29    30
+	
+	### PREPARING FILES -- ARGUMENT DEPENDENT
+	if [[ ${DATAFORMAT} == "QC" || ${DATAFORMAT} == "RAW" ]]; then # OPTION: RAW, QC, META
+		echosucces "Plotting original harmonized data."
+		echo ""
+		echo "* Setting proper extension..."
+		if [[ ${DATAFORMAT} == "QC" ]]; then
+			echo "...for 'cleaned harmonized' data..."
+			DATAEXT="cdat"
+			DATAPLOTID="QC"
+			VT="22"
+		elif [[ ${DATAFORMAT} == "RAW" ]]; then
+			echo "...for 'original harmonized' data..."
+			DATAEXT="rdat"
+			DATAPLOTID="RAW"
+			VT="26"
+		elif [[ ${DATAFORMAT} == "META" ]]; then
+			echo "...for 'original harmonized' data..."
+			DATAEXT="rdat"
+			DATAPLOTID="RAW"
+			VT="26"
+		else
+			echoerrorflash "This is not an option! Double back, please."
+			echo ""
+		fi
+
+		echo ""
+		echo "* Making necessary intermediate 'plotting'-files and plotting..."
+		echo "- ...Manhattan-plots..." # CHR, BP, P-value
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $3, $4, $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle QC --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle TWOCOLOR --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
+
+		echo ""
+		echo "- ...normal QQ-plots..." # P-value
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.QQ -o ${PROJECTDIR}/${COHORTNAME}.QQ.log -e ${PROJECTDIR}/${COHORTNAME}.QQ.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ.sh
+
+		echo ""
+		echo "- ...QQ-plots stratified by imputation quality..." # P-value, INFO
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15, $12 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_info.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.QQ_by_INFO -o ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.log -e ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ_by_INFO.sh
+
+		echo ""
+		echo "- ...QQ-plots stratified by minor allele frequency..." # P-value, MAF
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15, $9 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_caf.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.log -e ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ_by_CAF.sh
+	
+		echo ""
+		echo "- ...QQ-plots stratified by variant type..." # P-value, VT
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $15, '$VT' }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/qqplot_by_type.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.txt.gz --outputdir ${PROJECTDIR} --stattype ${PVALUE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.log -e ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.QQ_by_TYPE.sh
+	
+		echo ""
+		echo "- ...histograms of the beta (effect size)..." # BETA
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $13 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/effectsize_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.txt.gz --outputdir ${PROJECTDIR} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.HISTOGRAM_BETA -o ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.log -e ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.HISTOGRAM_BETA.sh
+
+		echo ""
+		echo "- ...a correlation plot of the observed p-value and the p-value based on beta and standard error..." # BETA, SE, P-value
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $13, $14, $15 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/p_z_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.P_Z.txt.gz --outputdir ${PROJECTDIR} --randomsample ${RANDOMSAMPLE} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.P_Z.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.P_Z -o ${PROJECTDIR}/${COHORTNAME}.P_Z.log -e ${PROJECTDIR}/${COHORTNAME}.P_Z.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.P_Z.sh
+
+		echo ""
+		echo "- ...histograms of the imputation quality..." # INFO
+		zcat ${PROJECTDIR}${COHORTNAME}.${DATAEXT} | awk '{ print $12 }' | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt
+		echo "${SOFTWARE}/MANTEL/SCRIPTS/info_score_plotter.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.INFO.txt.gz --outputdir ${PROJECTDIR} --imageformat ${FORMAT}" > ${PROJECTDIR}/${COHORTNAME}.INFO.sh
+		#qsub -S /bin/bash -N ${COHORTNAME}.INFO -o ${PROJECTDIR}/${COHORTNAME}.INFO.log -e ${PROJECTDIR}/${COHORTNAME}.INFO.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.INFO.sh
+	
+
+	elif 
+		echosucces "Plotting meta-analysis results."
+		echo ""
+
+	else 
+		echoerrorflash "This is not an option! Double back, please."
+		echo ""
+
+	fi
+
+
+	#	echo "- cleaning up input data for ${FILE}"
+	#	rm -v ${PLOTTED}/${FILENAME}.MANHATTAN.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.QQ.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_INFO.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_CAF.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.QQ_by_TYPE.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.HISTOGRAM_BETA.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.P_Z.txt.gz
+	#	rm -v ${PLOTTED}/${FILENAME}.INFO.txt.gz
+		
+### END of if-else statement for the number of command-line arguments passed ###
+fi 
+
+script_copyright_message
+
+
+
 
 ### Header example
 ###	1	   2   3  4		 5			  6			  7	  8	  9	  10	11	 12	  13 14	15 16	 17		    18
@@ -205,10 +392,10 @@ echo ""
 #	rm -v ${PLOTTED}/${FILENAME}.P_Z.txt.gz
 #	rm -v ${PLOTTED}/${FILENAME}.INFO.txt.gz
 #done
-echo ""
-echo "================================================================================"
-echo "*** FREQUENCY PLOTTING ***"
-### scripts_allele_freq_plots
+#echo ""
+#echo "================================================================================"
+#echo "*** FREQUENCY PLOTTING ***"
+#### scripts_allele_freq_plots
 ### Allele_frequencies.1000G_p1_v3.out
 ### Allele_frequencies.1000G_p3_v5.out
 ### allele_frequency_plot_by_ethnicity.Rscript
@@ -268,27 +455,27 @@ echo ""
 #
 #done
 
-echo ""
-echo "* Plotting AFRICAN ancestral populations..."
-for FILE in $(echo `ls ${PLOTTED}/COMPASS*.AFR.*.FREQ.txt`); do
-	### PREPARING FILES
-	FILENAME=$(basename ${FILE} .txt)
-	echo "*** Processing file ${FILENAME} ***"
-	echo ""
-	echo "- found file: ${FILE}"
-	echo "- plotting frequencies for AFRICANS..."
-
-	echo "sh ${PROJECTDIR}/scripts_allele_freq_plots/plotting_allele_frequencies_based_on_ethnicity_1000G_p1.sh \
-	-s ${PROJECTDIR}/scripts_allele_freq_plots/Allele_frequencies.1000G_p1_v3.out \
-	-i ${FILE} \
-	-e AFR \
-	-o ${PLOTTED}/${FILENAME} " > ${PLOTTED}/${FILENAME}.AF_PLOTPREP.sh
-	qsub -S /bin/bash -N ${FILENAME}.AF_PLOTPREP -hold_jid ${FILENAME}.FREQ -o ${PLOTTED}/${FILENAME}.AF_PLOTPREP.log -e ${PLOTTED}/${FILENAME}.AF_PLOTPREP.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.AF_PLOTPREP.sh
-	
-	echo "${SOFTWARE}/MANTEL/SCRIPTS/allele_frequency_plotter.R -p ${PLOTTED} -r ${PLOTTED}/${FILENAME}.AF_PLOT.txt.gz -o ${PLOTTED} -e AFR -f PNG " > ${PLOTTED}/${FILENAME}.AF_PLOT.sh
-	qsub -S /bin/bash -N ${FILENAME}.AF_PLOT -hold_jid ${FILENAME}.AF_PLOTPREP -o ${PLOTTED}/${FILENAME}.AF_PLOT.log -e ${PLOTTED}/${FILENAME}.AF_PLOT.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.AF_PLOT.sh
-
-done
+#echo ""
+#echo "* Plotting AFRICAN ancestral populations..."
+#for FILE in $(echo `ls ${PLOTTED}/COMPASS*.AFR.*.FREQ.txt`); do
+#	### PREPARING FILES
+#	FILENAME=$(basename ${FILE} .txt)
+#	echo "*** Processing file ${FILENAME} ***"
+#	echo ""
+#	echo "- found file: ${FILE}"
+#	echo "- plotting frequencies for AFRICANS..."
+#
+#	echo "sh ${PROJECTDIR}/scripts_allele_freq_plots/plotting_allele_frequencies_based_on_ethnicity_1000G_p1.sh \
+#	-s ${PROJECTDIR}/scripts_allele_freq_plots/Allele_frequencies.1000G_p1_v3.out \
+#	-i ${FILE} \
+#	-e AFR \
+#	-o ${PLOTTED}/${FILENAME} " > ${PLOTTED}/${FILENAME}.AF_PLOTPREP.sh
+#	qsub -S /bin/bash -N ${FILENAME}.AF_PLOTPREP -hold_jid ${FILENAME}.FREQ -o ${PLOTTED}/${FILENAME}.AF_PLOTPREP.log -e ${PLOTTED}/${FILENAME}.AF_PLOTPREP.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.AF_PLOTPREP.sh
+#	
+#	echo "${SOFTWARE}/MANTEL/SCRIPTS/allele_frequency_plotter.R -p ${PLOTTED} -r ${PLOTTED}/${FILENAME}.AF_PLOT.txt.gz -o ${PLOTTED} -e AFR -f PNG " > ${PLOTTED}/${FILENAME}.AF_PLOT.sh
+#	qsub -S /bin/bash -N ${FILENAME}.AF_PLOT -hold_jid ${FILENAME}.AF_PLOTPREP -o ${PLOTTED}/${FILENAME}.AF_PLOT.log -e ${PLOTTED}/${FILENAME}.AF_PLOT.errors -l h_vmem=${QMEM} -l h_rt=${QTIME} -wd ${PROJECTDIR} ${PLOTTED}/${FILENAME}.AF_PLOT.sh
+#
+#done
 
 #echo ""
 #echo "* Plotting SOUTH-/EAST-ASIAN ancestral populations..."
@@ -372,69 +559,4 @@ done
 #
 #done
 
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "Wow. I'm all done buddy. What a job! let's have a beer!"
-date
 
-###	UtrechtSciencePark Colours Scheme
-###
-### Website to convert HEX to RGB: http://hex.colorrrs.com.
-### For some functions you should divide these numbers by 255.
-###
-###	No.	Color				HEX		RGB							CMYK					CHR		MAF/INFO
-### --------------------------------------------------------------------------------------------------------------------
-###	1	yellow				#FBB820 (251,184,32)				(0,26.69,87.25,1.57) 	=>	1 		or 1.0 > INFO
-###	2	gold				#F59D10 (245,157,16)				(0,35.92,93.47,3.92) 	=>	2		
-###	3	salmon				#E55738 (229,87,56) 				(0,62.01,75.55,10.2) 	=>	3 		or 0.05 < MAF < 0.2 or 0.4 < INFO < 0.6
-###	4	darkpink			#DB003F ((219,0,63)					(0,100,71.23,14.12) 	=>	4		
-###	5	lightpink			#E35493 (227,84,147)				(0,63,35.24,10.98) 	=>	5 		or 0.8 < INFO < 1.0
-###	6	pink				#D5267B (213,38,123)				(0,82.16,42.25,16.47) 	=>	6		
-###	7	hardpink			#CC0071 (204,0,113)					(0,0,0,0) 	=>	7		
-###	8	lightpurple			#A8448A (168,68,138)				(0,0,0,0) 	=>	8		
-###	9	purple				#9A3480 (154,52,128)				(0,0,0,0) 	=>	9		
-###	10	lavendel			#8D5B9A (141,91,154)				(0,0,0,0) 	=>	10		
-###	11	bluepurple			#705296 (112,82,150)				(0,0,0,0) 	=>	11		
-###	12	purpleblue			#686AA9 (104,106,169)				(0,0,0,0) 	=>	12		
-###	13	lightpurpleblue		#6173AD (97,115,173/101,120,180)	(0,0,0,0) 	=>	13		
-###	14	seablue				#4C81BF (76,129,191)				(0,0,0,0) 	=>	14		
-###	15	skyblue				#2F8BC9 (47,139,201)				(0,0,0,0) 	=>	15		
-###	16	azurblue			#1290D9 (18,144,217)				(0,0,0,0) 	=>	16		 or 0.01 < MAF < 0.05 or 0.2 < INFO < 0.4
-###	17	lightazurblue		#1396D8 (19,150,216)				(0,0,0,0) 	=>	17		
-###	18	greenblue			#15A6C1 (21,166,193)				(0,0,0,0) 	=>	18		
-###	19	seaweedgreen		#5EB17F (94,177,127)				(0,0,0,0) 	=>	19		
-###	20	yellowgreen			#86B833 (134,184,51)				(0,0,0,0) 	=>	20		
-###	21	lightmossgreen		#C5D220 (197,210,32)				(0,0,0,0) 	=>	21		
-###	22	mossgreen			#9FC228 (159,194,40)				(0,0,0,0) 	=>	22		or MAF > 0.20 or 0.6 < INFO < 0.8
-###	23	lightgreen			#78B113 (120,177,19)				(0,0,0,0) 	=>	23/X
-###	24	green				#49A01D (73,160,29)					(0,0,0,0) 	=>	24/Y
-###	25	grey				#595A5C (89,90,92)					(0,0,0,0) 	=>	25/XY	or MAF < 0.01 or 0.0 < INFO < 0.2
-###	26	lightgrey			#A2A3A4	(162,163,164)				(0,0,0,0) 	=> 	26/MT
-### --------------------------------------------------------------------------------------------------------------------
-
-
-THISYEAR=$(date +'%Y')
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo ""
-echo ""
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "+ The MIT License (MIT)                                                                                 +"
-echo "+ Copyright (c) 2015-${THISYEAR} Sander W. van der Laan                                                             +"
-echo "+                                                                                                       +"
-echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
-echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
-echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
-echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
-echo "+ subject to the following conditions:                                                                  +"
-echo "+                                                                                                       +"
-echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
-echo "+ portions of the Software.                                                                             +"
-echo "+                                                                                                       +"
-echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
-echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
-echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
-echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
-echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
-echo "+                                                                                                       +"
-echo "+ Reference: http://opensource.org.                                                                     +"
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"

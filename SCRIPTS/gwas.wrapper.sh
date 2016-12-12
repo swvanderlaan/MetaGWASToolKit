@@ -120,118 +120,118 @@ else
 	echo "The basename of the cohort is...........: "${BASEFILENAME}
 	echo "Variant type in cohort's data...........: "${VARIANTTYPE}
 	
-echo ""
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "Wrapping up split files and checking parsing and harmonizing..."
-echo ""
-echo "* Making necessary 'readme' files..."
-echo "Cohort File VariantType Parsing ParsingErrorFile" > ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
-echo "Cohort File VariantType Harmonizing HarmonizingErrorFile" > ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
-
-### HEADER .pdat-file
-### Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P  N  N_cases N_controls Imputed
-### 1	   2   3  4      5            6           7   8   9   10    11   12   13 14 15 16      17         18
-
-### HEADER .rdat-file
-### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
-### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
-
-echo ""	
-echo "* Making necessary 'summarized' files..."
-#echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
-#echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
-echo "Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
-echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_ref	BP_ref	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
-
-	
-### Setting the patterns to look for -- never change this
-PARSEDPATTERN="All done parsing"
-HARMONIZEDPATTERN="All done! 🍺"
-
-echo ""
-echo "We will look for the following pattern in the ..."
-echo "...parsed log file...........: [ ${PARSEDPATTERN} ]"
-echo "...harmonized log file 🙊 ...: [ ${HARMONIZEDPATTERN} ]"
-
-echo ""
-echo "* Check parsing of GWAS datasets."
-for ERRORFILE in ${PROJECTDIR}/gwas.parser.${BASEFILENAME}.*.log; do
-	### determine basename of the ERRORFILE
-	echo $ERRORFILE
-	BASENAMEERRORFILE=$(basename ${ERRORFILE})
-	BASEERRORFILE=$(basename ${ERRORFILE} .log)
-	prefix_parsed='gwas.parser.' # removing the 'gwas.parser.'-part from the ERRORFILE
-	BASEPARSEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_parsed//")
 	echo ""
-	echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
-
-	echo "Error file...........................:" ${BASENAMEERRORFILE}
-	if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
-		PARSEDMESSAGE=$(echosucces "success")
-		echo "Parsing report.......................: ${PARSEDMESSAGE}"
-		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
-		echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
-		#cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
-		cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
-		echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
-		###rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
-		###rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
-		###rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
-		###rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
-		###rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
-		###rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
-	else
-		echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-		echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-		echoerror "####################################################################################"
-		cat ${ERRORFILE}
-		echoerror "####################################################################################"
-		PARSEDMESSAGE="failure"
-		echoerror "Parsing report.......................: ${PARSEDMESSAGE}"
-		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
-	fi
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Wrapping up split files and checking parsing and harmonizing..."
+	echo ""
+	echo "* Making necessary 'readme' files..."
+	echo "Cohort File VariantType Parsing ParsingErrorFile" > ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+	echo "Cohort File VariantType Harmonizing HarmonizingErrorFile" > ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
+	
+	### HEADER .pdat-file
+	### Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P  N  N_cases N_controls Imputed
+	### 1	   2   3  4      5            6           7   8   9   10    11   12   13 14 15 16      17         18
+	
+	### HEADER .rdat-file
+	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
+	
+	echo ""	
+	echo "* Making necessary 'summarized' files..."
+	#echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
+	#echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
+	echo "Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
+	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_ref	BP_ref	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
+	
+		
+	### Setting the patterns to look for -- never change this
+	PARSEDPATTERN="All done parsing"
+	HARMONIZEDPATTERN="All done! 🍺"
 	
 	echo ""
-done
-
-echo ""
-echo "* Check harmonized of GWAS datasets."
-for ERRORFILE in ${PROJECTDIR}/gwas2ref.harmonizer.${BASEFILENAME}.*.log; do
-	### determine basename of the ERRORFILE
-	BASENAMEERRORFILE=$(basename ${ERRORFILE})
-	BASEERRORFILE=$(basename ${ERRORFILE} .log)
-	prefix_harmonized='gwas2ref.harmonizer.' # removing the 'gwas2ref.harmonizer.'-part from the ERRORFILE
-	BASEHARMONIZEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_harmonized//")
-	echo ""
-	echo "* checking split chunk: [ ${BASEHARMONIZEDFILE} ] for pattern \"${HARMONIZEDPATTERN}\"..."
-
-	echo "Error file...........................:" ${BASENAMEERRORFILE}
-	if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
-		HARMONIZEDMESSAGE=$(echosucces "success")
-		echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
-		echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.rdat ]..."
-		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
-		#cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
-		cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.rdat
-		echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
-		###rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
-		###rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
-		###rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
-		###rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
-		###rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
-	else
-		echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-		echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-		echoerror "####################################################################################"
-		cat ${ERRORFILE}
-		echoerror "####################################################################################"
-		HARMONIZEDMESSAGE="failure"
-		echoerror "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
-		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
-	fi
+	echo "We will look for the following pattern in the ..."
+	echo "...parsed log file...........: [ ${PARSEDPATTERN} ]"
+	echo "...harmonized log file 🙊 ...: [ ${HARMONIZEDPATTERN} ]"
 	
 	echo ""
-done
+	echo "* Check parsing of GWAS datasets."
+	for ERRORFILE in ${PROJECTDIR}/gwas.parser.${BASEFILENAME}.*.log; do
+		### determine basename of the ERRORFILE
+		echo $ERRORFILE
+		BASENAMEERRORFILE=$(basename ${ERRORFILE})
+		BASEERRORFILE=$(basename ${ERRORFILE} .log)
+		prefix_parsed='gwas.parser.' # removing the 'gwas.parser.'-part from the ERRORFILE
+		BASEPARSEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_parsed//")
+		echo ""
+		echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
+	
+		echo "Error file...........................:" ${BASENAMEERRORFILE}
+		if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
+			PARSEDMESSAGE=$(echosucces "success")
+			echo "Parsing report.......................: ${PARSEDMESSAGE}"
+			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
+			#cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
+			cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
+			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
+			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
+		else
+			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+			echoerror "####################################################################################"
+			cat ${ERRORFILE}
+			echoerror "####################################################################################"
+			PARSEDMESSAGE="failure"
+			echoerror "Parsing report.......................: ${PARSEDMESSAGE}"
+			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+		fi
+		
+		echo ""
+	done
+	
+	echo ""
+	echo "* Check harmonized of GWAS datasets."
+	for ERRORFILE in ${PROJECTDIR}/gwas2ref.harmonizer.${BASEFILENAME}.*.log; do
+		### determine basename of the ERRORFILE
+		BASENAMEERRORFILE=$(basename ${ERRORFILE})
+		BASEERRORFILE=$(basename ${ERRORFILE} .log)
+		prefix_harmonized='gwas2ref.harmonizer.' # removing the 'gwas2ref.harmonizer.'-part from the ERRORFILE
+		BASEHARMONIZEDFILE=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_harmonized//")
+		echo ""
+		echo "* checking split chunk: [ ${BASEHARMONIZEDFILE} ] for pattern \"${HARMONIZEDPATTERN}\"..."
+	
+		echo "Error file...........................:" ${BASENAMEERRORFILE}
+		if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
+			HARMONIZEDMESSAGE=$(echosucces "success")
+			echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
+			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.rdat ]..."
+			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
+			#cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
+			cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.rdat
+			echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
+			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
+		else
+			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+			echoerror "####################################################################################"
+			cat ${ERRORFILE}
+			echoerror "####################################################################################"
+			HARMONIZEDMESSAGE="failure"
+			echoerror "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
+			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
+		fi
+		
+		echo ""
+	done
 
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
