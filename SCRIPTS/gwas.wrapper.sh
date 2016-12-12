@@ -59,10 +59,7 @@ script_arguments_error() {
 	echoerror "- Argument #2 is the cohort name."
 	echoerror "- Argument #3 is 'basename' of the cohort data file."
 	echoerror "- Argument #4 is the variant type used in the GWAS data."
-<<<<<<< HEAD
 	echoerror ""
-=======
->>>>>>> origin/master
 	echoerror "An example command would be: gwas.wrapper.sh [arg1] [arg2] [arg3] [arg4]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
@@ -76,12 +73,7 @@ echobold "            GWASWRAPPER: WRAPPER FOR PARSED AND HARMONIZED GENOME-WIDE
 echobold ""
 echobold "* Version:      v1.0.0"
 echobold ""
-<<<<<<< HEAD
 echobold "* Last update:  2016-12-11"
-=======
-echobold "* Last update:  2016-12-07"
-echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
->>>>>>> origin/master
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
 echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
@@ -91,7 +83,6 @@ echobold "* Description:  Produce concatenated parsed and harmonized GWAS data."
 echobold ""
 echobold "* REQUIRED: "
 echobold "  - A high-performance computer cluster with a qsub system"
-<<<<<<< HEAD
 echobold "  - R v3.2+, Python 2.7+, Perl."
 echobold "  - Required Python 2.7+ modules: [pandas], [scipy], [numpy]."
 echobold "  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long]."
@@ -100,13 +91,6 @@ echobold "  - Note: it will also work on a Mac OS X system with R and Python ins
 ### This might be a viable option! https://gist.github.com/JamieMason/4761049
 echobold ""
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-=======
-echobold "  - R v3.2+, Python 2.7+"
-echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
-### ADD-IN: function to check requirements...
-echo ""
-echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
->>>>>>> origin/master
 
 ##########################################################################################
 ### SET THE SCENE FOR THE SCRIPT
@@ -154,16 +138,11 @@ echo "Cohort File VariantType Harmonizing HarmonizingErrorFile" > ${PROJECTDIR}/
 
 echo ""	
 echo "* Making necessary 'summarized' files..."
-<<<<<<< HEAD
 #echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
 #echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
 echo "Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
 echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_ref	BP_ref	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
 
-=======
-echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
-echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
->>>>>>> origin/master
 	
 ### Setting the patterns to look for -- never change this
 PARSEDPATTERN="All done parsing"
@@ -192,7 +171,6 @@ for ERRORFILE in ${PROJECTDIR}/gwas.parser.${BASEFILENAME}.*.log; do
 		echo "Parsing report.......................: ${PARSEDMESSAGE}"
 		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
 		echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
-<<<<<<< HEAD
 		#cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
 		cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
 		echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
@@ -202,16 +180,6 @@ for ERRORFILE in ${PROJECTDIR}/gwas.parser.${BASEFILENAME}.*.log; do
 		###rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
 		###rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
 		###rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
-=======
-		cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
-		echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
-		#rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
-		#rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
-		#rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
-		#rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
-		#rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
-		#rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
->>>>>>> origin/master
 	else
 		echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 		echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -243,7 +211,6 @@ for ERRORFILE in ${PROJECTDIR}/gwas2ref.harmonizer.${BASEFILENAME}.*.log; do
 		echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
 		echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.rdat ]..."
 		echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
-<<<<<<< HEAD
 		#cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
 		cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.rdat
 		echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
@@ -252,15 +219,6 @@ for ERRORFILE in ${PROJECTDIR}/gwas2ref.harmonizer.${BASEFILENAME}.*.log; do
 		###rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
 		###rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
 		###rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
-=======
-		cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
-		echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
-		#rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
-		#rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
-		#rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
-		#rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
-		#rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
->>>>>>> origin/master
 	else
 		echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 		echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
