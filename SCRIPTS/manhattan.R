@@ -123,8 +123,7 @@ opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000
 opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/" 
 opt$colorstyle="FULL"
 opt$imageformat="PNG"
-opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt"
-
+opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt"
 
 if (opt$verbose) {
      # if (opt$verbose) {
@@ -211,16 +210,16 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      cat("\n\nLoad in a subset of the data based on the p-values.")
      if (opt$colorstyle == "QC") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
-          data <- data[ which(data$V3 <= 0.50), ]
-          sig <- data[ which(data$V3 <= 0.50), ]
-          nonsig <- data[ which(data$V3 > 0.50), ]
+          data <- data[which(data$V3 <= 0.50), ]
+          sig <- data[which(data$V3 <= 0.50), ]
+          nonsig <- data[which(data$V3 >= 0.05), ]
           size <- sum(nonsig$V1 > 0)
           p <- sig
      } else if (opt$colorstyle == "FULL" || opt$colorstyle == "TWOCOLOR") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
-          data <- data[ which(data$V3 <= 1), ]
-          sig <- data[ which(data$V3 <= 1), ]
-          nonsig <- data[ which(data$V3 > 0.50), ]
+          data <- data[which(data$V3 <= 1), ]
+          sig <- data[which(data$V3 <= 0.50), ]
+          nonsig <- data[which(data$V3 >= 0.05), ]
           size <- sum(nonsig$V1 > 0)
           p <- sig
      } else {
