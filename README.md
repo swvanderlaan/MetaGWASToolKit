@@ -55,16 +55,26 @@ if [ -d ~/git/MetaGWASToolKit/.git ]; then \
 This ToolKit will (semi-)automatically perform a meta-analysis of GWAS. It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
 
 ##### Reformatting summary statistics GWAS data
-[Some text here]
-
-##### Plotting reformatted GWAS data
-[Some text here]
+GWAS datasets are first parse and harmonized by `gwas.parser.R` and `gwas2ref.harmonizer.py`. During *parsing* the GWAS dataset will be re-formatted to fit the downstream pipeline. In addition some variables are calculated (if not present), for instance "minor allele frequency (MAF)", and "minor allele count (MAC)". During *harmonization* the parsed dataset will be compared to a reference (see below) and in conjunction with `gwas.wrapper.sh`
 
 ##### Cleaning reformatted GWAS data
-[Some text here]
+After parsing and harmonization the reformatted data will be cleaned based on the settings provided in  `meta_configuration.conf`. Cleaning settings include:
+- MAF, minimum minor allele frequency to keep variants, e.g. "0.005"
+- MAC, minimum minor allele count to keep variants, e.g. "30"
+- HWE, Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. "1E-6"
+- INFO, minimum imputation quality score to keep variants, e.g. "0.3"
+- BETA, maximum effect size to allow for any variant, e.g. "10"
+- SE, maximum standard error to allow for any variant, e.g. "10"
 
-##### Plotting cleaned GWAS data
-[Some text here]
+##### Plotting reformatted and cleaned GWAS data
+Both the *un*cleaned and the cleaned reformatted data will be visualized: **MetaGWASToolKit** will generate various plots automagically:
+- Manhattan-plot
+- QQ-plot, regular with confidence interval
+- QQ-plot by coded allele frequency
+- QQ-plot by imputation quality
+- QQ-plot by variant type
+- a P-Z-plot showing the correlation between the observed p-values and the one calculated from 'beta' and the 'standard error'.
+- Histograms of the 'effect size', including lines at the ±4 standard deviation, and the 'imputation quality'.
 
 ##### Perform meta-analysis
 [Some text here]
@@ -80,10 +90,42 @@ This ToolKit will (semi-)automatically perform a meta-analysis of GWAS. It will 
 - Effective Sample Size
 - SE-N lambda
 
+##### References
+There are a couple of reference available per standard, these are:
+- HapMap 2 [HM2], version 2, release 22, b36. HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature.
+- 1000G phase 1, version 3 [1Gp1], b37. 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
+- 1000G phase 3, version 5 [1Gp3], b37. 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
+- Genome of the Netherlands, version 4 [GoNL5], b37. GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
+- Genome of the Netherlands, version 5 [GoNL5], b37. GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
+- Combination of 1Gp3 and GoNL5 [1Gp3GONL5], b37. This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
+
+One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`. This script will automagically create various *variantID* versions, and add in information per variant. The resulting file is used by `gwas2ref.harmonizer.py` for harmonization.
+
+##### Something
+[Some text here]
+
 --------------
 
 #### TO DO
+#####Manhattan
+- add in option to give the output a specific name (now it's based on the filename)
+- highlight a specific region (previous/novel loci)
+- add in a gene name at the most significant peaks (previous/novel loci)
+- add in option on test-statistics (Z-score, Chi^2, or P-value)
+- add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female)
+- add in option to make it horizontal, vertical or circular
+- better outline chr X, XY, Y, MT
+- ~~change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes~~ :ballot_box_with_check:
 
+##### QQ-plots
+- add in confidence interval as option, and also an improved one
+- add in more options for variant-types, currently only SNV and INDEL; one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation
+- add in option to cut-off the maximum -log10(P), for instance everything p<5.0e-10 is set to p=5.0e-10; while at the same time lambdas are calculate based on the original p-values.
+
+##### Meta-analysis
+- add in trans-ethnic meta-analysis option
+
+##### Something
 - [some text here]
 
 --------------
