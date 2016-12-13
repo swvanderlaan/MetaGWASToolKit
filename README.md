@@ -5,7 +5,7 @@ This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Ass
 
 Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). 
 
-All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `qsub_analysis.sh` script, and two text-files: `meta_configuration.conf` (a configuration file with some system and analytical settings), and `meta_files.list` (containing a list of all the GWAS datasets).
+All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `qsub_metagwastoolkit.sh` script, and two text-files: `meta_configuration.conf` (a configuration file with some system and analytical settings), and `meta_files.list` (containing a list of all the GWAS datasets).
 
 The installation procedure is quite straightforward, and only entails two steps consisting of command one-liners that are *easy* to read. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
@@ -54,8 +54,13 @@ if [ -d ~/git/MetaGWASToolKit/.git ]; then \
 #### Meta-analysis of GWAS
 This ToolKit will (semi-)automatically perform a meta-analysis of GWAS. It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
 
-##### Reformatting summary statistics GWAS data
-GWAS datasets are first parse and harmonized by `gwas.parser.R` and `gwas2ref.harmonizer.py`. During *parsing* the GWAS dataset will be re-formatted to fit the downstream pipeline. In addition some variables are calculated (if not present), for instance "minor allele frequency (MAF)", and "minor allele count (MAC)". During *harmonization* the parsed dataset will be compared to a reference (see below) and in conjunction with `gwas.wrapper.sh`
+The main script, which is controlled by `qsub_metagwastoolkit.sh`, `meta_configuration.conf`, and `meta_files.list`, is `run_metagwastoolkit.sh`. `run_metagwastoolkit.sh` will automagically chunk up data, submit jobs, and set things so that your meta-analysis will run smoothly. 
+The premier step is at the 'reformatting' stage. Any weirdly formatted GWAS dataset will immediately throw errors, and effectively throwing out that particular GWAS dataset from the meta-analysis. Such errors will be reported.
+
+~~In terms of time: a small meta-analysis of GWAS including 5 datasets and ~8,000 individuals took half a working day on a high-performance computer cluster, and ~24 hours on a MacBook Pro with 16 Gb of RAM.~~
+
+###### Reformatting summary statistics GWAS data
+GWAS datasets are first cut in chunks of 100,000 variants by `run_metagwastoolkit.sh`, and subsequently parse and harmonized by `gwas.parser.R` and `gwas2ref.harmonizer.py`. During *parsing* the GWAS dataset will be re-formatted to fit the downstream pipeline. In addition some variables are calculated (if not present), for instance "minor allele frequency (MAF)", and "minor allele count (MAC)". During *harmonization* the parsed dataset will be compared to a reference (see below) and certain information from the reference is obtained and added to the parsed data. `gwas.wrapper.sh` will automagically wrap up all the parsed and harmonized data into two seperate datasets, entitled `dataset.pdat` for the parsed data, and `dataset.rdat` for the harmonized data.
 
 ##### Cleaning reformatted GWAS data
 After parsing and harmonization the reformatted data will be cleaned based on the settings provided in  `meta_configuration.conf`. Cleaning settings include:
@@ -65,6 +70,8 @@ After parsing and harmonization the reformatted data will be cleaned based on th
 - INFO, minimum imputation quality score to keep variants, e.g. "0.3"
 - BETA, maximum effect size to allow for any variant, e.g. "10"
 - SE, maximum standard error to allow for any variant, e.g. "10"
+
+The resulting file, `dataset.cdat`, will be used for downstream plotting and analysis.
 
 ##### Plotting reformatted and cleaned GWAS data
 Both the *un*cleaned and the cleaned reformatted data will be visualized: **MetaGWASToolKit** will generate various plots automagically:
@@ -99,7 +106,7 @@ There are a couple of reference available per standard, these are:
 - Genome of the Netherlands, version 5 [GoNL5], b37. GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
 - Combination of 1Gp3 and GoNL5 [1Gp3GONL5], b37. This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
 
-One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`. This script will automagically create various *variantID* versions, and add in information per variant. The resulting file is used by `gwas2ref.harmonizer.py` for harmonization.
+One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`, and in fact doing so is an option in the `qsub_metagwastoolkit.sh`. This script will automagically create various *variantID* versions, and add in information per variant. The resulting file is used by `gwas2ref.harmonizer.py` for harmonization. 
 
 ##### Something
 [Some text here]
