@@ -1,11 +1,11 @@
 MetaGWASToolKit
 ============
-A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies.
+A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
 This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (MetaGWASToolKit): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
 
 Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). 
 
-All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `run_analysis.sh` script, and depending on the analyses to be run, some text-files.
+All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `qsub_analysis.sh` script, and two text-files: `meta_configuration.conf` (a configuration file with some system and analytical settings), and `meta_files.list` (containing a list of all the GWAS datasets).
 
 The installation procedure is quite straightforward, and only entails two steps consisting of command one-liners that are *easy* to read. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
