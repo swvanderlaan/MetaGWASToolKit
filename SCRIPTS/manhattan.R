@@ -171,9 +171,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
 
      #--------------------------------------------------------------------------
      ### GENERAL SETUP
-     Today=format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d - %h:%m%s")
+     Today=format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
      cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
-     #Time=format(as.POSIXlt(Sys.time()), "%Y%m%d - %H:%M:%S")
+     #Time=format(as.POSIXlt(Sys.time()), "%H:%M:%S")
      
      #--------------------------------------------------------------------------
      ### DEFINE THE LOCATIONS OF DATA
