@@ -4,13 +4,15 @@
 # Alternative shebang for local Mac OS X: #!/usr/bin/python
 # Linux version for HPC: #!/hpc/local/CentOS7/common/lang/python/2.7.10/bin/python
 
+### ADD-IN:
+### - dynamically determine the proper chr-bp based on the reference, like with the VariantID/Marker
 
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "                               GWAS TO REFERENCE HARMONIZER "
 print ""
-print "* Version: GWAS2REF.HARMONIZER.v2.2.0"
+print "* Version: GWAS2REF.HARMONIZER.v2.2.1"
 print ""
-print "* Last update      : 2016-12-11"
+print "* Last update      : 2016-12-14"
 print "* Written by       : Tim Bezemer (t.bezemer-2@umcutrecht.nl)."
 print "* Suggested for by : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print ""
