@@ -1,6 +1,8 @@
 MetaGWASToolKit
 ============
+
 ** !!!NOTE: these scripts and the readme are under heavy development, check back frequently!!! **
+
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
 This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (MetaGWASToolKit): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
 
