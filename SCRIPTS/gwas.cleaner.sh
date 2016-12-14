@@ -171,97 +171,97 @@ else
 	echo "Cohort base filename............................................................: ${COHORTNAME}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo "" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo "Cleaning parameters set. " >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo " - BETA -- effect size ±........................................................: ${BETA}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo " - SE -- standard error ±.......................................................: ${SE}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+	echo " - BETA -- effect size..........................................................: ${BETA}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+	echo " - SE -- standard error.........................................................: ${SE}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo " - MAF -- minor allele frequency................................................: ${MAF}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo " - MAC -- minor allele count....................................................: ${MAC}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo " - INFO -- imputation quality score.............................................: ${INFO}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo " - HWE p-value..................................................................: ${HWE}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo "" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo "General statistics." >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	
-	cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ print $1 }' > ${PROJECTDIR}/${COHORTNAME}.markers.dat
-	perl ${SCRIPTS}/uniquefy.pl ${PROJECTDIR}/${COHORTNAME}.markers.dat > ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
-	
-	UNIQUE_NUMBER_VARIANTS=$(tail -n +2 ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	
-	N_COLUMNS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ print NF }' | sort -n | uniq | awk '{printf ("%'\''d\n", $0)}')
-	LC_NUMERIC=en_US 
-	AVG_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ if($16 != "NA" ) { SUM_N += $16; TOTAL_N++ } } END { if(TOTAL_N > 0) print SUM_N / TOTAL_N; } ' | awk '{printf ("%'\''f\n", $0)}')
-	TOT_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	NOTREF_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $34 == "no" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	REF_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $34 == "yes" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	
-	BETA_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $13 > '$BETA' || $13 < -'$BETA' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	BETA_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $13 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	SE_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $14 > '$SE' || $14 < -'$SE' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	SE_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $14 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	P_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $15 < 0 || $15 > 1 )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	P_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $15 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	
-	MONOMORPHIC=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 == 0 || $9 == 1 )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	MAF_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 < '$MAF' || $9 > (1-'$MAF') )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	MAC_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $10 < '$MAC' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	INFO_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ if($12 != "NA") ( $12 > 1.1 || $12 < '$INFO' ) }' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	
-	HWE_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $11 < '$HWE' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
-	
-	### On screen output
-	echo "Sanity check: number of columns (we expect 34)..................................: ${N_COLUMNS}" 
-	echo "Average sample size (N) per variant.............................................: ${AVG_NUMBER_VARIANTS}" 
-	echo "Total number of variants........................................................: ${TOT_NUMBER_VARIANTS}" 
-	echo "Number of unique variants.......................................................: ${UNIQUE_NUMBER_VARIANTS}" 
-	echo "Number of variants *not* in the reference.......................................: ${NOTREF_NUMBER_VARIANTS}" 
-	echo "Number of variants in the reference.............................................: ${REF_NUMBER_VARIANTS}" 
-	echo "Number of variants with out of range effect sizes...............................: ${BETA_OOR}" 
-	echo "Number of variants with invalid effect sizes....................................: ${BETA_INVALID}" 
-	echo "Number of variants with out of range standard errors............................: ${SE_OOR}" 
-	echo "Number of variants with invalid standard errors.................................: ${SE_INVALID}" 
-	echo "Number of variants with out of range p-values (p < 0, p > 1)....................: ${P_OOR}"
-	echo "Number of variants with invalid p-values........................................: ${P_INVALID}" 
-	echo "Number of monomorphic variants..................................................: ${MONOMORPHIC}" 
-	echo "Number of variants *not* meeting the MAF filter.................................: ${MAF_OOR}" 
-	echo "Number of variants *not* meeting the MAC filter.................................: ${MAC_INVALID}" 
-	echo "Number of variants *not* meeting the INFO-metric filter.........................: ${INFO_INVALID}" 
-	echo "Number of variants with out of range HWE p-values...............................: ${HWE_OOR}"
-	
-	### REPORTING
-	echo "Sanity check: number of columns (we expect 34)..................................: ${N_COLUMNS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Average sample size (N) per variant.............................................: ${AVG_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Total number of variants........................................................: ${TOT_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of unique variants.......................................................: ${UNIQUE_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants *not* in the reference.......................................: ${NOTREF_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants in the reference.............................................: ${REF_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with out of range effect sizes...............................: ${BETA_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with invalid effect sizes....................................: ${BETA_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with out of range standard errors............................: ${SE_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with invalid standard errors.................................: ${SE_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with out of range p-values (p < 0, p > 1)....................: ${P_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with invalid p-values........................................: ${P_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of monomorphic variants..................................................: ${MONOMORPHIC}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants *not* meeting the MAF filter.................................: ${MAF_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants *not* meeting the MAC filter.................................: ${MAC_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants *not* meeting the INFO-metric filter.........................: ${INFO_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "Number of variants with out of range HWE p-values...............................: ${HWE_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
-	echo "" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+
+# 	cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ print $1 }' > ${PROJECTDIR}/${COHORTNAME}.markers.dat
+# 	perl ${SCRIPTS}/uniquefy.pl ${PROJECTDIR}/${COHORTNAME}.markers.dat > ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
+# 	
+# 	UNIQUE_NUMBER_VARIANTS=$(tail -n +2 ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	
+# 	N_COLUMNS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ print NF }' | sort -n | uniq | awk '{printf ("%'\''d\n", $0)}')
+# 	LC_NUMERIC=en_US 
+# 	AVG_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ if($16 != "NA" ) { SUM_N += $16; TOTAL_N++ } } END { if(TOTAL_N > 0) print SUM_N / TOTAL_N; } ' | awk '{printf ("%'\''f\n", $0)}')
+# 	TOT_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	NOTREF_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $34 == "no" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	REF_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $34 == "yes" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	
+# 	BETA_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $13 > '$BETA' || $13 < -'$BETA' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	BETA_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $13 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	SE_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $14 > '$SE' || $14 < -'$SE' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	SE_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $14 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	P_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $15 < 0 || $15 > 1 )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	P_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $15 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	
+# 	MONOMORPHIC=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 == 0 || $9 == 1 )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	MAF_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 < '$MAF' || $9 > (1-'$MAF') )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	MAC_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $10 < '$MAC' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	INFO_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ if($12 != "NA") ( $12 > 1.1 || $12 < '$INFO' ) }' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	
+# 	HWE_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $11 < '$HWE' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+# 	
+# 	### On screen output
+# 	echo "Sanity check: number of columns (we expect 34)..................................: ${N_COLUMNS}" 
+# 	echo "Average sample size (N) per variant.............................................: ${AVG_NUMBER_VARIANTS}" 
+# 	echo "Total number of variants........................................................: ${TOT_NUMBER_VARIANTS}" 
+# 	echo "Number of unique variants.......................................................: ${UNIQUE_NUMBER_VARIANTS}" 
+# 	echo "Number of variants *not* in the reference.......................................: ${NOTREF_NUMBER_VARIANTS}" 
+# 	echo "Number of variants in the reference.............................................: ${REF_NUMBER_VARIANTS}" 
+# 	echo "Number of variants with out of range effect sizes...............................: ${BETA_OOR}" 
+# 	echo "Number of variants with invalid effect sizes....................................: ${BETA_INVALID}" 
+# 	echo "Number of variants with out of range standard errors............................: ${SE_OOR}" 
+# 	echo "Number of variants with invalid standard errors.................................: ${SE_INVALID}" 
+# 	echo "Number of variants with out of range p-values (p < 0, p > 1)....................: ${P_OOR}"
+# 	echo "Number of variants with invalid p-values........................................: ${P_INVALID}" 
+# 	echo "Number of monomorphic variants..................................................: ${MONOMORPHIC}" 
+# 	echo "Number of variants *not* meeting the MAF filter.................................: ${MAF_OOR}" 
+# 	echo "Number of variants *not* meeting the MAC filter.................................: ${MAC_INVALID}" 
+# 	echo "Number of variants *not* meeting the INFO-metric filter.........................: ${INFO_INVALID}" 
+# 	echo "Number of variants with out of range HWE p-values...............................: ${HWE_OOR}"
+# 	
+# 	### REPORTING
+# 	echo "Sanity check: number of columns (we expect 34)..................................: ${N_COLUMNS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Average sample size (N) per variant.............................................: ${AVG_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Total number of variants........................................................: ${TOT_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of unique variants.......................................................: ${UNIQUE_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants *not* in the reference.......................................: ${NOTREF_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants in the reference.............................................: ${REF_NUMBER_VARIANTS}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with out of range effect sizes...............................: ${BETA_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with invalid effect sizes....................................: ${BETA_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with out of range standard errors............................: ${SE_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with invalid standard errors.................................: ${SE_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with out of range p-values (p < 0, p > 1)....................: ${P_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with invalid p-values........................................: ${P_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of monomorphic variants..................................................: ${MONOMORPHIC}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants *not* meeting the MAF filter.................................: ${MAF_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants *not* meeting the MAC filter.................................: ${MAC_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants *not* meeting the INFO-metric filter.........................: ${INFO_INVALID}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "Number of variants with out of range HWE p-values...............................: ${HWE_OOR}" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
+# 	echo "" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	
 	echo ""
 	echo "Applying filters..."
 	### $12/$11 == "NA" -- to prevent variants to be filtered out in cohorts that did not provide imputation or HWE-p-value
-	cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '($13 < '$BETA' && $13 > -'$BETA' && $13 != "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp1
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp1 | tail -n +2 | awk '($14 < '$SE' && $14 > -'$SE' && $14 != "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp2
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp2 | tail -n +2 | awk '($15 > 0 && $15 < 1 && $15 != "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp3
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp3 | tail -n +2 | awk '($9 != 0 && $9 != 1 && $9 > '$MAF' && $9 < (1-'$MAF'))' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp4
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp4 | tail -n +2 | awk '($10 > '$MAC')' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp5
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp5 | tail -n +2 | awk '($12 < 1.1 && $12 > '$INFO' || $12 == "NA" )' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp6
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp6 | tail -n +2 | awk '($12 < '$HWE' || $12 == "NA" )' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp
+# 	cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '($13 < '$BETA' && $13 > -'$BETA' && $13 != "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp1
+# 	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp1 | tail -n +2 | awk '($14 < '$SE' && $14 > -'$SE' && $14 != "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp2
+# 	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp2 | tail -n +2 | awk '($15 > 0 && $15 < 1 && $15 != "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp3
+# 	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp3 | tail -n +2 | awk '($9 != 0 && $9 != 1 && $9 > '$MAF' && $9 < (1-'$MAF'))' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp4
+# 	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp4 | tail -n +2 | awk '($10 > '$MAC')' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp5
+# 	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp5 | tail -n +2 | awk '($12 < 1.1 && $12 > '$INFO' || $12 == "NA" )' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp6
+# 	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp6 | tail -n +2 | awk '($11 >= '$HWE' || $11 == "NA")' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp
 	
-	
-	#cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '($13 < '$BETA' && $13 > -'$BETA' && $13 != "NA") && ($14 < '$SE' && $14 > -'$SE' && $14 != "NA") && ($15 > 0 && $15 < 1 && $15 != "NA") && ($9 != 0 && $9 != 1 && $9 > '$MAF' && $9 < (1-'$MAF')) && ($10 > '$MAC') && ($12 < 1.1 && $12 > '$INFO' || $12 == "NA" )' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp
+
+	cat ${PROJECTDIR}/${COHORTNAME}.rdat | awk '("$13" < "$BETA" && "$13" > -"$BETA" && "$13" != "NA")' | awk '{ print $13 }' | head  #  && ($14 < '$SE' && $14 > -'$SE' && $14 != \"NA\") && ($15 > 0 && $15 < 1 && $15 != \"NA\") && ($9 != 0 && $9 != 1 && $9 > '$MAF' && $9 < (1-'$MAF')) && ($10 > '$MAC') && ($12 < 1.1 && $12 > '$INFO' || $12 == \"NA\") && ($11 >= '$HWE' || $11 == \"NA\")' | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' > ${PROJECTDIR}/${COHORTNAME}.cdat.temp"
 	echo "Making cleaned dataset..."
-	echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
+	#echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
 	#cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
-	cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
+	#cat ${PROJECTDIR}/${COHORTNAME}.cdat.temp | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
 	echo ""
 	echo "GWAS dataset is parsed, harmonized, and cleaned."
 	QC_NUMBER_VARIANTS=$(cat ${PROJECTDIR}/${COHORTNAME}.cdat | tail -n +2 | wc -l | awk '{printf ("%'\''d\n", $0)}')

@@ -16,10 +16,10 @@
 ### - change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    MANHATTAN PLOTTER v1.1.1
+    MANHATTAN PLOTTER v1.1.2
     \n
-    * Version: v1.1.1
-    * Last edit: 2016-12-12
+    * Version: v1.1.2
+    * Last edit: 2016-12-14
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -33,8 +33,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./manhattan.R -p projectdir -r resultfile -o outputdir -c colorstyle -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./manhattan.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --colorstyle colorstyle --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./manhattan.R -p projectdir -r resultfile -o outputdir -c colorstyle -f imageformat [OPTIONAL: -t titleplot -v verbose (DEFAULT) -q quiet]
+#        ./manhattan.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --colorstyle colorstyle --imageformat imageformat [OPTIONAL: --titleplot titleplot --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------
@@ -108,22 +108,34 @@ option_list = list(
                  help="The image format (PDF (width=10, height=5), PNG/TIFF/EPS (width=1280, height=720)."),
      make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',
                  help="Path to the output directory."),
+     make_option(c("-t", "--titleplot"), action="store", default="Manhattan-plot", type='character',
+                 help="The title of the plot? [default %default]"),
      make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
                  help="Should the program print extra stuff out? [default %default]"),
      make_option(c("-q", "--quiet"), action="store_false", dest="verbose",
                  help="Make the program not be verbose.")
-     #make_option(c("-c", "--cvar"), action="store", default="this is c",
-     #            help="a variable named c, with a default [default %default]")  
+     # make_option(c("-c", "--cvar"), action="store", default="this is c",
+     #             help="a variable named c, with a default [default %default]")  
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
 #--------------------------------------------------------------------------
-### FOR LOCAL DEBUGGING
-# opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/"
-# opt$outputdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/" 
+# 
+# ### FOR LOCAL DEBUGGING
+# ### MacBook Pro
+# #MACDIR="/Users/swvanderlaan"
+# ### Mac Pro
+# MACDIR="/Volumes/MyBookStudioII/Backup"
+# 
+# opt$projectdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/")
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/")
 # opt$colorstyle="FULL"
 # opt$imageformat="PNG"
-# opt$resultfile="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt"
+# #opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt")
+# opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt")
+# ### FOR LOCAL DEBUGGING
+# 
+#--------------------------------------------------------------------------
 
 if (opt$verbose) {
      # if (opt$verbose) {
@@ -142,6 +154,8 @@ if (opt$verbose) {
      cat(opt$colorstyle)
      cat("\nThe image format.........................: ")
      cat(opt$imageformat)
+     cat("\nThe title of the plot....................: ")
+     cat(opt$titleplot)
      cat("\n\n")
      
 }
@@ -152,13 +166,14 @@ cat("Wow. We are finally starting \"Mahattan Plotter\". ")
 # main point of program is here, do this whether or not "verbose" is set
 if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$colorstyle) & !is.na(opt$imageformat)) {
      study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
-     cat(paste("We are going to \nmake P-Z-plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
-     cat("\n\n")
-     
+     filename <- basename(opt$resultfile)
+     cat(paste("We are going to \nmake P-Z-plot of your (meta-)GWAS results. \nData are taken from.........: '",filename,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
+
      #--------------------------------------------------------------------------
      ### GENERAL SETUP
-     Today=format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
-     cat(paste("Today's date is: ", Today, ".\n", sep = ''))
+     Today=format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d - %h:%m%s")
+     cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
+     #Time=format(as.POSIXlt(Sys.time()), "%Y%m%d - %H:%M:%S")
      
      #--------------------------------------------------------------------------
      ### DEFINE THE LOCATIONS OF DATA
@@ -189,18 +204,22 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      }
      cat("\n* Removing NA's...")
      data <- na.omit(rawdata)
-     
-     cat("\n\nClean data from NAs and formatting chromosomes.")
-     data = data[complete.cases(data),]
+
+     cat("\n\nReformatting chromosomes: X/XY/Y/MT to 23/24/25/26.")
      data$V1 = toupper(data$V1) #convert to upper case
+     cat("\n- chromosome 'X' to '23'....")
      data$V1[data$V1 == "0X"] = "23"
      data$V1[data$V1 == "X"] = "23"
+     cat("\n- chromosome 'Y' to '24'....")
      data$V1[data$V1 == "0Y"] = "24"
      data$V1[data$V1 == "Y"] = "24"
+     cat("\n- chromosome 'XY' to '25'....")
      data$V1[data$V1 == "XY"] = "25"
+     cat("\n- chromosome 'MT' to '26'....")
      data$V1[data$V1 == "MT"] = "26"
-     data$V1 = as.numeric(data$V1)
-     data$V2 = as.numeric(data$V2)
+     data$V1 = as.integer(data$V1)
+     data$V2 = as.integer(data$V2)
+     data$V3 = as.numeric(data$V3)
 
      cat("\n\nReordering data.")
      # V1 = chromosome
@@ -213,14 +232,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           data <- data[which(data$V3 <= 0.50), ]
           sig <- data[which(data$V3 <= 0.50), ]
           nonsig <- data[which(data$V3 >= 0.05), ]
-          size <- sum(nonsig$V1 > 0)
           p <- sig
      } else if (opt$colorstyle == "FULL" || opt$colorstyle == "TWOCOLOR") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
           data <- data[which(data$V3 <= 1), ]
           sig <- data[which(data$V3 <= 0.50), ]
           nonsig <- data[which(data$V3 >= 0.05), ]
-          size <- sum(nonsig$V1 > 0)
           p <- sig
      } else {
      cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
@@ -302,39 +319,39 @@ Assigning positions and p-values for...\n")
      cat("\n\nDetermining what type of image should be produced and plotting axes.")
      if (opt$imageformat == "PNG")
           if (opt$colorstyle == "FULL") {
-          	png(paste0(opt$outputdir,"/",study,".FULL.png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width=1280, height=720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	png(paste0(opt$outputdir,"/",study,".TWOCOLOR.png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width=1280, height=720)
           	} else {
-          	png(paste0(opt$outputdir,"/",study,".QC.png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width=1280, height=720)
      		}
      if (opt$imageformat == "TIFF")
           if (opt$colorstyle == "FULL") {
-          	tiff(paste0(opt$outputdir,"/",study,".FULL.tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width=1280, height=720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	tiff(paste0(opt$outputdir,"/",study,".TWOCOLOR.tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width=1280, height=720)
           	} else {
-          	tiff(paste0(opt$outputdir,"/",study,".QC.tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width=1280, height=720)
      		}
 
      if (opt$imageformat == "EPS")
      	  if (opt$colorstyle == "FULL") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".FULL.eps"),
+          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".TWOCOLOR.eps"),
+          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else {
-          	postscript(file = paste0(opt$outputdir,"/",study,".QC.eps"),
+          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
      		}
      if (opt$imageformat == "PDF")
           if (opt$colorstyle == "FULL") {
-          	pdf(paste0(opt$outputdir,"/",study,".FULL.pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width=10, height=5)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	pdf(paste0(opt$outputdir,"/",study,".TWOCOLOR.pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width=10, height=5)
           	} else {
-          	pdf(paste0(opt$outputdir,"/",study,".QC.pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width=10, height=5)
      		}
      
      ### START PLOTTING ###
@@ -342,11 +359,20 @@ Assigning positions and p-values for...\n")
      cat("\n\nSet up the plot.")
      cat("\n* plotting chromosome 1...")
      if (opt$colorstyle == "FULL") {
-          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#FBB820", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
+          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#FBB820", 
+               xlim = c(0, maxX), ylim = c(0, (maxY+2)), 
+               xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), 
+               xaxs = "i", yaxs = "i", las = 1, bty = "l", main = paste0("",opt$titleplot,""), axes = FALSE)
      } else if (opt$colorstyle == "TWOCOLOR") {
-          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
+          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", 
+               xlim = c(0, maxX), ylim = c(0, (maxY+2)), 
+               xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), 
+               xaxs = "i", yaxs = "i", las = 1, bty = "l", main = paste0("",opt$titleplot,""), axes = FALSE)
      } else {
-          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", xlim = c(0, maxX), ylim = c(0, (maxY+2)), xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), xaxs = "i", yaxs = "i", las = 1, bty = "l", main = "Manhattan-plot", axes = FALSE)
+          plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", 
+               xlim = c(0, maxX), ylim = c(0, (maxY+2)), 
+               xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), 
+               xaxs = "i", yaxs = "i", las = 1, bty = "l", main = paste0("",opt$titleplot,""), axes = FALSE)
      }
      
      ### Add in results per chromosome, with offset to the right starting after chromosome 1
@@ -358,9 +384,11 @@ Assigning positions and p-values for...\n")
           offset <- offset + max(list_pos[[i-x]])
           cat(paste0("the offset is [ ",offset," ]..."))
           if (opt$colorstyle == "FULL") {
-               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_full[i])
+               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), 
+                      pch=20, cex=1.0, col=uithof_color_full[i])
           } else if (opt$colorstyle == "TWOCOLOR") {
-               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_two[i])
+               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), 
+                      pch=20, cex=1.0, col=uithof_color_two[i])
           } else if (opt$colorstyle == "QC") {
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_qc[i])
           } else {
@@ -436,7 +464,8 @@ chromosomes, so we can't plot the labels. Double back, please.\n\n"),
          - --r/resultfile  : path to resultfile\n
          - --o/outputdir   : path to output directory\n
          - --c/colorstyle  : the color style to be used (FULL, TWOCOLOR or QC)\n
-         - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n\n", 
+         - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n
+         - --t/title       : the title on the plot (optional)\n\n", 
          file=stderr()) # print error messages to stderr
 }
 
@@ -445,11 +474,10 @@ chromosomes, so we can't plot the labels. Double back, please.\n\n"),
 cat(paste("\nAll done plotting a Manhattan-plot of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-
-
-#--------------------------------------------------------------------------
-### SAVE ENVIRONMENT | FOR DEBUGGING
-save.image(paste0(opt$outputdir,"/",Today,"_",study,"_MANHATTANPLOTTER.RData"))
+# 
+# #--------------------------------------------------------------------------
+# ### SAVE ENVIRONMENT | FOR DEBUGGING
+save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_MANHATTANPLOTTER.RData"))
 
 
 ###	UtrechtSciencePark Colours Scheme
