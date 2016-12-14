@@ -180,7 +180,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      cat("\n* The file appears to be gzipped, now loading...\n")
        rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
      } else if(filetype != "gzfile") {
-     cat("\n* The file appears not to be gezipped, now loading...\n")
+     cat("\n* The file appears not to be gzipped, now loading...\n")
        rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
      } else {
      cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 

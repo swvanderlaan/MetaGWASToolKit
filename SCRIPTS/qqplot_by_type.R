@@ -12,10 +12,10 @@
 ###   one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ by TYPE PLOTTER v1.1.1
+    QQ by TYPE PLOTTER v1.1.2
     \n
-    * Version: v1.1.1
-    * Last edit: 2016-12-12
+    * Version: v1.1.2
+    * Last edit: 2016-12-14
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
@@ -210,7 +210,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   cat("\n* The file appears to be gzipped, now loading...\n")
     rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
   } else if(filetype != "gzfile") {
-  cat("\n* The file appears not to be gezipped, now loading...\n")
+  cat("\n* The file appears not to be gzipped, now loading...\n")
     rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
   } else {
   cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 

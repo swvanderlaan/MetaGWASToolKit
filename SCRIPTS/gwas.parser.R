@@ -221,7 +221,7 @@ tab, space, nor semicolon delimited. Double back, please.\n\n",
            file=stderr()) # print error messages to stder
     }
   } else if(filetype != "gzfile") {
-    cat("\n* The file appears not to be gezipped, checking delimiter now...")
+    cat("\n* The file appears not to be gzipped, checking delimiter now...")
     cat("\n* Data header looks like this:\n")
     print(TESTDELIMITER)
     if(grepl(",", TESTDELIMITER) == TRUE){

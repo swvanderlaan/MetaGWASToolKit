@@ -199,7 +199,7 @@ else
 	P_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $15 < 0 || $15 > 1 )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
 	P_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $15 == "NA" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
 	
-	MONOMORPHIC=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 == "0" || $9 == "1" )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
+	MONOMORPHIC=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 == 0 || $9 == 1 )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
 	MAF_OOR=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $9 < '$MAF' || $9 > (1-'$MAF') )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
 	MAC_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '( $10 < '$MAC' )' | wc -l | awk '{printf ("%'\''d\n", $0)}')
 	INFO_INVALID=$(cat ${PROJECTDIR}/${COHORTNAME}.rdat | tail -n +2 | awk '{ if($12 != "NA") ( $12 > 1.1 || $12 < '$INFO' ) }' | wc -l | awk '{printf ("%'\''d\n", $0)}')
