@@ -1,8 +1,9 @@
 MetaGWASToolKit
 ============
 
-** !!!NOTE: these scripts and the readme are under heavy development, check back frequently!!! **
+**NOTE: these scripts and the readme are under heavy development, check back frequently.**
 
+### Introduction
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
 This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (MetaGWASToolKit): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
 
@@ -31,17 +32,17 @@ We have tested MetaGWASToolKit on CentOS7, and OS X Sierra (version 10.11.[x]).
 
 --------------
 
-#### Installing the scripts locally
+### Installing the scripts locally
 
 You can use the scripts locally to run analyses on a Unix-based system, like Mac OS X (Sierra+). We need to make an appropriate directory to download 'gits' to, and install this 'git'.
 
-##### Step 1: Make a directory, and go there.
+#### Step 1: Make a directory, and go there.
 
 ```
 mkdir -p ~/git/ && cd ~/git
 ```
 
-##### Step 2: Clone this git, unless it already exists.
+#### Step 2: Clone this git, unless it already exists.
 
 ```
 if [ -d ~/git/MetaGWASToolKit/.git ]; then \
@@ -51,9 +52,8 @@ if [ -d ~/git/MetaGWASToolKit/.git ]; then \
 	fi
 ```
 
-##### Step 3: Check for dependencies of Python, Perl and R, and install them if necessary.
+#### Step 3: Check for dependencies of Python, Perl and R, and install them if necessary.
 [text and codes forthcoming]
-
 
 --------------
 
