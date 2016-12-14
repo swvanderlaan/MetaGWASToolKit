@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser v1.1.3
+    GWAS Parser v1.1.4
     \n
-    * Version: v1.1.3
-    * Last edit: 2016-12-11
+    * Version: v1.1.4
+    * Last edit: 2016-12-13
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -533,7 +533,7 @@ of the GWAS data. Double back, please.\n\n",
   
   cat("\n  > changing NA to '0' for BP...")
   GWASDATA_PARSED$BP <- GWASDATA_RAWSELECTION$BP
-  GWASDATA_PARSED <- GWASDATA_PARSED %>% mutate(BP = ifelse(is.na(BP),0,CHR))# unknown base pair positions are set to '0'
+  GWASDATA_PARSED <- GWASDATA_PARSED %>% mutate(BP = ifelse(is.na(BP),0,BP))# unknown base pair positions are set to '0'
   
   cat("\n  > adding strand information...")
   GWASDATA_PARSED$Strand <- ifelse(("Strand" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 

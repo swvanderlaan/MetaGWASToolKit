@@ -168,36 +168,19 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      #--------------------------------------------------------------------------
      ### LOADING RESULTS FILE
      ### Location of is set by 'opt$resultfile' # argument 2
-<<<<<<< Updated upstream
      cat("\n\nLoading results file and removing NA's.")
    
      ### Checking file type -- is it gzipped or not?
      data_connection <- file(opt$resultfile)
      filetype <- summary(data_connection)$class
-=======
-     cat("\n\nLoading results file and removing NA's...")
-   
-     ### Checking file type -- is it gzipped or not?
-     data_connection <- file(opt$resultfile)
-     data_connection
-     filetype <- summary(data_connection)$class
-     filetype
->>>>>>> Stashed changes
      close(data_connection)
     
      ### Loading the data
      if(filetype == "gzfile"){
-<<<<<<< Updated upstream
      cat("\n* The file appears to be gzipped, now loading...\n")
        rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
      } else if(filetype != "gzfile") {
      cat("\n* The file appears not to be gezipped, now loading...\n")
-=======
-     cat("\n* The file appears to be gzipped, now loading...")
-       rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
-     } else if(filetype != "gzfile") {
-     cat("\n* The file appears not to be gezipped, now loading...")
->>>>>>> Stashed changes
        rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
      } else {
      cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
@@ -207,13 +190,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      cat("\n* Removing NA's...")
      data <- na.omit(rawdata)
      
-<<<<<<< Updated upstream
      cat("\n\nClean data from NAs and formatting chromosomes.")
      data = data[complete.cases(data),]
-=======
-     cat("\nClean data from NAs and formatting chromosomes...")
-     #data = data[complete.cases(data),]
->>>>>>> Stashed changes
      data$V1 = toupper(data$V1) #convert to upper case
      data$V1[data$V1 == "0X"] = "23"
      data$V1[data$V1 == "X"] = "23"
@@ -221,7 +199,6 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      data$V1[data$V1 == "Y"] = "24"
      data$V1[data$V1 == "XY"] = "25"
      data$V1[data$V1 == "MT"] = "26"
-<<<<<<< Updated upstream
      data$V1 = as.numeric(data$V1)
      data$V2 = as.numeric(data$V2)
 
@@ -243,27 +220,6 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           data <- data[which(data$V3 <= 1), ]
           sig <- data[which(data$V3 <= 0.50), ]
           nonsig <- data[which(data$V3 >= 0.05), ]
-=======
-     data$V1 = as.integer(data$V1)
-     data$V2 = as.integer(data$V2)
-     
-     cat("\nReordering data...\n")
-     setorder(data, V1, -V2)
-
-     cat("\nLoad in a subset of the data based on p<=0.50...")
-     if (opt$colorstyle == "QC") {
-     cat(paste0("\n* color style is '",opt$colorstyle,"'..."))
-          data <- data[V3 <= "0.50"]
-          sig <- data[V3 < "0.05"]
-          nonsig <- data[V3 >= "0.05"]
-          size <- sum(nonsig$V1 > 0)
-          p <- sig
-     } else {
-     cat(paste0("\n* color style is '",opt$colorstyle,"'..."))
-          data <- data[V3 <= "0.50"]
-          sig <- data[V3 < "0.05"]
-          nonsig <- data[V3 >= "0.05"]
->>>>>>> Stashed changes
           size <- sum(nonsig$V1 > 0)
           p <- sig
      } else {
@@ -284,19 +240,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      
      # Let's count the number of chromosomes to plot
      nchr = length(unique(data$V1))
-<<<<<<< Updated upstream
      cat(paste0("\n* The number of chromosomes to plot: ", nchr,"; these are:"))
      
      # Take into account unique chrs
      uniq_chr = unique(data$V1)
      cat(paste0("\n...chromosome [ ", uniq_chr," ]..."))
-=======
-     cat(paste0("\n   * The number of chromosomes to plot: ", nchr,"; these are:\n"))
-     
-     # Take into account unique chrs
-     uniq_chr = unique(data$V1)
-     cat(paste0("   - chromosome ", uniq_chr,"\n"))
->>>>>>> Stashed changes
      
      cat("\n\nDetermining the positions and p-values per chromosomes, and finally 'maxX'.
 Assigning positions and p-values for...\n")
@@ -307,19 +255,11 @@ Assigning positions and p-values for...\n")
      for (i in 1:length(uniq_chr)){
           cat(paste0("...chromosome [ ",i," ]...\n"))
           # getting a list of positions per chromosome
-<<<<<<< Updated upstream
           assign((paste("pos_", i, sep= "")), (subset(p$V2, p$V1 == uniq_chr[i])))
           # getting a list of p-values per chromosome
           assign((paste("p_", i, sep= "")), (subset(p$V3, p$V1 == uniq_chr[i])))  
           # calculating the maxX based on the input-data
           maxX = maxX + max(subset(p$V2, p$V1 == uniq_chr[i]))  
-=======
-          assign((paste("pos_",i,sep="")), (subset(p$V1, p$V1==uniq_chr[i])))
-          # getting a list of p-values per chromosome
-          assign((paste("p_",i,sep="")), (subset(p$V3, p$V1==uniq_chr[i])))  
-          # calculating the maxX based on the input-data
-          maxX=maxX+max(subset(p$V2, p$V1==uniq_chr[i]))  
->>>>>>> Stashed changes
      }
      cat(paste0("\n\n* The maximum on the X-axis: ", format(maxX, big.mark = ","),"."))
      
@@ -379,7 +319,6 @@ Assigning positions and p-values for...\n")
 
      if (opt$imageformat == "EPS")
      	  if (opt$colorstyle == "FULL") {
-<<<<<<< Updated upstream
           	postscript(file = paste0(opt$outputdir,"/",study,".FULL.eps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else if (opt$colorstyle == "TWOCOLOR") {
@@ -387,15 +326,6 @@ Assigning positions and p-values for...\n")
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else {
           	postscript(file = paste0(opt$outputdir,"/",study,".QC.eps"),
-=======
-          	postscript(file = paste0(opt$outputdir,"/",study,".FULL.eps"), 
-          	           horizontal = FALSE, onefile = FALSE, paper = "special")
-          	} else if (opt$colorstyle == "TWOCOLOR") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".TWOCOLOR.eps"), 
-          	           horizontal = FALSE, onefile = FALSE, paper = "special")
-          	} else {
-          	postscript(file = paste0(opt$outputdir,"/",study,".QC.eps"), 
->>>>>>> Stashed changes
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
      		}
      if (opt$imageformat == "PDF")
@@ -431,17 +361,12 @@ Assigning positions and p-values for...\n")
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_full[i])
           } else if (opt$colorstyle == "TWOCOLOR") {
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_two[i])
-<<<<<<< Updated upstream
           } else if (opt$colorstyle == "QC") {
                points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_qc[i])
           } else {
             cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
 You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"), 
                 file=stderr()) # print error messages to stder
-=======
-          } else {
-               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_qc[i])
->>>>>>> Stashed changes
           }
      }
      
@@ -463,14 +388,7 @@ You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"),
           xtix[i] <- max_pos_chr + xtix[i-x];
           
           # putting the labels in the middle
-<<<<<<< Updated upstream
           xCHR[i] <- (max_pos_chr + min(subset(p$V2, p$V1==chr)))/2 + offset;
-=======
-          xCHR[i] <- (max_pos_chr +min(subset(p$V2, p$V1==chr)))/2 + offset;
-          
-          # drawing the labels	
-          axis(1, at=xCHR[i], labels=c(uniq_chr[i]), cex.axis=sz[i], tick=FALSE);
->>>>>>> Stashed changes
           
           # drawing the labels
           if (i == 23) {
@@ -488,7 +406,6 @@ You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"),
      
      cat("\n* plotting the X-axis...")
      #Plot the X-axis
-<<<<<<< Updated upstream
      if(nchr==22) {
           axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","",""))
      } else if(nchr==23) {
@@ -509,22 +426,6 @@ chromosomes, so we can't plot the labels. Double back, please.\n\n"),
      #axis(2) # this should work as well
      
      cat("\n* plotting the genome-wide significance threshold.\n")
-=======
-     if(nchr==22)
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==23)
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==24)
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==25)
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","",""))
-     if(nchr==26)
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","","",""))
-     axis(2, ylim=c(0, (maxY+2)))
-     #axis(2) # this should work as well
-     
-     cat("\n\nPlot the genome-wide significance threshold.\n")
->>>>>>> Stashed changes
      lines(c(0, maxX), c(-log10(5e-08), -log10(5e-08)), lty="dotted", col="#595A5C")
      
      dev.off()
@@ -549,7 +450,6 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #--------------------------------------------------------------------------
 ### SAVE ENVIRONMENT | FOR DEBUGGING
 save.image(paste0(opt$outputdir,"/",Today,"_",study,"_MANHATTANPLOTTER.RData"))
-
 
 
 ###	UtrechtSciencePark Colours Scheme

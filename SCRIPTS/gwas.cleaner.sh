@@ -262,21 +262,12 @@ else
 	
 	echo ""
 	echo "Gzipping (intermediate) and removing temporary files..."
-<<<<<<< Updated upstream
 	#rm -v ${PROJECTDIR}/${COHORTNAME}.cdat.temp
-	#gzip -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
-	#gzip -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
-	#gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
-	#gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
-	#gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
-=======
-	rm -v ${PROJECTDIR}/${COHORTNAME}.cdat.temp
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
->>>>>>> Stashed changes
 	
 	echo "" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme
 	echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++" >> ${PROJECTDIR}/${COHORTNAME}.cleaner.readme

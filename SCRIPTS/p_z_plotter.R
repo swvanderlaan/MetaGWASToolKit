@@ -192,7 +192,7 @@ of the data. Double back, please.\n\n",
   # ExomeChip or Metabochip data you'll probably need to set this number lower. 
   # This number should be given as the option "random_sample".
 
-  size_data <- length(data_pz[,1])
+  size_data <- length(data_pz$V1)
   
   cat("\n\nDetermining size of the data and setting the random sample size...\n")
   if (size_data-1 > opt$randomsample) {
