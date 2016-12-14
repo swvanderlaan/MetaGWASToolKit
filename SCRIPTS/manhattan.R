@@ -236,7 +236,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      } else if (opt$colorstyle == "FULL" || opt$colorstyle == "TWOCOLOR") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
           data <- data[which(data$V3 <= 1), ]
-          sig <- data[which(data$V3 <= 0.50), ]
+          sig <- data[which(data$V3 <= 0.99), ]
           nonsig <- data[which(data$V3 >= 0.05), ]
           p <- sig
      } else {
@@ -477,7 +477,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 
 # #--------------------------------------------------------------------------
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
-save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_MANHATTANPLOTTER.RData"))
+#save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_MANHATTANPLOTTER.RData"))
 
 
 ###	UtrechtSciencePark Colours Scheme

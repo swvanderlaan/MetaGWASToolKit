@@ -77,17 +77,17 @@ option_list = list(
               help="Path to the output directory."),
   make_option(c("-f", "--filename"), action="store", default=NA, type='character',
               help="The output filename, an extension will be automatically added."),
-  make_option(c("-e", "--effectsize"), action="store", default=NA, type='character',
+  make_option(c("-e", "--effectsize"), action="store", default=NA, type='numeric',
               help="Maximum effect size to allow for any variant, e.g. 10."),
-  make_option(c("-s", "--standarderror"), action="store", default=NA, type='character',
+  make_option(c("-s", "--standarderror"), action="store", default=NA, type='numeric',
               help="Maximum standard error to allow for any variant, e.g. 10."),
-  make_option(c("-m", "--maf"), action="store", default=NA, type='character',
+  make_option(c("-m", "--maf"), action="store", default=NA, type='numeric',
               help="Minimum minor allele frequency to keep variants, e.g. 0.005."),
-  make_option(c("-c", "--mac"), action="store", default=NA, type='character',
+  make_option(c("-c", "--mac"), action="store", default=NA, type='numeric',
               help="Minimum minor allele count to keep variants, e.g. 30."),
-  make_option(c("-i", "--info"), action="store", default=NA, type='character',
+  make_option(c("-i", "--info"), action="store", default=NA, type='numeric',
               help="Minimum imputation quality score to keep variants, e.g. 0.3."),
-  make_option(c("-w", "--hwe_p"), action="store", default=NA, type='character',
+  make_option(c("-w", "--hwe_p"), action="store", default=NA, type='numeric',
               help="Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. 1E-6."),
   make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
               help="Should the program print extra stuff out? [logical (FALSE or TRUE); default %default]"),
@@ -160,8 +160,8 @@ if(!is.na(opt$filename) & !is.na(opt$datagwas) & !is.na(opt$outputdir)
    & !is.na(opt$maf) & !is.na(opt$mac)
    & !is.na(opt$info) & !is.na(opt$hwe_p)) {
   cat(paste0("\n\nWe are going to clean the GWAS data.
-             \nAnalysing these results................: '",basename(opt$datagwas),"'
-             Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
+\nAnalysing these results................: '",basename(opt$datagwas),"'
+Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   study <- opt$filename # argument 3
   filename <- basename(opt$datagwas)
   
@@ -292,22 +292,22 @@ if(!is.na(opt$filename) & !is.na(opt$datagwas) & !is.na(opt$outputdir)
     no_variants=length(DATASET$VariantID)
     no_variants_snp=length(grep(TRUE, DATASET$VT == "SNP"))
     no_variants_indel=length(grep(TRUE, DATASET$VT == "INDEL"))
-    cat(paste0("\n  - number of remaining variants : ",no_variants))
-    cat(paste0("\n  - of which SNVs                : ",no_variants_snp))
-    cat(paste0("\n  - of which INDELs              : ",no_variants_indel))
+    cat(paste0("\n  - number of remaining variants : ",format(no_variants, big.mark=",")))
+    cat(paste0("\n  - of which SNVs                : ",format(no_variants_snp, big.mark=",")))
+    cat(paste0("\n  - of which INDELs              : ",format(no_variants_indel, big.mark=",")))
   }
   
   cat("\nCleaning dataset.")
-  cat(paste0("\n* removing variants where ",-opt$effectsize," < effect size < ",opt$effectsize," or 'NA'..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW, Beta > -opt$effectsize & Beta < opt$effectsize & Beta != "NA")
+  cat(paste0("\n* removing variants where -",opt$effectsize," < effect size < ",opt$effectsize," or 'NA'..."))
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW, Beta > -opt$effectsize & Beta < opt$effectsize & !is.na(Beta))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants where ",-opt$standarderror," < standard error < ",opt$standarderror," or 'NA'..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, SE > -opt$standarderror & SE < opt$standarderror & SE != "NA")
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, SE > -opt$standarderror & SE < opt$standarderror & !is.na(SE))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat("\n* removing out of range p-values, i.e. p < 0, p > 1, or P = 'NA'...")
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, P >= 0 & P <= 1 & P != "NA")
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, P >= 0 & P <= 1 & !is.na(P))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants with minor allele frequencies < ",opt$maf,"..."))
@@ -325,8 +325,7 @@ if(!is.na(opt$filename) & !is.na(opt$datagwas) & !is.na(opt$outputdir)
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"..."))
   GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P) | HWE_P == 0)
   report.variants(GWASDATA_RAW_CLEANED)
-  
-  
+    
   cat("\nAll done cleaning the dataset.")
   ### SAVE NEW DATA ###
   cat("\n\nSaving cleaned data...\n")
@@ -338,23 +337,23 @@ if(!is.na(opt$filename) & !is.na(opt$datagwas) & !is.na(opt$outputdir)
   cat(paste("\nAll done cleaning [",basename(opt$datagwas),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
-  } else {
-    cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-    cat("\n*** ERROR *** You didn't specify all variables:\n
-        - --d/datagwas      : Path to the GWAS data; can be tab, comma, space or semicolon delimited, as well as gzipped.
-        - --o/outputdir     : Path to output directory.
-        - --f/filename      : The output filename, an extension will be automatically added.
-        - --e/effectsize    : Maximum effect size to allow for any variant, e.g. 10.
-        - --s/standarderror : Maximum standard error to allow for any variant, e.g. 10.
-        - --m/maf           : Minimum minor allele frequency to keep variants, e.g. 0.005.
-        - --c/mac           : Minimum minor allele count to keep variants, e.g. 30.
-        - --i/info          : Minimum imputation quality score to keep variants, e.g. 0.3.
-        - --h/hwe_p         : Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. 1E-6.",
-        file=stderr()) # print error messages to stderr
-  }
+} else {
+  cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n*** ERROR *** You didn't specify all variables:\n
+      - --d/datagwas      : Path to the GWAS data; can be tab, comma, space or semicolon delimited, as well as gzipped.
+      - --o/outputdir     : Path to output directory.
+      - --f/filename      : The output filename, an extension will be automatically added.
+      - --e/effectsize    : Maximum effect size to allow for any variant, e.g. 10.
+      - --s/standarderror : Maximum standard error to allow for any variant, e.g. 10.
+      - --m/maf           : Minimum minor allele frequency to keep variants, e.g. 0.005.
+      - --c/mac           : Minimum minor allele count to keep variants, e.g. 30.
+      - --i/info          : Minimum imputation quality score to keep variants, e.g. 0.3.
+      - --w/hwe_p         : Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. 1E-6.",
+      file=stderr()) # print error messages to stderr
+}
+      
+cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
         
-        cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-        
-        ### SAVE ENVIRONMENT | FOR DEBUGGING
-        #save.image(paste0(OUT_loc, "/", Today,"_",study,"_GWAS_CLEANER.RData"))
+### SAVE ENVIRONMENT | FOR DEBUGGING
+#save.image(paste0(OUT_loc, "/", Today,"_",study,"_GWAS_CLEANER.RData"))
         
