@@ -77,19 +77,19 @@ echobold "                     GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION ST
 echobold ""
 echobold "* Version:      v1.0.0"
 echobold ""
-echobold "* Last update:  2016-12-12"
-echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
-echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
-echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
-echobold "                Paul I.W. de Bakker | UMC Utrecht | p.i.w.debakker-2@umcutrecht.nl."
-echobold "* Testers:      Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl."
+echobold "* Last update:  2016-12-14"
+echobold "* Written by:   Sander W. van der Laan \| UMC Utrecht \| s.w.vanderlaan-2@umcutrecht.nl."
+echobold "                Sara Pulit \| UMC Utrecht \| s.l.pulit@umcutrecht.nl; "
+echobold "                Jessica van Setten \| UMC Utrecht \| j.vansetten@umcutrecht.nl; "
+echobold "                Paul I.W. de Bakker \| UMC Utrecht \| p.i.w.debakker-2@umcutrecht.nl."
+echobold "* Testers:      Jessica van Setten \| UMC Utrecht \| j.vansetten@umcutrecht.nl."
 echobold "* Description:  Produce plots (PDF and PNG) for quick inspection and publication."
 echobold ""
 echobold "* REQUIRED: "
 echobold "  - A high-performance computer cluster with a qsub system"
 echobold "  - R v3.2+, Python 2.7+, Perl."
-echobold "  - Required Python 2.7+ modules: [pandas], [scipy], [numpy]."
-echobold "  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long]."
+echobold "  - Required Python 2.7+ modules: \[pandas\], \[scipy\], \[numpy\]."
+echobold "  - Required Perl modules: \[YAML\], \[Statistics::Distributions\], \[Getopt::Long\]."
 echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
 ### ADD-IN: function to check requirements...
 ### This might be a viable option! https://gist.github.com/JamieMason/4761049
@@ -146,12 +146,12 @@ else
 	echo "* Setting proper extension..."
 	if [[ ${DATAFORMAT} == "QC" ]]; then
 		echo "...for 'cleaned harmonized' data..."
-		DATAEXT="cdat"
+		DATAEXT="cdat.gz"
 		DATAPLOTID="QC"
 		VT="26" # column that holds the variant type information, should be 'SNP' or 'INDEL'
 	elif [[ ${DATAFORMAT} == "RAW" ]]; then
 		echo "...for 'original harmonized' data..."
-		DATAEXT="rdat"
+		DATAEXT="rdat.gz"
 		DATAPLOTID="RAW"
 		VT="26" # column that holds the variant type information, should be 'SNP' or 'INDEL'
 	elif [[ ${DATAFORMAT} == "META" ]]; then
@@ -185,6 +185,7 @@ else
 	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P    N   N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 	
+	echo ""
 	### PREPARING FILES -- ARGUMENT DEPENDENT
 	if [[ ${DATAFORMAT} == "QC" || ${DATAFORMAT} == "RAW" ]]; then # OPTION: RAW, or QC
 		echosucces "Plotting original harmonized data."

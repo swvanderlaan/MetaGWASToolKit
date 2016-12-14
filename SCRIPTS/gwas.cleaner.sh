@@ -262,7 +262,7 @@ else
 	
 	echo ""
 	echo "Gzipping (intermediate) and removing temporary files..."
-	#rm -v ${PROJECTDIR}/${COHORTNAME}.cdat.temp
+	rm -v ${PROJECTDIR}/${COHORTNAME}.cdat.temp
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.markers.dat
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.uniquemarkers.dat
 	gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat

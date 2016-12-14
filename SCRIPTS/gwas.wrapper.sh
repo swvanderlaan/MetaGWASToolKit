@@ -171,15 +171,17 @@ else
 			echo "Parsing report.......................: ${PARSEDMESSAGE}"
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
 			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
-			###cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
+			### OBSOLETE CODE - probably to be removed
+			### cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
+			### OBSOLETE CODE - probably to be removed
 			cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
-# 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
-# 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
-# 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
-# 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
-# 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
-# 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
+			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
 		else
 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -211,14 +213,16 @@ else
 			echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
 			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.rdat ]..."
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGE} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
-			###cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
+			### OBSOLETE CODE - probably to be removed
+			### cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25, $26, $27, $28, $29, $30, $31, $32, $33, $34 }'>> ${PROJECTDIR}/${COHORTNAME}.rdat
+			### OBSOLETE CODE - probably to be removed
 			cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.rdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
-# 			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
-# 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
-# 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
-# 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
-# 			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
+			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
 		else
 			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
