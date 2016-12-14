@@ -128,6 +128,7 @@ There are a couple of reference available per standard, these are:
 - add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female)
 - add in option to make it horizontal, vertical or circular
 - better outline chr X, XY, Y, MT
+- add in option to change the title of the plot
 - ~~change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes~~ :ballot_box_with_check:
 
 #### QQ-plots
