@@ -7,15 +7,16 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Cleaner v1.0.0
+    GWAS Cleaner v1.0.1
     \n
-    * Version: v1.0.0
-    * Last edit: 2016-12-14
+    * Version: v1.0.1
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 ### Usage: ./gwas.cleaner.R -d datagwas -o outputdir -f filename -e effectsize -s standarderror -m maf -c mac -i info -h hwe_p [OPTIONAL: -v verbose (DEFAULT) -q quiet]
 ###        ./gwas.cleaner.R --datagwas datagwas --outputdir outputdir --filename filename --effectsize effectsize --standarderror standarderror --maf maf --mac mac --info info --hwe_p hwe_p [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
@@ -67,7 +68,7 @@ install.packages.auto("data.table")
 
 cat("\nDone! Required packages installed and loaded.\n\n")
 
-cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 ### OPTION LISTING
 option_list = list(
@@ -128,7 +129,7 @@ opt = parse_args(OptionParser(option_list=option_list))
 if (opt$verbose) {
   ### You can use either the long or short name; so opt$a and opt$avar are the same.
   ### Show the user what the variables are.
-  cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("* Checking the settings as given through the flags.")
   cat("\n - The GWAS data .................................................: ")
   cat(opt$datagwas)
@@ -147,10 +148,9 @@ if (opt$verbose) {
   cat(opt$info)
   cat("\n - Hardy-Weinberg equilibrium p-value at which to drop variants...: ")
   cat(opt$hwe_p)
-  cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n\n")
 }
-cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 cat("Starting \"GWAS Cleaner\".")
 
 ### START OF THE PROGRAM
@@ -172,7 +172,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   #### DEFINE THE LOCATIONS OF DATA
   OUT_loc = opt$outputdir # argument 2
   
-  cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   
   ### LOADING GWAS RESULTS FILES
   
@@ -338,7 +338,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
 } else {
-  cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n*** ERROR *** You didn't specify all variables:\n
       - --d/datagwas      : Path to the GWAS data; can be tab, comma, space or semicolon delimited, as well as gzipped.
       - --o/outputdir     : Path to output directory.
@@ -352,8 +352,8 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
       file=stderr()) # print error messages to stderr
 }
       
-cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-        
-### SAVE ENVIRONMENT | FOR DEBUGGING
-#save.image(paste0(OUT_loc, "/", Today,"_",study,"_GWAS_CLEANER.RData"))
+cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+#        
+# ### SAVE ENVIRONMENT | FOR DEBUGGING
+# save.image(paste0(OUT_loc, "/", Today,"_",study,"_DEBUG_GWAS_CLEANER.RData"))
         

@@ -7,14 +7,15 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser v1.1.4
+    GWAS Parser v1.1.5
     \n
-    * Version: v1.1.4
-    * Last edit: 2016-12-13
+    * Version: v1.1.5
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
+    
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 ### Usage: ./gwas.parser.R -p projectdir -d datagwas -o outputdir [OPTIONAL: -v verbose (DEFAULT) -q quiet]
@@ -67,7 +68,7 @@ install.packages.auto("data.table")
 
 cat("\nDone! Required packages installed and loaded.\n\n")
 
-cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 ### OPTION LISTING
 option_list = list(
@@ -111,7 +112,7 @@ opt = parse_args(OptionParser(option_list=option_list))
 if (opt$verbose) {
   ### You can use either the long or short name; so opt$a and opt$avar are the same.
   ### Show the user what the variables are.
-  cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("* Checking the settings as given through the flags.")
   cat("\n - The project directory....................: ")
   cat(opt$projectdir)
@@ -119,10 +120,9 @@ if (opt$verbose) {
   cat(opt$datagwas)
   cat("\n - The output directory.....................: ")
   cat(opt$outputdir)
-  cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n\n")
 }
-cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 cat("Starting \"GWAS Parser\".")
 
 ### START OF THE PROGRAM
@@ -160,7 +160,7 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
     # Handle this error as appropriate
   }
   
-  cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   
   ### LOADING GWAS RESULTS FILES
 
@@ -581,7 +581,7 @@ of the GWAS data. Double back, please.\n\n",
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
 } else {
-  cat("\n\n\n\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n*** ERROR *** You didn't specify all variables:\n
       - --p/projectdir    : Path to the project directory.
       - --d/datagwas      : Path to the GWAS data, relative to the project directory;
@@ -590,7 +590,7 @@ of the GWAS data. Double back, please.\n\n",
       file=stderr()) # print error messages to stderr
 }
 
-cat("\n+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 # 
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
-save.image(paste0(ROOT_loc, "/", OUT_loc, "/", Today,"_", basename(opt$datagwas),"_DEBUG_GWAS_Parser.RData"))
+# save.image(paste0(ROOT_loc, "/", OUT_loc, "/", Today,"_", basename(opt$datagwas),"_DEBUG_GWAS_Parser.RData"))

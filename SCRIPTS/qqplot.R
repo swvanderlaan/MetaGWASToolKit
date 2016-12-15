@@ -11,21 +11,20 @@
 ### - add in option to cut-off the maximum -log10(P), for instance everything p<5.0e-10 
 ###   is set to p=5.0e-10; while at the same time lambda's are calculate based on the original p-values
 
-cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ PLOTTER v1.2.1
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    QQ PLOTTER v1.2.2
     \n
-    * Version: v1.2.1
-    * Last edit: 2016-12-14
+    * Version: v1.2.2
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  QQ-Plotter for GWAS (meta-analysis) results. Can produce 
     output in different colours and image-formats. One column is expected
     containing the test-statistic (Z-score, Chi^2, or P-value). 
     NO HEADER.
-    The script should be usuable on both any Linux distribution with 
-    R 3+ installed, Mac OS X and Windows.
+    The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 # usage: ./qqplot.R -p projectdir -r resultfile -o outputdir -s stattype -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
 #        ./qqplot.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --stattype stattype --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
@@ -78,7 +77,7 @@ install.packages.auto("data.table")
 
 cat("\nDone! Required packages installed and loaded.\n\n")
 
-cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
@@ -123,7 +122,7 @@ if (opt$verbose) {
   # you can use either the long or short name
   # so opt$a and opt$avar are the same.
   # show the user what the variables are
-  cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("Checking the settings.")
   cat("\nThe project directory....................: ")
   cat(opt$projectdir)
@@ -138,7 +137,7 @@ if (opt$verbose) {
   cat("\n\n")
   
 }
-cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 cat("Wow. We are finally starting \"QQ-Plotter\". ")
 #--------------------------------------------------------------------------
 ### START OF THE PROGRAM
@@ -310,7 +309,8 @@ of the data. Double back, please.\n\n",
   dev.off()
   
 } else {
-  cat("You didn't specify all variables:\n
+  cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+  cat("\n*** ERROR *** You didn't specify all variables:\n
       - --p/projectdir  : path to project directory\n
       - --r/resultfile  : path to resultfile\n
       - --o/outputdir   : path to output directory\n
@@ -323,12 +323,12 @@ of the data. Double back, please.\n\n",
 ### CLOSING MESSAGE
 cat(paste("All done plotting a QQ-plot of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
-cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 #--------------------------------------------------------------------------
-### SAVE ENVIRONMENT | FOR DEBUGGING
-###save.image(paste0(opt$outputdir,"/",Today,"_",study,"_QQPLOT.RData"))
+#
+# ### SAVE ENVIRONMENT | FOR DEBUGGING
+# save.image(paste0(opt$outputdir,"/",Today,"_",study,"_DEBUG_QQPLOT.RData"))
 
 
 ###	UtrechtSciencePark Colours Scheme

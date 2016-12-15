@@ -16,10 +16,10 @@
 ### - change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    MANHATTAN PLOTTER v1.1.2
+    MANHATTAN PLOTTER v1.1.3
     \n
-    * Version: v1.1.2
-    * Last edit: 2016-12-14
+    * Version: v1.1.3
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -28,10 +28,9 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
       2) with basepair position
       3) with test-statistic (P-value)
       NO HEADER.
-      The script should be usuable on both any Linux distribution with 
-      R 3+ installed, Mac OS X and Windows.
+    The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 # usage: ./manhattan.R -p projectdir -r resultfile -o outputdir -c colorstyle -f imageformat [OPTIONAL: -t titleplot -v verbose (DEFAULT) -q quiet]
 #        ./manhattan.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --colorstyle colorstyle --imageformat imageformat [OPTIONAL: --titleplot titleplot --verbose verbose (DEFAULT) -quiet quiet]
@@ -84,7 +83,7 @@ install.packages.auto("data.table")
 
 cat("\nDone! Required packages installed and loaded.\n\n")
 
-cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
@@ -142,7 +141,7 @@ if (opt$verbose) {
      # you can use either the long or short name
      # so opt$a and opt$avar are the same.
      # show the user what the variables are
-     cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+     cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
      cat("Checking the settings.")
      cat("\nThe project directory....................: ")
      cat(opt$projectdir)
@@ -159,7 +158,7 @@ if (opt$verbose) {
      cat("\n\n")
      
 }
-cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 cat("Wow. We are finally starting \"Mahattan Plotter\". ")
 #--------------------------------------------------------------------------
 ### START OF THE PROGRAM
@@ -459,7 +458,8 @@ chromosomes, so we can't plot the labels. Double back, please.\n\n"),
      dev.off()
      
 } else {
-     cat("You didn't specify all variables:\n
+     cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+     cat("\n*** ERROR *** You didn't specify all variables:\n
          - --p/projectdir  : path to project directory\n
          - --r/resultfile  : path to resultfile\n
          - --o/outputdir   : path to output directory\n
@@ -473,12 +473,12 @@ chromosomes, so we can't plot the labels. Double back, please.\n\n"),
 ### CLOSING MESSAGE
 cat(paste("\nAll done plotting a Manhattan-plot of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
-cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-# 
-# #--------------------------------------------------------------------------
-# ### SAVE ENVIRONMENT | FOR DEBUGGING
-#save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_MANHATTANPLOTTER.RData"))
+cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
+#--------------------------------------------------------------------------
+#
+# ### SAVE ENVIRONMENT | FOR DEBUGGING
+# save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_DEBUG_MANHATTANPLOTTER.RData"))
 
 ###	UtrechtSciencePark Colours Scheme
 ###
