@@ -561,7 +561,7 @@ else
 	
 	### END OF BETA ###
 	
-	### END of if-else statement for the number of command-line arguments passed ###
+### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
 script_copyright_message

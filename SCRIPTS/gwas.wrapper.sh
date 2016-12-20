@@ -71,9 +71,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.1"
+echobold "* Version:      v1.0.2"
 echobold ""
-echobold "* Last update:  2016-12-15"
+echobold "* Last update:  2016-12-20"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
 echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
@@ -184,8 +184,6 @@ else
 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
-			echo "- gzipping da [ ${COHORTNAME}.pdat ] shizzle..."
-			gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
 		else
 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -226,8 +224,6 @@ else
 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
 			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
-			echo "- gzipping da [ ${COHORTNAME}.rdat ] shizzle..."
-			gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
 		else
 			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -269,8 +265,6 @@ else
 			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
 			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}
 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
-			echo "- gzipping da [ ${COHORTNAME}.cdat ] shizzle..."
-			gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
 		else
 			echoerrorflash "*** Error *** The pattern \"${CLEANEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -285,7 +279,21 @@ else
 		
 		echo ""
 	done
+	echo ""
+	
+	echo ""
+	echo "Gzipping da [ ${COHORTNAME}.pdat ] shizzle..."
+	gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
 
+	echo ""
+	echo "Gzipping da [ ${COHORTNAME}.rdat ] shizzle..."
+	gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
+	
+	echo ""
+	echo "Gzipping da [ ${COHORTNAME}.cdat ] shizzle..."
+	gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
+
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
