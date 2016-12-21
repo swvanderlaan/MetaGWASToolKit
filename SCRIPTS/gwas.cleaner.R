@@ -9,14 +9,14 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
-    * Version: v1.0.2
-    * Last edit: 2016-12-20
+    * Version: v1.0.3
+    * Last edit: 2016-12-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
-++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 ### Usage: ./gwas.cleaner.R -d datagwas -o outputdir -f filename -e effectsize -s standarderror -m maf -c mac -i info -h hwe_p [OPTIONAL: -v verbose (DEFAULT) -q quiet]
 ###        ./gwas.cleaner.R --datagwas datagwas --outputdir outputdir --filename filename --effectsize effectsize --standarderror standarderror --maf maf --mac mac --info info --hwe_p hwe_p [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
@@ -99,32 +99,32 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
-#--------------------------------------------------------------------------
+# #--------------------------------------------------------------------------
+# # 
+# # ### FOR LOCAL DEBUGGING
+# # ### MacBook Pro
+# # #MACDIR="/Users/swvanderlaan"
+# # ### Mac Pro
+# MACDIR="/Volumes/MyBookStudioII/Backup"
+# # 
+# opt$effectsize=10
+# opt$standarderror=10
+# opt$maf=0.005
+# opt$mac=30
+# opt$info=0.3
+# opt$hwe_p=1E-6
+# 
+# # opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
+# # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
+# # opt$filename="EPICNL_m1"
+# 
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1")
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.rdat.gz")
+# opt$filename="AEGS_m1"
 # 
 # ### FOR LOCAL DEBUGGING
-# ### MacBook Pro
-# #MACDIR="/Users/swvanderlaan"
-# ### Mac Pro
-MACDIR="/Volumes/MyBookStudioII/Backup"
 # 
-opt$effectsize=10
-opt$standarderror=10
-opt$maf=0.005
-opt$mac=30
-opt$info=0.3
-opt$hwe_p=1E-6
-
-# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
-# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
-# opt$filename="EPICNL_m1"
-
-opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1")
-opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.rdat")
-opt$filename="AEGS_m1"
-
-### FOR LOCAL DEBUGGING
-
-#--------------------------------------------------------------------------
+# #--------------------------------------------------------------------------
 
 if (opt$verbose) {
   ### You can use either the long or short name; so opt$a and opt$avar are the same.
@@ -159,7 +159,7 @@ if(!is.na(opt$filename) & !is.na(opt$datagwas) & !is.na(opt$outputdir)
    & !is.na(opt$effectsize) & !is.na(opt$standarderror)
    & !is.na(opt$maf) & !is.na(opt$mac)
    & !is.na(opt$info) & !is.na(opt$hwe_p)) {
-  cat(paste0("\n\nWe are going to clean the GWAS data.
+cat(paste0("\n\nWe are going to clean the GWAS data.
 \nAnalysing these results................: '",basename(opt$datagwas),"'
 Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   study <- opt$filename # argument 3
@@ -288,6 +288,12 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
          file=stderr()) # print error messages to stder
   }
   
+  ### set columns class properly
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, CHR = as.integer(CHR)) # convert to integer
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, CHR_ref = as.integer(CHR_ref)) # convert to integer
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, BP = as.integer(BP)) # convert to integer
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, BP_ref = as.integer(BP_ref)) # convert to integer
+  
   report.variants <- function(DATASET){
     no_variants=length(DATASET$VariantID)
     no_variants_snp=length(grep(TRUE, DATASET$VT == "SNP"))
@@ -296,7 +302,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
     cat(paste0("\n  - of which SNVs                : ",format(no_variants_snp, big.mark=",")))
     cat(paste0("\n  - of which INDELs              : ",format(no_variants_indel, big.mark=",")))
   }
-  
+
   cat("\nCleaning dataset.")
   cat(paste0("\n* removing variants where -",opt$effectsize," < effect size < ",opt$effectsize," or 'NA'..."))
   GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW, Beta > -opt$effectsize & Beta < opt$effectsize & !is.na(Beta))
@@ -311,7 +317,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants with minor allele frequencies < ",opt$maf,"..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, MAF > opt$maf & MAF < (1-opt$maf), MAF != 0 & MAF != 1 )
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, MAF > opt$maf & MAF < (1-opt$maf) & MAF != 0 & MAF != 1 )
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants with minor allele counts < ",opt$mac,"..."))
@@ -325,7 +331,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"..."))
   GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P) | HWE_P == 0)
   report.variants(GWASDATA_RAW_CLEANED)
-    
+  
   cat("\nAll done cleaning the dataset.")
   ### SAVE NEW DATA ###
   cat("\n\nSaving cleaned data...\n")
@@ -337,23 +343,22 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   cat(paste("\nAll done cleaning [",basename(opt$datagwas),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
-} else {
-  cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-  cat("\n*** ERROR *** You didn't specify all variables:\n
-      - --d/datagwas      : Path to the GWAS data; can be tab, comma, space or semicolon delimited, as well as gzipped.
-      - --o/outputdir     : Path to output directory.
-      - --f/filename      : The output filename, an extension will be automatically added.
-      - --e/effectsize    : Maximum effect size to allow for any variant, e.g. 10.
-      - --s/standarderror : Maximum standard error to allow for any variant, e.g. 10.
-      - --m/maf           : Minimum minor allele frequency to keep variants, e.g. 0.005.
-      - --c/mac           : Minimum minor allele count to keep variants, e.g. 30.
-      - --i/info          : Minimum imputation quality score to keep variants, e.g. 0.3.
-      - --w/hwe_p         : Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. 1E-6.",
-      file=stderr()) # print error messages to stderr
-}
-      
+  } else {
+    cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+    cat("\n*** ERROR *** You didn't specify all variables:\n
+        - --d/datagwas      : Path to the GWAS data; can be tab, comma, space or semicolon delimited, as well as gzipped.
+        - --o/outputdir     : Path to output directory.
+        - --f/filename      : The output filename, an extension will be automatically added.
+        - --e/effectsize    : Maximum effect size to allow for any variant, e.g. 10.
+        - --s/standarderror : Maximum standard error to allow for any variant, e.g. 10.
+        - --m/maf           : Minimum minor allele frequency to keep variants, e.g. 0.005.
+        - --c/mac           : Minimum minor allele count to keep variants, e.g. 30.
+        - --i/info          : Minimum imputation quality score to keep variants, e.g. 0.3.
+        - --w/hwe_p         : Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. 1E-6.",
+        file=stderr()) # print error messages to stderr
+  }
+
 cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 #        
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
 # save.image(paste0(OUT_loc, "/", Today,"_",study,"_DEBUG_GWAS_CLEANER.RData"))
-        
