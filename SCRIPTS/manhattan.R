@@ -16,10 +16,10 @@
 ### - change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    Manhattan Plotter -- MetaGWASToolKit
+    MANHATTAN PLOTTER v1.1.3
     \n
-    * Version: v1.1.4
-    * Last edit: 2016-12-20
+    * Version: v1.1.3
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -478,7 +478,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #--------------------------------------------------------------------------
 #
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
-# save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_DEBUG_MANHATTANPLOTTER.RData"))
+save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_DEBUG_MANHATTANPLOTTER.RData"))
 
 ###	UtrechtSciencePark Colours Scheme
 ###

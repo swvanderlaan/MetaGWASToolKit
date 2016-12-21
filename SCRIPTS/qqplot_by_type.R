@@ -12,10 +12,10 @@
 ###   one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ by Type Plotter -- MetaGWASToolKit
+    QQ by TYPE PLOTTER v1.1.3
     \n
-    * Version: v1.1.4
-    * Last edit: 2016-12-20
+    * Version: v1.1.3
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 

@@ -12,10 +12,10 @@
 ###   is set to p=5.0e-10; while at the same time lambda's are calculate based on the original p-values
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ Plotter -- MetaGWASToolKit
+    QQ PLOTTER v1.2.2
     \n
-    * Version: v1.2.3
-    * Last edit: 2016-12-20
+    * Version: v1.2.2
+    * Last edit: 2016-12-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  QQ-Plotter for GWAS (meta-analysis) results. Can produce 

@@ -75,9 +75,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                     GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.0"
+echobold "* Version:      v1.0.1"
 echobold ""
-echobold "* Last update:  2016-12-14"
+echobold "* Last update:  2016-12-21"
 echobold "* Written by:   Sander W. van der Laan - UMC Utrecht - s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit - UMC Utrecht - s.l.pulit@umcutrecht.nl; "
 echobold "                Jessica van Setten - UMC Utrecht - j.vansetten@umcutrecht.nl; "
@@ -156,7 +156,7 @@ else
 		VT="26" # column that holds the variant type information, should be 'SNP' or 'INDEL'
 	elif [[ ${DATAFORMAT} == "META" ]]; then
 		echo "...for 'meta-analyzed, cleaned, and harmonized' data..."
-		DATAEXT="mdat"
+		DATAEXT="mdat.gz"
 		DATAPLOTID="META"
 		VT="22" # column that holds the variant type information, should be 'SNP' or 'INDEL'
 	else
