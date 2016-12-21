@@ -469,7 +469,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #--------------------------------------------------------------------------
 #
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
-# save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_DEBUG_MANHATTANPLOTTER.RData"))
+save.image(paste0(OUT_loc, "/", Today,"_",study,"_",opt$colorstyle,"_DEBUG_MANHATTANPLOTTER.RData"))
 
 ###	UtrechtSciencePark Colours Scheme
 ###

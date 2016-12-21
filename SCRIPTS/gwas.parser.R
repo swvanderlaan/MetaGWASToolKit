@@ -87,6 +87,7 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
+<<<<<<< HEAD
 # #--------------------------------------------------------------------------
 #  
 # ### FOR LOCAL DEBUGGING
@@ -107,8 +108,28 @@ opt = parse_args(OptionParser(option_list=option_list))
 # opt$outputdir="METAFABP4_1000G/RAW"
 # 
 # ### FOR LOCAL DEBUGGING
+=======
+# ### OPTIONLIST | FOR LOCAL DEBUGGING -- MacBook Pro
+# opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4"
+# # original
+# ###opt$datagwas="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
+# opt$datagwas="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20161219.txt.gz"
+>>>>>>> origin/master
 # 
 # #--------------------------------------------------------------------------
+
+### OPTIONLIST | FOR LOCAL DEBUGGING -- Mac Pro
+opt$projectdir="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4"
+# original
+#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.txt"
+# different header
+opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20161219.txt.gz"
+#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
+#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
+#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
+
+opt$outputdir="METAFABP4_1000G/RAW"
+### OPTIONLIST | FOR LOCAL DEBUGGING
 
 if (opt$verbose) {
   ### You can use either the long or short name; so opt$a and opt$avar are the same.
