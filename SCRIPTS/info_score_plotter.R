@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    IMPUTATION QUALITY PLOTTER v1.3.0
+    Imputation Quality Score Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.3.0
-    * Last edit: 2016-12-12
+    * Version: v1.4.1
+    * Last edit: 2016-12-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  INFO-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -216,8 +216,9 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 
 #--------------------------------------------------------------------------
-### SAVE ENVIRONMENT | FOR DEBUGGING
-###save.image(paste0(opt$outputdir,"/",Today,"_",study,"_INFO_SCORE_PLOTTER.RData"))
+#
+# ### SAVE ENVIRONMENT | FOR DEBUGGING
+# save.image(paste0(opt$outputdir,"/",Today,"_",study,"_INFO_SCORE_PLOTTER.RData"))
 
 ###	UtrechtSciencePark Colours Scheme
 ###

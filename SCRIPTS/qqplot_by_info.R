@@ -6,14 +6,11 @@
 ### Linux version
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
-### WISHLIST
-### - add in confidence interval as option, and also an improved one
-
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ by INFO-score PLOTTER v1.1.3
+    QQ by INFO-score Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.3
-    * Last edit: 2016-12-15
+    * Version: v1.1.4
+    * Last edit: 2016-12-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 

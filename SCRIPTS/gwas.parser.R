@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser v1.1.5
+    GWAS Parser -- MetaGWASToolKit
     \n
-    * Version: v1.1.5
-    * Last edit: 2016-12-15
+    * Version: v1.1.7
+    * Last edit: 2016-12-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -87,27 +87,28 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
-# ### OPTIONLIST | FOR LOCAL DEBUGGING -- MacBook Pro
-# opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4"
-# # original
-# ###opt$datagwas="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
-# opt$datagwas="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt"
+# #--------------------------------------------------------------------------
+#  
+# ### FOR LOCAL DEBUGGING
+# ### MacBook Pro
+# #MACDIR="/Users/swvanderlaan"
+# ### Mac Pro
+# MACDIR="/Volumes/MyBookStudioII/Backup"
+#  
+# opt$projectdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4")
+# ### original
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz")
+# #opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20161219.txt.gz")
+# ### different header
+# #opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz")
+# #opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz")
+# #opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz")
 # 
 # opt$outputdir="METAFABP4_1000G/RAW"
-# ### OPTIONLIST | FOR LOCAL DEBUGGING
 # 
-# ### OPTIONLIST | FOR LOCAL DEBUGGING -- Mac Pro
-# opt$projectdir="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4"
-# # original
-# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.txt"
-# # different header
-# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
-# opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
-# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
-# #opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
+# ### FOR LOCAL DEBUGGING
 # 
-# opt$outputdir="METAFABP4_1000G/RAW"
-# ### OPTIONLIST | FOR LOCAL DEBUGGING
+# #--------------------------------------------------------------------------
 
 if (opt$verbose) {
   ### You can use either the long or short name; so opt$a and opt$avar are the same.
@@ -163,7 +164,6 @@ Parsed results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   
   ### LOADING GWAS RESULTS FILES
-
   cat("\nLoading GWAS data.\n")
   ### Location of is set by 'opt$datagwas' # argument 2
   ### Checking file type -- is it gzipped or not?
@@ -274,7 +274,6 @@ tab, space, nor semicolon delimited. Double back, please.\n\n",
 of the GWAS data. Double back, please.\n\n", 
          file=stderr()) # print error messages to stder
     }
-  
 
   ### Selecting the columns we want
   cat("\n* selecting required columns, and creating them if not present...")
@@ -430,10 +429,9 @@ of the GWAS data. Double back, please.\n\n",
                               GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
   
   ### set 'chromosome' column to integer
-  GWASDATA_RAWSELECTION <- mutate(
-    GWASDATA_RAWSELECTION, 
-    CHR      = as.integer(CHR)) # convert to numeric
-  
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, BP = as.integer(BP)) # convert to numeric
+
   ### OBSOLETE -- if you feeding 1 file, this may be useful, if you are batching the data, 
   ### this may not be that useful (the data will be ordered per batch!)
   ###cat("\n* arranging based on chromosomal base pair position...") 
@@ -491,7 +489,7 @@ of the GWAS data. Double back, please.\n\n",
   cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. There's something wrong with the allele frequencies. Double back, please.", file=stderr()) # print error messages to stder
           
           } 
-    
+  
   ### Calculate MAC
   cat("\n* calculating 'minor allele count' (MAC)...")
   GWASDATA_RAWSELECTION$MAC <- (GWASDATA_RAWSELECTION$MAF*GWASDATA_RAWSELECTION$N*2)
@@ -520,9 +518,10 @@ of the GWAS data. Double back, please.\n\n",
     
     return(GWASDATA_PARSED)
   }
+  
   GWASDATA_PARSED <- create_empty_table(num_rows, num_cols)
   colnames(GWASDATA_PARSED) <- col.Names
-  
+
   cat("\n- adding data to dataframe...")
   cat("\n  > adding the markers...")
   GWASDATA_PARSED$Marker <- GWASDATA_RAWSELECTION$Marker
@@ -547,11 +546,19 @@ of the GWAS data. Double back, please.\n\n",
   GWASDATA_PARSED$EAF <- ifelse(GWASDATA_RAWSELECTION$EAF != "NA", GWASDATA_RAWSELECTION$EAF, "NA")
   GWASDATA_PARSED$MAF <- ifelse(GWASDATA_RAWSELECTION$MAF != "NA", GWASDATA_RAWSELECTION$MAF, "NA")
   GWASDATA_PARSED$MAC <- ifelse(GWASDATA_RAWSELECTION$MAC != "NA", GWASDATA_RAWSELECTION$MAC, "NA")
-  GWASDATA_PARSED$HWE_P <- ifelse(("HWE_P" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
-                                  GWASDATA_RAWSELECTION$HWE_P, "NA") # this is not always present
-  GWASDATA_PARSED$Info <- ifelse(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
-                                 GWASDATA_RAWSELECTION$Info, "1") # in case of genotyped data
-
+  
+  if(("HWE_P" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
+    GWASDATA_PARSED$HWE_P <- ifelse(GWASDATA_RAWSELECTION$HWE_P != "NA", GWASDATA_RAWSELECTION$HWE_P, "NA")
+  } else {
+    GWASDATA_PARSED$HWE_P <- "NA" # this is not always present
+  } 
+  
+  if(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
+    GWASDATA_PARSED$Info <- ifelse(GWASDATA_RAWSELECTION$Info != "NA", GWASDATA_RAWSELECTION$Info, "NA")
+  } else {
+    GWASDATA_PARSED$Info <- "1" # in case of genotyped data
+  }
+  
   cat("\n  > adding test statistics...")  
   GWASDATA_PARSED$Beta <- ifelse(GWASDATA_RAWSELECTION$Beta != "NA", GWASDATA_RAWSELECTION$Beta, "NA")
   GWASDATA_PARSED$SE <- ifelse(GWASDATA_RAWSELECTION$SE != "NA", GWASDATA_RAWSELECTION$SE, "NA")
@@ -559,13 +566,25 @@ of the GWAS data. Double back, please.\n\n",
 
   cat("\n  > adding sample information statistics...")  
   GWASDATA_PARSED$N <- ifelse(GWASDATA_RAWSELECTION$N != "NA", GWASDATA_RAWSELECTION$N, "NA")
-  GWASDATA_PARSED$N_cases <- ifelse(("N_cases" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
-                                    GWASDATA_RAWSELECTION$N_cases, "NA") # in case of quantitative trait analyses
-  GWASDATA_PARSED$N_controls <- ifelse(("N_controls" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
-                                       GWASDATA_RAWSELECTION$N_controls, "NA") # in case of quantitative trait analyses
   
-  GWASDATA_PARSED$Imputed <- ifelse(("Imputed" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE, 
-                                    GWASDATA_RAWSELECTION$Imputed, "0") # 1 = imputed, 0 = genotyped
+  if(("N_cases" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
+    GWASDATA_PARSED$N_cases <- ifelse(GWASDATA_RAWSELECTION$N_cases != "NA", GWASDATA_RAWSELECTION$N_cases, "NA")
+  } else {
+    GWASDATA_PARSED$N_cases <- "NA" # in case of quantitative trait analyses
+  } 
+  
+  if(("N_controls" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
+    GWASDATA_PARSED$N_controls <- ifelse(GWASDATA_RAWSELECTION$N_controls != "NA", GWASDATA_RAWSELECTION$N_controls, "NA")
+  } else {
+    GWASDATA_PARSED$N_controls <- "NA" # in case of quantitative trait analyses
+  }
+  
+  if(("Imputed" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
+    GWASDATA_PARSED$Imputed <- ifelse(GWASDATA_RAWSELECTION$Imputed != "NA", GWASDATA_RAWSELECTION$Imputed, "NA")
+  } else {
+    GWASDATA_PARSED$Imputed <- "2" # 2 = no information, 1 = imputed, 0 = genotyped
+  }
+  
   cat("\nAll done creating the final parsed dataset.")
   ### SAVE NEW DATA ###
   cat("\n\nSaving parsed data...\n")

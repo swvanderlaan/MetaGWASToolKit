@@ -6,16 +6,11 @@
 ### Linux version
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
-### WISHLIST
-### - add in confidence interval as option, and also an improved one
-### - add in option to cut-off the maximum -log10(P), for instance everything p<5.0e-10 
-###   is set to p=5.0e-10; while at the same time lambda's are calculate based on the original p-values
-
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ PLOTTER v1.2.2
+    QQ Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.2.2
-    * Last edit: 2016-12-15
+    * Version: v1.2.3
+    * Last edit: 2016-12-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  QQ-Plotter for GWAS (meta-analysis) results. Can produce 

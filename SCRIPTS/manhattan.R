@@ -6,20 +6,11 @@
 ### Linux version
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
-### WISH LIST
-### - highlight a specific region (previous/novel loci)
-### - add in a gene name at the most significant peaks (previous/novel loci)
-### - add in option on test-statistics (Z-score, Chi^2, or P-value)
-### - add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female)
-### - add in option to make it horizontal, vertical or circular
-### - better outline chr X, XY, Y, MT
-### - change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes
-
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    MANHATTAN PLOTTER v1.1.3
+    Manhattan Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.3
-    * Last edit: 2016-12-15
+    * Version: v1.1.4
+    * Last edit: 2016-12-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
