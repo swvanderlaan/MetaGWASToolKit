@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    IMPUTATION QUALITY PLOTTER v1.3.0
+    Imputation Quality Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.3.0
-    * Last edit: 2016-12-12
+    * Version: v1.3.1
+    * Last edit: 2016-12-20
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  INFO-plotter for GWAS (meta-analysis) results. Can produce output 

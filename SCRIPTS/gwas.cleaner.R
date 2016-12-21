@@ -7,10 +7,10 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Cleaner v1.0.1
+    GWAS Cleaner -- MetaGWASToolKit
     \n
-    * Version: v1.0.1
-    * Last edit: 2016-12-15
+    * Version: v1.0.2
+    * Last edit: 2016-12-20
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -105,22 +105,22 @@ opt = parse_args(OptionParser(option_list=option_list))
 # ### MacBook Pro
 # #MACDIR="/Users/swvanderlaan"
 # ### Mac Pro
-# MACDIR="/Volumes/MyBookStudioII/Backup"
+MACDIR="/Volumes/MyBookStudioII/Backup"
 # 
-# opt$effectsize=10
-# opt$standarderror=10
-# opt$maf=0.005
-# opt$mac=30
-# opt$info=0.3
-# opt$hwe_p=1E-6
-# 
-# # opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
-# # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
-# # opt$filename="EPICNL_m1"
-# 
-# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1")
-# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.rdat")
-# opt$filename="AEGS_m1"
+opt$effectsize=10
+opt$standarderror=10
+opt$maf=0.005
+opt$mac=30
+opt$info=0.3
+opt$hwe_p=1E-6
+
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
+# opt$filename="EPICNL_m1"
+
+opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1")
+opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.rdat")
+opt$filename="AEGS_m1"
 
 ### FOR LOCAL DEBUGGING
 

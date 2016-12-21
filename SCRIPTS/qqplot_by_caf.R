@@ -10,10 +10,10 @@
 ### - add in confidence interval as option, and also an improved one
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    QQ by CAF PLOTTER v1.1.3
+    QQ by CAF Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.3
-    * Last edit: 2016-12-15
+    * Version: v1.1.4
+    * Last edit: 2016-12-20
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
