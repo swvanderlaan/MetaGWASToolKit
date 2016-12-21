@@ -3,7 +3,7 @@
 #
 # Version: METAGWAS2.1.0"
 #
-# Last update:	2016-12-02"
+# Last update:	2016-12-21"
 # Written by:	Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
 #				Sara Pulit | UMC Utrecht, s.l.pulit@umcutrecht.nl);
 #				Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl);

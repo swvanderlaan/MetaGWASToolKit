@@ -298,7 +298,11 @@ of the GWAS data. Double back, please.\n\n",
 
   ### Selecting the columns we want
   cat("\n* selecting required columns, and creating them if not present...")
-  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", 
+  chr MARKER ALLELES FREQ1 RSQR EFFECT1_a STDERR_a CHISQ_a PVALUE_a
+SNP chr position coded_allele noncoded_allele imp_qual AF_coded beta SE pval
+Markername chr bp Effect_allele Other_allele EAF info BETA SE P
+
+  VectorOfColumnsWeWant <- c("^marker.$", "^snp$", "^rsid$", "^markername$", 
                              "^chr$", "^chrom$", "^chromosome$", 
                              "^position$", "^bp$",
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", 
@@ -307,14 +311,14 @@ of the GWAS data. Double back, please.\n\n",
                              "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", 
                              "^strand$", 
                              "^beta$", "^effect[_]size$", "^effectsize$", 
-                             "^se.$", "^se$", 
+                             "^se.$", "^se$", "^stderr.$", 
                              "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$",# p-value
-                             "^[remc]af$", # effect/minor allele frequency
+                             "^[remc]af$", "^freq.$",# effect/minor allele frequency
                              "^hwe.value$", "^hwe$", "^hwe.val$", 
                              "^n$", "^samplesize$",
                              "^n_case.$", "^n_control.$", "^n_cntrl.$",
                              "^imputed$", 
-                             "^info$")
+                             "^info$", "^imp.$", "^rsqr$")
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
    
@@ -342,6 +346,8 @@ of the GWAS data. Double back, please.\n\n",
   
   ### Rename columns -- imputation
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^info$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^imp.$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^rsqr$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Imputed = matches("^imputed$"), everything())
   
   ### Rename columns -- n cases and controls
@@ -366,6 +372,7 @@ of the GWAS data. Double back, please.\n\n",
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pval$"), everything())
   
   ### Rename columns -- standard error
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^stderr.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se$"), everything())
   
@@ -375,6 +382,7 @@ of the GWAS data. Double back, please.\n\n",
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^effectsize$"), everything())
   
   ### Rename columns -- allele frequency
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^freq.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RAF = matches("^raf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^eaf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MAF = matches("^maf$"), everything())
@@ -422,7 +430,8 @@ of the GWAS data. Double back, please.\n\n",
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chromosome$"), everything())
   
   ### Rename columns -- marker name
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^marker$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^markername$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^marker.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^snp$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^rsid$"), everything())
   
