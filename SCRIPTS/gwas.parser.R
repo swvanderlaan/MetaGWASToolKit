@@ -87,7 +87,6 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
-<<<<<<< HEAD
 # #--------------------------------------------------------------------------
 #  
 # ### FOR LOCAL DEBUGGING
@@ -108,28 +107,8 @@ opt = parse_args(OptionParser(option_list=option_list))
 # opt$outputdir="METAFABP4_1000G/RAW"
 # 
 # ### FOR LOCAL DEBUGGING
-=======
-# ### OPTIONLIST | FOR LOCAL DEBUGGING -- MacBook Pro
-# opt$projectdir="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4"
-# # original
-# ###opt$datagwas="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz"
-# opt$datagwas="/Users/swvanderlaan/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20161219.txt.gz"
->>>>>>> origin/master
 # 
 # #--------------------------------------------------------------------------
-
-### OPTIONLIST | FOR LOCAL DEBUGGING -- Mac Pro
-opt$projectdir="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4"
-# original
-#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.txt"
-# different header
-opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20161219.txt.gz"
-#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.EffectOther.txt.gz"
-#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearder.txt.gz"
-#opt$datagwas="/Volumes/MyBookStudioII/Backup/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/AEGS.WHOLE.FABP4.20150125.TEMP.differenthearderMinorMajor.txt.gz"
-
-opt$outputdir="METAFABP4_1000G/RAW"
-### OPTIONLIST | FOR LOCAL DEBUGGING
 
 if (opt$verbose) {
   ### You can use either the long or short name; so opt$a and opt$avar are the same.
@@ -298,11 +277,7 @@ of the GWAS data. Double back, please.\n\n",
 
   ### Selecting the columns we want
   cat("\n* selecting required columns, and creating them if not present...")
-  chr MARKER ALLELES FREQ1 RSQR EFFECT1_a STDERR_a CHISQ_a PVALUE_a
-SNP chr position coded_allele noncoded_allele imp_qual AF_coded beta SE pval
-Markername chr bp Effect_allele Other_allele EAF info BETA SE P
-
-  VectorOfColumnsWeWant <- c("^marker.$", "^snp$", "^rsid$", "^markername$", 
+  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", 
                              "^chr$", "^chrom$", "^chromosome$", 
                              "^position$", "^bp$",
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", 
@@ -311,14 +286,14 @@ Markername chr bp Effect_allele Other_allele EAF info BETA SE P
                              "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", 
                              "^strand$", 
                              "^beta$", "^effect[_]size$", "^effectsize$", 
-                             "^se.$", "^se$", "^stderr.$", 
+                             "^se.$", "^se$", 
                              "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$",# p-value
-                             "^[remc]af$", "^freq.$",# effect/minor allele frequency
+                             "^[remc]af$", # effect/minor allele frequency
                              "^hwe.value$", "^hwe$", "^hwe.val$", 
                              "^n$", "^samplesize$",
                              "^n_case.$", "^n_control.$", "^n_cntrl.$",
                              "^imputed$", 
-                             "^info$", "^imp.$", "^rsqr$")
+                             "^info$")
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
    
@@ -346,8 +321,6 @@ Markername chr bp Effect_allele Other_allele EAF info BETA SE P
   
   ### Rename columns -- imputation
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^info$"), everything())
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^imp.$"), everything())
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^rsqr$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Imputed = matches("^imputed$"), everything())
   
   ### Rename columns -- n cases and controls
@@ -372,7 +345,6 @@ Markername chr bp Effect_allele Other_allele EAF info BETA SE P
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pval$"), everything())
   
   ### Rename columns -- standard error
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^stderr.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se$"), everything())
   
@@ -382,7 +354,6 @@ Markername chr bp Effect_allele Other_allele EAF info BETA SE P
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^effectsize$"), everything())
   
   ### Rename columns -- allele frequency
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^freq.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RAF = matches("^raf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^eaf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MAF = matches("^maf$"), everything())
@@ -430,8 +401,7 @@ Markername chr bp Effect_allele Other_allele EAF info BETA SE P
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chromosome$"), everything())
   
   ### Rename columns -- marker name
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^markername$"), everything())
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^marker.$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^marker$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^snp$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^rsid$"), everything())
   
@@ -642,4 +612,4 @@ Markername chr bp Effect_allele Other_allele EAF info BETA SE P
 cat("\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 # 
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
-# save.image(paste0(ROOT_loc, "/", OUT_loc, "/", Today,"_", basename(opt$datagwas),"_DEBUG_GWAS_Parser.RData"))
+# save.image(paste0(ROOT_loc, "/", OUT_loc, "/", Today,"_", basename(opt$datagwas),"_DEBUG_GWAS_PARSER.RData"))

@@ -71,9 +71,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.3"
+echobold "* Version:      v1.0.4"
 echobold ""
-echobold "* Last update:  2016-12-21"
+echobold "* Last update:  2016-12-22"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
 echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
@@ -142,20 +142,20 @@ else
 	###echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
 	###echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
 	echo "Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
-	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_ref	BP_ref	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
-	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_ref	BP_ref	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
+	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
+	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
 	
 		
 	### Setting the patterns to look for -- never change this
 	PARSEDPATTERN="All done parsing"
-	HARMONIZEDPATTERN="All done! 🍺"
+	HARMONIZEDPATTERN="All done harmonizing. Let's have a beer, buddy!"
 	CLEANEDPATTERN="All done cleaning"
 	
 	echo ""
 	echo "We will look for the following pattern in the ..."
-	echo "...parsed log file 🙈 .......: [ ${PARSEDPATTERN} ]"
-	echo "...harmonized log file 🙉 ...: [ ${HARMONIZEDPATTERN} ]"
-	echo "...cleaned log file 🙊 ......: [ ${CLEANEDPATTERN} ]"
+	echo "...parsed log file...........: [ ${PARSEDPATTERN} ]"
+	echo "...harmonized log file.......: [ ${HARMONIZEDPATTERN} ]"
+	echo "...cleaned log file..........: [ ${CLEANEDPATTERN} ]"
 	
 	echo ""
 	echo "* Check parsing of GWAS datasets."
@@ -183,7 +183,7 @@ else
 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
-			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_Parser.RData
+			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_PARSER.RData
 		else
 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
