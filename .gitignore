@@ -1,2 +1,12 @@
-
 SCRIPTS/.Rhistory
+RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz
+RESOURCES/1000Gp1v3_EUR/
+RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz
+RESOURCES/1000Gp3v5_EUR/
+RESOURCES/HAPMAP/
+RESOURCES/dbSNP_146.b37.p13.chr_pos.txt.gz
+RESOURCES/dbsnp129_hg18.txt.gz
+RESOURCES/dbsnp129_hg18_excl_non_ref.attrib.gz
+RESOURCES/dbsnp129_hg18_excl_non_ref.txt.gz
+RESOURCES/dbsnp137_hg19.attrib.gz
+RESOURCES/dbsnp137_hg19.txt.gz

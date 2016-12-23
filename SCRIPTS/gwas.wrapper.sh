@@ -71,14 +71,10 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.4"
+echobold "* Version:      v1.0.5"
 echobold ""
-echobold "* Last update:  2016-12-22"
+echobold "* Last update:  2016-12-23"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
-echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
-echobold "                Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl; "
-echobold "                Paul I.W. de Bakker | UMC Utrecht | p.i.w.debakker-2@umcutrecht.nl."
-echobold "* Testers:      Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl."
 echobold "* Description:  Produce concatenated parsed, harmonized, and cleaned GWAS data."
 echobold ""
 echobold "* REQUIRED: "
@@ -134,13 +130,11 @@ else
 	### 1	   2   3  4      5            6           7   8   9   10    11   12   13 14 15 16      17         18
 	
 	### HEADER .rdat-file
-	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 	
 	echo ""	
 	echo "* Making necessary 'summarized' files..."
-	###echo "Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
-	###echo "VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P N N_cases N_controls Imputed CHR_ref BP_ref REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
 	echo "Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
 	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
 	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
