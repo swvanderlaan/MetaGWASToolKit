@@ -58,8 +58,10 @@ script_arguments_error() {
 	echoerror "- Argument #1 is path_to/ the configuration file."
 	echoerror "- Argument #2 is path_to/ the cleaned, parsed, harmonized GWAS data."
 	echoerror "- Argument #3 is path_to/ main meta-analysis results directory."
+	echoerror "- Argument #4 is path_to/ cohort meta-analysis results directory."
+	echoerror "- Argument #5 is the name of the cohort."
 	echoerror ""
-	echoerror "An example command would be: gwas.variantcollector.sh [arg1] [arg2]"
+	echoerror "An example command would be: meta.preparator.sh [arg1] [arg2] [arg3] [arg4] [arg5]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
  	echo ""
@@ -70,9 +72,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          METAGWASPREPARATOR"
 echobold ""
-echobold "* Version:      v1.0.5"
+echobold "* Version:      v1.0.8"
 echobold ""
-echobold "* Last update:  2016-12-23"
+echobold "* Last update:  2016-12-27"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Collects all variants into one file."
 echobold ""
@@ -92,11 +94,11 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##########################################################################################
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 6 ]]; then 
+if [[ $# -lt 5 ]]; then 
 	echo ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
-	echoerror "You must supply [6] arguments when running *** GWASVARIANTCOLLECTOR -- MetaGWASToolKit ***!"
+	echoerror "You must supply [5] arguments when running *** GWASVARIANTCOLLECTOR -- MetaGWASToolKit ***!"
 	script_arguments_error
 else
 	echo ""
@@ -107,13 +109,16 @@ else
 	METARESULTDIR=${3} # depends on arg3
 	METAPREPDIRCOHORT=${4} # depends on arg4
 	COHORT=${5} # depends on arg5
-	CHUNKSIZE=${6}
+	CHUNKSIZE=${CHUNKSIZE} # depends on contents of arg1
 	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS
-
+	METATEMPRESULTDIR=${METARESULTDIR}
 	echo ""
 	echo "All arguments are passed. These are the settings:"
-	echo "Cleaned, parsed, and harmonized data.......: "${RAWDATA}
-	echo "Main meta-analysis results directory.......: "${METARESULTDIR}
+	echo "Cleaned, parsed, and harmonized data..................: "${RAWDATACOHORT}
+	echo "Main meta-analysis results directory..................: "${METARESULTDIR}
+	echo "Cohort specific meta-analysis preparatory directory...: "${METAPREPDIRCOHORT}
+	echo "Cohort to be prepared..............;..................: "${COHORT}
+	echo "Temporary meta-analysis results directory.............: "${METATEMPRESULTDIR}
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -132,19 +137,17 @@ else
 	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 
-	### Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
+	### Adding headers.
 	for SPLITFILE in ${METAPREPDIRCOHORT}/${COHORT}.reorder.split.*; do
 		### determine basename of the splitfile
-		BASESPLITFILE=$(basename ${SPLITFILE} .cdat)
+		BASESPLITFILE=$(basename ${SPLITFILE})
 		echo ""
 		echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
 		echo ""
-		echo " - heading a temporary file." 
-		echo "VariantID CHR BP Beta SE P EffectAllele OtherAllele Info EAF MAC N N_cases N_controls Imputed VT Reference" > ${METAPREPDIRCOHORT}/tmp_file
-		echo " - adding the split data to the temporary file."
-		cat ${SPLITFILE} | awk ' { print $1, $3, $4, $13, $14, $15, $6, $7, $12, $8, $10, $16, $17, $18, $19, $26, $34} ' >> ${METAPREPDIRCOHORT}/tmp_file
+		### REQUIRED Columns: VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
+		cat ${SPLITFILE} | awk ' { print $1, $3, $4, $13, $14, $15, $6, $7, $8, $12} ' > ${METATEMPRESULTDIR}/tmp_file
 		echo " - renaming the temporary file."
-		mv -fv ${METAPREPDIRCOHORT}/tmp_file ${SPLITFILE}
+		mv -fv ${METATEMPRESULTDIR}/tmp_file ${METATEMPRESULTDIR}/${BASESPLITFILE}
 	done	
 
 ### END of if-else statement for the number of command-line arguments passed ###

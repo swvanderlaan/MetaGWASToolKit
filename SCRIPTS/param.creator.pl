@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDOUT "+                              MedianSE-Lambda-Mean_N CALCULATOR                         +\n";
-print STDOUT "+                                 version 2.0 | 27-12-2016                               +\n";
+print STDOUT "+                                   CREATES PARAMETER FILE                               +\n";
+print STDOUT "+                                  version 2.0 | 27-12-2016                               +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
@@ -57,7 +57,7 @@ my @studyname = ();
 
 ### Print header line to output file
 open OUT, ">$output" or die "Could not open $output, $!";
-print OUT join("\t", "Study","Median_SE","Lambda","Mean_N")."\n";
+print OUT join("\t", "Study","Lambda","Mean_N","BetaCorrectionFactor","MetaFile")."\n"; # idea: "MetaFile" added later through bash for each split-file
 
 ### Open cohort file and read in names of studies
 open C, $cohort_file;
@@ -77,7 +77,7 @@ while(<C>){
 	my @fields = split;
 	my $n_line = $fields[12];
 	my $se_line = $fields[4];
-	my $z_line = abs($fields[3]/$fields[4]);
+	my $z_line = abs($fields[3]/$fields[4]); # we expect beta and se to be the 4th, and 5th column in the $file
 
 	push @n, $n_line;
 	push @se, $se_line;
@@ -87,7 +87,7 @@ while(<C>){
 
     close IN;
 
-### Calculate median of SE, mean of N, and lambda 
+### Calculate mean of N, and lambda 
     if ($calibrationfactor eq "HM2") {# constant factor for HapMap 2 (CEU) imputed data
     	print "Reference is HM2, calibration factor is 1.75. Calculating inverse median(SE) for $studyname[$nstudies]...\n";
     	$median_se = sprintf("%.3f",1.75/(median (@se))) ;
@@ -99,7 +99,9 @@ while(<C>){
     }
     my $mean_n = sprintf("%.3f",mean (@n)) ;
     my $lambda = sprintf("%.3f",(median (@z) * median (@z)) / 0.4549364) ;
-    print OUT join("\t",$studyname[$nstudies],$median_se,$lambda,$mean_n)."\n";
+    print OUT join("\t",$studyname[$nstudies],$lambda,$mean_n,$correctionfactor,$metastudyname[$nstudies])."\n";
+    
+    #EPICNL_m1	1	475	1	METAFABP4_1000G/MODEL1/META/EPICNL_m1.reorder.split
 
 ### Reset parameters, go to next study
     $nstudies++;

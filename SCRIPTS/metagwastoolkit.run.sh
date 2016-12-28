@@ -77,9 +77,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.4.0"
+echobold "* Version:      v1.4.1"
 echobold ""
-echobold "* Last update:  2016-12-07"
+echobold "* Last update:  2016-12-22"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
@@ -117,7 +117,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 if [[ $# -lt 3 ]]; then 
 	echo ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
+	echoerrorflash "               *** Oh, oh, computer says no! Number of arguments found "$#". ***"
 	echoerror "You must supply [3] arguments when running *** MetaGWASToolKit ***!"
 	script_arguments_error
 else
@@ -141,9 +141,13 @@ else
 	# Project information
 	ORIGINALS=${DATA_UPLOAD_FREEZE} # from configuration file
 	PROJECTDIR=${PROJECTDIR} # from configuration file
+	SUBPROJECTDIRNAME=${SUBPROJECTDIRNAME} # from configuration file
+	OUTPUTDIRNAME=${OUTPUTDIRNAME} # from configuration file
 	GWASFILES=${2} # Depends on arg2 -- all the GWAS dataset information
 	REFERENCE=${3} # Depends on arg3 -- the reference to use
 	
+	# Data preparation settings for parallelization
+	CHUNKSIZE=${CHUNKSIZE}
 	# Cleaning settings
 	MAF=${MAF} # from configuration file
 	MAC=${MAC} # from configuration file
@@ -185,83 +189,105 @@ else
 	G1000P3GONL5=${RESOURCES}/1000Gp3v5_GoNL5.INFO.txt.gz # not available yet > version 2.5
 	
 	##########################################################################################
-	### CREATE THE OUTPUT DIRECTORY
+	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
-	METAOUTPUT=${OUTPUTDIR}
 	
-	echo "Checking for the existence of the output directory [ ${METAOUTPUT} ]."
-	if [ ! -d ${PROJECTDIR}/${METAOUTPUT} ]; then
+	echo "Checking for the existence of the output directory [ ${OUTPUTDIRNAME} ]."
+	if [ ! -d ${PROJECTDIR}/${OUTPUTDIRNAME} ]; then
 		echo "> Output directory doesn't exist - Mr. Bourne will create it for you."
-		mkdir -v ${PROJECTDIR}/${METAOUTPUT}
+		mkdir -v ${PROJECTDIR}/${OUTPUTDIRNAME}
 	else
 		echo "> Output directory already exists."
 	fi
+	METAOUTPUT=${OUTPUTDIRNAME}
+	
+	echo ""
+	echo "Checking for the existence of the subproject directory [ ${METAOUTPUT}/${SUBPROJECTDIRNAME} ]."
+	if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME} ]; then
+		echo "> Subproject directory doesn't exist - Mr. Bourne will create it for you."
+		mkdir -v ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	else
+		echo "> Subproject directory already exists."
+	fi
+	SUBPROJECTDIR=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	
+	echo "Checking for the existence of the raw data directory [ ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW ]."
+	if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW ]; then
+		echo "> Raw data directory doesn't exist - Mr. Bourne will create it for you."
+		mkdir -v ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	else
+		echo "> Raw data directory already exists."
+	fi
+	
+	# Setting directory for raw data.
+	RAWDATA=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	
+	echo "Checking for the existence of the meta-analysis results directory [ ${METAOUTPUT}/${SUBPROJECTDIRNAME}/META ]."
+	if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META ]; then
+		echo "> Meta-analysis results  directory doesn't exist - Mr. Bourne will create it for you."
+		mkdir -v ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META
+	else
+		echo "> Meta-analysis results  directory already exists."
+	fi
+	
+	# Setting directory for raw data.
+	METARESULTDIR=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META
 	
 	##########################################################################################
 	### SETTING UP THE OUTPUT AND RAWDATA DIRECTORIES
 	echo ""
 	### Making raw data directories, unless they already exist. Depends on arg2.
 	if [[ ${REFERENCE} = "1Gp1" || ${REFERENCE} = "1Gp3" ]]; then
-		
-		echo "Checking for the existence of the raw data directory [ ${METAOUTPUT}/RAW ]."
-		if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/RAW ]; then
-	  		echo "> Raw data directory doesn't exist - Mr. Bourne will create it for you."
-	  		mkdir -v ${PROJECTDIR}/${METAOUTPUT}/RAW
-	  	else
-	  		echo "> Raw data directory already exists."
-	  	fi
-	  	
-	  	# Setting directory for raw data.
-		RAWDATA=${PROJECTDIR}/${METAOUTPUT}/RAW
-	  		
-	  		echo ""
-	  		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  		echo ""
-	  		echo "The scene is properly set, and directories are created! 🖖"
-	  		echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
-	  		echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
-	  		echo "MetaGWASToolKit resources......................: "${RESOURCES}
-	  		echo "Reference used.................................: "${REFERENCE}
-	  		echo "Main directory.................................: "${PROJECTDIR}
-	  		echo "Main analysis output directory.................: "${METAOUTPUT}
-	  		echo "Original data directory........................: "${ORIGINALS}
-	  		echo "We are processing these cohort(s)..............:"
-			while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-				LINE=${GWASCOHORT}
-				COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-				echo "     * ${COHORT}"
-			done < ${GWASFILES}
-	  		echo "Raw data directory.............................: "${RAWDATA}
-	  		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  		echo ""
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
 	
 	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4"  || ${REFERENCE} = "GONL5"  || ${REFERENCE} = "1Gp3GONL5" ]]; then
-			echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  		echoerrornooption ""
-	  		echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
-	  		echoerrornooption "Unfortunately using ${REFERENCE} as a reference is not possible yet. Currently only 1Gp1 and 1Gp3 are "
-	  		echoerrornooption "available."
-	  		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echoerrornooption ""
+	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
+	  	echoerrornooption "Unfortunately using ${REFERENCE} as a reference is not possible yet. Currently only 1Gp1 and 1Gp3 are "
+	  	echoerrornooption "available."
+	  	echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		### The wrong arguments are passed, so we'll exit the script now!
 		echo ""
 		script_copyright_message
 		exit 1
 	
 	else
-	  		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  		echoerror ""
-	  		echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
-	  		echoerror "You have the following options as reference for the quality control"
-	  		echoerror "and meta-analysis:"
-	  		echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
-	  		echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
-	  		echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
-	  		echoerror " - [1Gp3]         1000G (phase 3, release 5, 20130502 version, b37, hg19)."
-	  		echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
-	  		echonooption " - [GONL5]        Genome of the Netherlands, version 5."
-	  		echonooption " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
-	  		echonooption "(Opaque: not an option yet)"
-	  		echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echoerror ""
+	  	echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
+	  	echoerror "You have the following options as reference for the quality control"
+	  	echoerror "and meta-analysis:"
+	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
+	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
+	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
+	  	echoerror " - [1Gp3]         1000G (phase 3, release 5, 20130502 version, b37, hg19)."
+	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
+	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
+	  	echonooption " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
+	  	echonooption "(Opaque: not an option yet)"
+	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		### The wrong arguments are passed, so we'll exit the script now!
 		echo ""
 		script_copyright_message
@@ -294,15 +320,15 @@ else
 		fi
 		RAWDATACOHORT=${RAWDATA}/${COHORT}
 		
-		##########################################################################################
-		### REFORMAT, PARSE, AND HARMONIZE ORIGINAL GWAS DATA
-		##########################################################################################
+		#=========================================================================================
+		#== REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA
+		#=========================================================================================
 		#
 		echo ""
-		echo "* Chopping up GWAS summary statistics into chunks of 100K variants -- for parallelisation and speedgain..."
+		echo "* Chopping up GWAS summary statistics into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
 		
 		### Split up the file in increments of 1000K -- note: the period at the end of '${BASEFILE}' is a separator character
-		zcat ${ORIGINALS}/${FILE} | tail -n +2 | split -l 100000 - ${RAWDATACOHORT}/${BASEFILE}.
+		zcat ${ORIGINALS}/${FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
 		
 		### Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
 		for SPLITFILE in ${RAWDATACOHORT}/${BASEFILE}.*; do
@@ -318,13 +344,21 @@ else
 			echo " - renaming the temporary file."
 			mv -fv ${RAWDATACOHORT}/tmp_file ${SPLITFILE}
 			
+			#=========================================================================================
+			#== PARSING THE GWAS DATA
+			#=========================================================================================
+			#
 			echo ""
 			echo "* Parsing data for cohort ${COHORT} [ file: ${BASESPLITFILE} ]."
 			### FOR DEBUGGING LOCALLY -- Mac OS X
-			### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/RAW/${COHORT} 
-			echo "Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/RAW/${COHORT} " > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
+			### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}
+			echo "Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} " > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
 			qsub -S /bin/bash -N gwas.parser.${BASESPLITFILE} -hold_jid run_metagwastoolkit -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEPARSER} -l h_vmem=${QMEMPARSER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
 			
+			#=========================================================================================
+			#== HARMONIZING THE PARSED GWAS DATA
+			#=========================================================================================
+			#
 			echo ""
 			echo "* Harmonising parsed [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}..."
 			### FOR DEBUGGING LOCALLY -- Mac OS X
@@ -334,11 +368,29 @@ else
 			echo "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${G1000P1} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
 			qsub -S /bin/bash -N gwas2ref.harmonizer.${BASEFILE} -hold_jid gwas.parser.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
 		
+			#=========================================================================================
+			#== CLEANING UP THE REFORMATTED GWAS DATA
+			#=========================================================================================
+			#
+			echo ""
+			echo "* Cleaning harmonized data for [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}"
+			echo "  using the following pre-specified settings:"
+			echo "  - MAF  = ${MAF}"
+			echo "  - MAC  = ${MAC}"
+			echo "  - HWE  = ${HWE}"
+			echo "  - INFO = ${INFO}"
+			echo "  - BETA = ${BETA}"
+			echo "  - SE   = ${SE}"
+			### FOR DEBUGGING LOCALLY -- Mac OS X
+			### ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
+			echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+			qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASEFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+
 		done
 
-		##########################################################################################
-		### WRAPPING THE REFORMATTED GWAS DATA
-		##########################################################################################
+		#=========================================================================================
+		#== WRAPPING THE REFORMATTED GWAS DATA
+		#=========================================================================================
 		#
 
 		echo ""
@@ -346,28 +398,11 @@ else
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
 		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-		qsub -S /bin/bash -N gwas.wrapper.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		qsub -S /bin/bash -N gwas.wrapper -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
 		
-		##########################################################################################
-		### CLEANING UP THE REFORMATTED & WRAPPED GWAS DATA
-		##########################################################################################
-		#
-		
-		### MAKE A CLEANER SCRIPT TO REMOVE ALL THE INTERMEDIATE SPLITTED FILES
-		# arguments: inputdir, outputdir, cohort, MAF, MAC, HWE, INFO, BETA, SE
-		# - source configuration file with cleaner settings
-	
-		echo ""
-		echo "* Cleaning harmonized data for cohort ${COHORT} using the specified settings..."
-		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/gwas.cleaner.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}	
-		echo "${SCRIPTS}/gwas.cleaner.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASEFILE}.sh
-		qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASEFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASEFILE}.sh
-
-	
-		##########################################################################################
-		### PLOTTING THE REFORMATTED & WRAPPED GWAS DATA
-		##########################################################################################
+		#=========================================================================================
+		#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA
+		#=========================================================================================
 		#
 
 		echo ""
@@ -377,11 +412,11 @@ else
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
  		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
- 		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.raw -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+ 		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.raw -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
 
-		##########################################################################################
-		### PLOTTING THE CLEANED GWAS DATA
-		##########################################################################################
+		#=========================================================================================
+		#== PLOTTING THE CLEANED GWAS DATA
+		#=========================================================================================
 		#
 
 		echo ""
@@ -391,85 +426,75 @@ else
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
  		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
- 		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.qc -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+ 		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.qc -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
 
-	
+
 	done < ${GWASFILES}
 	
 	
-	##############################################################################
-	#### META-ANALYSIS
-	##############################################################################
+	#############################################################################
+	### META-ANALYSIS
+	#############################################################################
+	
+	# check that the cleaning was successful. 
+	# collect all unique variants
+	
+	# 
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Starting the meta-analysis. "
+	echo ""
+	
+	#=========================================================================================
+	#== COLLECT ALL UNIQUE VARIANTS ACROSS ALL GWAS COHORTS
+	#=========================================================================================
 	#
-	#### Collect all unique variants across all GWAS cohorts
-	#echo ""
-	#echo "We will collect all unique variants across all GWAS cohorts included."
-	#for i in `seq 1 3`; do # you can change the number of models to collect data from by changing `seq 1 3`.
-	#	echo "Making output directories."
-	#	if [ ! -d $METAOUTPUT/MODEL$i/OUTPUT ]; then
-	#		mkdir -v $METAOUTPUT/MODEL$i/OUTPUT
-	#	else
-	#		echo "Directory for model$i already there."
-	#	fi
-	#	tail -n +2 $METAOUTPUT/MODEL$i/*.cdat | awk ' { print $1 } ' >> $METAOUTPUT/MODEL$i/OUTPUT/foo
-	#	$SCRIPTS/uniquefy.pl $METAOUTPUT/MODEL$i/OUTPUT/foo > $METAOUTPUT/MODEL$i/OUTPUT/bar
-	#	echo "SNP" > $METAOUTPUT/MODEL$i/OUTPUT/all_variants.txt
-	#	cat $METAOUTPUT/MODEL$i/OUTPUT/bar >> $METAOUTPUT/MODEL$i/OUTPUT/all_variants.txt
-	#	#rm -v $METAOUTPUT/MODEL$i/OUTPUT/foo $METAOUTPUT/MODEL$i/OUTPUT/bar; 
-	#	# chop up the SNP list into chunks of 100K SNPs -- for parallelisation [we will later use this file as input for mantel.pl '--snps']
-	#	tail -n +2 $METAOUTPUT/MODEL$i/OUTPUT/all_variants.txt | split -d -a 3 -l 125000 - $METAOUTPUT/MODEL$i/OUTPUT/all_variants.txt.
-	#done
+	
+	echo ""
+	echo "We will collect all unique variants across all GWAS cohorts."
+	echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/meta.variantcollector.sh
+ 	qsub -S /bin/bash -N meta.variantcollector -hold_jid gwas.wrapper -o ${METARESULTDIR}/meta.variantcollector.log -e ${METARESULTDIR}/meta.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.variantcollector.sh
+
+	#=========================================================================================
+	#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS
+	#=========================================================================================
 	#
-	#### Reorder all 
-	#echo ""
-	#echo "Preparing files for meta-analysis by re-ordering GWAS cohort data files by generic variant list."
-	#for i in `seq 1 3`; do
-	#	for j in $( ls $METAOUTPUT/MODEL$i/*.cdat ); do
-	#		rawcohortpathname=$j
-	#		rawcohortname=${rawcohortpathname%.*} # removes the extension
-	#		cohortname=${rawcohortname##*/} #removes everything before the /
-	#		echo $cohortname
-	#		$SCRIPTS/merge_tables.pl --file1 $j --file2 $METAOUTPUT/MODEL$i/OUTPUT/all_variants.txt --index SNP > $METAOUTPUT/MODEL$i/OUTPUT/$cohortname.rcdat
-	#		# chop up each GWAS result into chunks of 100K SNPs -- for parallelisation
-	#		tail -n +2 $METAOUTPUT/MODEL$i/OUTPUT/$cohortname.rcdat | split -d -a 3 -l 125000 - $METAOUTPUT/MODEL$i/OUTPUT/$cohortname.rcdat.
-	#		
-	#		# we probably need to get the headers back on everyone of those .rcdat.* files?
-	#		# how to do this in bash???
-	#		#for k in ( $METAOUTPUT/MODEL$i/OUTPUT/$cohortname.rcdat.* )
-	#		#	RAWEXT=$k
-	#		#	EXT=${RAWEXT%.*} # removes the extension
-	#		#	head -1 $METAOUTPUT/MODEL$i/$cohortname.rcdat | awk ' { printf("SNP"); for (l=2;l<=NF;l++) { printf(" %s", $l); } printf("\n"); } ' > $k:r:r.tmp.$EXT
-	#		#	echo "SNP CHR POS BETA SE P CA A2 CAF RATIO MAF MAC N STRAND" > $k:r:r.tmp.$EXT
-	#		#	cat $k >> $k:r:r.tmp.$EXT; 
-	#		#done
-	#
-	#	done
-	#done
-	#
-	#### collect all dbSNP129 SNPs
-	##cat $OUT/*.129.txt | awk ' { print $1 } ' | grep -v SNP > $OUT/foo
-	##$SCRIPTS/uniquefy.pl $OUT/foo > $OUT/all_129_snps.txt
-	##rm $OUT/foo
-	#
-	##foreach i ( $OUT/cohort1.129.txt $OUT/cohort2.129.txt $OUT/cohort3.129.txt )
-	#
-	#	#echo $i
-	#
-	#	### prepare files for meta-analysis by re-ordering all study-specific files by the generic SNP list
-	#	#$SCRIPTS/merge_tables.pl --file1 $i --file2 $OUT/all_129_snps.txt --index Build129 > $i:r.all.txt
-	#	#tail -n +2 $i:r.all.txt | split -d -a 3 -l 125000 - $i:r.all.txt.
-	#
-	#	#foreach j ( $i:r.all.txt.* )
-	#		#set ext=$j:e
-	#		#head -1 $i:r.all.txt | awk ' { printf("SNP"); for (i=2;i<=NF;i++) { printf(" %s", $i); } printf("\n"); } ' > $j:r:r.tmp.$ext
-	#		#echo "SNP CHR POS BETA SE PVAL CA A2 CAF RATIO" > $j:r:r.tmp.$ext
-	#		#cat $j >> $j:r:r.tmp.$ext
-	#	#end
-	##end
-	#
-	#
-	#### chop up the SNP list into chunks of 100K SNPs -- for parallelization
-	##tail -n +2 $OUT/all_129_snps.txt | split -d -a 3 -l 125000 - $OUT/all_129_snps.txt.
+	
+	echo ""
+	echo "We will prepare each cleaned cohort for meta-analysis."
+	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			
+		LINE=${GWASCOHORT}
+		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+		FILE=$(echo "${LINE}" | awk '{ print $2 }')
+		VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
+		
+		BASEFILE=$(basename ${FILE} .txt.gz)
+		
+		echo ""
+		if [ ! -d ${METARESULTDIR}/${COHORT} ]; then
+	  		echo "Making subdirectory for ${COHORT}..."
+	  		mkdir -v ${METARESULTDIR}/${COHORT}
+		else
+			echo "Directory for ${COHORT} already there."
+		fi
+		
+		# Set the rawdata for the cohort
+		RAWDATACOHORT=${RAWDATA}/${COHORT}
+		
+		# Set the meta-analysis preparation-stage directory for the cohort
+		METAPREPDIRCOHORT=${METARESULTDIR}/${COHORT}
+
+		echo ""
+		echo "* Reordering [ ${COHORT} ]..."
+		echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT} ${CHUNKSIZE}" > ${METARESULTDIR}/${COHORT}.meta.preparator.sh
+ 		qsub -S /bin/bash -N ${COHORT}.meta.preparator -hold_jid meta.variantcollector -o ${METARESULTDIR}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}.meta.preparator.sh
+	
+	done < ${GWASFILES}
+	
+
+	### chop up the SNP list into chunks of 100K SNPs -- for parallelization
+	#tail -n +2 $OUT/all_129_snps.txt | split -d -a 3 -l 125000 - $OUT/all_129_snps.txt.
 	
 	
 	###############################################################################
@@ -561,7 +586,7 @@ else
 	
 	### END OF BETA ###
 	
-### END of if-else statement for the number of command-line arguments passed ###
+	### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
 script_copyright_message
