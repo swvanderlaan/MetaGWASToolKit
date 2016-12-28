@@ -10,3 +10,11 @@ RESOURCES/dbsnp129_hg18_excl_non_ref.attrib.gz
 RESOURCES/dbsnp129_hg18_excl_non_ref.txt.gz
 RESOURCES/dbsnp137_hg19.attrib.gz
 RESOURCES/dbsnp137_hg19.txt.gz
+
+RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt.gz
+
+RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt.gz
+
+RESOURCES/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
+
+RESOURCES/dbSNP147_b37_hg19.allVariants.txt.gz
