@@ -73,9 +73,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          META-ANALYZER OF GWAS"
 echobold ""
-echobold "* Version:      v1.0.0"
+echobold "* Version:      v1.0.1"
 echobold ""
-echobold "* Last update:  2016-12-27"
+echobold "* Last update:  2017-04-20"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Meta-analyses GWAS datasets."
 echobold ""
@@ -116,7 +116,7 @@ else
 	
 	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS # depends on contents of arg1
 	
-	PARAMSFILE=${2} # depends on arg2
+	PARAMSFILE=${2} # depends on arg2 ### NOTE: FUTURE VERSION WILL MAKE THIS AUTOMATICALLY -- WILL BE REMOVED FROM CONF FILE
 	VARIANTSFILE=${3} # depends on arg3
 	
 	REFERENCE=${4} # depends on arg4
@@ -143,7 +143,7 @@ else
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "We will collect all unique variants across all GWAS cohorts..."
 
-	METACOMMAND="${SCRIPTS}/METAGWAS.pl --params ${PARAMSFILE} --variants ${VARIANTSFILE} --dbsnp ${DBSNPFILE} --freq ${REFFREQFILE} --genes ${GENESFILE} --dist ${GENESDISTANCE} --out ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.out --ext ${EXTENSION} --ref ${REFERENCE} --pop ${POPULATION}" 
+	METACOMMAND="${SCRIPTS}/METAGWAS.pl --params ${PARAMSFILE} --variants ${VARIANTSFILE} --dbsnp ${DBSNPFILE} --freq ${REFFREQFILE} --genes ${GENESFILE} --dist ${GENESDISTANCE} --out ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out --ext ${EXTENSION} --ref ${REFERENCE} --pop ${POPULATION} --no-header" 
 	
 	if [[ ${METAMODEL} == "RANDOM" && ${VERBOSE} == "VERBOSE" ]]; then
 		echo "Performing meta-analysis using Z-score and fixed-effects models; and in addition a random-effects model."

@@ -72,9 +72,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          METAGWASPREPARATOR"
 echobold ""
-echobold "* Version:      v1.0.8"
+echobold "* Version:      v1.0.9"
 echobold ""
-echobold "* Last update:  2016-12-27"
+echobold "* Last update:  2017-04-20"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Collects all variants into one file."
 echobold ""
@@ -111,7 +111,7 @@ else
 	COHORT=${5} # depends on arg5
 	CHUNKSIZE=${CHUNKSIZE} # depends on contents of arg1
 	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS
-	METATEMPRESULTDIR=${METARESULTDIR}
+	METATEMPRESULTDIR=${METARESULTDIR}/TEMP
 	echo ""
 	echo "All arguments are passed. These are the settings:"
 	echo "Cleaned, parsed, and harmonized data..................: "${RAWDATACOHORT}
@@ -131,23 +131,24 @@ else
 	echo " - gzipping the shizzle..."
 	gzip -v ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat
 	echo " - splitting cleaned, and re-ordered data into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
-	zcat ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat.gz | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${METAPREPDIRCOHORT}/${COHORT}.reorder.split.
+	zcat ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat.gz | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/${COHORT}.reorder.split.
 	
 	### HEADER .cdat-file
 	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
 	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
 
 	### Adding headers.
-	for SPLITFILE in ${METAPREPDIRCOHORT}/${COHORT}.reorder.split.*; do
+	for SPLITFILE in ${METATEMPRESULTDIR}/${COHORT}.reorder.split.*; do
 		### determine basename of the splitfile
 		BASESPLITFILE=$(basename ${SPLITFILE})
 		echo ""
-		echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
+		echo "* Prepping split chunk [ ${BASESPLITFILE} ] while re-ordering columns..."
 		echo ""
 		### REQUIRED Columns: VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
-		cat ${SPLITFILE} | awk ' { print $1, $3, $4, $13, $14, $15, $6, $7, $8, $12} ' > ${METATEMPRESULTDIR}/tmp_file
+		cat ${SPLITFILE} | awk ' { print $1, $3, $4, $13, $14, $15, $6, $7, $8, $12} ' > ${METAPREPDIRCOHORT}/tmp_file
 		echo " - renaming the temporary file."
-		mv -fv ${METATEMPRESULTDIR}/tmp_file ${METATEMPRESULTDIR}/${BASESPLITFILE}
+		mv -fv ${METAPREPDIRCOHORT}/tmp_file ${METAPREPDIRCOHORT}/${BASESPLITFILE}
+		rm -v ${SPLITFILE}
 	done	
 
 ### END of if-else statement for the number of command-line arguments passed ###
