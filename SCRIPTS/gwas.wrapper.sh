@@ -71,9 +71,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.5"
+echobold "* Version:      v1.0.6"
 echobold ""
-echobold "* Last update:  2016-12-23"
+echobold "* Last update:  2017-04-20"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Produce concatenated parsed, harmonized, and cleaned GWAS data."
 echobold ""
@@ -177,7 +177,7 @@ else
 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
-			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_PARSER.RData
+			#rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_PARSER.RData
 		else
 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "

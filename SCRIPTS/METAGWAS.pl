@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ####################################################################################################
 #
-# Version: METAGWAS2.1.0"
+# Version: METAGWAS2.1.1"
 #
-# Last update			: 2016-12-27"
+# Last update			: 2017-04-20"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl)
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
 #						  Sara Pulit | UMC Utrecht, s.l.pulit@umcutrecht.nl);
@@ -144,8 +144,8 @@
 #
 # [--ext]				Extension of the input file.
 # [--extract]			List of variants to extract -- the meta-analysis will only be done on these.
-# [--no-header]			Use this if the input file doesn't have headers
-# [--random-effects]	To invoke the random-effects calculations and thus heterogeneity tests
+# [--no-header]			Use this if the input file doesn't have headers.
+# [--random-effects]	To invoke the random-effects calculations and thus heterogeneity tests.
 # [--verbose]			To get an verbose output, which adds the per-study BETA, SE, P, alleles, 
 #						allele frequency, allele-flips, sign-flips, RATIO, effective sample size, 
 #						for the given variant.
@@ -162,7 +162,7 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.0 | 27-12-2016                               +\n";
+print STDOUT "+                                 version 2.0 | 20-04-2017                               +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
