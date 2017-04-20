@@ -528,9 +528,9 @@ while(my $c = <DBSNP>){
     $dbsnp_a2{$variant} = $alleles[1];
 	
 	my $strand = $fields[4]; 
-#     if ( $strand eq "+" ) { next; }
-#     
-#     print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+    if ( $strand eq "+" ) { next; }
+    
+    print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
     
     if ( $strand eq "-" ) { 
 #     	@{$dbsnp_alleles{$variant}} = ();
@@ -543,7 +543,7 @@ while(my $c = <DBSNP>){
 		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
 		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
  	
- 		print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ]. Correcting.\n";
+ 		print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ]. Correcting.\n";
  	   
     }
     
