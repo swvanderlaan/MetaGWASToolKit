@@ -542,10 +542,10 @@ while(my $c = <DBSNP>){
 		
 		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
 		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
-    
+ 	
+ 		print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ]. Correcting.\n";
+ 	   
     }
- 
-	print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ]. Correcting.\n";
     
     $n_dbsnp_annotations++;
   }
