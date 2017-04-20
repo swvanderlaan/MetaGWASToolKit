@@ -1,5 +1,12 @@
 #!/usr/bin/perl
-####################################################################################################
+##########################################################################################
+#
+# FIXES NEEDED
+#	- dbSNP file with INDELs
+#	- handle INDELs like bi-allelic variants
+#
+#
+#
 #
 # Version: METAGWAS2.1.1"
 #
@@ -9,7 +16,9 @@
 #						  Sara Pulit | UMC Utrecht, s.l.pulit@umcutrecht.nl);
 #						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl);
 #
-# Note					: Originally based on MANTEL.pl, but heavily edited to accomodate the new era of 1000G imputed GWAS.
+# Note					: Originally based on MANTEL.pl, but heavily edited to accomodate 
+#						  the new era of 1000G and Haplotype Reference Consortium (HRC) 
+#                         imputed GWAS.
 #
 # Website				: http://www.atheroexpress.nl/software
 #        
@@ -22,36 +31,40 @@
 # as well as a sample-size weighting (correted for imputation qualtiy) under a fixed-effects model.   
 # Tests for heterogeneity (Cochran's Q and I-squared) and random-effects statistics are optional.
 #
-####################################################################################################
+##########################################################################################
 #
 # REQUIRED INPUT:
 #
-# 1) A plain-text file with association analysis results for all studies combined into a single file
-#    (one line per variant).
+# 1) A plain-text file with association analysis results for all studies combined into a 
+#    single file (one line per variant).
 #
 #    Expected file format (where the number indicates the column):
 #
 #	 VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF  Info
 #	 1         2   3  4    5  6 7            8           9    10
 #
-#    where 'CHR' is the chromosome number, 'BP' is the chromosomal basepair position of the variant,
-#    'Beta' is the computed estimate parameter of the effect of the given variant,
-#    'SE' is the standard error around that Beta estimate,
-#    'EffectAllele' represents the effect allele that the Beta and SE are referring to, 'OtherAllele' is the other allele,
-#    'EAF' refers to the allele frequency of the effect allele (EffectAllele), 
-#    'Info' is the ratio of the observed variance of the dosage to the expected (binomial) 
+#    where:
+#    - 'CHR' is the chromosome number, 
+#    - 'BP' is the chromosomal basepair position of the variant, 
+#	 - 'Beta' is the computed estimate parameter of the effect of the given variant,
+#    - 'SE' is the standard error around that Beta estimate,
+#    - 'EffectAllele' represents the effect allele that the Beta and SE are referring to, 
+#    - 'OtherAllele' is the other allele,
+#    - 'EAF' refers to the allele frequency of the effect allele (EffectAllele), 
+#    - 'Info' is the ratio of the observed variance of the dosage to the expected (binomial) 
 #    variance (i.e. the imputation quality, info-score),
 #
 #    Columns 2-10 are repeated (on the same line) for every additional GWAS that is part of the
 #    meta-analysis.
 #
-#    The 'Info' is used to correct the weight of the contribution of each individual study depending
-#    on the imputation quality of the variant.  This is only necessary when imputation was used (set to
-#    1 if all variants are genotyped experimentally). See de Bakker et al., Human Molecular Genetics,
-#    2008 for more background information on this topic.
+#    The 'Info' is used to correct the weight of the contribution of each individual study 
+#    depending on the imputation quality of the variant.  This is only necessary when 
+#    imputation was used (set to 1 if all variants are genotyped experimentally). 
+#    See [de Bakker PIW et al., Human Molecular Genetics, 2008] for more background 
+#    information on this topic.
 #
-#	 Note: 	Here a variant can be a single-nucleotide polymorphism or another type of variant such as
-#			a INDEL or other structural variant.
+#	 Note: 	Here a VariantID can be a single-nucleotide polymorphism or another type of 
+#           variant such as a INDEL or other structural variant.
 #
 # 2) [--params]	A plain-text file that contains study-specific parameters 
 #
@@ -150,15 +163,15 @@
 #						allele frequency, allele-flips, sign-flips, RATIO, effective sample size, 
 #						for the given variant.
 #
-####################################################################################################
+##########################################################################################
 
-####################################################################################################
-####################################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### SETTING THE SCENE
 ###
-####################################################################################################
-####################################################################################################
+##########################################################################################
+##########################################################################################
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
@@ -184,7 +197,7 @@ my $dbsnpFile; # obligatory
 my $freqFile; # obligatory
 my $genesFile; # obligatory
 my $extension = "";
-my $gene_dist = 200;
+my $gene_dist = 500;
 my $reference; # obligatory
 my $population; # obligatory
 my $freq_flip = 0.15;
@@ -268,13 +281,13 @@ print STDOUT "  --verbose        : add per-cohort summary statistics to meta-ana
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### read in Variant list
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Reading in variant list.\n";
@@ -305,13 +318,13 @@ close(VARIANT);
 
 print STDOUT "Number of variants ready for meta-analysis: $n_total_variants.\n";
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### read in VARIANT extract list ( if given )
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 my %extract = ();
 my $n_extract_variants = 0;
 
@@ -335,13 +348,13 @@ print STDOUT "\n";
   print STDOUT "Extracting variants from: [ $n_extract_variants ].\n";
 }
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### read in study parameters
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Reading in study parameters.\n";
@@ -408,7 +421,7 @@ while(my $c = <PARAMS>){
   }
   close($FILE);
 
-  #print STDOUT "read $filename[$nstudies] with $counter SNPs\n";
+  print STDOUT "* Reading [ $filename[$nstudies] ] with [ $counter ] variants...\n";
 
   ### reopen it and skip first line (if --no_header is not specified)
   $fh[$nstudies]->open($filename[$nstudies]) || die "*** ERROR *** [ $filename[$nstudies] ] did not open. Please double back.\n";
@@ -433,13 +446,13 @@ print STDOUT "\n";
 print STDOUT "Total number of studies: $nstudies.\n";
 
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### read in dbSNP file to get inventory of markers, positions and annotation
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 #
 # Expected format of such a dbSNP file is the following:
 #
@@ -450,8 +463,10 @@ print STDOUT "Total number of studies: $nstudies.\n";
 #	chr1	102891517	102891542	rs56752146	+		A/G					single	unknown
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDOUT "Reading in dbSNP annotation file.\n";
+print STDOUT "Reading in dbSNP annotation file.\n"; 
 print STDOUT "\n";
+
+### NOTE TO SELF # Are INDELs in the dbSNP file? Should we add them? Where do we get them??? ###
 
 open (DBSNP, "gunzip -c $dbsnpFile |") or die "*** ERROR *** Cannot open [ $dbsnpFile ]. Please double back.\n";
 print STDOUT "* Reading dbSNP annotations file: [ $dbsnpFile ]...\n";
@@ -460,7 +475,7 @@ my $n_dbsnp_annotations = 0;
 my %skip_list = ();
 my %dbsnp_chr = ();
 my %dbsnp_pos = ();
-#my %dbsnp_alleles = ();
+my %dbsnp_alleles = ();
 my %dbsnp_a1 = ();
 my %dbsnp_a2 = ();
 my %dbsnp_function = ();
@@ -472,16 +487,16 @@ while(my $c = <DBSNP>){
   my @fields = split /\s+/, $c;
   my $variant = $fields[3];
 
-  ### skipping SNPs that map to alternate chromosome (e.g. chr6_qbl) 
+  ### skipping SNPs that map to alternate chromosomes (e.g. chr6_qbl) 
   if ( $fields[0] =~ m/_/ ) { next; }
   
   if ( defined( $variantlist{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) ) {
 
     if ( defined( $dbsnp_a1{$variant} ) ) {
-#      print STDERR "$variant appears more than once -- skipping it\n";
-      $caveat{$variant} = "not_unique_position";
-#      $skip_list{$variant} = 1;
-      next;
+    	print STDERR "$variant appears more than once -- skipping it\n";
+    	$caveat{$variant} = "not_unique_position";
+		$skip_list{$variant} = 1;
+		next;
     }
     
     my @alleles = split /\//, $fields[5];
@@ -491,6 +506,8 @@ while(my $c = <DBSNP>){
       $skip_list{$variant} = 1;
       next;
     } 
+
+### NOTE TO SELF: what does this mean??? ###
    if ( $fields[5] =~ m/lengthTooLong/ ) {
       print STDERR "* $variant has alleles with [ lengthTooLong ] -- skipping it.\n";
       $skip_list{$variant} = 1;
@@ -506,23 +523,30 @@ while(my $c = <DBSNP>){
     $dbsnp_chr{$variant} = $fields[0];
     $dbsnp_pos{$variant} = $fields[1] + 1;
     $dbsnp_function{$variant} = $fields[7];
-#    $dbsnp_alleles{$variant} = [ @alleles ];
+    $dbsnp_alleles{$variant} = [ @alleles ];
     $dbsnp_a1{$variant} = $alleles[0];
     $dbsnp_a2{$variant} = $alleles[1];
-
-#    print "from dbsnp read $variant with $dbsnp_alleles{$variant}[0] $dbsnp_alleles{$variant}[1] alleles strand = $strand\n";
+	
+	my $strand = $fields[4]; 
+#     if ( $strand eq "+" ) { next; }
+#     
+#     print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
     
-    my $strand = $fields[4]; 
     if ( $strand eq "-" ) { 
-#      @{$dbsnp_alleles{$variant}} = ();
-#      foreach my $allele ( @alleles ) { 
-#        push @{$dbsnp_alleles{$variant}}, allele_flip( $allele );
-#      }
-      $dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
-      $dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
+#     	@{$dbsnp_alleles{$variant}} = ();
+#     	foreach my $allele ( @alleles ) { 
+#     	
+#     		push @{$dbsnp_alleles{$variant}}, allele_flip( $allele );
+#     	
+#     	}
+		
+		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
+		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
+    
     }
-#    print "from dbsnp read $variant with $dbsnp_alleles{$variant}[0] $dbsnp_alleles{$variant}[1] alleles strand = $strand function = $dbsnp_function{$variant}\n";
  
+	print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ]. Correcting.\n";
+    
     $n_dbsnp_annotations++;
   }
 }
@@ -530,13 +554,13 @@ close (DBSNP);
 
 print STDOUT "Number of annotated variants: $n_dbsnp_annotations.\n";
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### check all variants on the list if they are in dbSNP 
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Checking existence in dbSNP of variants listed in this meta-analysis.\n";
@@ -550,14 +574,29 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   }
 }
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### read in the reference and alternative alleles from the Reference Frequency File 
 ### (nothing is done currently with those - but may need them later for A/T and C/G SNPs)
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
+#
+# Expected format of such a RefFreq file is the following:
+#
+# 	0		  1	      2      3   4   5  6     7     8     9     10    11
+#	VariantID CHR_REF BP_REF REF ALT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF
+#	rs58108140 1 10583 G A 0.14 NA 0.04 0.17 0.13 NA NA
+#	rs189107123 1 10611 C G 0.02 NA 0.01 0.03 0.01 NA NA
+#	rs180734498 1 13302 C T 0.11 NA 0.21 0.08 0.02 NA NA
+#	rs144762171 1 13327 G C 0.03 NA 0.02 0.03 0.02 NA NA
+#	rs201747181 1 13957 TC T 0.02 0.02 0.02 0.02 0.01 NA NA
+#	rs151276478 1 13980 T C 0.02 NA 0.01 0.02 0.02 NA NA
+#	rs140337953 1 30923 G T 0.73 NA 0.48 0.80 0.89 NA NA
+#	rs199681827 1 46402 C CTGT 0.0037 NA 0.01 NA 0.0017 NA NA
+#	rs200430748 1 47190 G GA 0.01 NA 0.06 0.0028 NA NA NA
+#
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Reading in alleles from Reference Frequency File.\n";
@@ -571,52 +610,55 @@ my %reference_a1_freq = ();
 while(my $c = <REFFREQ>){
   chomp $c;
   $c =~ s/^\s+//;
-  my @fields = split /\s+/, $c;
-  my $variant = $fields[1]; 
+  
+  ### NOTE TO SELF # How are INDELs handled??? ###
+  
+  my @fields = split /\s+/, $c; 
+  my $variant = $fields[0]; 
   if ( $variant eq "VariantID" ) { next; }
 
   if ( ( ! defined( $skip_list{$variant} ) ) && defined( $variantlist{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) ) {
 
-    my $a1 = $fields[4];  # reference allele (can be 0 if monomorphic)
-    my $a2 = $fields[5];  # alternative allele
+    my $a1 = $fields[3];  # reference allele (can be 0 if monomorphic -- specifically in PLINK-generated files)
+    my $a2 = $fields[4];  # alternative allele
 
     # HapMap 2 based
     if ( $reference eq "HM2" && $population eq "EUR" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
+    	$reference_a1_freq{$variant} = $fields[5];
     }
     elsif ( $reference eq "HM2" && $population eq "AFR" ) { 
     	$reference_a1_freq{$variant} = $fields[6];
     }
     elsif ( $reference eq "HM2" && $population eq "JPT" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
+    	$reference_a1_freq{$variant} = $fields[7];
     }
     elsif ( $reference eq "HM2" && $population eq "CHB" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
+    	$reference_a1_freq{$variant} = $fields[8];
     }
     # 1000G based
     elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "PAN" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
+    	$reference_a1_freq{$variant} = $fields[5];
     }
 	elsif ( $reference eq "1Gp3" && $population eq "EUR" ) { 
-    	$reference_a1_freq{$variant} = $fields[7];
+    	$reference_a1_freq{$variant} = $fields[6];
     }
     elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AFR" ) { 
-    	$reference_a1_freq{$variant} = $fields[8];
+    	$reference_a1_freq{$variant} = $fields[7];
     }
     elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AMERICA" ) { 
-    	$reference_a1_freq{$variant} = $fields[9];
+    	$reference_a1_freq{$variant} = $fields[8];
     }
     elsif ( $reference eq "1Gp1" && $population eq "ASIAN" ) { 
-    	$reference_a1_freq{$variant} = $fields[10];
+    	$reference_a1_freq{$variant} = $fields[9];
     }
     elsif ( $reference eq "1Gp3" && $population eq "EAS" ) { 
-    	$reference_a1_freq{$variant} = $fields[11];
+    	$reference_a1_freq{$variant} = $fields[10];
     }
     elsif ( $reference eq "1Gp3" && $population eq "SAS" ) { 
-    	$reference_a1_freq{$variant} = $fields[12];
+    	$reference_a1_freq{$variant} = $fields[11];
     }
     elsif ( $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" && $population eq "PAN" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
+    	$reference_a1_freq{$variant} = $fields[5];
     }
 	else {
       die "*** ERROR *** You did not specify the reference (--ref) and the population (--pop); now we cannot determine the proper population-based frequency in the reference. Please double back.\n";
@@ -659,21 +701,37 @@ while(my $c = <REFFREQ>){
     }
   }
 }
-close (HM);
+close (REFFREQ);
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### read in the genes
 ### 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
+#
+# Expected format of such a genes file is the following:
+#
+# 	0 1	        2         3
+#	9 112963230 112969859 C9orf152
+#	11 46299662 46342293 CREB3L1
+#	19 49999713 50002889 RPS11
+#	20 44996001 45023121 ELMO2
+#	14 74179283 74180342 PNMA1
+#	16 55513391 55539351 MMP2
+#	11 61160103 61165745 TMEM216
+#	10 128114435 128359049 C10orf90
+#	20 39813568 39833556 ZHX3
+#	13 103498616 103528250 ERCC5
+#
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Reading in genes.\n";
 print STDOUT "\n";
 
-open (GENE, $genesFile) or die "*** ERROR *** Cannot open $genesFile. Please double back.\n";
+open (GENE, "gunzip -c $genesFile |") or die "*** ERROR *** Cannot open $genesFile. Please double back.\n";
+#open (GENE, $genesFile) or die "*** ERROR *** Cannot open $genesFile. Please double back.\n";
 print STDOUT "* Reading file: $genesFile...\n";
 
 my $ngenes = 0;
@@ -697,13 +755,13 @@ close (GENE);
 print STDOUT "Number of annotated genes: $ngenes\n";
 print STDOUT "Maximal distance to genes: $gene_dist KB\n";
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### prepare output file -- write out the header line
 ###
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Starting the meta-analysis.\n";
@@ -726,14 +784,14 @@ if ( $random_effects ) {
 print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE FUNCTION CAVEAT\n";
 
 
-################################################################################
-################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### now loop over all variants from the list - and do some work
 ###
-################################################################################
-################################################################################
-print STDOUT "Meta-analyzing...\n";
+##########################################################################################
+##########################################################################################
+print STDOUT "Meta-analyzing this shizzle...\n";
 my $nvariants_in_meta = 0;
 my $not_on_reference = 0;
 my $skip = 0;
@@ -853,13 +911,11 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 		    $flip_alleles[$study] = 1;
 		}
 		else {
-		    print STDERR "* In $study_name[$study], $variant has allele frequencies for A/T or C/G SNPs inconsistent with Reference frequencies -- skipping this variant for this study.\n";
+		    print STDERR "* In $study_name[$study], $variant has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.\n";
 		    $study_okay[$study] = 0;
 		}
 	    }
-	}
-        
-          
+	}   
         
        ### frequency-based test for non-A/T and non-C/G SNPs 
         else {
@@ -1171,12 +1227,12 @@ print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Summarizing this meta-analysis.\n";
 print STDOUT "\n";
-print STDOUT "* Number of SNPs in meta-analysis       : $nvariants_in_meta.\n";
-print STDOUT "* Number of SNPs not in the Reference   : $not_on_reference.\n";
-print STDOUT "* Number of uninformative SNPs skipped  : $n_skipped_uninformative.\n";
+print STDOUT "* Number of variants in meta-analysis       : $nvariants_in_meta.\n";
+print STDOUT "* Number of variants not in the Reference   : $not_on_reference.\n";
+print STDOUT "* Number of uninformative variants skipped  : $n_skipped_uninformative.\n";
 print STDOUT "\n";
-print STDOUT "          Study name     Allele flips     Sign flips     Informative SNPs\n";
-print STDOUT "          ----------     ------------     ----------     ----------------\n";
+print STDOUT "          Study name     Allele flips     Sign [beta] flips     Informative variants\n";
+print STDOUT "          ----------     ------------     -----------------     --------------------\n";
 
 for (my $study = 0; $study < $nstudies; $study++) {
   close $fh[$study]; 
@@ -1186,13 +1242,13 @@ for (my $study = 0; $study < $nstudies; $study++) {
 print STDOUT "\n";
 print STDOUT "This meta-analysis of GWAS was successfully finished!!!\n";
 
-####################################################################################################
-####################################################################################################
+##########################################################################################
+##########################################################################################
 ###
 ### FUNCTIONS FOR FLIPPING AND RECODING ALLELES
 ###
-####################################################################################################
-####################################################################################################
+##########################################################################################
+##########################################################################################
 
 sub allele_flip($)
 {

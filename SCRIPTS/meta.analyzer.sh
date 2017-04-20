@@ -116,7 +116,7 @@ else
 	
 	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS # depends on contents of arg1
 	
-	PARAMSFILE=${2} # depends on arg2
+	PARAMSFILE=${2} # depends on arg2 ### NOTE: FUTURE VERSION WILL MAKE THIS AUTOMATICALLY -- WILL BE REMOVED FROM CONF FILE
 	VARIANTSFILE=${3} # depends on arg3
 	
 	REFERENCE=${4} # depends on arg4
