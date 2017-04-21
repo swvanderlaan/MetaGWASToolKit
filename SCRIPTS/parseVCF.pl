@@ -6,15 +6,15 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
 #               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
-# Version:		1.2.8
-# Update date: 	2016-12-14
+# Version:		1.2.9
+# Update date: 	2017-04-21
 #
 # Usage:		parseVCF.pl --file [input.vcf.gz] --out [output.txt]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                     PARSE VCF FILES                                    +\n";
-print STDERR "+                                         V1.2.8                                         +\n";
+print STDERR "+                                         V1.2.9                                         +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -363,8 +363,8 @@ while (my $row = <IN>) {
   				}
 
  				
-print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$vid14\t$vid15\t$vid16\t$vid17\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
-#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
+print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$vid14\t$vid15\t$vid16\t$vid17\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\n";
+#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\n";
 
 }
 
