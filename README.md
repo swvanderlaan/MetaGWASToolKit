@@ -117,12 +117,12 @@ One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`, 
 
 ##### Available references
 There are a couple of reference available per standard, these are:
-- ** HapMap 2 [`HM2`], version 2, release 22, b36.** HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature.
-- ** 1000G phase 1, version 3 [`1Gp1`], b37.** 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
-- ** 1000G phase 3, version 5 [`1Gp3`], b37.** 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
-- ** Genome of the Netherlands, version 4 [`GoNL4`], b37.** GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
-- ** Genome of the Netherlands, version 5 [`GoNL5`], b37.** GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
-- ** Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.** This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
+- **HapMap 2 [`HM2`], version 2, release 22, b36.**        -- HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature.
+- **1000G phase 1, version 3 [`1Gp1`], b37.**              -- 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
+- **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
+- **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
+- **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
+- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
 
 #### Something
 [Some text here]
