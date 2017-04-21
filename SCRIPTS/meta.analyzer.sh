@@ -73,9 +73,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          META-ANALYZER OF GWAS"
 echobold ""
-echobold "* Version:      v1.0.1"
+echobold "* Version:      v1.0.2"
 echobold ""
-echobold "* Last update:  2017-04-20"
+echobold "* Last update:  2017-04-21"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Meta-analyses GWAS datasets."
 echobold ""
@@ -162,7 +162,7 @@ else
 	
 	else [[ ${METAMODEL} == "DEFAULT" && ${VERBOSE} == "DEFAULT" ]]
 		echo "Performing meta-analysis using Z-score and fixed-effects models."
-		echo "Results will be verbose -- all per-cohort data are added to the output."
+		echo "Results will be summarized."
 		${METACOMMAND}
 	
 	fi

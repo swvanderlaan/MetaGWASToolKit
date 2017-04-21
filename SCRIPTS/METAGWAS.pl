@@ -1,17 +1,11 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# FIXES NEEDED
-#	- dbSNP file with INDELs
-#	- handle INDELs like bi-allelic variants
+# Version: METAGWAS2.1.2"
 #
-#
-#
-#
-# Version: METAGWAS2.1.1"
-#
-# Last update			: 2017-04-20"
-# Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl)
+# Last update			: 2017-04-21"
+# Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
+#						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
 #						  Sara Pulit | UMC Utrecht, s.l.pulit@umcutrecht.nl);
 #						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl);
@@ -196,17 +190,17 @@ my $extractFile; # obligatory
 my $dbsnpFile; # obligatory
 my $freqFile; # obligatory
 my $genesFile; # obligatory
-my $extension = "";
-my $gene_dist = 500;
+my $extension = ""; # command-line option
+my $gene_dist = 500; # command-line option
 my $reference; # obligatory
 my $population; # obligatory
-my $freq_flip = 0.15;
-my $freq_warning = 0.45;
+my $freq_flip = 0.15; # command-line option
+my $freq_warning = 0.45; # command-line option
 my $low_freq_warning = $freq_warning;
 my $hifreq_warning = 1-$freq_warning;
-my $no_header = '';
-my $random_effects = '';
-my $verbose = '';
+my $no_header = ''; # command-line option
+my $random_effects = ''; # command-line option
+my $verbose = ''; # command-line option
 my $outFile = "metagwas.out";
 
 GetOptions(
@@ -449,24 +443,37 @@ print STDOUT "Total number of studies: $nstudies.\n";
 ##########################################################################################
 ##########################################################################################
 ###
-### read in dbSNP file to get inventory of markers, positions and annotation
+### read in a dbSNP file to get inventory of markers, positions and annotation
 ###
 ##########################################################################################
 ##########################################################################################
 #
+# This file is expected to be similar to a dbSNP-derived annotated list of variants; 
+# it could be manually generated using a reference, for instance 1000G phase 1 or phase 3.
+# Among others it is used to:
+# - check the existence of a variant in the respective GWAS in dbSNP or the reference
+# - obtain functional information on the variant and add this to an annotated meta-analysis
+#   output
+#
+# NOTE: dbSNP only contains variants which have been assigned a rs-identifier; in many
+#       references (GoNL4, GoNL5, 1000G phase 1, 1000G phase 3) variants exist that were 
+#       submitted to dbSNP but have had no rs-identifier assigned yet. This implies that 
+#       relying solely on the dbSNP database may not be appropriate for your specific 
+#       meta-analysis of GWAS.
+# 
 # Expected format of such a dbSNP file is the following:
 #
-#	chrom	chromStart	chromEnd	name		strand	observed			class	func
-#	chr1	6946796		6946821		rs57898978	+		A/G					single	intron
-#	chr1	8912885		8912910		rs57188530	+		C/G					single	unknown
-#	chr1	34340790	34340885	rs6143185	+		(LARGEDELETION)/-	named	intron
-#	chr1	102891517	102891542	rs56752146	+		A/G					single	unknown
+#	Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction
+#	chr1 62914560 62914560 rs538775156 + -/T insertion intron
+#	chr1 40370176 40370176 rs564192510 + -/T insertion unknown
+#	chr1 61341695 61341699 rs146746778 + -/TTTA deletion unknown
+#	chr1 71827455 71827460 rs774608072 + -/TCTTA deletion unknown
+#	chr1 88342516 88342533 rs777906343 + -/ACATTTAGGTTATTTCC deletion unknown
+#
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "Reading in dbSNP annotation file.\n"; 
 print STDOUT "\n";
-
-### NOTE TO SELF # Are INDELs in the dbSNP file? Should we add them? Where do we get them??? ###
 
 open (DBSNP, "gunzip -c $dbsnpFile |") or die "*** ERROR *** Cannot open [ $dbsnpFile ]. Please double back.\n";
 print STDOUT "* Reading dbSNP annotations file: [ $dbsnpFile ]...\n";
@@ -492,27 +499,29 @@ while(my $c = <DBSNP>){
   
   if ( defined( $variantlist{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) ) {
 
-    if ( defined( $dbsnp_a1{$variant} ) ) {
-    	print STDERR "$variant appears more than once -- skipping it\n";
-    	$caveat{$variant} = "not_unique_position";
-		$skip_list{$variant} = 1;
-		next;
-    }
+	### should probably be removed, as SNPs and INDELs can exist on the same basepair position(s)
+     if ( defined( $dbsnp_a1{$variant} ) ) {
+     	print STDERR "$variant appears more than once -- skipping it\n";
+     	$caveat{$variant} = "not_unique_position";
+ 		$skip_list{$variant} = 1;
+  		next;
+     }
     
     my @alleles = split /\//, $fields[5];
    
+    ### Checking how many 'elements' exist in @alleles: if '2' elements, '1' is returned
     if ( $#alleles > 1 ) { 
       print STDERR "* $variant has more than 2 alleles [" . $fields[5] . "] -- skipping it.\n";
       $skip_list{$variant} = 1;
       next;
     } 
 
-### NOTE TO SELF: what does this mean??? ###
    if ( $fields[5] =~ m/lengthTooLong/ ) {
       print STDERR "* $variant has alleles with [ lengthTooLong ] -- skipping it.\n";
       $skip_list{$variant} = 1;
       next;
     }
+    
     if ( $#alleles == 0 ) { 
       print STDERR "* $variant has only 1 allele [" . $fields[5] . "] -- skipping it.\n";
       $skip_list{$variant} = 1;
@@ -528,22 +537,17 @@ while(my $c = <DBSNP>){
     $dbsnp_a2{$variant} = $alleles[1];
 	
 	my $strand = $fields[4]; 
-    if ( $strand eq "+" ) { next; }
-    
-    print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+    if ( $strand eq "+" ) { 
+     	print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+		next; 
+	}
     
     if ( $strand eq "-" ) { 
-#     	@{$dbsnp_alleles{$variant}} = ();
-#     	foreach my $allele ( @alleles ) { 
-#     	
-#     		push @{$dbsnp_alleles{$variant}}, allele_flip( $allele );
-#     	
-#     	}
 		
 		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
 		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
  	
- 		print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ]. Correcting.\n";
+  		print STDERR "* From dbSNP read $variant with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles has strand [ $strand ]. Correcting.\n";
  	   
     }
     
@@ -706,24 +710,27 @@ close (REFFREQ);
 ##########################################################################################
 ##########################################################################################
 ###
-### read in the genes
+### read in the genes from GENCODE
 ### 
 ##########################################################################################
 ##########################################################################################
 #
+# MetaGWASToolKit uses GENCODE -- obviously other flavours are possible.
+#
 # Expected format of such a genes file is the following:
 #
-# 	0 1	        2         3
-#	9 112963230 112969859 C9orf152
-#	11 46299662 46342293 CREB3L1
-#	19 49999713 50002889 RPS11
-#	20 44996001 45023121 ELMO2
-#	14 74179283 74180342 PNMA1
-#	16 55513391 55539351 MMP2
-#	11 61160103 61165745 TMEM216
-#	10 128114435 128359049 C10orf90
-#	20 39813568 39833556 ZHX3
-#	13 103498616 103528250 ERCC5
+# Column 	Chr TxStart		TxEnd		Gene		EnsemblID			Strand
+# Column# 	0	1	        2         	3			4					5
+#			1 	66999065 	67210057 	SGIP1 		ENST00000237247.6 	+
+#			1 	66999274 	67210768 	SGIP1 		ENST00000371039.1 	+
+#			1 	66999822 	67208882 	SGIP1 		ENST00000371035.3 	+
+#			1 	66999838 	67142779 	SGIP1 		ENST00000468286.1 	+
+#			1 	66999868 	67213982 	SGIP1 		ENST00000371036.3 	+
+#			1 	66999964 	67213982 	SGIP1 		ENST00000371037.4 	+
+#			1 	8377885 	8404225 	SLC45A1 	ENST00000471889.1 	+
+#			1 	8378168 	8404227 	SLC45A1 	ENST00000377479.2 	+
+#			1 	8384389 	8404227 	SLC45A1 	ENST00000289877.8 	+
+#			1 	16767166	16786573 	NECAP2 		ENST00000337132.5 	+
 #
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -735,10 +742,12 @@ open (GENE, "gunzip -c $genesFile |") or die "*** ERROR *** Cannot open $genesFi
 print STDOUT "* Reading file: $genesFile...\n";
 
 my $ngenes = 0;
-my @gene = ();
-my @gene_chr = ();
-my @gene_start = ();
-my @gene_stop = ();
+my @gene = (); # gene name, official HUGO
+my @gene_chr = (); # chromosome
+my @gene_start = (); # transcription start position
+my @gene_stop = (); # transcription end position
+my @gene_ensembl = (); # Ensembl ID
+my @gene_strand = (); # gene strand position
 
 while(my $c = <GENE>){
   chomp $c;
@@ -748,6 +757,8 @@ while(my $c = <GENE>){
   $gene_start[$ngenes] = $fields[1];
   $gene_stop[$ngenes] = $fields[2];
   $gene[$ngenes] = $fields[3];
+  $gene_ensembl[$ngenes] = $fields[4];
+  $gene_strand[$ngenes] = $fields[5];
   $ngenes++;
 }
 close (GENE);
@@ -781,7 +792,7 @@ print OUT " EFFECTALLELE OTHERALLELE EAF N_EFF Z_SQRTN P_SQRTN BETA_FIXED SE_FIX
 if ( $random_effects ) {
   print OUT "BETA_RANDOM  SE_RANDOM  Z_RANDOM  P_RANDOM  BETA_LOWER_RANDOM BETA_UPPER_RANDOM COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED ";
 }
-print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE FUNCTION CAVEAT\n";
+print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT\n";
 
 
 ##########################################################################################
@@ -1165,6 +1176,8 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     my $yes_genes = 0;
     my %listed_genes = ();
     my $nearest_gene = "NA";
+    my $nearest_gene_ensembl = "NA";
+    my $nearest_gene_strand = "NA";
     my $nearest_distance = 10000000000;
     my $gene_length_temp = 10000000000;
     my $left_most = $refpos - ($gene_dist * 1000);
@@ -1184,15 +1197,21 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 
           if ( $refpos > $gene_start[$i] && $refpos < $gene_stop[$i] && $gene_length < $gene_length_temp ) { 
             $nearest_gene = $gene[$i];
+            $nearest_gene_ensembl = $gene_ensembl[$i];
+            $nearest_gene_strand = $gene_strand[$i];
             $gene_length_temp = $gene_length;
             $nearest_distance = 0;
           }
           elsif ( $dist_left > 0 && $dist_left < $nearest_distance ) {
             $nearest_gene = $gene[$i];
+            $nearest_gene_ensembl = $gene_ensembl[$i];
+            $nearest_gene_strand = $gene_strand[$i];
             $nearest_distance = $dist_left;
           }
           elsif ( $dist_right > 0 && $dist_right < $nearest_distance ) {
             $nearest_gene = $gene[$i];
+            $nearest_gene_ensembl = $gene_ensembl[$i];
+            $nearest_gene_strand = $gene_strand[$i];
             $nearest_distance = $dist_right;
           }
 #          print "gene = $gene[$i]   $dist_left  $dist_right  nearest gene = $nearest_gene   nearest_distance = $nearest_distance   gene_length_temp = $gene_length_temp\n"; 
@@ -1204,7 +1223,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
       print OUT " NA";
     }
      
-    print OUT " $nearest_gene $dbsnp_function{$variant}";
+    print OUT " $nearest_gene $nearest_gene_ensembl $nearest_gene_strand $dbsnp_function{$variant}";
     
     if ( defined( $caveat{$variant} ) ) { print OUT " $caveat{$variant}"; } else { print OUT " NA"; }
 
@@ -1252,20 +1271,42 @@ print STDOUT "This meta-analysis of GWAS was successfully finished!!!\n";
 
 sub allele_flip($)
 {
-  my $allele = shift;
-  my $flipped_allele = "";
-  if ( $allele eq "(LARGEDELETION)" || $allele eq "lengthTooLong" ) { return $allele; }
+	my $allele = shift;
+	my $flipped_allele = "";
+	# probably legacy - it doesn't appear to be part of dbSNP anymore
+ 	if ( $allele eq "(LARGEDELETION)" || $allele eq "lengthTooLong" ) { return $allele; } 
 
-  for (my $i=0; $i < length($allele); $i++) {
-    my $current_base = substr $allele, $i, 1;
-    if ( $current_base eq "A" ) { $flipped_allele .= "T"; }
-    elsif ( $current_base eq "C" ) { $flipped_allele .= "G"; }
-    elsif ( $current_base eq "G" ) { $flipped_allele .= "C"; }
-    elsif ( $current_base eq "T" ) { $flipped_allele .= "A"; }
-    else { $flipped_allele .= $current_base; }    
-  }
+	if ( length($allele) == 1 ) {
+		for (my $i=0; $i < length($allele); $i++) {
+			my $current_base = substr $allele, $i, 1;
+			if ( $current_base eq "A" ) { $flipped_allele .= "T"; }
+			elsif ( $current_base eq "C" ) { $flipped_allele .= "G"; }
+			elsif ( $current_base eq "G" ) { $flipped_allele .= "C"; }
+			elsif ( $current_base eq "T" ) { $flipped_allele .= "A"; }
+			elsif ( $current_base eq "I" ) { $flipped_allele .= "D"; }
+			elsif ( $current_base eq "D" ) { $flipped_allele .= "I"; }
+			else { $flipped_allele .= $current_base; }
+			print STDERR "The allele was flipped from [ $current_base ] to [ $flipped_allele ].\n";
+		}
+	return $flipped_allele;
+}
 
-  return $flipped_allele;
+	if ( length($allele) > 1 ) {
+		print STDERR "Given allele: \t\t[ $allele ].\n";
+		
+		for (my $i=0; $i < length($allele); $i++) {
+		my $current_base = substr $allele, $i, 1;
+		
+		if ( $current_base eq "A" ) { $flipped_allele = $flipped_allele . $current_base =~ s/A/T/gr; }
+		elsif ( $current_base eq "C" ) { $flipped_allele = $flipped_allele . $current_base =~ s/C/G/gr; }
+		elsif ( $current_base eq "G" ) { $flipped_allele = $flipped_allele . $current_base =~ s/G/C/gr; }
+		elsif ( $current_base eq "T" ) { $flipped_allele = $flipped_allele . $current_base =~ s/T/A/gr; }
+		else { $flipped_allele .= $current_base; }
+		}
+		
+		print STDERR "The flipped base is: \t[ $flipped_allele ].\n";
+   }
+	return $flipped_allele;
 }
 
 sub allele_1234_to_ACGT($)

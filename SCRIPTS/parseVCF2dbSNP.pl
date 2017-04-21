@@ -1,20 +1,21 @@
 # Overlap some data with some other data
 #
 # Description: 	this script parse VCF files of 1000G phase 1 or phase 3. It will make a new 
-#				file containing variantIDs, alleles and frequencies. Can be used to align
-#				GWAS results in terms of allele coding, and variantID nomenclature.
+#				file containing variantIDs, alleles and variant information. Can be used 
+#				to check GWAS results in terms of variant-existence compared to the 
+#				reference.
 #
-# Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
-#               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
-# Version:		1.0.0
+# Written by:	Sander W. van der Laan & Jacco Schaap; UMC Utrecht, Utrecht, the 
+#               Netherlands, s.w.vanderlaan-2@umcutrecht.nl or j.schaap-2@umcutrecht.nl.
+# Version:		1.0.1
 # Update date: 	2017-04-21
 #
 # Usage:		parseVCF2dbSNP.pl --file [input.vcf.gz] --out [output.txt]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDERR "+                              PARSE VCF FILES TO dbSNP format                           +\n";
-print STDERR "+                                         V1.0.0                                         +\n";
+print STDERR "+                              PARSE VCF FILES TO DBSNP FORMAT                           +\n";
+print STDERR "+                                         V1.0.1                                         +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -42,7 +43,7 @@ GetOptions(
            );
 # IF STATEMENT TO CHECK CORRECT INPUT
 if ( $file eq "" || $output eq "" ) {
-    print "Usage: %>parseVCF.pl --file input.vcf.gz --out output.txt\n";
+    print "Usage: %>parseVCF2dbSNP.pl --file input.vcf.gz --out output.txt\n";
     print "";
     print "Parses the input file, expected to be a VCF file (format 4.1+) and outputs a file containing information on the variantIDs.\n";
     exit();
@@ -52,6 +53,9 @@ if ( $file eq "" || $output eq "" ) {
 #### SETTING OTHER VARIABLES -- see below for header of VCF-file
 print STDERR "Setting variables...\n";
 
+### Expected output -- 	information for 'VariantFunction' is obtained from the original 
+###						dbSNP files.
+###
 ###   Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction
 ###   chr1 62914560 62914560 rs538775156 + -/T insertion intron
 ###   chr1 40370176 40370176 rs564192510 + -/T insertion unknown
@@ -60,6 +64,7 @@ print STDERR "Setting variables...\n";
 ###   chr1 88342516 88342533 rs777906343 + -/ACATTTAGGTTATTTCC deletion unknown
 
 my $chr = "";
+my $bp = ""; 
 my $chrstart = "";
 my $chrend = "";
 my $vid = ""; # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
@@ -91,13 +96,18 @@ my $dummy=<IN>;
 while (my $row = <IN>) {
 	  chomp $row;
 	  my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
-	  $vid = $vareach[2]; # variantID
 	  $chr = $vareach[0]; # chromosome
-	  $chrstart = $vareach[1]; # base pair start position
-      $chrend = $vareach[1]; # base pair end position
+	  $bp = $vareach[1]; # base pair (start) position
 	  $REF = $vareach[3]; # reference allele
 	  $ALT = $vareach[4]; # alternate allele
 	  $INFO = $vareach[7]; # info column -- refer to below for information
+
+### adjust the key variantID -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+  if ($vareach[2] =~ m/(\.)/){
+  	$vid = "chr$chr\:$bp\:$REF\_$ALT";
+  } else {
+  	$vid = $vareach[2]
+  	}
 
 ### get variant type
   if ($INFO =~ m/VT\=(SNP.*?)/){
@@ -112,18 +122,19 @@ while (my $row = <IN>) {
   if (length($REF) == 1 and length($ALT) == 1){
   	$chrstart = $vareach[1]; # base pair start position
   	$chrend = $vareach[1]; # base pair end position
+  
   } elsif (length($REF) > 1){ 
   	$chrstart = $vareach[1]; # base pair start position
-  	$chrend = $vareach[1]; # base pair end position
+  	$chrend = $vareach[1] + length($REF); # base pair end position
   	
   	} elsif (length($ALT) > 1){ 
   	$chrstart = $vareach[1]; # base pair start position
   	$chrend = $vareach[1] + length($ALT); # base pair end position
   	
-  	} else { 
-  	$chrstart = $vareach[1]; # base pair start position
-  	$chrend = $vareach[1]; # base pair end position
-  	}
+  		} else { 
+  			$chrstart = $vareach[1]; # base pair start position
+  			$chrend = $vareach[1]; # base pair end position
+  }
 
 print OUT "$chr\t$chrstart\t$chrend\t$vid\t$strand\t$REF/$ALT\t$vidclass\t$vidfunc\n";
 
