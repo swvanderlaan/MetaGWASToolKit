@@ -14,7 +14,7 @@
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                              PARSE VCF FILES TO dbSNP format                           +\n";
-print STDERR "+                                         V1.2.8                                         +\n";
+print STDERR "+                                         V1.0.0                                         +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -91,6 +91,7 @@ my $dummy=<IN>;
 while (my $row = <IN>) {
 	  chomp $row;
 	  my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
+	  $vid = $vareach[2]; # variantID
 	  $chr = $vareach[0]; # chromosome
 	  $chrstart = $vareach[1]; # base pair start position
       $chrend = $vareach[1]; # base pair end position
@@ -123,7 +124,7 @@ while (my $row = <IN>) {
   	$chrstart = $vareach[1]; # base pair start position
   	$chrend = $vareach[1]; # base pair end position
   	}
-  
+
 print OUT "$chr\t$chrstart\t$chrend\t$vid\t$strand\t$REF/$ALT\t$vidclass\t$vidfunc\n";
 
 }
