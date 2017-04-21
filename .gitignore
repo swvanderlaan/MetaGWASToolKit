@@ -18,3 +18,15 @@ RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt.gz
 RESOURCES/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
 
 RESOURCES/dbSNP147_b37_hg19.allVariants.txt.gz
+
+RESOURCES/ORIGINALS/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
+
+RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz
+
+RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.txt.gz
+
+RESOURCES/ORIGINALS/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
+
+RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz
+
+RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz

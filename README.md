@@ -5,13 +5,13 @@ MetaGWASToolKit
 
 ### Introduction
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
-This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (MetaGWASToolKit): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
+This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (**MetaGWASToolKit**): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
 
 Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). 
 
-All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `qsub_metagwastoolkit.sh` script, and two text-files: `meta_configuration.conf` (a configuration file with some system and analytical settings), and `meta_files.list` (containing a list of all the GWAS datasets).
+All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `metagwastoolkit.qsub.sh` script, and two text-files: `metagwastoolkit.conf` (a configuration file with some system and analytical settings), and `metagwastoolkit.list` (containing a list of all the GWAS datasets).
 
-The installation procedure is quite straightforward, and only entails three steps consisting of command one-liners that are *easy* to read. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
+The installation procedure is quite straightforward, and only entails four steps consisting of command one-liners that are *easy* to read. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
 ```
 these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
@@ -27,7 +27,7 @@ Multiline commands end with a dash \
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so. 
 
-We have tested MetaGWASToolKit on CentOS7, and OS X Sierra (version 10.11.[x]). 
+We have tested **MetaGWASToolKit** on CentOS7, and OS X Sierra (version 10.11.[x]). 
 
 
 --------------
@@ -55,19 +55,28 @@ if [ -d ~/git/MetaGWASToolKit/.git ]; then \
 #### Step 3: Check for dependencies of Python, Perl and R, and install them if necessary.
 [text and codes forthcoming]
 
+
+#### Step 4: Create necessary databases. These include:
+- DBSNPFILE     -- a dbSNP/Reference file containing information per variant.
+- REFFREQFILE   -- a file containing reference frequencies per variant.
+- GENESFILE     -- a file containing chromosomal basepair positions per gene.
+
+[text and codes forthcoming]
+
+
 --------------
 
 ### Meta-analysis of GWAS
-This ToolKit will (semi-)automatically perform a meta-analysis of GWAS. It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
+**MetaGWASToolKit** will (semi-)automatically perform a meta-analysis of GWAS. It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
 
-The main script, which is controlled by `qsub_metagwastoolkit.sh`, `meta_configuration.conf`, and `meta_files.list`, is `run_metagwastoolkit.sh`. `run_metagwastoolkit.sh` will automagically chunk up data, submit jobs, and set things so that your meta-analysis will run smoothly. 
+The main script, which is controlled by `metagwastoolkit.qsub.sh`, `metagwastoolkit.conf`, and `metagwastoolkit.list`, is `metagwastoolkit.run.sh`. `metagwastoolkit.run.sh` will automagically chunk up data, submit jobs, and set things so that your meta-analysis will run smoothly. 
 The premier step is at the 'reformatting' stage. Any weirdly formatted GWAS dataset will immediately throw errors, and effectively throwing out that particular GWAS dataset from the meta-analysis. Such errors will be reported.
 
 #### Reformatting summary statistics GWAS data
-GWAS datasets are first cut in chunks of 100,000 variants by `run_metagwastoolkit.sh`, and subsequently parse and harmonized by `gwas.parser.R` and `gwas2ref.harmonizer.py`. During *parsing* the GWAS dataset will be re-formatted to fit the downstream pipeline. In addition some variables are calculated (if not present), for instance "minor allele frequency (MAF)", and "minor allele count (MAC)". During *harmonization* the parsed dataset will be compared to a reference (see below) and certain information from the reference is obtained and added to the parsed data. `gwas.wrapper.sh` will automagically wrap up all the parsed and harmonized data into two seperate datasets, entitled `dataset.pdat` for the parsed data, and `dataset.rdat` for the harmonized data.
+GWAS datasets are first cut in chunks of 100,000 variants by `metagwastoolkit.run.sh`, and subsequently parse and harmonized by `gwas.parser.R` and `gwas2ref.harmonizer.py`. During *parsing* the GWAS dataset will be re-formatted to fit the downstream pipeline. In addition some variables are calculated (if not present), for instance "minor allele frequency (MAF)", and "minor allele count (MAC)". During *harmonization* the parsed dataset will be compared to a reference (see below) and certain information from the reference is obtained and added to the parsed data. `gwas.wrapper.sh` will automagically wrap up all the parsed and harmonized data into two seperate datasets, entitled `dataset.pdat` for the parsed data, and `dataset.rdat` for the harmonized data.
 
 #### Cleaning reformatted GWAS data
-After parsing and harmonization the reformatted data will be cleaned based on the settings provided in  `meta_configuration.conf`. Cleaning settings include:
+After parsing and harmonization the reformatted data will be cleaned based on the settings provided in  `metagwastoolkit.conf`. Cleaning settings include:
 - MAF, minimum minor allele frequency to keep variants, e.g. "0.005"
 - MAC, minimum minor allele count to keep variants, e.g. "30"
 - HWE, Hardy-Weinberg equilibrium p-value at which to drop variants, e.g. "1E-6"
@@ -101,9 +110,10 @@ Both the *un*cleaned and the cleaned reformatted data will be visualized: **Meta
 - Effective Sample Size
 - SE-N lambda
 
-#### References
+#### References and other datasebases
 ##### Creating references
-One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`, and in fact doing so is an option in the `qsub_metagwastoolkit.sh`. This script will automagically create various *variantID* versions, and add in information per variant. The resulting file is used by `gwas2ref.harmonizer.py` for harmonization. 
+One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`, and in fact doing so is an option in the `metagwastoolkit.qsub.sh`. This script will automagically create various *variantID* versions, and add in information per variant. The resulting file is used by `gwas2ref.harmonizer.py` for harmonization. 
+[more text and codes forthcoming]
 
 ##### Available references
 There are a couple of reference available per standard, these are:
@@ -138,10 +148,11 @@ There are a couple of reference available per standard, these are:
 
 #### Meta-analysis 
 - add in trans-ethnic meta-analysis option
-- add in option to choose reference to use
-- make Perl-script that generates the frequency file (perhaps while using gwas2harmonize?)
+- ~~add in option to choose reference to use~~ :ballot_box_with_check:
+- ~~make Perl-script that generates the frequency file (perhaps while using gwas2harmonize?)~~ :ballot_box_with_check:
 - add in params-file generator (cohort-name, lambda [after QC], avg. sample size, beta-correction factor)
 - add in option to include/exclude special chromosomes (X, Y, XY, MT)
+- add in more extensive annotation of variants - perhaps HaploReg; eQTL/mQTL/pQTL; ENCODE?
 
 #### Something
 - [some text here]
@@ -149,7 +160,7 @@ There are a couple of reference available per standard, these are:
 --------------
 
 #### The MIT License (MIT)
-##### Copyright (c) 2015-2016 Sander W. van der Laan | s.w.vanderlaan-2 [at] umcutrecht.nl
+##### Copyright (c) 2015-2017 Sander W. van der Laan | s.w.vanderlaan-2 [at] umcutrecht.nl
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:   
 
