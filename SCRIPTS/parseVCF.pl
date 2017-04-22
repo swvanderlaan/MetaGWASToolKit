@@ -6,15 +6,15 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
 #               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
-# Version:		1.2.8
-# Update date: 	2016-12-14
+# Version:		1.2.9
+# Update date: 	2017-04-23
 #
 # Usage:		parseVCF.pl --file [input.vcf.gz] --out [output.txt]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                     PARSE VCF FILES                                    +\n";
-print STDERR "+                                         V1.2.8                                         +\n";
+print STDERR "+                                         V1.2.9                                         +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -54,24 +54,24 @@ print STDERR "Setting variables...\n";
 
 my $chr = "";
 my $bp = "";
-my $vid = ""; # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-my $vid1 = ""; # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-my $vid2 = ""; # 'rs[xxxx]' or '[X]:bp[XXXXX]:A1_A2'
-my $vid3 = ""; # 'rs[xxxx]' or '[X]:bp[XXXXX]:[I/D]_[D/I]'
-my $vid4 = ""; # '[X]:bp[XXXXX]:A1_A2'
-my $vid5 = ""; # '[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
-my $vid6 = ""; # 'chr[X]:bp[XXXXX]:A1_A2'
-my $vid7 = ""; # 'chr[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
-my $vid8 = ""; # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]'
-my $vid9 = ""; # 'rs[xxxx]' or '[X]:bp[XXXXX]'
-my $vid10 = ""; # 'chr[X]:bp[XXXXX]'
-my $vid11 = ""; # '[X]:bp[XXXXX]'
-my $vid12 = ""; # 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
-my $vid13 = ""; # '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
-my $vid14 = ""; # 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
-my $vid15 = ""; # '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
-my $vid16 = ""; # 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
-my $vid17 = ""; # '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+my $vid = ""; # type 1: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+my $vid1 = ""; # type 2: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
+my $vid2 = ""; # type 3: 'rs[xxxx]' or '[X]:bp[XXXXX]:A1_A2'
+my $vid3 = ""; # type 4: 'rs[xxxx]' or '[X]:bp[XXXXX]:[I/D]_[D/I]'
+my $vid4 = ""; # type 5: '[X]:bp[XXXXX]:A1_A2'
+my $vid5 = ""; # type 6: '[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+my $vid6 = ""; # type 7: 'chr[X]:bp[XXXXX]:A1_A2'
+my $vid7 = ""; # type 8: 'chr[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+my $vid8 = ""; # type 9: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]'
+my $vid9 = ""; # type 10: 'rs[xxxx]' or '[X]:bp[XXXXX]'
+my $vid10 = ""; # type 11: 'chr[X]:bp[XXXXX]'
+my $vid11 = ""; # type 12: '[X]:bp[XXXXX]'
+my $vid12 = ""; # type 13: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
+my $vid13 = ""; # type 14: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
+my $vid14 = ""; # type 15: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+my $vid15 = ""; # type 16: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+my $vid16 = ""; # type 17: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+my $vid17 = ""; # type 18: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
 my $REF = ""; # reference allele
 my $ALT = ""; # other allele
 my $AlleleA = ""; # reference allele, with [REF/I/D] nomenclature
@@ -102,7 +102,6 @@ open(OUT, '>', $output) or die "* ERROR: Could not create the output file [ $out
 
 print STDERR "* create header...\n";
 print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tVariantID_alt4\tVariantID_alt5\tVariantID_alt6\tVariantID_alt7\tVariantID_alt8\tVariantID_alt9\tVariantID_alt10\tVariantID_alt11\tVariantID_alt12\tVariantID_alt13\tVariantID_alt14\tVariantID_alt15\tVariantID_alt16\tVariantID_alt17\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tVT\tAF\tEURAF\tAFRAF\tAMRAF\tASNAF\tEASAF\tSASAF\n";
-#print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tVariantID_alt4\tVariantID_alt5\tVariantID_alt6\tVariantID_alt7\tVariantID_alt8\tVariantID_alt9\tVariantID_alt10\tVariantID_alt11\tVariantID_alt12\tVariantID_alt13\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tVT\tAF\tEURAF\tAFRAF\tAMRAF\tASNAF\tEASAF\tSASAF\n";
 
 print STDERR "* looping over file to extract relevant data...\n";
 my $dummy=<IN>;
@@ -364,7 +363,6 @@ while (my $row = <IN>) {
 
  				
 print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$vid14\t$vid15\t$vid16\t$vid17\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
-#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
 
 }
 

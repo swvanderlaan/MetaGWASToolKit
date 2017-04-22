@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version: METAGWAS2.1.2"
+# Version: METAGWAS2.1.3"
 #
-# Last update			: 2017-04-21"
+# Last update			: 2017-04-23"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
@@ -800,6 +800,18 @@ print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE NEAREST_GENE_ENSEM
 ###
 ##########################################################################################
 ##########################################################################################
+#
+# Expected input file format
+#
+# Column#	0		  1	  2  3    4  5 6            7           8   9
+#			VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
+#			rs61769339 1 662622 0.064738 0.151472 0.669216 A G 0.0813265 0.314296
+#			rs61769350 1 693731 0.0809252 0.125964 0.520777 G A 0.0959278 0.395173
+#			rs189800799 1 701835 -0.29061 0.256943 0.258402 C T 0.0204806 0.419007
+#			rs28457007 1 712930 -0.2485 0.267268 0.352784 C T 0.0195845 0.404344
+#			chr1:713131:AT_A 1 713131 -0.22227 0.228877 0.331793 AT A 0.0220612 0.485933
+#			rs114983708 1 714019 -0.0590389 0.179203 0.741906 G A 0.0527746 0.335025
+
 print STDOUT "Meta-analyzing this shizzle...\n";
 my $nvariants_in_meta = 0;
 my $not_on_reference = 0;
@@ -839,10 +851,10 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my @beta = ();
   my @se = ();
   my @pval = ();
-  my @a1 = ();
+  my @a1 = (); # effect allele
   my @a2 = ();
-  my @af1 = ();
-  my @ratio = ();
+  my @af1 = (); # effect allele frequency
+  my @ratio = (); # i.e. imputation quality
  
   ###
   ### first read in the data
