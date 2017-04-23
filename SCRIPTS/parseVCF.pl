@@ -72,6 +72,11 @@ my $vid14 = ""; # type 15: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:R_[D/I]' (but
 my $vid15 = ""; # type 16: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
 my $vid16 = ""; # type 17: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
 my $vid17 = ""; # type 18: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+
+my $vid18 = ""; # type 19: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+my $vid19 = ""; # type 20: 'rs[xxxx]' or '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+
+
 my $REF = ""; # reference allele
 my $ALT = ""; # other allele
 my $AlleleA = ""; # reference allele, with [REF/I/D] nomenclature
