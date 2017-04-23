@@ -1,0 +1,4 @@
+/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/test_environment/aegs.jdat aegs
+/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/test_environment/chs.jdat chs
+/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/test_environment/fhs.jdat fhs
+/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/test_environment/sorbs.jdat sorbs
