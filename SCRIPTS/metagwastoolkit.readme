@@ -1,0 +1,122 @@
+
+#############################################################################
+### *START* INFORMATION FOR THIS SPECIFIC META-ANALYSIS
+#############################################################################
+# Included cohorts:
+# - cohort 1: AEGS1+AEGS2 combined, Athero-Express Genomics Study 1 & 2, N=771
+# - cohort 2: CHS, Cardiovascular Health Study, N=2,707
+# - cohort 3: EPICNL, EPIC Netherlands, N=
+# - cohort 4: FHS, Framhingham Heart Study, N=3,651
+# - cohort 5: Sorbs, German Sorbs, N=900/891 (N=9 without BMI)
+# Models run:
+# - model 1: ln[FABP4]~SNP+age+sex+PCs
+# - model 2: ln[FABP4]~SNP+age+sex+BMI+PCs
+# - model 3: ln[FABP4]~SNP+age+sex+BMI+eGFR+PCs
+#############################################################################
+### *END* INFORMATION FOR THIS SPECIFIC META-ANALYSIS
+#############################################################################
+
+
+
+
+##########################################################################################
+### META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES
+##########################################################################################
+# Script to QC raw GWAS result data and run MetaGWASToolKit
+#
+# RECOMMENDATIONS
+# This script can be run on a Mac OS X system, it is validated to work on Mac OS X
+# Mountain Lion+. For this some software needs to be installed.
+# For the best performance run it on a Macbook Pro 13" mid-2012 or later with at 
+# least 16 Gb RAM and 512 Gb hard drive.
+# For software refer to the section "SPECIFIC INSTALLATIONS REQUIRED FOR MAC OS X". 
+# However, our recommendation is to run it on a Linux-based cluster computer for 
+# speed (parallelisation and more RAM) and space.
+#
+# REQUIREMENTS
+# Latest version of MetaGWASToolKit.
+# Make a "meta_configuration.conf" file, which should be a Unix-coded, 
+# Unicode (UTF-8) formatted files (see example).
+
+##########################################################################################
+### SPECIFIC INSTALLATIONS REQUIRED FOR MAC OS X
+##########################################################################################
+# * First, install "Commandline Tools for Xcode", go to
+# 		http://www.cpan.org/ports/binaries.html#mac_osx
+# * Second, make sure you have the following modules installed in this order
+# 	using the following commands:
+# 	-sudo cpan YAML
+# 	-sudo cpan Statistics::Distributions
+# 	-sudo cpan Getopt::Long
+# 	(The use of "sudo" means you will be prompted for the admin password)
+# * Third, make sure you have your system locale set to "en_US.UTF-8" by
+# 	adding the to your profile (e.g. ~/.bash_profile):
+# 	export LC_ALL=en_US.UTF-8
+#	(For instructions how to edit the .bash_profile Google is a great resource 
+
+##########################################################################################
+### REFORMAT ORIGINAL GWAS DATA
+##########################################################################################
+#
+# Original data is reformatted to a generic format needed for the QC and
+# meta-analysis. This requires a simple list of cohorts, files, 
+# and VariantID-type. This should be a simple text-file with three 
+# columns *without* a header:
+#
+# EXAMPLE GWAS FILE LIST
+# SOMECOHORTNAME	COHORTFILE	VARIANTTYPE
+# cohort1 cohort1.txt.gz VariantID_alt1
+# cohort2 cohort2.txt VariantID_alt2
+#
+# ### ADD-IN: automatically check which variantID is relevant
+# You are going to have to determine the variant type by hand, there are 14 pre-defined:
+# VariantID 		: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+# VariantID_alt1	: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
+# VariantID_alt2	: 'rs[xxxx]' or '[X]:bp[XXXXX]:A1_A2'
+# VariantID_alt3	: 'rs[xxxx]' or '[X]:bp[XXXXX]:[I/D]_[D/I]'
+# VariantID_alt4	: '[X]:bp[XXXXX]:A1_A2'
+# VariantID_alt5	: '[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+# VariantID_alt6	: 'chr[X]:bp[XXXXX]:A1_A2'
+# VariantID_alt7	: 'chr[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+# VariantID_alt8 	: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]'
+# VariantID_alt9 	: 'rs[xxxx]' or '[X]:bp[XXXXX]'
+# VariantID_alt10 	: 'chr[X]:bp[XXXXX]'
+# VariantID_alt11 	: '[X]:bp[XXXXX]'
+# VariantID_alt12 	: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:A1_A2' - but ONLY for INDELS!!!
+# VariantID_alt13 	: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:A1_A2' - but ONLY for INDELS!!!
+# VariantID_alt14 	: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+# VariantID_alt15 	: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+#
+# NOTE: we asume you have run 'parseVCF.pl' on a reference dataset in VCF-format (v4.1+),
+#       this will generate the reference file with the 14 variant type key's as noted above.
+
+
+### TO DO
+# We need to make scripts that automagically make required files when installing this
+# meta-analysis package.
+# DBSNPFILE 
+# could be 1000G based or a specific dbSNP download
+wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
+echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > dbSNP147_GRCh37_hg19_Feb2009.txt
+zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> dbSNP147_GRCh37_hg19_Feb2009.txt
+gzip -v dbSNP147_GRCh37_hg19_Feb2009.txt
+mkdir -v ORIGINALS
+mv -v dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz ORIGINALS/
+
+# REFFREQFILE
+# could be 1000G based or a specific dbSNP download
+# GENESFILE  -- probably use GENCODE as this is made based on a combination of manual and automatic work
+
+#wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz -O GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.gtf.gz
+cat GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt | awk '{ print $3, $5, $6, $13, $2, $4}' > gencode_v19_GRCh37_hg19_Feb2009.txt.temp
+cat gencode_v19_GRCh37_hg19_Feb2009.txt.temp | awk -F" " '{gsub(/chr/, "", $1)}1'  | tail -n +2 > gencode_v19_GRCh37_hg19_Feb2009.txt
+rm -v gencode_v19_GRCh37_hg19_Feb2009.txt.temp
+gzip -v gencode_v19_GRCh37_hg19_Feb2009.txt
+mkdir -v ORIGINALS
+mv -v GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt ORIGINALS/
+gzip -v ORIGINALS/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt
+
+wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O refseq_GRCh37_hg19_Feb2009.txt.gz
+
+
+
