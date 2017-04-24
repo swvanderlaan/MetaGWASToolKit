@@ -1,10 +1,10 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
 
 ### Linux version
-### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Parser -- MetaGWASToolKit
@@ -89,20 +89,20 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 #--------------------------------------------------------------------------
 
-### FOR LOCAL DEBUGGING
-### MacBook Pro
-#MACDIR="/Users/swvanderlaan"
-### Mac Pro
-MACDIR="/Volumes/EliteProQx2Media"
-
-opt$projectdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4")
-### original
-opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz")
-opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/CHS.FABP4.20140827.txt.gz")
-
-opt$outputdir="METAFABP4_1000G/RAW"
-
-### FOR LOCAL DEBUGGING
+# ### FOR LOCAL DEBUGGING
+# ### MacBook Pro
+# #MACDIR="/Users/swvanderlaan/PLINK/analyses"
+# ### Mac Pro
+# MACDIR="/Volumes/EliteProQx2Media/PLINK/analyses"
+# 
+# opt$projectdir=paste0(MACDIR, "/meta_gwasfabp4")
+# ### original
+# opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz")
+# #opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/CHS.FABP4.20140827.txt.gz")
+# 
+# opt$outputdir="METAFABP4_1000G/RAW"
+# 
+# ### FOR LOCAL DEBUGGING
 
 #--------------------------------------------------------------------------
 

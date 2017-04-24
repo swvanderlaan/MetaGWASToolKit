@@ -1,16 +1,16 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
 
 ### Linux version
-### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.1/bin/Rscript --vanilla
+### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-Z Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.3
-    * Last edit: 2016-12-21
+    * Version: v1.1.4
+    * Last edit: 2017-04-24
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  P-Z-plotter for GWAS (meta-analysis) results. Will plot the
