@@ -73,7 +73,7 @@ echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-W
 echobold ""
 echobold "* Version:      v1.0.6"
 echobold ""
-echobold "* Last update:  2017-04-20"
+echobold "* Last update:  2017-04-24"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Produce concatenated parsed, harmonized, and cleaned GWAS data."
 echobold ""
@@ -172,11 +172,11 @@ else
 			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
 			cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat/.errors/.log] ]..."
-# 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
-# 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
-# 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
-# 			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
-# 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
 # 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_PARSER.RData
 		else
 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
@@ -213,11 +213,11 @@ else
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
 			cat ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.rdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEHARMONIZEDFILE}[.ref.pdat/.errors/.log] ]..."
-# 			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
-# 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
-# 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
-# 			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
-# 			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
+			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}.ref.pdat
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASEHARMONIZEDFILE}
 		else
 			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -253,12 +253,12 @@ else
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${CLEANEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.cleaned.readme
 			cat ${PROJECTDIR}/${BASECLEANEDFILE}.cdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
 			echo "- removing files [ ${PROJECTDIR}/${BASECLEANEDFILE}[.cdat/.errors/.log] ]..."
-# 			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}.cdat
-# 			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.errors
-# 			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.log
-# 			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
-# 			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}
-# 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
+			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}.cdat
+			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.errors
+			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
+			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}
+			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
 		else
 			echoerrorflash "*** Error *** The pattern \"${CLEANEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
