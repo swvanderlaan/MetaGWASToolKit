@@ -397,9 +397,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chromosome$"), everything())
   
   ### Rename columns -- marker name
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^marker$"), everything())
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^snp$"), everything())
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Marker = matches("^rsid$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^marker$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snp$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^rsid$"), everything())
   
   ### Rename columns -- removing leading 'zeros'
   cat("\n* removing leading 'zeros' from chromosome number...")
@@ -499,13 +499,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                   "numeric", "numeric", "numeric", 
                   "integer", "integer", "integer", 
                   "character")
-  col.Names = c("VariantID", "Marker", "CHR", "BP", "Strand", 
+  col.Names = c("Marker", "MarkerOriginal", "CHR", "BP", "Strand", 
                 "EffectAllele", "OtherAllele", 
                 "EAF", "MAF", "MAC", "HWE_P", "Info",
                 "Beta", "SE", "P",
                 "N", "N_cases", "N_controls",
                 "Imputed")
-  num_rows = length(GWASDATA_RAWSELECTION$Marker)
+  num_rows = length(GWASDATA_RAWSELECTION$MarkerOriginal)
   num_cols = length(col.Names)
   
   ### Function to create empty table
@@ -520,14 +520,14 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   
   cat("\n- adding data to dataframe...")
   cat("\n  > adding the new markers...")
-  GWASDATA_PARSED$VariantID <- as.character(paste("chr",GWASDATA_RAWSELECTION$CHR,":",
+  GWASDATA_PARSED$Marker <- as.character(paste("chr",GWASDATA_RAWSELECTION$CHR,":",
                                                   GWASDATA_RAWSELECTION$BP,":",
                                                   GWASDATA_RAWSELECTION$OtherAllele,"_",
                                                   GWASDATA_RAWSELECTION$EffectAllele, 
                                                   sep = ""))
   
   cat("\n  > adding the original markers...")
-  GWASDATA_PARSED$Marker <- GWASDATA_RAWSELECTION$Marker
+  GWASDATA_PARSED$MarkerOriginal <- GWASDATA_RAWSELECTION$MarkerOriginal
   
   cat("\n  > changing NA to '0' for Chr...")
   GWASDATA_PARSED$CHR <- GWASDATA_RAWSELECTION$CHR
