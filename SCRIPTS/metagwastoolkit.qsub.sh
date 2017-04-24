@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 #$ -S /bin/bash 																				# the type of BASH you'd like to use
-#$ -N run_metagwastoolkit 																		# the name of this script
+#$ -N metagwastoolkit.qsub 																		# the name of this script
 # -hold_jid some_other_basic_bash_script 														# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
-#$ -o /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/run_metagwastoolkit.debug.log 				# the log file of this job
-#$ -e /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/run_metagwastoolkit.debug.errors 			# the error file of this job
-#$ -l h_rt=02:00:00 																			# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
-#$ -l h_vmem=4G 																				#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
+#$ -o /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.alphaMETA_TESTv11.log 				# the log file of this job
+#$ -e /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.alphaMETA_TESTv11.errors 			# the error file of this job
+#$ -l h_rt=08:00:00 																			# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
+#$ -l h_vmem=8G 																				#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
 # -l tmpspace=64G 																				# this is the amount of temporary space you think your script will use
 #$ -M s.w.vanderlaan-2@umcutrecht.nl 															# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
 #$ -m a 																						# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
@@ -21,79 +21,49 @@
 # yourself and others. Trust me, you'll forget why and how you made this!!!
 
 RESOURCES=/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES
+SCRIPTS=/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS
 PROJECTDIR=/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4
 ORIGINALDATA=${PROJECTDIR}/DATA_UPLOAD_FREEZE/1000G
+REFERENCE_1KG=/hpc/dhl_ec/data/references/1000G
 
-#####################################################################################################
-#### THIS SHOULD ONLY BE RUN ONCE || THIS SHOULD ONLY BE RUN ONCE || THIS SHOULD ONLY BE RUN ONCE ###
-####
-# echo "Making reference file..."
-# echo "* 1000G phase 1."
-# perl /hpc/local/CentOS7/dhl_ec/software/GWASToolKit/parseVCF.pl --file /hpc/dhl_ec/data/references/1000G/Phase1/VCF_format/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
-# echo "* 1000G phase 3."
-# perl /hpc/local/CentOS7/dhl_ec/software/GWASToolKit/parseVCF.pl --file /hpc/dhl_ec/data/references/1000G/Phase3/VCF_format/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
+####################################################################################################
+### THIS SHOULD ONLY BE RUN ONCE || THIS SHOULD ONLY BE RUN ONCE || THIS SHOULD ONLY BE RUN ONCE ###
+###
+echo "Making reference file..."
+echo "* 1000G phase 1."
+perl ${SCRIPTS}/parseVCF.pl --file ${REFERENCE_1KG}/Phase1/VCF_format/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
+echo "* 1000G phase 3."
+perl ${SCRIPTS}/parseVCF.pl --file ${REFERENCE_1KG}/Phase3/VCF_format/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
+echo ""
+echo "Gzipping reference files."
+gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
+gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
+echo ""
+echo "Getting some stats for 1000G phase 1."
+echo "- head"
+zcat ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz | head
+echo "- tail"
+zcat ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz | tail
+echo "- lines"
+zcat ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz | wc -l
+
+echo "Getting some stats for 1000G phase 3."
+echo "- head"
+zcat ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz | head
+echo "- tail"
+zcat ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz | tail
+echo "- lines"
+zcat ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz | wc -l
+ 
+### REFORMATTING SORBS -- because that is shitty formatted
+### SORBS.WHOLE.FABP4.20141117.txt.gz
+### SORBS.WHOLE.FABP4adjBMI.20141117.txt.gz
+### SORBS.WHOLE.FABP4adjBMIeGFR.20150703.txt.gz
 # 
-# echo ""
-# echo "Gzipping reference files."
-# gzip -v ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
-# gzip -v ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
-# 
-# 
-# echo ""
-# 
-# echo "Changing header 1000G phase 1."
-# mv -v ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz foo.gz
-# echo "VariantID	VariantID_alt1	VariantID_alt2	VariantID_alt3	VariantID_alt4	VariantID_alt5	VariantID_alt6	VariantID_alt7	VariantID_alt8	VariantID_alt9	VariantID_alt10	VariantID_alt11	VariantID_alt12	VariantID_alt13	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF" > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
-# zcat foo.gz | tail -n +2 >> ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
-# 
-# gzip -v ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt
-# rm -v foo.gz
-# 
-# echo ""
-# echo "Changing header 1000G phase 3."
-# mv -v ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz bar.gz
-# echo "VariantID	VariantID_alt1	VariantID_alt2	VariantID_alt3	VariantID_alt4	VariantID_alt5	VariantID_alt6	VariantID_alt7	VariantID_alt8	VariantID_alt9	VariantID_alt10	VariantID_alt11	VariantID_alt12	VariantID_alt13	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF" > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
-# zcat bar.gz | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
-# 
-# gzip -v ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt
-# rm -v bar.gz
-# 
-# echo ""
-# echo "Getting some stats for 1000G phase 1."
-# echo "- head"
-# zcat ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz | head
-# echo "- tail"
-# zcat ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz | tail
-# echo "- lines"
-# zcat ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz | wc -l
-# 
-# echo "Getting some stats for 1000G phase 3."
-# echo "- head"
-# zcat ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz | head
-# echo "- tail"
-# zcat ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz | tail
-# echo "- lines"
-# zcat ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz | wc -l
-# 
-# ### REFORMATTING SORBS -- because that is shitty formatted
-# ### SORBS.WHOLE.FABP4.20141117.txt.gz
-# ### SORBS.WHOLE.FABP4adjBMI.20141117.txt.gz
-# ### SORBS.WHOLE.FABP4adjBMIeGFR.20150703.txt.gz
-# 
-# ### REFORMAT SORBS model 3 with new MARKERID
+# ### REFORMAT SORBS model 1-3 with new MARKERID
 # echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.WHOLE.FABP4.20141117.edit.txt
 # echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMI.20141117.edit.txt
 # echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.edit.txt
-# 
-# echo ""
-# echo "Reformatting SORBS model 3..."
-# zcat ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.txt.gz | awk '{if($4=="I") 
-# { print $1, $2, $3, $4, "D", "+", $7, $8, $9, $10, $11, $12, $13, $14} else if($4=="D") 
-# { print $1, $2, $3, $4, "I", "+", $7, $8, $9, $10, $11, $12, $13, $14} else if($5=="D") 
-# { print $1, $2, $3, "I", $5, "+", $7, $8, $9, $10, $11, $12, $13, $14} else if($5=="I") 
-# { print $1, $2, $3, "D", $5, "+", $7, $8, $9, $10, $11, $12, $13, $14} else 
-# { print $1, $2, $3, $4, $5, "+", $7, $8, $9, $10, $11, $12, $13, $14} }' | 
-# awk '{ print "chr"$2":"$3":"$4"_"$5, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14}' | tail -n +2 >> ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.edit.txt 
 # 
 # ### REFORMAT SORBS model 1 and 2 with new MARKERID AND CHR/BP COLUMNS
 # echo "Reformatting SORBS model 1..."
@@ -118,6 +88,16 @@ ORIGINALDATA=${PROJECTDIR}/DATA_UPLOAD_FREEZE/1000G
 # awk -F ":" '{if($3=="") {print $1, $2} else {print $1, $2, $3}}' | 
 # awk '{if($16=="") { print "chr"$1":"$2":"$5"_"$6, $1, $2, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15} else 
 # {print "chr"$1":"$2":"$6"_"$7, $1, $2, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16} }' | tail -n +2  >> ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMI.20141117.edit.txt
+# 
+# echo ""
+# echo "Reformatting SORBS model 3..."
+# zcat ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.txt.gz | awk '{if($4=="I") 
+# { print $1, $2, $3, $4, "D", "+", $7, $8, $9, $10, $11, $12, $13, $14} else if($4=="D") 
+# { print $1, $2, $3, $4, "I", "+", $7, $8, $9, $10, $11, $12, $13, $14} else if($5=="D") 
+# { print $1, $2, $3, "I", $5, "+", $7, $8, $9, $10, $11, $12, $13, $14} else if($5=="I") 
+# { print $1, $2, $3, "D", $5, "+", $7, $8, $9, $10, $11, $12, $13, $14} else 
+# { print $1, $2, $3, $4, $5, "+", $7, $8, $9, $10, $11, $12, $13, $14} }' | 
+# awk '{ print "chr"$2":"$3":"$4"_"$5, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14}' | tail -n +2 >> ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.edit.txt 
 # 
 # echo ""
 # echo "- heads"
@@ -148,17 +128,70 @@ ORIGINALDATA=${PROJECTDIR}/DATA_UPLOAD_FREEZE/1000G
 # gzip -v ${ORIGINALDATA}/SORBS.WHOLE.FABP4.20141117.edit.txt
 # gzip -v ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMI.20141117.edit.txt
 # gzip -v ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.edit.txt
-#
-####
-#####################################################################################################
+# 
+# echo "Moving the shizzle..."
+# mv -v ${ORIGINALDATA}/SORBS.WHOLE.FABP4.20141117.txt.gz ${ORIGINALDATA}/SORBS_old/
+# mv -v ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMI.20141117.txt.gz ${ORIGINALDATA}/SORBS_old/
+# mv -v ${ORIGINALDATA}/SORBS.WHOLE.FABP4adjBMIeGFR.20150703.txt.gz ${ORIGINALDATA}/SORBS_old/
+# 
+# echo "REFORMAT SORBS chromosome 23 with new MARKERID..."
+# ### Marker	Chr	Position	Effect_allele	Other_allele	Strand	Beta	SE	Pval	EAF	Hwe	N	Imputed	Info
+# ### chrX:152062	X	152062	T	G	NA	-6.30296	22.0269	0.774764538994547	0.78289	NA	535	NA	1e-05
+# ### chrX:154678	X	154678	A	G	NA	-11.1693	23.8341	0.639336357981315	0.77739	NA	535	NA	1e-05
+# ### chrX:162640	X	162640	G	C	NA	-0.585175	43.8965	0.989363883922898	0.96792	NA	535	NA	1e-05
+# ### chrX:164498	X	164498	G	C	NA	-9.73634	41.8497	0.816033062667872	0.9725	NA	535	NA	1e-05
+# ###
+# ### SORBS.CHR23.FEMALES_AUTO.FABP4.20150812.txt.gz 
+# ### SORBS.CHR23.FEMALES_AUTO.FABP4adjBMI.20150812.txt.gz
+# ### SORBS.CHR23.FEMALES_AUTO.FABP4adjBMIeGFR.20150812.txt.gz
+# ### SORBS.CHR23.FEMALES_NOAUTO.FABP4.20150812.txt.gz
+# ### SORBS.CHR23.FEMALES_NOAUTO.FABP4adjBMI.20150812.txt.gz
+# ### SORBS.CHR23.FEMALES_NOAUTO.FABP4adjBMIeGFR.20150812.txt.gz
+# ### SORBS.CHR23.MALES_NOAUTO.FABP4.20150812.txt.gz
+# ### SORBS.CHR23.MALES_NOAUTO.FABP4adjBMI.20150812.txt.gz
+# ### SORBS.CHR23.MALES_NOAUTO.FABP4adjBMIeGFR.20150812.txt.gz
+# 
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.FEMALES_AUTO.FABP4.20150812.edit.txt
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.FEMALES_AUTO.FABP4adjBMI.20150812.edit.txt
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.FEMALES_AUTO.FABP4adjBMIeGFR.20150812.edit.txt
+# 
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.FEMALES_NOAUTO.FABP4.20150812.edit.txt
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.FEMALES_NOAUTO.FABP4adjBMI.20150812.edit.txt
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.FEMALES_NOAUTO.FABP4adjBMIeGFR.20150812.edit.txt
+# 
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.MALES_NOAUTO.FABP4.20150812.edit.txt
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.MALES_NOAUTO.FABP4adjBMI.20150812.edit.txt
+# echo "Marker Chr Position EffectAllele OtherAllele Strand Beta SE Pval EAF HWE N Imputed Info" > ${ORIGINALDATA}/SORBS.CHR23.MALES_NOAUTO.FABP4adjBMIeGFR.20150812.edit.txt
+# 
+# for SORBS in SORBS.CHR23.FEMALES_AUTO.FABP4.20150812  SORBS.CHR23.FEMALES_AUTO.FABP4adjBMI.20150812 SORBS.CHR23.FEMALES_AUTO.FABP4adjBMIeGFR.20150812 SORBS.CHR23.FEMALES_NOAUTO.FABP4.20150812 SORBS.CHR23.FEMALES_NOAUTO.FABP4adjBMI.20150812 SORBS.CHR23.FEMALES_NOAUTO.FABP4adjBMIeGFR.20150812 SORBS.CHR23.MALES_NOAUTO.FABP4.20150812 SORBS.CHR23.MALES_NOAUTO.FABP4adjBMI.20150812 SORBS.CHR23.MALES_NOAUTO.FABP4adjBMIeGFR.20150812 ; do 
+# 	echo "Reformatting ${SORBS}..."
+# 	zcat ${ORIGINALDATA}/${SORBS}.txt.gz | awk '{if($4=="I") 
+# 	{ print $1, $2, $3, $4, "D", $6, $7, $8, $9, $10, $11, $12, $13, $14} else if($4=="D") 
+# 	{ print $1, $2, $3, $4, "I", $6, $7, $8, $9, $10, $11, $12, $13, $14} else if($5=="D") 
+# 	{ print $1, $2, $3, "I", $5, $6, $7, $8, $9, $10, $11, $12, $13, $14} else if($5=="I") 
+# 	{ print $1, $2, $3, "D", $5, $6, $7, $8, $9, $10, $11, $12, $13, $14} else 
+# 	{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14} }' | 
+# 	awk -F ":" '{if($3=="") {print $1, $2} else {print $1, $2, $3}}' | 
+# 	awk '{if($16=="") { print "chr"$1":"$2":"$5"_"$6, $1, $2, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15} else 
+# 	{print "chr"$1":"$2":"$6"_"$7, $1, $2, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16} }' | tail -n +2  >> ${ORIGINALDATA}/${SORBS}.edit.txt
+# 	echo ""
+# 	echo "Gzipping the shizzle..."
+# 	gzip -v ${ORIGINALDATA}/${SORBS}.edit.txt
+# 	echo "Moving the shizzle..."
+# 	mv -v ${ORIGINALDATA}/${SORBS}.txt.gz ${ORIGINALDATA}/SORBS_old/
+# done
 
-### REDO (SORBS m1 + SORBS m2 + SORBS m3)
-${PROJECTDIR}/run_metagwastoolkit.sh meta_configuration.conf meta_files.test.list 1Gp1
+
+
+#####################################################################################################
+# 
+# ### REDOs
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.conf $(pwd)/metagwastoolkit.files.redo.list 1Gp1
 
 ### ALL
-###${PROJECTDIR}/run_metagwastoolkit.sh $(pwd)/meta_configuration.conf $(pwd)/meta_files.model1.list 1Gp1
-###${PROJECTDIR}/run_metagwastoolkit.sh $(pwd)/meta_configuration.conf $(pwd)/meta_files.model2.list 1Gp1
-###${PROJECTDIR}/run_metagwastoolkit.sh $(pwd)/meta_configuration.conf $(pwd)/meta_files.model3.list 1Gp1
+${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model1.conf $(pwd)/metagwastoolkit.files.model1.short.list 1Gp1
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model2.conf $(pwd)/metagwastoolkit.files.model2.list 1Gp1
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model3.conf $(pwd)/metagwastoolkit.files.model3.list 1Gp1
 
 
 

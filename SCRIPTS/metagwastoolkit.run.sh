@@ -77,9 +77,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.4.1"
+echobold "* Version:      v1.4.5"
 echobold ""
-echobold "* Last update:  2016-12-22"
+echobold "* Last update:  2017-04-23"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
@@ -167,6 +167,8 @@ else
 	QRUNTIMEWRAPPER=${QRUNTIMEWRAPPER} # from configuration file
 	QRUNTIMECLEANER=${QRUNTIMECLEANER} # from configuration file
 	QRUNTIMEPLOTTER=${QRUNTIMEPLOTTER} # from configuration file
+	QRUNTIMEMETAPREP=${QRUNTIMEMETAPREP} # from configuration file
+	QRUNTIMEANALYZER=${QRUNTIMEANALYZER} # from configuration file
 	
 	# - run memory
 	QMEM=${QMEM} # from configuration file
@@ -175,6 +177,8 @@ else
 	QMEMWRAPPER=${QMEMWRAPPER} # from configuration file
 	QMEMCLEANER=${QMEMCLEANER} # from configuration file
 	QMEMPLOTTER=${QMEMPLOTTER} # from configuration file
+	QMEMMETAPREP=${QMEMMETAPREP} # from configuration file
+	QMEMANALYZER=${QMEMANALYZER} # from configuration file
 	
 	#- mailing
 	QMAIL=${QMAIL} # from configuration file
@@ -191,7 +195,6 @@ else
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
-	
 	echo "Checking for the existence of the output directory [ ${OUTPUTDIRNAME} ]."
 	if [ ! -d ${PROJECTDIR}/${OUTPUTDIRNAME} ]; then
 		echo "> Output directory doesn't exist - Mr. Bourne will create it for you."
@@ -210,7 +213,8 @@ else
 		echo "> Subproject directory already exists."
 	fi
 	SUBPROJECTDIR=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}
-	
+
+	echo ""	
 	echo "Checking for the existence of the raw data directory [ ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW ]."
 	if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW ]; then
 		echo "> Raw data directory doesn't exist - Mr. Bourne will create it for you."
@@ -218,20 +222,29 @@ else
 	else
 		echo "> Raw data directory already exists."
 	fi
-	
 	# Setting directory for raw data.
 	RAWDATA=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	
+
+	echo ""		
 	echo "Checking for the existence of the meta-analysis results directory [ ${METAOUTPUT}/${SUBPROJECTDIRNAME}/META ]."
 	if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META ]; then
-		echo "> Meta-analysis results  directory doesn't exist - Mr. Bourne will create it for you."
+		echo "> Meta-analysis results directory doesn't exist - Mr. Bourne will create it for you."
 		mkdir -v ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META
 	else
-		echo "> Meta-analysis results  directory already exists."
+		echo "> Meta-analysis results directory already exists."
 	fi
-	
-	# Setting directory for raw data.
+	# Setting directory for meta-analysis data.
 	METARESULTDIR=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META
+	
+	echo "Checking for the existence of the meta-analysis temporary results directory [ ${METAOUTPUT}/${SUBPROJECTDIRNAME}/META/TEMP ]."
+	if [ ! -d ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META/TEMP ]; then
+		echo "> Meta-analysis results temporary directory doesn't exist - Mr. Bourne will create it for you."
+		mkdir -v ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META/TEMP
+	else
+		echo "> Meta-analysis results temporary directory already exists."
+	fi
+	# Setting directory for meta-analysis temporary data.
+	METATEMPRESULTDIR=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/META/TEMP
 	
 	##########################################################################################
 	### SETTING UP THE OUTPUT AND RAWDATA DIRECTORIES
@@ -428,18 +441,16 @@ else
  		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
  		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.qc -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
 
-
 	done < ${GWASFILES}
 	
-	
+ 	
 	#############################################################################
 	### META-ANALYSIS
 	#############################################################################
-	
+	#
 	# check that the cleaning was successful. 
 	# collect all unique variants
-	
-	# 
+	 
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Starting the meta-analysis. "
@@ -452,8 +463,8 @@ else
 	
 	echo ""
 	echo "We will collect all unique variants across all GWAS cohorts."
-	echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/meta.variantcollector.sh
- 	qsub -S /bin/bash -N meta.variantcollector -hold_jid gwas.wrapper -o ${METARESULTDIR}/meta.variantcollector.log -e ${METARESULTDIR}/meta.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.variantcollector.sh
+	echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
+ 	qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.wrapper -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
 
 	#=========================================================================================
 	#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS
@@ -487,15 +498,66 @@ else
 
 		echo ""
 		echo "* Reordering [ ${COHORT} ]..."
-		echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT} ${CHUNKSIZE}" > ${METARESULTDIR}/${COHORT}.meta.preparator.sh
- 		qsub -S /bin/bash -N ${COHORT}.meta.preparator -hold_jid meta.variantcollector -o ${METARESULTDIR}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}.meta.preparator.sh
+		echo "${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
+ 		qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
 	
 	done < ${GWASFILES}
-	
+# 
+# 					### !!! THIS PART STILL REQUIRES MANUAL START !!! ###
+# 					          ### can we make it automatic? ###
+# 
+# 	#=========================================================================================
+# 	#== PERFORM META-ANALYSIS PER CHUNK IN PARALLEL
+# 	#=========================================================================================
+# 	#
+# 	
+# 	RAWDATACOHORT=${RAWDATA}/${COHORT}
+# 	rm -v ${RAWDATACOHORT}/*remover.errors
+# 	rm -v ${RAWDATACOHORT}/*remover.log
+# 	rm -v ${RAWDATACOHORT}/*remover.sh
+# 	
+# 	# FUTURE VERSIONS WILL HAVE A SCRIPT TO AUTOMATICALLY MAKE THIS...
+# 	PARAMSFILE="${PARAMSFILE}" 
+# 	# MAKE A SCRIPT TO AUTOMATICALLY MAKE THIS...
+# 	VARIANTSFILES=$(ls ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.*) 
+# 
+# 	echo ""
+# 	echo "We will perform the meta-analysis per chunk of ${CHUNKSIZE} variants."
+# 	
+# 	for VARIANTFILE in ${VARIANTSFILES}; do 
+# 	
+# 		EXTENSION="${VARIANTFILE##*.}"
+#  		VARIANTFILEBASE=${VARIANTFILE%.*}
+#  		echo "* processing chunk [ ${EXTENSION} ] ..."
+# 		echo ""
+# 		echo "${SCRIPTS}/meta.analyzer.sh ${CONFIGURATIONFILE} ${PARAMSFILE} ${VARIANTFILEBASE} ${REFERENCE} ${METARESULTDIR} ${EXTENSION}" > ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
+#  		qsub -S /bin/bash -N meta.analyzer -hold_jid meta.preparator -o ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log -e ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors -l h_rt=${QRUNTIMEANALYZER} -l h_vmem=${QMEMANALYZER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
+# 	
+# 	done
+# 	
+# 	#=========================================================================================
+# 	#== CORRECTING P-VALUES & WRAPPING THE META-ANALYSIS RESULTS
+# 	#=========================================================================================
+# 	#
+#	# Some p-values are computed as 0 (because the Statistics module in Perl freaks out 
+#	# for chi-square above a certain threshold). Here we can recompute these p-values 
+#	# in R.
+#	#
+#	
+#	#cat $OUT.all.txt | awk ' $12 == 0 || $16 == 0 || $22 == 0 { print $1,$11,$15,$21 } ' > $OUT.all.needs_fixing.txt
+#	#R CMD BATCH -CL -$OUT.all.needs_fixing.txt -$OUT.all.fixed.txt $SCRIPTS/meta.R
+#	#echo "SNP P_SQRTN P_FIXED P_RANDOM" > $OUT.all.fixed.txt.2
+#	#tail -n +2 $OUT.all.fixed.txt >> $OUT.all.fixed.txt.2
+#	#$SCRIPTS/mergeTables.pl --file1 $OUT.all.fixed.txt.2 --file2 $OUT.all.txt --index SNP --replace > $OUT.all.corrected.txt
+#	#mv $OUT.all.corrected.txt $OUT.all.txt
+#	
+#	
+# 	echo "* Wrapping up meta-analysis of GWAS..."
+# 	### FOR DEBUGGING LOCALLY -- Mac OS X
+# 	### ${SCRIPTS}/meta.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
+# 	echo "${SCRIPTS}/meta.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+# 	qsub -S /bin/bash -N meta.wrapper -hold_jid meta.analyzer -o ${RAWDATACOHORT}/meta.wrapper.log -e ${RAWDATACOHORT}/meta.wrapper.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/meta.wrapper.sh
 
-	### chop up the SNP list into chunks of 100K SNPs -- for parallelization
-	#tail -n +2 $OUT/all_129_snps.txt | split -d -a 3 -l 125000 - $OUT/all_129_snps.txt.
-	
 	
 	###############################################################################
 	###
