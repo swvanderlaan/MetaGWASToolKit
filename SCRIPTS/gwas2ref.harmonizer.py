@@ -10,9 +10,9 @@
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "                                          GWAS TO REFERENCE HARMONIZER "
 print ""
-print "* Version          : v2.2.3"
+print "* Version          : v2.2.4"
 print ""
-print "* Last update      : 2017-04-23"
+print "* Last update      : 2017-04-24"
 print "* Written by       : Tim Bezemer (t.bezemer-2@umcutrecht.nl)."
 print "* Suggested for by : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print ""
@@ -34,8 +34,8 @@ from time import strftime
 import random
 import operator
 
-alt_ids = ["VariantID_alt1", "VariantID_alt2", "VariantID_alt3", "VariantID_alt4", "VariantID_alt5", "VariantID_alt6", "VariantID_alt7", "VariantID_alt8", "VariantID_alt9", "VariantID_alt10", "VariantID_alt11", "VariantID_alt12", "VariantID_alt13", "VariantID_alt14", "VariantID_alt15", "VariantID_alt16", "VariantID_alt17"]
-load_columns = ["VariantID","VariantID_alt1","VariantID_alt2","VariantID_alt3","VariantID_alt4","VariantID_alt5","VariantID_alt6","VariantID_alt7","VariantID_alt8","VariantID_alt9","VariantID_alt10","VariantID_alt11","VariantID_alt12","VariantID_alt13", "VariantID_alt14", "VariantID_alt15", "VariantID_alt16", "VariantID_alt17","CHR_REF","BP_REF","REF","ALT","AlleleA","AlleleB","VT","AF","EURAF","AFRAF","AMRAF","ASNAF","EASAF","SASAF"]
+alt_ids = ["VariantID_alt1", "VariantID_alt2", "VariantID_alt3"]
+load_columns = ["VariantID","VariantID_alt1","VariantID_alt2","VariantID_alt3","CHR_REF","BP_REF","REF","ALT","AlleleA","AlleleB","VT","AF","EURAF","AFRAF","AMRAF","ASNAF","EASAF","SASAF"]
 
 parser = argparse.ArgumentParser(description="Look up 'Marker' in GWAS dataset and find associated data in 1000G reference.")
 parser.add_argument("-i", "--identifier", help="The VariantID identifier to use (" + ", ".join(["VariantID"] + alt_ids) + ").", type=str)

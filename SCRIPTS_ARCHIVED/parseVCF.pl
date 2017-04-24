@@ -59,9 +59,27 @@ print STDERR "Setting variables...\n";
 my $chr = "";
 my $bp = "";
 my $vid = ""; # type 1: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-my $vid1 = ""; # type 2: 'chr[X]:bp[XXXXX]:A1_A2'
-my $vid2 = ""; # type 3: 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-my $vid3 = ""; # type 4: 'chr[X]:bp[XXXXX]:R_[D/I]'
+my $vid1 = ""; # type 2: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
+my $vid2 = ""; # type 3: 'rs[xxxx]' or '[X]:bp[XXXXX]:A1_A2'
+my $vid3 = ""; # type 4: 'rs[xxxx]' or '[X]:bp[XXXXX]:[I/D]_[D/I]'
+my $vid4 = ""; # type 5: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[D/I]' -- NOTE: here the ALT/AlleleB is in the name
+my $vid5 = ""; # type 6: 'rs[xxxx]' or '[X]:bp[XXXXX]:[D/I]' -- NOTE: here the ALT/AlleleB is in the name
+my $vid6 = ""; # type 7: '[X]:bp[XXXXX]:A1_A2'
+my $vid7 = ""; # type 8: '[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+my $vid8 = ""; # type 9: 'chr[X]:bp[XXXXX]:A1_A2'
+my $vid9 = ""; # type 10: 'chr[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+my $vid10 = ""; # type 11: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]'
+my $vid11 = ""; # type 12: 'rs[xxxx]' or '[X]:bp[XXXXX]'
+my $vid12 = ""; # type 13: 'chr[X]:bp[XXXXX]'
+my $vid13 = ""; # type 14: '[X]:bp[XXXXX]'
+my $vid14 = ""; # type 15: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
+my $vid15 = ""; # type 16: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
+my $vid16 = ""; # type 17: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+my $vid17 = ""; # type 18: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+my $vid18 = ""; # type 19: 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+my $vid19 = ""; # type 20: '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+my $vid20 = ""; # type 21: 'chr[X]:bp[XXXXX]:A1_A2' or 'chr[X]:bp[XXXXX]:[D/I]'
+my $vid21 = ""; # type 22: '[X]:bp[XXXXX]:A1_A2' or '[X]:bp[XXXXX]:[D/I]'
 
 my $REF = ""; # reference allele
 my $ALT = ""; # other allele
@@ -92,7 +110,7 @@ print STDERR "Creating output file...\n";
 open(OUT, '>', $output) or die "* ERROR: Could not create the output file [ $output ]!";
 
 print STDERR "* create header...\n";
-print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tVT\tAF\tEURAF\tAFRAF\tAMRAF\tASNAF\tEASAF\tSASAF\n";
+print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tVariantID_alt4\tVariantID_alt5\tVariantID_alt6\tVariantID_alt7\tVariantID_alt8\tVariantID_alt9\tVariantID_alt10\tVariantID_alt11\tVariantID_alt12\tVariantID_alt13\tVariantID_alt14\tVariantID_alt15\tVariantID_alt16\tVariantID_alt17\tVariantID_alt18\tVariantID_alt19\tVariantID_alt20\tVariantID_alt21\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tVT\tAF\tEURAF\tAFRAF\tAMRAF\tASNAF\tEASAF\tSASAF\n";
 
 print STDERR "* looping over file to extract relevant data...\n";
 my $dummy=<IN>;
@@ -167,47 +185,251 @@ while (my $row = <IN>) {
   	$AFRAF = "NA"
   	}
 
-### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+### adjust the key variantID -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
   if ($vareach[2] =~ m/(\.)/){
   	$vid = "chr$chr\:$bp\:$REF\_$ALT";
   } else {
   	$vid = $vareach[2]
   	}
 
-### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-  $vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+### adjust the key variantID1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+  } elsif ($vareach[2] =~ m/(\.)/ and length($REF) > 1){ 
+  		$vid1 = "chr$chr\:$bp\:I\_D";
+	  	$AlleleA = "I";
+  		$AlleleB = "D";
+  		} elsif ($vareach[2] =~ m/(\.)/ and length($ALT) > 1){ 
+  			$vid1 = "chr$chr\:$bp\:D\_I";
+  			$AlleleA = "D";
+	  		$AlleleB = "I";
+  			} else { 
+  				$vid1 = $vareach[2];
+  				}
 
-### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-  if (length($REF) == 1 and length($ALT) == 1){
-  	$vid2 = "chr$chr\:$bp\:$REF\_$ALT";
-  } elsif (length($REF) > 1){ 
-  		$vid2 = "chr$chr\:$bp\:I\_D";
+### adjust the key variantID2 -- # 'rs[xxxx]' or '[X]:bp[XXXXX]:A1_A2'
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid2 = "$chr\:$bp\:$REF\_$ALT";
+  } elsif ($vareach[2] =~ m/(\.)/ and length($REF) > 1){ 
+  		$vid2 = "$chr\:$bp\:$REF\_$ALT";
+  		} elsif ($vareach[2] =~ m/(\.)/ and length($ALT) > 1){ 
+  			$vid2 = "$chr\:$bp\:$REF\_$ALT";
+  			} else { 
+  				$vid2 = $vareach[2];
+  				}
+### adjust the key variantID3 -- # 'rs[xxxx]' or '[X]:bp[XXXXX]:[I/D]_[D/I]'
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid3 = "$chr\:$bp\:$REF\_$ALT";
+  } elsif ($vareach[2] =~ m/(\.)/ and length($REF) > 1){ 
+  		$vid3 = "$chr\:$bp\:I\_D";
   		$AlleleA = "I";
 		$AlleleB = "D";
-  		} elsif (length($ALT) > 1){ 
-  			$vid2 = "chr$chr\:$bp\:D\_I";
+  		} elsif ($vareach[2] =~ m/(\.)/ and length($ALT) > 1){ 
+  			$vid3 = "$chr\:$bp\:D\_I";
   			$AlleleA = "D";
 		  	$AlleleB = "I";
   			} else { 
-  				$vid2 = "chr$chr\:$bp\:$REF\_$ALT";
+  				$vid3 = $vareach[2];
+  				}
+### adjust the key variantID4 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:[D/I]' -- NOTE: here the ALT/AlleleB is in the name
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid4 = "$chr\:$bp\:$REF\_$ALT";
+  } elsif (length($REF) > 1){ 
+  		$vid4 = "$chr\:$bp\:D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid4 = "$chr\:$bp\:I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid4 = $vareach[2];
+  				}
+### adjust the key variantID5 -- # 'rs[xxxx]' or '[X]:bp[XXXXX]:[D/I]' -- NOTE: here the ALT/AlleleB is in the name
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid5 = "$chr\:$bp\:$REF\_$ALT";
+  } elsif (length($REF) > 1){ 
+  		$vid5 = "$chr\:$bp\:D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid5 = "$chr\:$bp\:I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid5 = $vareach[2];
+  				}
+### adjust the key variantID6 -- # '[X]:bp[XXXXX]:A1_A2'
+  $vid6 = "$chr\:$bp\:$REF\_$ALT";
+
+### adjust the key variantID7 -- # '[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid7 = "$chr\:$bp\:$REF\_$ALT";
+  } elsif (length($REF) > 1){ 
+  		$vid7 = "$chr\:$bp\:I\_D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid7 = "$chr\:$bp\:D\_I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid7 = "$chr\:$bp\:$REF\_$ALT";
+  				}
+  				
+### adjust the key variantID8 -- # 'chr[X]:bp[XXXXX]:A1_A2'
+  $vid8 = "chr$chr\:$bp\:$REF\_$ALT";
+  
+### adjust the key variantID9 -- # 'chr[X]:bp[XXXXX]:[REF/I/D]_[ALT/D/I]'
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid9 = "chr$chr\:$bp\:$REF\_$ALT";
+  } elsif (length($REF) > 1){ 
+  		$vid9 = "chr$chr\:$bp\:I\_D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid9 = "chr$chr\:$bp\:D\_I";
+  			$AlleleA = "D";
+			$AlleleB = "I";
+  			} else { 
+  				$vid9 = "chr$chr\:$bp\:$REF\_$ALT";
   				}
 
-### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
+### adjust the key variantID10 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]'
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid10 = "chr$chr\:$bp";
+  } else { 
+  	$vid10 = $vareach[2];
+  	}
+ 
+### adjust the key variantID11 -- # 'rs[xxxx]' or '[X]:bp[XXXXX]'
+  if ($vareach[2] =~ m/(\.)/ and length($REF) == 1 and length($ALT) == 1){
+  	$vid11 = "$chr\:$bp";
+  } else { 
+  	$vid11 = $vareach[2];
+  	}
+
+### adjust the key variantID12 -- # 'chr[X]:bp[XXXXX]'
+  $vid12 = "chr$chr\:$bp";
+
+### adjust the key variantID13 -- # '[X]:bp[XXXXX]'
+  $vid13 = "$chr\:$bp";
+  
+### adjust the key variantID14 -- # 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
   if (length($REF) == 1 and length($ALT) == 1){
-  	$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
+    	$vid14 = "chr$chr\:$bp";
+    } elsif (length($REF) > 1){ 
+    		$vid14 = "chr$chr\:$bp\:$REF\_$ALT";
+    		} elsif (length($ALT) > 1){ 
+    			$vid14 = "chr$chr\:$bp\:$REF\_$ALT";
+    			} else { 
+    				$vid14 = "chr$chr\:$bp";
+    				}  
+ 
+### adjust the key variantID15 -- # '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:A1_A2' (but ONLY for INDELS!!!)
+  if (length($REF) == 1 and length($ALT) == 1){
+    	$vid15 = "$chr\:$bp";
+    } elsif (length($REF) > 1){ 
+    		$vid15 = "$chr\:$bp\:$REF\_$ALT";
+    		} elsif (length($ALT) > 1){ 
+    			$vid15 = "$chr\:$bp\:$REF\_$ALT";
+    			} else { 
+    				$vid15 = "$chr\:$bp";
+    				}  
+
+### adjust the key variantID16 -- # 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid16 = "chr$chr\:$bp";
   } elsif (length($REF) > 1){ 
-  		$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
+  		$vid16 = "chr$chr\:$bp\:$ref_indel\_D";
   		$AlleleA = "$ref_indel";
 		$AlleleB = "D";
   		} elsif (length($ALT) > 1){ 
-  			$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
+  			$vid16 = "chr$chr\:$bp\:$ref_indel\_I";
   			$AlleleA = "$ref_indel";
 		  	$AlleleB = "I";
   			} else { 
-  				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
+  				$vid16 = "chr$chr\:$bp";
   				}
 
-print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
+### adjust the key variantID17 -- # '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:R_[D/I]' (but ONLY for INDELS!!!)
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid17 = "$chr\:$bp";
+  } elsif (length($REF) > 1){ 
+  		$vid17 = "$chr\:$bp\:$ref_indel\_D";
+  		$AlleleA = "$ref_indel";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid17 = "$chr\:$bp\:$ref_indel\_I";
+  			$AlleleA = "$ref_indel";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid17 = "$chr\:$bp";
+  				}
+
+
+### adjust the key variantID18 -- # 'chr[X]:bp[XXXXX]' or 'chr[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid18 = "chr$chr\:$bp";
+  } elsif (length($REF) > 1){ 
+  		$vid18 = "chr$chr\:$bp\:D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid18 = "chr$chr\:$bp\:I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid18 = "chr$chr\:$bp";
+  				}
+
+### adjust the key variantID19 -- # '[X]:bp[XXXXX]' or '[X]:bp[XXXXX]:[D/I]' (but ONLY for INDELS!!!)
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid19 = "$chr\:$bp";
+  } elsif (length($REF) > 1){ 
+  		$vid19 = "$chr\:$bp\:D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid19 = "$chr\:$bp\:I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid19 = "$chr\:$bp";
+  				}
+
+### adjust the key variantID20 -- # 'chr[X]:bp[XXXXX]:A1_A2' or 'chr[X]:bp[XXXXX]:[D/I]'
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid20 = "chr$chr\:$bp\:$REF\_$ALT";
+  } elsif (length($REF) > 1){ 
+  		$vid20 = "chr$chr\:$bp\:I_D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid20 = "chr$chr\:$bp\:D_I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid20 = "chr$chr\:$bp\:$REF\_$ALT";
+  				}
+
+### adjust the key variantID19 -- # '[X]:bp[XXXXX]:A1_A2' or '[X]:bp[XXXXX]:[D/I]'
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$vid21 = "$chr\:$bp\:$REF\_$ALT";
+  } elsif (length($REF) > 1){ 
+  		$vid21 = "$chr\:$bp\:I_D";
+  		$AlleleA = "I";
+		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$vid21 = "$chr\:$bp\:D_I";
+  			$AlleleA = "D";
+		  	$AlleleB = "I";
+  			} else { 
+  				$vid21 = "$chr\:$bp\:$REF\_$ALT";
+  				}
+
+ 				
+print OUT "$vid\t$vid1\t$vid2\t$vid3\t$vid4\t$vid5\t$vid6\t$vid7\t$vid8\t$vid9\t$vid10\t$vid11\t$vid12\t$vid13\t$vid14\t$vid15\t$vid16\t$vid17\t$vid18\t$vid19\t$vid20\t$vid21\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
 
 }
 
