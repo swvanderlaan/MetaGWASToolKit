@@ -65,8 +65,8 @@ my $vid3 = ""; # type 4: 'chr[X]:bp[XXXXX]:R_[D/I]'
 
 my $REF = ""; # reference allele
 my $ALT = ""; # other allele
-my $AlleleA = ""; # reference allele, with [REF/I/D] nomenclature
-my $AlleleB = ""; # other allele, with [REF/I/D] nomenclature
+my $AlleleA = ""; # reference allele, with [I/D] nomenclature
+my $AlleleB = ""; # other allele, with [I/D] nomenclature
 my $INFO = "";
 my $VT = ""; # type of variant
 my $AF = "";
@@ -104,10 +104,21 @@ while (my $row = <IN>) {
 	  $REF = $vareach[3]; # reference allele
 	  $ALT = $vareach[4]; # alternate allele
 	  $INFO = $vareach[7]; # info column -- refer to below for information
-	  $AlleleA = $vareach[3];
-	  $AlleleB = $vareach[4];
 
-### NOTE: $vareach[2]; # variant allele
+### adjust alleleA and alleleB when variantID is an INDEL
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$AlleleA = $vareach[3];
+	$AlleleB = $vareach[4];
+  } elsif (length($REF) > 1){ 
+  		$AlleleA = "I";
+  		$AlleleB = "D";
+  		} elsif (length($ALT) > 1){ 
+  			$AlleleA = "D";
+  			$AlleleB = "I";
+  			} else { 
+  				$AlleleA = $vareach[3];
+  				$AlleleB = $vareach[4];
+  				}
 
 ### get variant type
   if ($INFO =~ m/VT\=(SNP.*?)/){
@@ -115,8 +126,8 @@ while (my $row = <IN>) {
   } elsif ($INFO =~ m/VT\=(INDEL.*?)/){
   		$VT = "INDEL"
   		} else {
-  		$VT = "NA"
-  		}
+  		  $VT = "NA"
+  		  }
 
 ### get allele frequencies
   if ($INFO =~ m/\;AF\=(.*?)(;)/){
@@ -182,12 +193,8 @@ while (my $row = <IN>) {
   	$vid2 = "chr$chr\:$bp\:$REF\_$ALT";
   } elsif (length($REF) > 1){ 
   		$vid2 = "chr$chr\:$bp\:I\_D";
-  		$AlleleA = "I";
-		$AlleleB = "D";
   		} elsif (length($ALT) > 1){ 
   			$vid2 = "chr$chr\:$bp\:D\_I";
-  			$AlleleA = "D";
-		  	$AlleleB = "I";
   			} else { 
   				$vid2 = "chr$chr\:$bp\:$REF\_$ALT";
   				}
@@ -197,12 +204,8 @@ while (my $row = <IN>) {
   	$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
   } elsif (length($REF) > 1){ 
   		$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
-  		$AlleleA = "$ref_indel";
-		$AlleleB = "D";
   		} elsif (length($ALT) > 1){ 
   			$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
-  			$AlleleA = "$ref_indel";
-		  	$AlleleB = "I";
   			} else { 
   				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
   				}
