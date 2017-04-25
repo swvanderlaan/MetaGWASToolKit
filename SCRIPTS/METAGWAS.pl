@@ -539,7 +539,7 @@ while(my $c = <DBSNP>){
 	
 	my $strand = $fields[4]; 
     if ( $strand eq "+" ) { 
-     	print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+     	#print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
 		next; 
 	}
     
@@ -887,14 +887,14 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     if ( $#fields == 9 ) { 
     	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ].\n";
     	if ( $fields[9] != "NA" ) {
-    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting.";
+    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting.\n";
     		$ratio[$study] = $fields[9];
     		} else {
-    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.";
+    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
     		$ratio[$study] = 1; 
     		}
     	} else { 
-    		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.";
+    		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
     		$ratio[$study] = 1; 
     	}
     	

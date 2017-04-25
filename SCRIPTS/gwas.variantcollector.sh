@@ -70,9 +70,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          GWASVARIANTCOLLECTOR"
 echobold ""
-echobold "* Version:      v1.0.3"
+echobold "* Version:      v1.0.4"
 echobold ""
-echobold "* Last update:  2016-12-27"
+echobold "* Last update:  2017-04-25"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Collects all variants into one file."
 echobold ""
@@ -142,6 +142,7 @@ else
 	echo ""
 	echo "* Chopping up the unique variant list into chunks of ${CHUNKSIZE} -- for parallelization"
 	tail -n +2 ${METARESULTDIR}/meta.all.unique.variants.txt | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.
+	ls ${METATEMPRESULTDIR} > ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.list
 	echo ""
 	echo "All done! Let's have a beer, buddy."
 

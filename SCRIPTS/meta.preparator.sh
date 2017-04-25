@@ -128,9 +128,6 @@ else
 	rm -v ${RAWDATACOHORT}/*remover.errors
 	rm -v ${RAWDATACOHORT}/*remover.log
 	rm -v ${RAWDATACOHORT}/*remover.sh
-# 	mkdir -v ${RAWDATACOHORT}/${COHORT}.pictures
-# 	cp -vf ${RAWDATACOHORT}/*.png ${RAWDATACOHORT}/${COHORT}.pictures
-# 	tar -zcvf ${RAWDATACOHORT}/${COHORT}.pictures.tar.gz ${RAWDATACOHORT}/${COHORT}.pictures
 	
 	echo ""	
 	echo "We will collect all unique variants across all GWAS cohorts..."
@@ -154,13 +151,11 @@ else
 		echo "* Prepping split chunk [ ${BASESPLITFILE} ] while re-ordering columns..."
 		echo ""
 		### REQUIRED Columns: VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
-		cat ${SPLITFILE} | awk ' { print $1, $4, $5, $14, $15, $16, $7, $8, $9, $13} ' > ${METAPREPDIRCOHORT}/tmp_file
+		cat ${SPLITFILE} | awk ' { print $1, $4, $5, $14, $15, $16, $7, $8, $9, $13 } ' > ${METAPREPDIRCOHORT}/tmp_file
 		echo " - renaming the temporary file."
 		mv -fv ${METAPREPDIRCOHORT}/tmp_file ${METAPREPDIRCOHORT}/${BASESPLITFILE}
 		rm -v ${SPLITFILE}
-	done	
-	
-	ls ${METAPREPDIRCOHORT} > ${METAPREPDIRCOHORT}/meta.all.unique.variants.reorder.split.list
+	done
 	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
