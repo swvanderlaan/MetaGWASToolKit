@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version: METAGWAS2.1.3"
+# Version: METAGWAS2.1.4"
 #
-# Last update			: 2017-04-23"
+# Last update			: 2017-04-25"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
@@ -34,7 +34,7 @@
 #
 #    Expected file format (where the number indicates the column):
 #
-#	 VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF  Info
+#	 VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF  Inf0
 #	 1         2   3  4    5  6 7            8           9    10
 #
 #    where:
@@ -46,7 +46,7 @@
 #    - 'OtherAllele' is the other allele,
 #    - 'EAF' refers to the allele frequency of the effect allele (EffectAllele), 
 #    - 'Info' is the ratio of the observed variance of the dosage to the expected (binomial) 
-#    variance (i.e. the imputation quality, info-score),
+#    variance (i.e. the imputation quality, info-score).
 #
 #    Columns 2-10 are repeated (on the same line) for every additional GWAS that is part of the
 #    meta-analysis.
@@ -169,7 +169,8 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.0 | 20-04-2017                               +\n";
+print STDOUT "+                                 version 2.0 | 25-04-2017                               +\n";
+print STDOUT "+                              (formely known as [ MANTEL ])                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
@@ -866,7 +867,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     chomp $c;
     my @fields = split /\s+/, $c;
 
-    if ( $fields[0] ne $variant ) { die "*** ERROR *** [ $filename[$study] ] is not in order with [ $variantFile ] -- was expecting $variant but got $fields[0]. \n"; }
+    if ( $fields[0] ne $variant ) { die "*** ERROR *** [ $filename[$study] ] is not in order with [ $variantFile ] -- was expecting [ $variant ] but got [ $fields[0] ]. \n"; }
 
     if ( $fields[1] eq "X" ) { $chr[$study] = 23; }
     elsif ( $fields[1] eq "Y" ) { $chr[$study] = 24; }
@@ -882,7 +883,22 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $a2[$study] = allele_1234_to_ACGT( $fields[7] );
     $af1[$study] = $fields[8];  
 
-    if ( $#fields == 9 ) { $ratio[$study] = $fields[9]; } else { $ratio[$study] = 1; }
+	# checking how many fields we have to determine the value of $ratio
+    if ( $#fields == 9 ) { 
+    	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ].\n";
+    	if ( $fields[9] != "NA" ) {
+    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting.";
+    		$ratio[$study] = $fields[9];
+    		} else {
+    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.";
+    		$ratio[$study] = 1; 
+    		}
+    	} else { 
+    		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.";
+    		$ratio[$study] = 1; 
+    	}
+    	
+    
   }
 
   ### reset skip 

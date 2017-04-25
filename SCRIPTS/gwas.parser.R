@@ -428,12 +428,6 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, BP = as.integer(BP)) # convert to numeric
   
-  ### OBSOLETE -- if you feeding 1 file, this may be useful, if you are batching the data, 
-  ### this may not be that useful (the data will be ordered per batch!)
-  ###cat("\n* arranging based on chromosomal base pair position...") 
-  ###GWASDATA_RAWSELECTION <- arrange(GWASDATA_RAWSELECTION, CHR, BP) # first by chr, then by bp
-  ### OBSOLETE
-  
   ### Calculating general statistics if not available
   cat("\n* calculating 'allele frequencies'...")
   ### calculate MAF -- *only* if MAF/minor allele/major allele *not* present
@@ -557,7 +551,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   } 
   
   if(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
-    GWASDATA_PARSED$Info <- ifelse(GWASDATA_RAWSELECTION$Info != "NA", GWASDATA_RAWSELECTION$Info, "NA")
+    GWASDATA_PARSED$Info <- ifelse(GWASDATA_RAWSELECTION$Info != "NA", GWASDATA_RAWSELECTION$Info, "NA") 
   } else {
     GWASDATA_PARSED$Info <- "1" # in case of genotyped data
   }

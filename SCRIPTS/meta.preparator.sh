@@ -72,9 +72,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          METAGWASPREPARATOR"
 echobold ""
-echobold "* Version:      v1.0.9"
+echobold "* Version:      v1.0.10"
 echobold ""
-echobold "* Last update:  2017-04-20"
+echobold "* Last update:  2017-04-25"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Collects all variants into one file."
 echobold ""
@@ -122,22 +122,31 @@ else
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "We will collect all unique variants across all GWAS cohorts..."
+	echo "We will do some cleaning first..."
 	
+	### Remove remover-script results
+	rm -v ${RAWDATACOHORT}/*remover.errors
+	rm -v ${RAWDATACOHORT}/*remover.log
+	rm -v ${RAWDATACOHORT}/*remover.sh
+# 	mkdir -v ${RAWDATACOHORT}/${COHORT}.pictures
+# 	cp -vf ${RAWDATACOHORT}/*.png ${RAWDATACOHORT}/${COHORT}.pictures
+# 	tar -zcvf ${RAWDATACOHORT}/${COHORT}.pictures.tar.gz ${RAWDATACOHORT}/${COHORT}.pictures
+	
+	echo ""	
+	echo "We will collect all unique variants across all GWAS cohorts..."
 	echo ""
 	echo "* Reordering [ ${COHORT} ]..."
 	echo " - merging cleaned data with uniquefied variant list..." 
 	${SCRIPTS}/mergeTables.pl --file1 ${RAWDATACOHORT}/${COHORT}.cdat.gz --file2 ${METARESULTDIR}/meta.all.unique.variants.txt --index VariantID --format GZIP1 > ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat
 	echo " - gzipping the shizzle..."
-	gzip -v ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat
+	gzip -fv ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat
 	echo " - splitting cleaned, and re-ordered data into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
 	zcat ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat.gz | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/${COHORT}.reorder.split.
 	
 	### HEADER .cdat-file
-	### VariantID Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
-	### 1		  2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
+	### VariantID Marker MarkerOriginal	CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
+	### 1		  2      	3   		4   5      6            7           8   9   10  11    12   13   14 15 16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34	35
 
-	### Adding headers.
 	for SPLITFILE in ${METATEMPRESULTDIR}/${COHORT}.reorder.split.*; do
 		### determine basename of the splitfile
 		BASESPLITFILE=$(basename ${SPLITFILE})
@@ -145,12 +154,14 @@ else
 		echo "* Prepping split chunk [ ${BASESPLITFILE} ] while re-ordering columns..."
 		echo ""
 		### REQUIRED Columns: VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
-		cat ${SPLITFILE} | awk ' { print $1, $3, $4, $13, $14, $15, $6, $7, $8, $12} ' > ${METAPREPDIRCOHORT}/tmp_file
+		cat ${SPLITFILE} | awk ' { print $1, $4, $5, $14, $15, $16, $7, $8, $9, $13} ' > ${METAPREPDIRCOHORT}/tmp_file
 		echo " - renaming the temporary file."
 		mv -fv ${METAPREPDIRCOHORT}/tmp_file ${METAPREPDIRCOHORT}/${BASESPLITFILE}
 		rm -v ${SPLITFILE}
 	done	
-
+	
+	ls ${METAPREPDIRCOHORT} > ${METAPREPDIRCOHORT}/meta.all.unique.variants.reorder.split.list
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
 

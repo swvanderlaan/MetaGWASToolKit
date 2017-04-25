@@ -225,7 +225,7 @@ print STDERR "\n";
 print STDERR "\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2016 Vinicius Tragante dó Ó & Sander W. van der Laan                     +\n";
+print STDERR "+ Copyright (c) 2016-2017 Vinicius Tragante dó Ó & Sander W. van der Laan                +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
 print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";

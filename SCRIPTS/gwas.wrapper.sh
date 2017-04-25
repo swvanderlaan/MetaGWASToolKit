@@ -135,9 +135,9 @@ else
 	
 	echo ""	
 	echo "* Making necessary 'summarized' files..."
-	echo "Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
-	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
-	echo "VariantID	Marker	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
+	echo "Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed" > ${PROJECTDIR}/${COHORTNAME}.pdat
+	echo "VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.rdat
+	echo "VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	EAF	MAF	MAC	HWE_P	Info	Beta	SE	P	N	N_cases	N_controls	Imputed	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	VT	AF	EURAF	AFRAF	AMRAF	ASNAF	EASAF	SASAF	Reference" > ${PROJECTDIR}/${COHORTNAME}.cdat
 	
 		
 	### Setting the patterns to look for -- never change this

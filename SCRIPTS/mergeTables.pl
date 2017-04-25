@@ -4,15 +4,15 @@
 #
 # Description: 	merges two files based on some key-column into one file. The lines do not 
 #               have to be sorted.
-#				BETA: USE WITH EITHER OR BOTH FILES GZIPPED.
 #
 # Original written and published by:
 # 		* Paul I.W. de Bakker, piwdebakker@mac.com
-#		* 4 July 2014
+#		* 4 July 2009
+#
 # Written by:	Sander W. van der Laan; UMC Utrecht, Utrecht, the Netherlands; 
 #               s.w.vanderlaan-2@umcutrecht.nl.
-# Version:		1.0
-# Update date: 	2016-02-17
+# Version:		2.0
+# Update date: 	2017-04-17
 #
 # Usage:		perl merge_tables.pl --file1 [INPUT_FILE_1] --file2 [INPUT_FILE_2] --index [INDEX_STRING] --format [GZIP1/GZIP2/GZIPB/NORM] (optional: --replace)
 
@@ -20,9 +20,6 @@
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                     MERGE TABLES FILES                                 +\n";
 print STDERR "+                                            V2.0                                        +\n";
-print STDERR "+                                         28-06-2016                                     +\n";
-print STDERR "+                              Written by: Sander W. van der Laan                        +\n";
-print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ \n";
 print STDERR "+ Hello. I am starting the merging of two files.\n";
@@ -58,7 +55,7 @@ GetOptions(
 # IF STATEMENT TO CHECK CORRECT INPUT
 #if ( $IndexStr eq "" || $Table1 eq "" || $Table2 eq "" || $zipped eq "" || $outfile eq "" ) {
 if ( $IndexStr eq "" || $Table1 eq "" || $Table2 eq "" || $zipped eq "" ) {
-    print "Usage: %>merge_tables.pl --file1 datafile_1 --file2 datafile_2 --index index_string --format [GZIP1/GZIP2/GZIPB/NORM] [--replace]\n";
+    print "Usage: %>mergeTables.pl --file1 datafile_1 --file2 datafile_2 --index index_string --format [GZIP1/GZIP2/GZIPB/NORM] [--replace]\n";
     print "";
     print "Prints all contents of datafile_2, each row is followed by the corresponding columns from datafile_1 (indexed on index_string).\n";
     print "The argument --format indicates which of the files are gzipped.\n";
@@ -209,7 +206,7 @@ print STDERR "+ The current date and time is: $newtime.\n";
 print STDERR "+ \n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2016 Sander W. van der Laan                                              +\n";
+print STDERR "+ Copyright (c) 2016-2017 Sander W. van der Laan                                         +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
 print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";
