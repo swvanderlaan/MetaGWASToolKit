@@ -532,9 +532,9 @@ while(my $c = <DBSNP>){
     $dbsnp_pos{$variant} = $fields[1] + 1;
     $dbsnp_function{$variant} = $fields[7];
 #     $dbsnp_alleles{$variant} = [ @alleles ];
-    $dbsnp_a1{$variant} = $alleles[0];
-    $dbsnp_a2{$variant} = $alleles[1];
-	
+    $dbsnp_a1{$variant} = $alleles[0]; # reference allele
+    $dbsnp_a2{$variant} = $alleles[1]; # alternative allele, equals to AlleleB in 1000G and thus the effect allele of 1000G imputed data
+    
 	my $strand = $fields[4]; 
     if ( $strand eq "+" ) { 
 #      	print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
@@ -620,8 +620,8 @@ while(my $c = <REFFREQ>){
 
   if ( ( ! defined( $skip_list{$variant} ) ) && defined( $variantlist{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) ) {
 
-    my $a1 = $fields[4];  # alternative allele (can be 0 if monomorphic -- specifically in PLINK-generated files)
-    my $a2 = $fields[3];  # reference allele
+    my $a1 = $fields[3];  # reference allele
+    my $a2 = $fields[4];  # alternative allele, equals to AlleleB in 1000G and thus the effect allele of 1000G imputed data
 
     # HapMap 2 based
     if ( $reference eq "HM2" && $population eq "EUR" ) { 
@@ -835,6 +835,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my $other_allele = $ref2;
   my @study_okay = ();
   my @flip_alleles = ();
+  my @flip_indels = (); # for INDELs of the form R/D/I
   my @sample_size_eff = ();
   my $n_okay_studies = 0;
   my $total_weight = 0;
@@ -930,76 +931,77 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
       $study_okay[$study] = 0;
 
     } else {
+    	  ### allele a1 and allele a2 match the two reference alleles 
+    	  	if ( ( $a1[$study] eq $ref1 && $a2[$study] eq $ref2 ) || ( $a1[$study] eq $ref2 && $a2[$study] eq $ref1 ) ) { 
+    		    $flip_alleles[$study] = 0;
+    		  ### frequency-based test for A/T or C/G SNPs
+    		    if ( ( $a1[$study] eq "A" && $a2[$study] eq "T" ) || ( $a1[$study] eq "T" && $a2[$study] eq "A" ) || ( $a1[$study] eq "C" && $a2[$study] eq "G" ) || ( $a1[$study] eq "G" && $a2[$study] eq "C" ) ) {
+				    if ( $reference_present{$variant} = 1 ) {
+						if ( $a1[$study] eq $ref1 && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+						}
+						elsif ( $a2[$study] eq $ref1 && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+						}
+						elsif ( $a1[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+						    $flip_alleles[$study] = 1;
+						}
+						elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+						    $flip_alleles[$study] = 1;
+						}
+						else {
+						    print STDERR "* In $study_name[$study], $variant has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.\n";
+						    $study_okay[$study] = 0;
+						}
+				    }
+				}   
+    		   ### frequency-based test for non-A/T and non-C/G SNPs 
+    		    else {
+				    if ( $reference_present{$variant} =1 ) {
+						if ( $a1[$study] eq $ref1 && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+						}
+						elsif ( $a2[$study] eq $ref1 && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+						}
+						else {
+						    print STDERR "* In $study_name[$study], $variant has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
+						    $study_okay[$study] = 0;
+						}
+				    }
+				}
+    		  ### Warning for allele frequencies between 0.45 and 0.55 for A/T and C/G SNPs
+    		  if ( ( ( $a1[$study] eq "A" && $a2[$study] eq "T" ) || ( $a1[$study] eq "T" && $a2[$study] eq "A" ) || ( $a1[$study] eq "C" && $a2[$study] eq "G" ) || ( $a1[$study] eq "G" && $a2[$study] eq "C" ) ) && ( ( $af1[$study] > $freq_warning && $af1[$study] < 1-$freq_warning ) || ( $reference_a1_freq{$variant} > $freq_warning && $reference_a1_freq{$variant} < 1-$freq_warning ) ) ) {
+			  	$caveat{$variant} .= "ATCG_variant_with_$low_freq_warning<EAF<$hifreq_warning";
+    		  }
+		
+    		}
+		### allele a1 and allele a2 do not match the two reference alleles 
+    	elsif ( ( $a1[$study] eq allele_flip( $ref1 ) && $a2[$study] eq allele_flip( $ref2 ) ) || ( $a1[$study] eq allele_flip( $ref2 ) && $a2[$study] eq allele_flip( $ref1 ) ) ) { 
+    			    $flip_alleles[$study] = 1;
+    			  
+    		  ### frequency-based test for non-A/T and non-C/G SNPs
+    		  if ( $reference_present{$variant} =1 ) {
+				 	if ( $a1[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+				 	}
+				 	elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
+				 	}
+				 	### in case of studies that have R/D/I coding for INDELs
+				 	elsif ( ( $a1 eq "D" && $a2 eq "I" && length($ref1) < length($ref2) ) || ( $a1 eq "I" && $a2 eq "D" && length($ref1) > length($ref2) ) || ($a1 eq "R" && $a2 eq "D" && length($ref1) > length($ref2) ) || ( $a1 eq "R" && $a2 eq "I" && length($ref1) < length($ref2) ) {
+					$flip_alleles[$study] = 0;
+					}
+					elsif ( ( $a1 eq "D" && $a2 eq "I" && length($ref1) > length($ref2) ) || ( $a1 eq "I" && $a2 eq "D" && length($ref1) < length($ref2) ) || ($a1 eq "R" && $a2 eq "D" && length($ref1) < length($ref2) ) || ( $a1 eq "R" && $a2 eq "I" && length($ref1) > length($ref2) ) {
+					$flip_indels[$study] = 1;
+					}
+				 	else {
+					print STDERR "* In $study_name[$study], $variant has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
+					$study_okay[$study] = 0;
+				 	}
+    		    }
+    	}
 
-      ### allele a1 and allele a2 match the two reference alleles 
-      if ( ( $a1[$study] eq $ref1 && $a2[$study] eq $ref2 ) || ( $a1[$study] eq $ref2 && $a2[$study] eq $ref1 ) ) { 
-        $flip_alleles[$study] = 0;
-
-      ### frequency-based test for A/T or C/G SNPs
-        if ( ( $a1[$study] eq "A" && $a2[$study] eq "T" ) || ( $a1[$study] eq "T" && $a2[$study] eq "A" ) || ( $a1[$study] eq "C" && $a2[$study] eq "G" ) || ( $a1[$study] eq "G" && $a2[$study] eq "C" ) ) {
-	    if ( $reference_present{$variant} = 1 ) {
-		if ( $a1[$study] eq $ref1 && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-		}
-		elsif ( $a2[$study] eq $ref1 && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-		}
-		elsif ( $a1[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-		    $flip_alleles[$study] = 1;
-		}
-		elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-		    $flip_alleles[$study] = 1;
-		}
-		else {
-		    print STDERR "* In $study_name[$study], $variant has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.\n";
-		    $study_okay[$study] = 0;
-		}
-	    }
-	}   
-        
-       ### frequency-based test for non-A/T and non-C/G SNPs 
-        else {
-	    if ( $reference_present{$variant} =1 ) {
-		if ( $a1[$study] eq $ref1 && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-		}
-		elsif ( $a2[$study] eq $ref1 && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-		}
-		else {
-		    print STDERR "* In $study_name[$study], $variant has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
-		    $study_okay[$study] = 0;
-		}
-	    }
-        
-	}
-
-      ### Warning for allele frequencies between 0.45 and 0.55 for A/T and C/G SNPs
-      if ( ( ( $a1[$study] eq "A" && $a2[$study] eq "T" ) || ( $a1[$study] eq "T" && $a2[$study] eq "A" ) || ( $a1[$study] eq "C" && $a2[$study] eq "G" ) || ( $a1[$study] eq "G" && $a2[$study] eq "C" ) ) && ( ( $af1[$study] > $freq_warning && $af1[$study] < 1-$freq_warning ) || ( $reference_a1_freq{$variant} > $freq_warning && $reference_a1_freq{$variant} < 1-$freq_warning ) ) ) {
-	  $caveat{$variant} .= "ATCG_variant_with_$low_freq_warning<EAF<$hifreq_warning";
-      }
-
-    }
-
-      ### allele a1 and allele a2 do not match the two reference alleles 
-      elsif ( ( $a1[$study] eq allele_flip( $ref1 ) && $a2[$study] eq allele_flip( $ref2 ) ) || ( $a1[$study] eq allele_flip( $ref2 ) && $a2[$study] eq allele_flip( $ref1 ) ) ) { 
-        $flip_alleles[$study] = 1;
-      
-      ### frequency-based test for non-A/T and non-C/G SNPs
-        if ( $reference_present{$variant} =1 ) {
-	    if ( $a1[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-	    }
-	    elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
-	    }
-	    else {
-		print STDERR "* In $study_name[$study], $variant has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
-		$study_okay[$study] = 0;
-	    }
-        }
-    }
-      ### the coded allele (a1) and the noncoded allele do not match the two reference alleles -- even after flipping
-      else {
-        print STDERR "* In $study_name[$study], $variant has alleles $a1[$study] $a2[$study] inconsistent with Reference alleles $ref1 $ref2 -- skipping this variant for this study.\n"; 
-        $study_okay[$study] = 0;
-      }
-    } 
-
+    	  ### the coded allele (a1) and the noncoded allele do not match the two reference alleles -- even after flipping
+    	  else {
+    	    print STDERR "* In $study_name[$study], $variant has alleles $a1[$study] $a2[$study] inconsistent with Reference alleles $ref1 $ref2 -- skipping this variant for this study.\n"; 
+    	    $study_okay[$study] = 0;
+    	  }
+    	} 
     if ( $study_okay[$study] == 1 ) {
 #       print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
       $sample_size_eff[$study] = $sample_size[$study] * ( $ratio[$study] > 1 ? 1 : $ratio[$study] );
@@ -1047,9 +1049,18 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
         my $sign = 1;
         my $alleles_flipped = "N";
 
+		### how to handle A/T/C/G variants including INDELs
         if ( $flip_alleles[$study] == 1 ) {
           $a1[$study] = allele_flip( $a1[$study] );
           $a2[$study] = allele_flip( $a2[$study] );
+          $alleles_flipped = "Y";
+          $allele_flips[$study]++;
+        }
+        
+        ### how to handle INDELs of the form R/D/I
+        if ( $flip_indels[$study] == 1 ) {
+          $a1[$study] = indel_flip( $a1[$study], $a2[$study] );
+          $a2[$study] = indel_flip( $a1[$study], $a2[$study] );
           $alleles_flipped = "Y";
           $allele_flips[$study]++;
         }
@@ -1311,8 +1322,6 @@ sub allele_flip($)
 			elsif ( $current_base eq "C" ) { $flipped_allele .= "G"; }
 			elsif ( $current_base eq "G" ) { $flipped_allele .= "C"; }
 			elsif ( $current_base eq "T" ) { $flipped_allele .= "A"; }
-			elsif ( $current_base eq "I" ) { $flipped_allele .= "D"; }
-			elsif ( $current_base eq "D" ) { $flipped_allele .= "I"; }
 			else { $flipped_allele .= $current_base; }
 # 			print STDERR "T ***DEBUG*** he allele was flipped from [ $current_base ] to [ $flipped_allele ].\n";
 		}
@@ -1335,6 +1344,29 @@ sub allele_flip($)
 # 		print STDERR " ***DEBUG*** The flipped base is: \t[ $flipped_allele ].\n";
    }
 	return $flipped_allele;
+}
+
+sub indels_flip($)
+{
+	my $indel_a1 = shift;
+	my $indel_a2 = shift;
+# 	my $flipped_indel_a1 = "";
+# 	my $flipped_indel_a2 = "";
+	my $flipped_indel_a1 = $indel_a2;
+	my $flipped_indel_a2 = $indel_a1;
+	print STDERR " ***DEBUG*** Given alleles: \t\t[ $indel_a1 / $indel_a2 ].\n";
+# 	for (my $i=0; $i < length($indel_a1); $i++) {
+# 		my $current_base_indel_a1 = substr $indel_a1, $i, 1;
+# 		my $current_base_indel_a2 = substr $indel_a2, $i, 1;
+# 		if ( $current_base_indel_a1 eq "D" && $current_base_indel_a2 eq "I" ) { $flipped_indel_a1 .= "I"; $flipped_indel_a2 .= "D"; }
+# 		elsif ( $current_base_indel_a1 eq "I" && $current_base_indel_a2 eq "D" ) { $flipped_indel_a1 .= "D"; $flipped_indel_a2 .= "I"; }
+#  		elsif ( $current_base_indel_a1 eq "R" && $current_base_indel_a2 eq "D" ) { $flipped_indel_a1 .= "D"; $flipped_indel_a2 .= "R"; }
+#  		elsif ( $current_base_indel_a1 eq "R" && $current_base_indel_a2 eq "I" ) { $flipped_indel_a1 .= "I"; $flipped_indel_a2 .= "R"; }
+# 		else { $flipped_indel .= $current_base; }
+# 
+ 		print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
+		}
+	return $flipped_indel;
 }
 
 sub allele_1234_to_ACGT($)
