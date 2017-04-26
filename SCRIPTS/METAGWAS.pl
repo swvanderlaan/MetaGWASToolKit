@@ -416,8 +416,6 @@ while(my $c = <PARAMS>){
   }
   close($FILE);
 
-  print STDOUT "* Reading [ $filename[$nstudies] ] with [ $counter ] variants...\n";
-
   ### reopen it and skip first line (if --no_header is not specified)
   $fh[$nstudies]->open($filename[$nstudies]) || die "*** ERROR *** [ $filename[$nstudies] ] did not open. Please double back.\n";
   if ( ! $no_header ) { 
