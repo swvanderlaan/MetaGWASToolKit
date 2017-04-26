@@ -1011,12 +1011,12 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   }
 
   if ( $n_okay_studies == 0 ) { 
-    print STDERR "* For $variant has alleles $a1[$study] and $a2[$study]; while reference has $ref1/$ref2. There is no information from any study -- so skipping this variant.\n";
+    print STDERR "* For $variant has alleles [ $ref1/$ref2 ] in the Reference. There is no information from any study -- so skipping this variant.\n";
     $n_skipped_uninformative++;
   }
   
   if ( $n_eff == 0 ) { 
-    print STDERR "* For $variant has alleles $a1[$study] and $a2[$study]; while reference has $ref1/$ref2. The effective sample size = 0 -- so skipping this variant.\n";
+    print STDERR "* For $variant has alleles [ $ref1/$ref2 ] in the Reference. The effective sample size = 0 -- so skipping this variant.\n";
     $n_skipped_uninformative++;
   }
 
