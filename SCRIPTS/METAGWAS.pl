@@ -449,10 +449,10 @@ print STDOUT "Total number of studies: $nstudies.\n";
 ##########################################################################################
 ##########################################################################################
 #
-# This file is expected to be similar to a dbSNP-derived annotated list of variants; 
+# This Variant Annotation File contains a list of variants with associated annotation data; 
 # it could be manually generated using a reference, for instance 1000G phase 1 or phase 3.
 # Among others it is used to:
-# - check the existence of a variant in the respective GWAS in dbSNP or the reference
+# - check the existence of a variant in the respective GWAS in the reference
 # - obtain functional information on the variant and add this to an annotated meta-analysis
 #   output
 #
@@ -462,7 +462,7 @@ print STDOUT "Total number of studies: $nstudies.\n";
 #       relying solely on the dbSNP database may not be appropriate for your specific 
 #       meta-analysis of GWAS.
 # 
-# Expected format of such a dbSNP file is the following:
+# Expected format of such a Variant Annotation File is the following:
 #
 #	Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction
 #	chr1 62914560 62914560 rs538775156 + -/T insertion intron
@@ -473,7 +473,7 @@ print STDOUT "Total number of studies: $nstudies.\n";
 #
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDOUT "Reading in dbSNP annotation file.\n"; 
+print STDOUT "Reading in Variant Annotation File.\n"; 
 print STDOUT "\n";
 
 open (DBSNP, "gunzip -c $dbsnpFile |") or die "*** ERROR *** Cannot open [ $dbsnpFile ]. Please double back.\n";
@@ -502,9 +502,9 @@ while(my $c = <DBSNP>){
 
 	### should probably be removed, as SNPs and INDELs can exist on the same basepair position(s)
      if ( defined( $dbsnp_a1{$variant} ) ) {
-     	print STDERR "$variant appears more than once -- skipping it\n";
+#      	print STDERR "$variant appears more than once -- skipping it\n";
      	$caveat{$variant} = "not_unique_position";
- 		$skip_list{$variant} = 1;
+#  		$skip_list{$variant} = 1;
   		next;
      }
     
@@ -533,18 +533,18 @@ while(my $c = <DBSNP>){
     $dbsnp_chr{$variant} = $fields[0];
     $dbsnp_pos{$variant} = $fields[1] + 1;
     $dbsnp_function{$variant} = $fields[7];
-    $dbsnp_alleles{$variant} = [ @alleles ];
+#     $dbsnp_alleles{$variant} = [ @alleles ];
     $dbsnp_a1{$variant} = $alleles[0];
     $dbsnp_a2{$variant} = $alleles[1];
 	
 	my $strand = $fields[4]; 
     if ( $strand eq "+" ) { 
-     	#print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+#      	print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
 		next; 
 	}
     
     if ( $strand eq "-" ) { 
-  		print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ]. Correcting.\n";		
+#   		print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ]. Correcting.\n";		
 		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
 		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
  	   
