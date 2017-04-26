@@ -477,7 +477,7 @@ print STDOUT "Reading in Variant Annotation File.\n";
 print STDOUT "\n";
 
 open (DBSNP, "gunzip -c $dbsnpFile |") or die "*** ERROR *** Cannot open [ $dbsnpFile ]. Please double back.\n";
-print STDOUT "* Reading dbSNP annotations file: [ $dbsnpFile ]...\n";
+print STDOUT "* Reading: [ $dbsnpFile ]...\n";
 
 my $n_dbsnp_annotations = 0;
 my %skip_list = ();
