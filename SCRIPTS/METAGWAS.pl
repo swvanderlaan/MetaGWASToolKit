@@ -502,9 +502,9 @@ while(my $c = <DBSNP>){
 
 	### should probably be removed, as SNPs and INDELs can exist on the same basepair position(s)
      if ( defined( $dbsnp_a1{$variant} ) ) {
-#      	print STDERR "$variant appears more than once -- skipping it\n";
+      	print STDERR "$variant appears more than once -- skipping it\n";
      	$caveat{$variant} = "not_unique_position";
-#  		$skip_list{$variant} = 1;
+  		$skip_list{$variant} = 1;
   		next;
      }
     
@@ -539,12 +539,12 @@ while(my $c = <DBSNP>){
 	
 	my $strand = $fields[4]; 
     if ( $strand eq "+" ) { 
-#      	print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+#      	print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
 		next; 
 	}
     
     if ( $strand eq "-" ) { 
-#   		print STDERR "* From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ]. Correcting.\n";		
+#   		print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ]. Correcting.\n";		
 		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
 		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
  	   
@@ -566,13 +566,13 @@ print STDOUT "Number of annotated variants: $n_dbsnp_annotations.\n";
 ##########################################################################################
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDOUT "Checking existence in dbSNP of variants listed in this meta-analysis.\n";
+print STDOUT "Checking existence in the Variant Annotation File of variants listed in this meta-analysis.\n";
 print STDOUT "\n";
 
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my $variant = $variant_name[$nvariant];
   if ( ! defined( $skip_list{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) && ! defined( $dbsnp_chr{$variant} ) ) {
-    print STDERR "* $variant in [ $variantFile ] is not annotated in dbSNP -- skipping it.\n";
+    print STDERR "* $variant in [ $variantFile ] is present in the Variant Annotation File  -- skipping it.\n";
     $skip_list{$variant} = 1;
   }
 }
@@ -885,20 +885,20 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 
 	# checking how many fields we have to determine the value of $ratio
     if ( $#fields == 9 ) { 
-    	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ].\n";
+    	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
     	if ( $fields[9] != "NA" ) {
-    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting.\n";
+#     		print STDERR " - Imputation quality = [ $fields[9] ].\n";
     		$ratio[$study] = $fields[9];
-    		print STDERR "*** DEBUG: ratio = $ratio[$study]."
+#     		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
     		} else {
-    		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
+#     		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
     		$ratio[$study] = 1; 
-    		print STDERR "*** DEBUG: ratio = $ratio[$study]."
+#     		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
     		}
     	} else { 
-    		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
+     		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
     		$ratio[$study] = 1; 
-    		print STDERR "*** DEBUG: ratio = $ratio[$study]."
+#     		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
     	}
     	
     
@@ -1315,13 +1315,13 @@ sub allele_flip($)
 			elsif ( $current_base eq "I" ) { $flipped_allele .= "D"; }
 			elsif ( $current_base eq "D" ) { $flipped_allele .= "I"; }
 			else { $flipped_allele .= $current_base; }
-			print STDERR "The allele was flipped from [ $current_base ] to [ $flipped_allele ].\n";
+# 			print STDERR "T ***DEBUG*** he allele was flipped from [ $current_base ] to [ $flipped_allele ].\n";
 		}
 	return $flipped_allele;
 }
 
 	if ( length($allele) > 1 ) {
-		print STDERR "Given allele: \t\t[ $allele ].\n";
+# 		print STDERR " ***DEBUG*** Given allele: \t\t[ $allele ].\n";
 		
 		for (my $i=0; $i < length($allele); $i++) {
 		my $current_base = substr $allele, $i, 1;
@@ -1333,7 +1333,7 @@ sub allele_flip($)
 		else { $flipped_allele .= $current_base; }
 		}
 		
-		print STDERR "The flipped base is: \t[ $flipped_allele ].\n";
+# 		print STDERR " ***DEBUG*** The flipped base is: \t[ $flipped_allele ].\n";
    }
 	return $flipped_allele;
 }
