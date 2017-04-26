@@ -85,7 +85,7 @@
 #
 # 3) [--variants]	Just a list of unique variants present across all cohorts.
 #
-# 4) [--dbsnp]	A dbSNP annotations file which includes all the information known about the variants; 
+# 4) [--dbsnp]	A Variant Annotation File which includes all the information known about the variants; 
 #    can be based on HapMap or 1000G, or any other reference.
 #
 #    Expected file format:
@@ -195,7 +195,7 @@ my $extension = ""; # command-line option
 my $gene_dist = 500; # command-line option
 my $reference; # obligatory
 my $population; # obligatory
-my $freq_flip = 0.15; # command-line option
+my $freq_flip = 0.30; # command-line option
 my $freq_warning = 0.45; # command-line option
 my $low_freq_warning = $freq_warning;
 my $hifreq_warning = 1-$freq_warning;
@@ -362,7 +362,7 @@ my @sample_size = ();
 my @correction_factor = ();
 my @allele_flips = ();
 my @sign_flips = ();
-my @n_informative_snps = ();
+my @n_informative_variants = ();
 my @fh = ();
 
 my $nstudies = 0;
@@ -427,7 +427,7 @@ while(my $c = <PARAMS>){
 
   $allele_flips[$nstudies] = 0;
   $sign_flips[$nstudies] = 0;
-  $n_informative_snps[$nstudies] = 0;
+  $n_informative_variants[$nstudies] = 0;
 
   $nstudies++;
 }
@@ -646,10 +646,10 @@ while(my $c = <REFFREQ>){
     elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AFR" ) { 
     	$reference_a1_freq{$variant} = $fields[7];
     }
-    elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AMERICA" ) { 
+    elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AMR" ) { 
     	$reference_a1_freq{$variant} = $fields[8];
     }
-    elsif ( $reference eq "1Gp1" && $population eq "ASIAN" ) { 
+    elsif ( $reference eq "1Gp1" && $population eq "ASN" ) { 
     	$reference_a1_freq{$variant} = $fields[9];
     }
     elsif ( $reference eq "1Gp3" && $population eq "EAS" ) { 
@@ -970,7 +970,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
         
 	}
 
-      ### Warning for allele frequencies between 0.35 and 0.65 for A/T and C/G SNPs
+      ### Warning for allele frequencies between 0.45 and 0.55 for A/T and C/G SNPs
       if ( ( ( $a1[$study] eq "A" && $a2[$study] eq "T" ) || ( $a1[$study] eq "T" && $a2[$study] eq "A" ) || ( $a1[$study] eq "C" && $a2[$study] eq "G" ) || ( $a1[$study] eq "G" && $a2[$study] eq "C" ) ) && ( ( $af1[$study] > $freq_warning && $af1[$study] < 1-$freq_warning ) || ( $reference_a1_freq{$variant} > $freq_warning && $reference_a1_freq{$variant} < 1-$freq_warning ) ) ) {
 	  $caveat{$variant} .= "ATCG_variant_with_$low_freq_warning<EAF<$hifreq_warning";
       }
@@ -1001,7 +1001,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     } 
 
     if ( $study_okay[$study] == 1 ) {
-      print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
+#       print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
       $sample_size_eff[$study] = $sample_size[$study] * ( $ratio[$study] > 1 ? 1 : $ratio[$study] );
       $n_eff += $sample_size_eff[$study];
       $n_okay_studies++;
@@ -1038,7 +1038,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
       ### if everything is really okay, proceed
       if ( $study_okay[$study] == 1 ) {
 
-        $n_informative_snps[$study] += 1;
+        $n_informative_variants[$study] += 1;
 
         ### put BETA and SE on same scale across studies and correct SE for inflation 
         $beta[$study] = $beta[$study] / $correction_factor[$study];
@@ -1283,7 +1283,7 @@ print STDOUT "          ----------     ------------     -----------------     --
 
 for (my $study = 0; $study < $nstudies; $study++) {
   close $fh[$study]; 
-  printf STDOUT "%20s %16d %14d %20d\n", $study_name[$study], $allele_flips[$study], $sign_flips[$study], $n_informative_snps[$study];
+  printf STDOUT "%20s %16d %14d %20d\n", $study_name[$study], $allele_flips[$study], $sign_flips[$study], $n_informative_variants[$study];
 }
 
 print STDOUT "\n";
