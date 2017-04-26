@@ -878,8 +878,8 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $beta[$study] = $fields[3];
     $se[$study] = $fields[4];
     $pval[$study] = $fields[5];
-    $a1[$study] = allele_1234_to_ACGT( $fields[6] );
-    $a2[$study] = allele_1234_to_ACGT( $fields[7] );
+    $a1[$study] = allele_1234_to_ACGT( $fields[7] ); # alternative allele, equals to AlleleB in 1000G and thus the effect allele of 1000G imputed data
+    $a2[$study] = allele_1234_to_ACGT( $fields[6] ); # reference allele
     $af1[$study] = $fields[8];  
 
 	# checking how many fields we have to determine the value of $ratio
