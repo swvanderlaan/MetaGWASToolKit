@@ -1003,7 +1003,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     } 
 
     if ( $study_okay[$study] == 1 ) {
-      print STDERR " *** DEBUG *** Examining sample size for [ $study ]: n = $sample_size[$study] and info = $ratio[$study]"
+      print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study]."
       $sample_size_eff[$study] = $sample_size[$study] * ( $ratio[$study] > 1 ? 1 : $ratio[$study] );
       $n_eff += $sample_size_eff[$study];
       $n_okay_studies++;
