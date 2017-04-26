@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version: METAGWAS2.1.4"
+# Version: METAGWAS2.1.5"
 #
-# Last update			: 2017-04-25"
+# Last update			: 2017-04-26"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
@@ -34,7 +34,7 @@
 #
 #    Expected file format (where the number indicates the column):
 #
-#	 VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF  Inf0
+#	 VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF  Info
 #	 1         2   3  4    5  6 7            8           9    10
 #
 #    where:
@@ -169,7 +169,7 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.0 | 25-04-2017                               +\n";
+print STDOUT "+                                 version 2.0 | 26-04-2017                               +\n";
 print STDOUT "+                              (formely known as [ MANTEL ])                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -570,7 +570,7 @@ print STDOUT "\n";
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my $variant = $variant_name[$nvariant];
   if ( ! defined( $skip_list{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) && ! defined( $dbsnp_chr{$variant} ) ) {
-    print STDERR "* $variant in [ $variantFile ] is present in the Variant Annotation File  -- skipping it.\n";
+    print STDERR "* $variant in [ $variantFile ] is not present in the Variant Annotation File  -- skipping it.\n";
     $skip_list{$variant} = 1;
   }
 }
@@ -620,8 +620,8 @@ while(my $c = <REFFREQ>){
 
   if ( ( ! defined( $skip_list{$variant} ) ) && defined( $variantlist{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) ) {
 
-    my $a1 = $fields[3];  # reference allele (can be 0 if monomorphic -- specifically in PLINK-generated files)
-    my $a2 = $fields[4];  # alternative allele
+    my $a1 = $fields[4];  # alternative allele (can be 0 if monomorphic -- specifically in PLINK-generated files)
+    my $a2 = $fields[3];  # reference allele
 
     # HapMap 2 based
     if ( $reference eq "HM2" && $population eq "EUR" ) { 
