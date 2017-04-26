@@ -1050,38 +1050,40 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
         my $sign = 1;
         my $alleles_flipped = "N";
 
-		### how to handle A/T/C/G variants including INDELs
+		### how to handle A/T/C/G variants including INDELs and implicitly the sign (of the effect size)
         if ( $flip_alleles[$study] == 1 ) {
           $a1[$study] = allele_flip( $a1[$study] );
           $a2[$study] = allele_flip( $a2[$study] );
           $alleles_flipped = "Y";
           $allele_flips[$study]++;
+          $sign = -1; 
+          $sign_flips[$study]++;
         }
         
-        ### how to handle INDELs of the form R/D/I
+        ### how to handle INDELs of the form R/D/I and implicitly the sign (of the effect size)
         if ( $flip_indels[$study] == 1 ) {
           $a1[$study] = indel_flip( $a1[$study], $a2[$study], "a1" );
           $a2[$study] = indel_flip( $a1[$study], $a2[$study], "a2" );
           $alleles_flipped = "Y";
           $allele_flips[$study]++;
-        }
-
-        if ( $a1[$study] eq $effect_allele && $a2[$study] eq $other_allele ) {
-#	if ( $a1[$study] eq $ref1 && $a2[$study] eq $ref2 ) {
-         #$sign = 1;
-        }
-        elsif ( $a1[$study] eq $other_allele && $a2[$study] eq $effect_allele ) {
-#	elsif ( $a1[$study] eq $ref2 && $a2[$study] eq $ref1 ) { 
-         # change the sign of the beta if the coded/noncoded alleles are reversed compared to the first study
-          #print STDERR "flipped sign for $a1 $a2\n";
           $sign = -1; 
           $sign_flips[$study]++;
-        } 
-        else {
-	    print STDERR "* For $variant in study $study effect/other alleles $a1[$study] $a2[$study] do not match reference alleles $ref1 $ref2.\n";
-          die "*** INTERNAL ERROR *** Effect/other alleles do not match reference alleles\n";
         }
- 
+# 
+# 		### check sign
+#         if ( $a1[$study] eq $effect_allele && $a2[$study] eq $other_allele ) {
+#         }
+#         elsif ( $a1[$study] eq $other_allele && $a2[$study] eq $effect_allele ) {
+#         ### change the sign of the beta if the coded/noncoded alleles are reversed compared to the first study
+# 		print STDERR "Flipped sign for [ $a1[$study]/$a2[$study] ] of $variant.\n";
+#           $sign = -1; 
+#           $sign_flips[$study]++;
+#         } 
+#         else {
+# 	    print STDERR "* For $variant in study $study effect/other alleles $a1[$study] $a2[$study] do not match reference alleles $ref1 $ref2.\n";
+#           die "*** INTERNAL ERROR *** Effect/other alleles do not match reference alleles\n";
+#         }
+#  
         ### inverse variance weighted z-score
         $signed_beta[$study] = $sign * $beta[$study];
         $weight[$study] = 1 / ( $se[$study] * $se[$study] );
