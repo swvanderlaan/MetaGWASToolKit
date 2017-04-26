@@ -1059,8 +1059,8 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
         
         ### how to handle INDELs of the form R/D/I
         if ( $flip_indels[$study] == 1 ) {
-          $a1[$study] = indel_flip( $a1[$study], $a2[$study] );
-          $a2[$study] = indel_flip( $a1[$study], $a2[$study] );
+          $a1[$study] = indel_flip( $a1[$study], $a2[$study], "a1" );
+          $a2[$study] = indel_flip( $a1[$study], $a2[$study], "a2" );
           $alleles_flipped = "Y";
           $allele_flips[$study]++;
         }
@@ -1350,6 +1350,7 @@ sub indels_flip($)
 {
 	my $indel_a1 = shift;
 	my $indel_a2 = shift;
+	my $indel_pos = shift;
 # 	my $flipped_indel_a1 = "";
 # 	my $flipped_indel_a2 = "";
 	my $flipped_indel_a1 = $indel_a2;
@@ -1366,7 +1367,14 @@ sub indels_flip($)
 # 
  		print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
 		}
-	return $flipped_indel;
+	if( $indel_pos eq "a1" ) {
+	return $flipped_indel_a1;
+	} elsif( $indel_pos eq "a2" ) {
+	return $flipped_indel_a2;
+	} else {
+	return "Oh crap.";
+	}
+	
 }
 
 sub allele_1234_to_ACGT($)
