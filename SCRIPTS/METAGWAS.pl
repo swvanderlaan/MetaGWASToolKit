@@ -889,13 +889,16 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     	if ( $fields[9] != "NA" ) {
     		print STDERR " - Imputation quality = [ $fields[9] ]. Setting.\n";
     		$ratio[$study] = $fields[9];
+    		print STDERR "*** DEBUG: ratio = $ratio[$study]."
     		} else {
     		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
     		$ratio[$study] = 1; 
+    		print STDERR "*** DEBUG: ratio = $ratio[$study]."
     		}
     	} else { 
     		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
     		$ratio[$study] = 1; 
+    		print STDERR "*** DEBUG: ratio = $ratio[$study]."
     	}
     	
     
