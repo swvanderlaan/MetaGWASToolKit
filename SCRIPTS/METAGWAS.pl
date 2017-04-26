@@ -983,10 +983,10 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 				 	elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
 				 	}
 				 	### in case of studies that have R/D/I coding for INDELs
-				 	elsif ( ( $a1 eq "D" && $a2 eq "I" && length($ref1) < length($ref2) ) || ( $a1 eq "I" && $a2 eq "D" && length($ref1) > length($ref2) ) || ($a1 eq "R" && $a2 eq "D" && length($ref1) > length($ref2) ) || ( $a1 eq "R" && $a2 eq "I" && length($ref1) < length($ref2) ) {
+				 	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ($a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) {
 					$flip_alleles[$study] = 0;
 					}
-					elsif ( ( $a1 eq "D" && $a2 eq "I" && length($ref1) > length($ref2) ) || ( $a1 eq "I" && $a2 eq "D" && length($ref1) < length($ref2) ) || ($a1 eq "R" && $a2 eq "D" && length($ref1) < length($ref2) ) || ( $a1 eq "R" && $a2 eq "I" && length($ref1) > length($ref2) ) {
+					elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ($a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) {
 					$flip_indels[$study] = 1;
 					}
 				 	else {
