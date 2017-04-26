@@ -972,8 +972,8 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     		  }
 		
     		}
-		### allele a1 and allele a2 do not match the two reference alleles 
-    	elsif ( ( $a1[$study] eq allele_flip( $ref1 ) && $a2[$study] eq allele_flip( $ref2 ) ) || ( $a1[$study] eq allele_flip( $ref2 ) && $a2[$study] eq allele_flip( $ref1 ) ) ) { 
+			### allele a1 and allele a2 do not match the two reference alleles 
+    		elsif ( ( $a1[$study] eq allele_flip( $ref1 ) && $a2[$study] eq allele_flip( $ref2 ) ) || ( $a1[$study] eq allele_flip( $ref2 ) && $a2[$study] eq allele_flip( $ref1 ) ) ) { 
     			    $flip_alleles[$study] = 1;
     			  
     		  ### frequency-based test for non-A/T and non-C/G SNPs
@@ -982,25 +982,26 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 				 	}
 				 	elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
 				 	}
-				 	### in case of studies that have R/D/I coding for INDELs
-				 	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) ) {
-					$flip_alleles[$study] = 0;
-					}
-					elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) ) {
-					$flip_indels[$study] = 1;
-					}
 				 	else {
 					print STDERR "* In $study_name[$study], $variant has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
 					$study_okay[$study] = 0;
 				 	}
     		    }
-    	}
-
-    	  ### the coded allele (a1) and the noncoded allele do not match the two reference alleles -- even after flipping
-    	  else {
+    		}
+	    	### in case of studies that have R/D/I coding for INDELs
+	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) ) {
+	    	print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
+	    	$flip_alleles[$study] = 0;
+	    	}
+	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) ) {
+	    	print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ], while the Reference has alleles [ $ref1/$ref2 ]. Flipping these.\n";
+	    	$flip_indels[$study] = 1;
+	    	}
+    	  	### the coded allele (a1) and the noncoded allele do not match the two reference alleles -- even after flipping
+    	  	else {
     	    print STDERR "* In $study_name[$study], $variant has alleles $a1[$study] $a2[$study] inconsistent with Reference alleles $ref1 $ref2 -- skipping this variant for this study.\n"; 
     	    $study_okay[$study] = 0;
-    	  }
+    	  	}
     	} 
     if ( $study_okay[$study] == 1 ) {
 #       print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
