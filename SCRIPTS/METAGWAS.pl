@@ -884,8 +884,8 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $af1[$study] = $fields[8];  
 
 	# checking how many fields we have to determine the value of $ratio
+   	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
     if ( $#fields == 9 ) { 
-    	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
     	if ( $fields[9] != "NA" ) {
 #     		print STDERR " - Imputation quality = [ $fields[9] ].\n";
     		$ratio[$study] = $fields[9];
@@ -1003,6 +1003,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     } 
 
     if ( $study_okay[$study] == 1 ) {
+      print STDERR " *** DEBUG *** Examining sample size for [ $study ]: n = $sample_size[$study] and info = $ratio[$study]"
       $sample_size_eff[$study] = $sample_size[$study] * ( $ratio[$study] > 1 ? 1 : $ratio[$study] );
       $n_eff += $sample_size_eff[$study];
       $n_okay_studies++;
