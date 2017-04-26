@@ -1351,21 +1351,13 @@ sub indels_flip($)
 	my $indel_a1 = shift;
 	my $indel_a2 = shift;
 	my $indel_pos = shift;
-# 	my $flipped_indel_a1 = "";
-# 	my $flipped_indel_a2 = "";
+
+	print STDERR " ***DEBUG*** Given alleles: \t\t[ $indel_a1 / $indel_a2 ].\n";
 	my $flipped_indel_a1 = $indel_a2;
 	my $flipped_indel_a2 = $indel_a1;
-	print STDERR " ***DEBUG*** Given alleles: \t\t[ $indel_a1 / $indel_a2 ].\n";
-# 	for (my $i=0; $i < length($indel_a1); $i++) {
-# 		my $current_base_indel_a1 = substr $indel_a1, $i, 1;
-# 		my $current_base_indel_a2 = substr $indel_a2, $i, 1;
-# 		if ( $current_base_indel_a1 eq "D" && $current_base_indel_a2 eq "I" ) { $flipped_indel_a1 .= "I"; $flipped_indel_a2 .= "D"; }
-# 		elsif ( $current_base_indel_a1 eq "I" && $current_base_indel_a2 eq "D" ) { $flipped_indel_a1 .= "D"; $flipped_indel_a2 .= "I"; }
-#  		elsif ( $current_base_indel_a1 eq "R" && $current_base_indel_a2 eq "D" ) { $flipped_indel_a1 .= "D"; $flipped_indel_a2 .= "R"; }
-#  		elsif ( $current_base_indel_a1 eq "R" && $current_base_indel_a2 eq "I" ) { $flipped_indel_a1 .= "I"; $flipped_indel_a2 .= "R"; }
-# 		else { $flipped_indel .= $current_base; }
-# 
- 		print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
+
+ 	print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
+
 	if( $indel_pos eq "a1" ) {
 	return $flipped_indel_a1;
 	} elsif( $indel_pos eq "a2" ) {
@@ -1373,7 +1365,6 @@ sub indels_flip($)
 	} else {
 	return "Oh crap.";
 	}
-	
 }
 
 sub allele_1234_to_ACGT($)
