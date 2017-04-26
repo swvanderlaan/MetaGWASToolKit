@@ -1297,6 +1297,7 @@ print STDOUT "This meta-analysis of GWAS was successfully finished!!!\n";
 ##########################################################################################
 ##########################################################################################
 
+### Function for flipping alleles with A/T/C/G
 sub allele_flip($)
 {
 	my $allele = shift;
@@ -1335,6 +1336,7 @@ sub allele_flip($)
 	return $flipped_allele;
 }
 
+### Function for flipping INDELs of the form R/D/I
 sub indels_flip($)
 {
 	my $indel_a1 = shift;
@@ -1356,6 +1358,7 @@ sub indels_flip($)
 	}
 }
 
+### Function to convert alleles encoding of 1/2/3/4 to A/C/G/T -- which is PLINK old-style
 sub allele_1234_to_ACGT($)
 {
 	my $allele = shift;
