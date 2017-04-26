@@ -884,7 +884,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $af1[$study] = $fields[8];  
 
 	# checking how many fields we have to determine the value of $ratio
-   	print STDERR "* A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
+#    	print STDERR " ***DEBUG***  A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
     if ( $#fields == 9 ) { 
     	if ( $fields[9] != "NA" ) {
 #     		print STDERR " - Imputation quality = [ $fields[9] ].\n";
@@ -1011,11 +1011,13 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   }
 
   if ( $n_okay_studies == 0 ) { 
+    print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
     print STDERR "* For $variant no information from any study -- so skipping this variant.\n";
     $n_skipped_uninformative++;
   }
   
   if ( $n_eff == 0 ) { 
+    print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study]; $ variant has alleles $a1[$study] and $a2[$study]; while reference has $ref1/$ref2.\n";
     print STDERR "* For $variant effective sample size = 0 -- so skipping this variant.\n";
     $n_skipped_uninformative++;
   }
