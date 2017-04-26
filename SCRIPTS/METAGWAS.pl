@@ -990,7 +990,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     		}
 	    	### in case of studies that have R/D/I coding for INDELs
 	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) ) {
-	    	print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
+# 	    	print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
 	    	$flip_alleles[$study] = 0;
 	    	}
 	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) ) {
@@ -1069,21 +1069,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
           $sign = -1; 
           $sign_flips[$study]++;
         }
-# 
-# 		### check sign
-#         if ( $a1[$study] eq $effect_allele && $a2[$study] eq $other_allele ) {
-#         }
-#         elsif ( $a1[$study] eq $other_allele && $a2[$study] eq $effect_allele ) {
-#         ### change the sign of the beta if the coded/noncoded alleles are reversed compared to the first study
-# 		print STDERR "Flipped sign for [ $a1[$study]/$a2[$study] ] of $variant.\n";
-#           $sign = -1; 
-#           $sign_flips[$study]++;
-#         } 
-#         else {
-# 	    print STDERR "* For $variant in study $study effect/other alleles $a1[$study] $a2[$study] do not match reference alleles $ref1 $ref2.\n";
-#           die "*** INTERNAL ERROR *** Effect/other alleles do not match reference alleles\n";
-#         }
-#  
+
         ### inverse variance weighted z-score
         $signed_beta[$study] = $sign * $beta[$study];
         $weight[$study] = 1 / ( $se[$study] * $se[$study] );
