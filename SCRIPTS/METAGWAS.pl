@@ -1366,7 +1366,6 @@ sub indels_flip($)
 # 		else { $flipped_indel .= $current_base; }
 # 
  		print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
-		}
 	if( $indel_pos eq "a1" ) {
 	return $flipped_indel_a1;
 	} elsif( $indel_pos eq "a2" ) {
