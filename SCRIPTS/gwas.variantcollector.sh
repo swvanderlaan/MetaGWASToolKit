@@ -142,7 +142,7 @@ else
 	echo ""
 	echo "* Chopping up the unique variant list into chunks of ${CHUNKSIZE} -- for parallelization"
 	tail -n +2 ${METARESULTDIR}/meta.all.unique.variants.txt | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.
-	ls ${METATEMPRESULTDIR} > ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.list
+	ls ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.a* > ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.list
 	echo ""
 	echo "All done! Let's have a beer, buddy."
 
