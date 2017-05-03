@@ -1011,7 +1011,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 			  	$caveat{$variant} .= "ATCG_variant_with_$low_freq_warning<EAF<$hifreq_warning";
     		  }
     	  	} ### END CHECK #1
-    	  				### START CHECK #2: allele a1 and allele a2 do NOT match the two reference alleles 
+    	  	### START CHECK #2: allele a1 and allele a2 do NOT match the two reference alleles 
     		elsif ( ( $a1[$study] eq allele_flip( $ref1 ) && $a2[$study] eq allele_flip( $ref2 ) ) || ( $a1[$study] eq allele_flip( $ref2 ) && $a2[$study] eq allele_flip( $ref1 ) ) ) { 
     			    $flip_alleles[$study] = 1;
     			  
