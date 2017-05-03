@@ -832,7 +832,7 @@ if ( $verbose ) {
 
 print OUT " CODEDALLELE OTHERALLELE CAF N_EFF Z_SQRTN P_SQRTN BETA_FIXED SE_FIXED Z_FIXED P_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED ";
 if ( $random_effects ) {
-  print OUT "BETA_RANDOM  SE_RANDOM  Z_RANDOM  P_RANDOM  BETA_LOWER_RANDOM BETA_UPPER_RANDOM COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED ";
+  print OUT "BETA_RANDOM SE_RANDOM Z_RANDOM P_RANDOM BETA_LOWER_RANDOM BETA_UPPER_RANDOM COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED ";
 }
 print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT\n";
 
@@ -1001,7 +1001,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 						elsif ( $a2[$study] eq $ref1 && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
 						}
 						else {
-						    print STDERR "* In $study_name[$study], $variant have matching alleles with Reference, but has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
+						    print STDERR "* In $study_name[$study], $variant has matching alleles with Reference, but an allele frequency inconsistent with Reference frequencies -- skipping this variant for this study.\n";
 						    $study_okay[$study] = 0;
 						}
 				    }
@@ -1022,7 +1022,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 				 	elsif ( $a2[$study] eq allele_flip( $ref1 ) && ( $af1[$study] > ( 1 - $reference_a1_freq{$variant} - $freq_flip ) ) && ( $af1[$study] < ( 1 - $reference_a1_freq{$variant} + $freq_flip ) ) ) {
 				 	}
 				 	else {
-					print STDERR "* In $study_name[$study], $variant has non-matching alleles with Reference, and allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.\n";
+					print STDERR "* In $study_name[$study], $variant has non-matching alleles with Reference, and an allele frequency inconsistent with Reference frequencies -- skipping this variant for this study.\n";
 					$study_okay[$study] = 0;
 				 	}
     		    }
