@@ -230,7 +230,7 @@ if ( ! $paramsFile || ! $variantFile || ! $dbsnpFile || ! $freqFile || ! $genesF
 	print STDERR "\n";
 	print STDERR "OPTIONAL: \n";
 	print STDERR "--dist           Maximal distance to a gene (in kilobase units); default is 200kb.\n";
-	print STDERR "--freq-flip      The frequency filter based on which the alleles will be flipped; default is 0.15.\n";
+	print STDERR "--freq-flip      The frequency filter based on which the alleles will be flipped; default is 0.30.\n";
 	print STDERR "--freq-warning   The frequency based on which a warning will be given for A/T & C/G SNPs; default is 0.45.\n";
 	print STDERR "--ext            Extension of the input file.\n";
 	print STDERR "--extract        List of variants to extract -- the meta-analysis will only be done on these.\n";
@@ -481,7 +481,7 @@ my $n_dbsnp_annotations = 0;
 my %skip_list = ();
 my %dbsnp_chr = ();
 my %dbsnp_pos = ();
-my %dbsnp_alleles = ();
+# my %dbsnp_alleles = ();
 my %dbsnp_a1 = ();
 my %dbsnp_a2 = ();
 my %dbsnp_function = ();
@@ -531,25 +531,22 @@ while(my $c = <DBSNP>){
     $dbsnp_chr{$variant} = $fields[0];
     $dbsnp_pos{$variant} = $fields[1] + 1;
     $dbsnp_function{$variant} = $fields[7];
-    $dbsnp_alleles{$variant} = [ @alleles ];
+#     $dbsnp_alleles{$variant} = [ @alleles ];
     $dbsnp_a1{$variant} = $alleles[0]; # reference allele
     $dbsnp_a2{$variant} = $alleles[1]; # alternative allele, equals to AlleleB in 1000G and thus the coded/effect allele of 1000G imputed data
     
 	my $strand = $fields[4]; 
-    if ( $strand eq "+" ) { 
-      	print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
-		next; 
-	}
-    
+#     if ( $strand eq "+" ) { 
+#       	print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ] and function [ $dbsnp_function{$variant} ].\n";
+# 		next; 
+# 	}
     if ( $strand eq "-" ) { 
-#   		print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ]. Correcting.\n";		
+#    		print STDERR " ***DEBUG***  From dbSNP read $variant, with [ $dbsnp_alleles{$variant}[0] / $dbsnp_alleles{$variant}[1] ] alleles, has strand [ $strand ]. Correcting.\n";		
 		$dbsnp_a1{$variant} = allele_flip( $dbsnp_a1{$variant} );
 		$dbsnp_a2{$variant} = allele_flip( $dbsnp_a2{$variant} );
- 	   
     }
-    
-    $n_dbsnp_annotations++;
   }
+  $n_dbsnp_annotations++;
 }
 close (DBSNP);
 
@@ -558,7 +555,7 @@ print STDOUT "Number of annotated variants: $n_dbsnp_annotations.\n";
 ##########################################################################################
 ##########################################################################################
 ###
-### check all variants on the list if they are in dbSNP 
+### check all variants on the list if they are in Variant Annotation File 
 ###
 ##########################################################################################
 ##########################################################################################
@@ -607,108 +604,138 @@ open (REFFREQ, "gunzip -c $freqFile |") or die "*** ERROR *** Cannot open [ $fre
 print STDOUT "* Reading Reference Frequency File: [ $freqFile ]...\n";
 
 my %reference_a1_freq = ();
-
+  
 while(my $c = <REFFREQ>){
   chomp $c;
   $c =~ s/^\s+//;
-  
-  ### NOTE TO SELF # How are INDELs handled??? ###
   
   my @fields = split /\s+/, $c; 
   my $variant = $fields[0]; 
   if ( $variant eq "VariantID" ) { next; }
 
+  my $a1 = "";
+  my $a2 = "";
+  
   if ( ( ! defined( $skip_list{$variant} ) ) && defined( $variantlist{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) ) {
-
-    if ( $reference eq "HM2") {
-        my $a1 = $fields[3];  # minor allele (can be 0 if monomorphic)
-        my $a2 = $fields[4];  # major allele
-        print STDOUT "allele A = $a1; allele B = $a2";
-    }
-    elsif ( $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" || $reference eq "1Gp1" || $reference eq "1Gp3" ) {
-        my $a1 = $fields[4];  # alternative allele, equals to AlleleB in 1000G and thus the coded/effect allele of 1000G imputed data
-        my $a2 = $fields[3];  # reference allele
-        print STDOUT "allele A = $a1; allele B = $a2";
-    }
-    else {
-        die "*** ERROR *** You did not specify the reference (--ref); now we cannot determine the proper reference-based allele and frequency. Please double back.\n";
-    }
-
+   
     # HapMap 2 based
-    if ( $reference eq "HM2" && $population eq "EUR" ) { 
-    	$reference_a1_freq{$variant} = $fields[5];
-    }
-    elsif ( $reference eq "HM2" && $population eq "AFR" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
-    }
-    elsif ( $reference eq "HM2" && $population eq "JPT" ) { 
-    	$reference_a1_freq{$variant} = $fields[7];
-    }
-    elsif ( $reference eq "HM2" && $population eq "CHB" ) { 
-    	$reference_a1_freq{$variant} = $fields[8];
-    }
+    if ( $reference eq "HM2") {
+		my $a1 = $fields[3];  # minor allele (can be 0 if monomorphic)
+		my $a2 = $fields[4];  # major allele
+		
+		if ( $population eq "EUR" ) { 
+			$reference_a1_freq{$variant} = $fields[5];
+		}
+		elsif ( $population eq "AFR" ) { 
+			$reference_a1_freq{$variant} = $fields[6];
+		}
+		elsif ( $population eq "JPT" ) { 
+			$reference_a1_freq{$variant} = $fields[7];
+		}
+		elsif ( $population eq "CHB" ) { 
+			$reference_a1_freq{$variant} = $fields[8];
+		}
+		else {
+			die "*** ERROR *** You did not specify the population (--pop); now we cannot determine the proper reference-based allele frequency. Please double back.\n";
+		}   
+      	
+      	### Checking allele compared to reference
+		if ( $a1 eq $dbsnp_a1{$variant} && $a2 eq $dbsnp_a2{$variant} ) {
+			my $tmp1 = $dbsnp_a1{$variant};
+			my $tmp2 = $dbsnp_a2{$variant};
+			$dbsnp_a1{$variant} = $tmp1;
+			$dbsnp_a2{$variant} = $tmp2;
+		}
+		elsif ( $a2 eq $dbsnp_a1{$variant} && $a1 eq $dbsnp_a2{$variant} ) {
+			my $tmp = $dbsnp_a1{$variant};
+			$dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+			$dbsnp_a2{$variant} = $tmp;
+		}
+		elsif ( allele_flip( $a2 ) eq $dbsnp_a1{$variant} && allele_flip( $a1 ) eq $dbsnp_a2{$variant} ) {
+			my $tmp = $dbsnp_a1{$variant};
+			$dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+			$dbsnp_a2{$variant} = $tmp;
+		}
+		elsif ( $a1 eq "0" && $a2 eq $dbsnp_a1{$variant} ) { 
+			my $tmp = $dbsnp_a1{$variant};
+			$dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+			$dbsnp_a2{$variant} = $tmp;
+		}
+		elsif ( $a1 eq "0" && $a2 eq $dbsnp_a2{$variant} ) {
+			$dbsnp_a1{$variant} = $dbsnp_a1{$variant};
+			$dbsnp_a2{$variant} = $dbsnp_a2{$variant};
+		}
+		elsif ( $a1 eq "0" && allele_flip( $a2 ) eq $dbsnp_a1{$variant} ) { 
+			my $tmp = $dbsnp_a1{$variant};
+			$dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+			$dbsnp_a2{$variant} = $tmp;
+		}
+	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
+	}
     # 1000G based
-    elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "PAN" ) { 
-    	$reference_a1_freq{$variant} = $fields[5];
-    }
-	elsif ( $reference eq "1Gp3" && $population eq "EUR" ) { 
-    	$reference_a1_freq{$variant} = $fields[6];
-    }
-    elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AFR" ) { 
-    	$reference_a1_freq{$variant} = $fields[7];
-    }
-    elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AMR" ) { 
-    	$reference_a1_freq{$variant} = $fields[8];
-    }
-    elsif ( $reference eq "1Gp1" && $population eq "ASN" ) { 
-    	$reference_a1_freq{$variant} = $fields[9];
-    }
-    elsif ( $reference eq "1Gp3" && $population eq "EAS" ) { 
-    	$reference_a1_freq{$variant} = $fields[10];
-    }
-    elsif ( $reference eq "1Gp3" && $population eq "SAS" ) { 
-    	$reference_a1_freq{$variant} = $fields[11];
-    }
-    elsif ( $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" && $population eq "PAN" ) { 
-    	$reference_a1_freq{$variant} = $fields[5];
-    }
-	else {
-      die "*** ERROR *** You did not specify the reference (--ref) and the population (--pop); now we cannot determine the proper population-based frequency in the reference. Please double back.\n";
-    }
-	
-	
-    if ( $a1 eq $dbsnp_a1{$variant} && $a2 eq $dbsnp_a2{$variant} ) {
-	my $tmp1 = $dbsnp_a1{$variant};
-	my $tmp2 = $dbsnp_a2{$variant};
-	$dbsnp_a1{$variant} = $tmp1;
-	$dbsnp_a2{$variant} = $tmp2;
-    }
-    elsif ( $a2 eq $dbsnp_a1{$variant} && $a1 eq $dbsnp_a2{$variant} ) {
-      my $tmp = $dbsnp_a1{$variant};
-      $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
-      $dbsnp_a2{$variant} = $tmp;
-    }
-    elsif ( allele_flip( $a2 ) eq $dbsnp_a1{$variant} && allele_flip( $a1 ) eq $dbsnp_a2{$variant} ) {
-      my $tmp = $dbsnp_a1{$variant};
-      $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
-      $dbsnp_a2{$variant} = $tmp;
-    }
-    elsif ( $a1 eq "0" && $a2 eq $dbsnp_a1{$variant} ) { 
-      my $tmp = $dbsnp_a1{$variant};
-      $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
-      $dbsnp_a2{$variant} = $tmp;
-    }
-    elsif ( $a1 eq "0" && $a2 eq $dbsnp_a2{$variant} ) {
-      $dbsnp_a1{$variant} = $dbsnp_a1{$variant};
-      $dbsnp_a2{$variant} = $dbsnp_a2{$variant};
-  	}
-    elsif ( $a1 eq "0" && allele_flip( $a2 ) eq $dbsnp_a1{$variant} ) { 
-      my $tmp = $dbsnp_a1{$variant};
-      $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
-      $dbsnp_a2{$variant} = $tmp;
-    }
+    if ( $reference eq "1Gp1" || $reference eq "1Gp3" || $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" ) {
+		my $a1 = $fields[4];  # alternative allele, equals to AlleleB in 1000G and thus the coded/effect allele of 1000G imputed data
+		my $a2 = $fields[3];  # reference allele
+		if ( $population eq "PAN" ) { 
+			$reference_a1_freq{$variant} = $fields[5];
+		}
+		elsif ( $reference eq "1Gp3" && $population eq "EUR" ) { 
+			$reference_a1_freq{$variant} = $fields[6];
+		}
+		elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AFR" ) { 
+			$reference_a1_freq{$variant} = $fields[7];
+		}
+		elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AMR" ) { 
+			$reference_a1_freq{$variant} = $fields[8];
+		}
+		elsif ( $reference eq "1Gp1" && $population eq "ASN" ) { 
+			$reference_a1_freq{$variant} = $fields[9];
+		}
+		elsif ( $reference eq "1Gp3" && $population eq "EAS" ) { 
+			$reference_a1_freq{$variant} = $fields[10];
+		}
+		elsif ( $reference eq "1Gp3" && $population eq "SAS" ) { 
+			$reference_a1_freq{$variant} = $fields[11];
+		}
+		else {
+			die "*** ERROR *** You did not specify the population (--pop); now we cannot determine the proper reference-based allele frequency. Please double back.\n";
+		} 
+
+		### Checking allele compared to reference	
+		if ( $a1 eq $dbsnp_a1{$variant} && $a2 eq $dbsnp_a2{$variant} ) {
+		  my $tmp1 = $dbsnp_a1{$variant};
+		  my $tmp2 = $dbsnp_a2{$variant};
+		  $dbsnp_a1{$variant} = $tmp1;
+		  $dbsnp_a2{$variant} = $tmp2;
+		}
+		elsif ( $a2 eq $dbsnp_a1{$variant} && $a1 eq $dbsnp_a2{$variant} ) {
+		  my $tmp = $dbsnp_a1{$variant};
+		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+		  $dbsnp_a2{$variant} = $tmp;
+		}
+		elsif ( allele_flip( $a2 ) eq $dbsnp_a1{$variant} && allele_flip( $a1 ) eq $dbsnp_a2{$variant} ) {
+		  my $tmp = $dbsnp_a1{$variant};
+		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+		  $dbsnp_a2{$variant} = $tmp;
+		}
+		elsif ( $a1 eq "0" && $a2 eq $dbsnp_a1{$variant} ) { 
+		  my $tmp = $dbsnp_a1{$variant};
+		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+		  $dbsnp_a2{$variant} = $tmp;
+		}
+		elsif ( $a1 eq "0" && $a2 eq $dbsnp_a2{$variant} ) {
+		  $dbsnp_a1{$variant} = $dbsnp_a1{$variant};
+		  $dbsnp_a2{$variant} = $dbsnp_a2{$variant};
+		}
+		elsif ( $a1 eq "0" && allele_flip( $a2 ) eq $dbsnp_a1{$variant} ) { 
+		  my $tmp = $dbsnp_a1{$variant};
+		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
+		  $dbsnp_a2{$variant} = $tmp;
+		}
+# 	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
+	}
     else {
-      print STDERR "* For the $variant, we cannot determine the Reference Frequency for alleles $a1 and $a2 and annotated alleles $dbsnp_a1{$variant} $dbsnp_a2{$variant} -- skipping it.\n";
+      print STDERR "* For the $variant, we cannot determine the Reference Frequency for alleles [ $a1/$a2 ] and annotated alleles [ $dbsnp_a1{$variant}/$dbsnp_a2{$variant} ] -- skipping it. Reference: [ $reference ]; population: [ $population ].\n";
       $skip_list{$variant} = 1;
     }
   }
@@ -746,7 +773,6 @@ print STDOUT "Reading in genes.\n";
 print STDOUT "\n";
 
 open (GENE, "gunzip -c $genesFile |") or die "*** ERROR *** Cannot open $genesFile. Please double back.\n";
-#open (GENE, $genesFile) or die "*** ERROR *** Cannot open $genesFile. Please double back.\n";
 print STDOUT "* Reading file: $genesFile...\n";
 
 my $ngenes = 0;
@@ -902,23 +928,22 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $af1[$study] = $fields[8];  
 
 	# checking how many fields we have to determine the value of $ratio
-    	print STDERR " ***DEBUG***  A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
+#     print STDERR " ***DEBUG***  A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
     if ( $#fields == 9 ) { 
     	if ( $fields[9] != "NA" ) {
-     		print STDERR " - Imputation quality = [ $fields[9] ].\n";
+#      		print STDERR " - Imputation quality = [ $fields[9] ].\n";
     		$ratio[$study] = $fields[9];
-     		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+#      		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
     		} else {
-     		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
+#      		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
     		$ratio[$study] = 1; 
-     		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+#      		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
     		}
     	} else { 
-     		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
+#      		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
     		$ratio[$study] = 1; 
-     		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
-    	}
-    	
+#      		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+    }
     
   }
 
@@ -1002,16 +1027,40 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 				 	}
     		    }
     		} ### END CHECK #2
-	    	### START CHECK #3: in case of studies that have R/D/I coding for INDELs
-	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) ) {
- 	    		print STDERR "*** DEBUG *** In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
+	    	### START CHECK #3: in case of studies that have D/I coding for INDELs
+	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) ) {
+#  	    		print STDERR "*** DEBUG *** In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
 	    		$flip_alleles[$study] = 0;
 	    	} ### END CHECK #3
+	    	
 	    	### START CHECK #4
-	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) ) {
-	    		print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ], while the Reference has alleles [ $ref1/$ref2 ]. Flipping these.\n";
+	    	elsif ( ( $a1[$study] eq "D" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) ) {
+ 	    		print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ], while the Reference has alleles [ $ref1/$ref2 ]. Flipping these.\n";
 	    		$flip_indels[$study] = 1;
 	    	} ### START CHECK #4
+	    	
+	    	
+	    	### START CHECK #5: in case of studies that have R/D/I coding for INDELs
+	    	elsif ( ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "D" && $a2[$study] eq "R" && length($ref1) < length($ref2) ) ) {
+#  	    		print STDERR "*** DEBUG *** In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
+	    		$flip_alleles[$study] = 0;
+	    	} ### END CHECK #5
+	    	### START CHECK #6: in case of studies that have R/D/I coding for INDELs
+	    	elsif ( ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "R" && length($ref1) > length($ref2) ) ) {
+#  	    		print STDERR "*** DEBUG *** In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ] which is the same as the Reference alleles [ $ref1/$ref2 ].\n";
+	    		$flip_alleles[$study] = 0;
+	    	} ### END CHECK #6
+	    	### START CHECK #7
+	    	elsif ( ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "D" && $a2[$study] eq "R" && length($ref1) > length($ref2) ) ) {
+	    		print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ], while the Reference has alleles [ $ref1/$ref2 ]. Flipping these.\n";
+	    		$flip_indels[$study] = 1;
+	    	} ### START CHECK #7
+	    	### START CHECK #8
+	    	elsif ( ( $a1[$study] eq "R" && $a2[$study] eq "I" && length($ref1) > length($ref2) ) || ( $a1[$study] eq "I" && $a2[$study] eq "R" && length($ref1) < length($ref2) ) ) {
+	    		print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ], while the Reference has alleles [ $ref1/$ref2 ]. Flipping these.\n";
+	    		$flip_indels[$study] = 1;
+	    	} ### START CHECK #8
+	    	
     	  	### the coded allele (a1) and the noncoded allele do not match the two reference alleles -- even after flipping
     	  	else {
     	    print STDERR "* In $study_name[$study], $variant has alleles $a1[$study] $a2[$study] inconsistent with Reference alleles $ref1 $ref2 -- skipping this variant for this study.\n"; 
@@ -1019,7 +1068,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     	  	}
     	} ### END OF THIS ELSE
     if ( $study_okay[$study] == 1 ) {
-       print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
+#        print STDERR " *** DEBUG *** Examining sample size for [ $study_name[$study] ]: n = $sample_size[$study] and info = $ratio[$study].\n";
       $sample_size_eff[$study] = $sample_size[$study] * ( $ratio[$study] > 1 ? 1 : $ratio[$study] );
       $n_eff += $sample_size_eff[$study];
       $n_okay_studies++;
@@ -1321,7 +1370,7 @@ sub allele_flip($)
  	if ( $allele eq "(LARGEDELETION)" || $allele eq "lengthTooLong" ) { return $allele; } 
 
 	if ( length($allele) == 1 ) {
-        print STDERR " ***DEBUG*** Given allele: \t\t[ $allele ].\n";
+#         print STDERR " ***DEBUG*** Given allele: \t\t[ $allele ].\n";
         
 		for (my $i=0; $i < length($allele); $i++) {
 			my $current_base = substr $allele, $i, 1;
@@ -1330,13 +1379,13 @@ sub allele_flip($)
 			elsif ( $current_base eq "G" ) { $flipped_allele .= "C"; }
 			elsif ( $current_base eq "T" ) { $flipped_allele .= "A"; }
 			else { $flipped_allele .= $current_base; }
- 			print STDERR " ***DEBUG*** The allele was flipped from [ $current_base ] to [ $flipped_allele ].\n";
+#  			print STDERR " ***DEBUG*** The allele was flipped from [ $current_base ] to [ $flipped_allele ].\n";
 		}
 	return $flipped_allele;
     }
 
 	if ( length($allele) > 1 ) {
- 		print STDERR " ***DEBUG*** Given allele: \t\t[ $allele ].\n";
+#  		print STDERR " ***DEBUG*** Given allele has length >1 and is: \t\t[ $allele ].\n";
 		
 		for (my $i=0; $i < length($allele); $i++) {
             my $current_base = substr $allele, $i, 1;
@@ -1345,8 +1394,8 @@ sub allele_flip($)
             elsif ( $current_base eq "G" ) { $flipped_allele = $flipped_allele . $current_base =~ s/G/C/gr; }
             elsif ( $current_base eq "T" ) { $flipped_allele = $flipped_allele . $current_base =~ s/T/A/gr; }
             else { $flipped_allele .= $current_base; }
-            print STDERR " ***DEBUG*** The flipped base is: \t[ $flipped_allele ].\n";
 		}
+# 		print STDERR " ***DEBUG*** The flipped base is: \t[ $flipped_allele ].\n";
         return $flipped_allele;
     }
 } ### END OF allele_flip
@@ -1358,11 +1407,11 @@ sub indels_flip($)
 	my $indel_a2 = shift;
 	my $indel_pos = shift;
 
-	print STDERR " ***DEBUG*** Given alleles: \t\t[ $indel_a1 / $indel_a2 ].\n";
+# 	print STDERR " ***DEBUG*** Given alleles: \t\t[ $indel_a1 / $indel_a2 ].\n";
 	my $flipped_indel_a1 = $indel_a2;
 	my $flipped_indel_a2 = $indel_a1;
 
- 	print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
+#  	print STDERR " ***DEBUG*** The allele was flipped from [ $indel_a1 / $indel_a2 ] to [ $flipped_indel_a1 / $flipped_indel_a2 ].\n";
 
 	if( $indel_pos eq "a1" ) {
         return $flipped_indel_a1;
