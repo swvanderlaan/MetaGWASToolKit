@@ -1,0 +1,1526 @@
+
+Currently Loaded Modules:
+  1) python/2.7.10
+
+* chr1:6434481:A_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:17676773:C_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:20286465:A_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:24804301:T_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:25591101:G_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:25591901:G_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:25614201:G_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:26459901:C_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* chr1:46474135:A_- in [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split ] is not present in the Variant Annotation File  -- skipping it.
+* In CHS_m1, rs12097586 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1815606 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4970364 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4970364 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4970364 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4970364 there is information from one study or none -- so skipping this variant.
+* For rs4970364 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs59549363 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11804831 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11804831 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11804831 there is information from one study or none -- so skipping this variant.
+* For rs11804831 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1268339 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1268339 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1268339 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1268339 there is information from one study or none -- so skipping this variant.
+* For rs1268339 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2748384 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2748384 there is information from one study or none -- so skipping this variant.
+* For rs2748384 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1739855 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1739855 there is information from one study or none -- so skipping this variant.
+* For rs1739855 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs640712 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs640712 there is information from one study or none -- so skipping this variant.
+* For rs640712 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2477782 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2477782 there is information from one study or none -- so skipping this variant.
+* For rs2477782 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3737720 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3737720 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3737720 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3737720 there is information from one study or none -- so skipping this variant.
+* For rs3737720 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2274262 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2274262 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs2274262 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2274262 there is information from one study or none -- so skipping this variant.
+* For rs2274262 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs61766198 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs61766198 there is information from one study or none -- so skipping this variant.
+* For rs61766198 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11590283 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11590283 there is information from one study or none -- so skipping this variant.
+* For rs11590283 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12103 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12103 there is information from one study or none -- so skipping this variant.
+* For rs12103 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12142199 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12142199 there is information from one study or none -- so skipping this variant.
+* For rs12142199 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs35946613 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs35946613 there is information from one study or none -- so skipping this variant.
+* For rs35946613 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs200690143 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs200690143 there is information from one study or none -- so skipping this variant.
+* For rs200690143 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2649599 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2649599 there is information from one study or none -- so skipping this variant.
+* For rs2649599 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs34582295 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs34582295 there is information from one study or none -- so skipping this variant.
+* For rs34582295 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12729599 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12729599 there is information from one study or none -- so skipping this variant.
+* For rs12729599 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs141100746 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs141100746 there is information from one study or none -- so skipping this variant.
+* For rs141100746 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs9726836 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs9726836 there is information from one study or none -- so skipping this variant.
+* For rs9726836 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240748 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240748 there is information from one study or none -- so skipping this variant.
+* For rs1240748 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240747 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1240747 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240747 there is information from one study or none -- so skipping this variant.
+* For rs1240747 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240746 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1240746 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240746 there is information from one study or none -- so skipping this variant.
+* For rs1240746 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240708 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1240708 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240708 there is information from one study or none -- so skipping this variant.
+* For rs1240708 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240709 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1240709 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240709 there is information from one study or none -- so skipping this variant.
+* For rs1240709 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240718 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1240718 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240718 there is information from one study or none -- so skipping this variant.
+* For rs1240718 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12030806 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12030806 there is information from one study or none -- so skipping this variant.
+* For rs12030806 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1695825 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1695825 there is information from one study or none -- so skipping this variant.
+* For rs1695825 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1695824 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1695824 there is information from one study or none -- so skipping this variant.
+* For rs1695824 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1695823 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1695823 there is information from one study or none -- so skipping this variant.
+* For rs1695823 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs873927 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs873927 there is information from one study or none -- so skipping this variant.
+* For rs873927 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240701 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240701 there is information from one study or none -- so skipping this variant.
+* For rs1240701 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240700 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240700 there is information from one study or none -- so skipping this variant.
+* For rs1240700 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1892289 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1892289 there is information from one study or none -- so skipping this variant.
+* For rs1892289 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240697 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240697 there is information from one study or none -- so skipping this variant.
+* For rs1240697 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1240695 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1240695 there is information from one study or none -- so skipping this variant.
+* For rs1240695 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1153092 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1153092 there is information from one study or none -- so skipping this variant.
+* For rs1153092 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1153094 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1153094 there is information from one study or none -- so skipping this variant.
+* For rs1153094 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1312568 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1312568 there is information from one study or none -- so skipping this variant.
+* For rs1312568 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1695859 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1695859 there is information from one study or none -- so skipping this variant.
+* For rs1695859 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1624483 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1624483 there is information from one study or none -- so skipping this variant.
+* For rs1624483 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1627833 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1627833 there is information from one study or none -- so skipping this variant.
+* For rs1627833 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1781145 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1781145 there is information from one study or none -- so skipping this variant.
+* For rs1781145 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1695861 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1695861 there is information from one study or none -- so skipping this variant.
+* For rs1695861 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1695862 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1695862 there is information from one study or none -- so skipping this variant.
+* For rs1695862 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1781148 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1781148 there is information from one study or none -- so skipping this variant.
+* For rs1781148 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1153105 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1153105 there is information from one study or none -- so skipping this variant.
+* For rs1153105 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7531221 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2015387 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1571148 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1571148 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1571148 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1571149 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1571149 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1571149 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1571149 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1571149 there is information from one study or none -- so skipping this variant.
+* For rs1571149 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7290 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7290 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7290 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7290 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7290 there is information from one study or none -- so skipping this variant.
+* For rs7290 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3766180 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3766180 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3766180 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3766180 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3766180 there is information from one study or none -- so skipping this variant.
+* For rs3766180 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3766178 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3766178 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3766178 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3766178 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3766178 there is information from one study or none -- so skipping this variant.
+* For rs3766178 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6665973 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6665973 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6665973 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6665973 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6665973 there is information from one study or none -- so skipping this variant.
+* For rs6665973 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7533 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7533 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7533 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7533 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7533 there is information from one study or none -- so skipping this variant.
+* For rs7533 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs9329413 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs9329413 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs9329413 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs9329413 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs9329413 there is information from one study or none -- so skipping this variant.
+* For rs9329413 the effective sample size = 0 -- so skipping this variant.
+* In CHS_m1, rs7517401 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7517401 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7517401 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs35008066 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3128342 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs35428350 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3930748 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3930748 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7366635 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7366635 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7366635 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7366635 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7366635 there is information from one study or none -- so skipping this variant.
+* For rs7366635 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3753332 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3753332 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3753332 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3753332 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3753332 there is information from one study or none -- so skipping this variant.
+* For rs3753332 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3753331 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3753331 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3753331 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3753331 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3753331 there is information from one study or none -- so skipping this variant.
+* For rs3753331 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs34962853 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12410854 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12410854 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs12410854 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs3766170 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3766170 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3766170 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3766170 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3766170 there is information from one study or none -- so skipping this variant.
+* For rs3766170 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3766169 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3766169 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs3766169 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3766169 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3766169 there is information from one study or none -- so skipping this variant.
+* For rs3766169 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs148029734 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs9439468 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs9439468 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs9439468 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs9439468 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs9439468 there is information from one study or none -- so skipping this variant.
+* For rs9439468 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs141720989 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6603791 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6603791 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6603791 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6603791 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6603791 there is information from one study or none -- so skipping this variant.
+* For rs6603791 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7543799 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7543799 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7543799 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7543799 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7543799 there is information from one study or none -- so skipping this variant.
+* For rs7543799 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7367692 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7367692 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7367692 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7367692 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7367692 there is information from one study or none -- so skipping this variant.
+* For rs7367692 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7364711 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7364711 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7364711 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7364711 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7364711 there is information from one study or none -- so skipping this variant.
+* For rs7364711 the effective sample size = 0 -- so skipping this variant.
+* In SORBS_m1, rs7550471 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6603792 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6603793 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6603793 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6603793 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6603793 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6603793 there is information from one study or none -- so skipping this variant.
+* For rs6603793 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7548959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7548959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7548959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs61774865 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs61774865 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs61774865 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs9439473 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs9439473 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs9439473 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs9439473 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs9439473 there is information from one study or none -- so skipping this variant.
+* For rs9439473 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7520996 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7520996 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7520996 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7520996 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7520996 there is information from one study or none -- so skipping this variant.
+* For rs7520996 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs33918586 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6666293 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6666293 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6666293 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs150737039 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7519837 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7519837 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7519837 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2490549 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2490552 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2803345 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2249670 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2459995 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs383650 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs973978 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12068202 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12068202 there is information from one study or none -- so skipping this variant.
+* For rs12068202 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs161803 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs161803 there is information from one study or none -- so skipping this variant.
+* For rs161803 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs161826 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs161826 there is information from one study or none -- so skipping this variant.
+* For rs161826 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs226480 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs226480 there is information from one study or none -- so skipping this variant.
+* For rs226480 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs161820 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs161820 there is information from one study or none -- so skipping this variant.
+* For rs161820 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs161823 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs161823 there is information from one study or none -- so skipping this variant.
+* For rs161823 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs537801 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs537801 there is information from one study or none -- so skipping this variant.
+* For rs537801 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs34180993 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11121432 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs71580091 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs71580091 there is information from one study or none -- so skipping this variant.
+* For rs71580091 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs34265250 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7417995 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6660810 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12124860 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs9430194 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12028233 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12028233 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs12028233 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs57573276 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs113211497 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11121469 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11121469 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11121469 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs111877086 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs111877086 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs111877086 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs72869650 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs72869650 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs72869650 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7520103 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs9430574 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12039250 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12039250 there is information from one study or none -- so skipping this variant.
+* For rs12039250 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2235699 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2235699 there is information from one study or none -- so skipping this variant.
+* For rs2235699 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2073017 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2073017 there is information from one study or none -- so skipping this variant.
+* For rs2073017 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11121615 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11121615 there is information from one study or none -- so skipping this variant.
+* For rs11121615 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6668047 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6668047 there is information from one study or none -- so skipping this variant.
+* For rs6668047 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs36083532 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs36083532 there is information from one study or none -- so skipping this variant.
+* For rs36083532 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6698228 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6698228 there is information from one study or none -- so skipping this variant.
+* For rs6698228 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6660242 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6660242 there is information from one study or none -- so skipping this variant.
+* For rs6660242 the effective sample size = 0 -- so skipping this variant.
+* In SORBS_m1, rs6673156 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4920310 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4920310 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4920310 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4920311 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4920311 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4920311 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4920466 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4920466 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs878949 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs878949 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs878949 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6671775 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6671775 there is information from one study or none -- so skipping this variant.
+* For rs6671775 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs61777966 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs61777966 there is information from one study or none -- so skipping this variant.
+* For rs61777966 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10917107 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10917107 there is information from one study or none -- so skipping this variant.
+* For rs10917107 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4655109 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4655109 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4655109 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4655109 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4655109 there is information from one study or none -- so skipping this variant.
+* For rs4655109 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12724658 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12724658 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs12724658 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs12724658 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12724658 there is information from one study or none -- so skipping this variant.
+* For rs12724658 the effective sample size = 0 -- so skipping this variant.
+* In CHS_m1, rs17338135 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs72540327 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs145191744 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs3014693 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2982305 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs3014716 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3014716 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2982309 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2982309 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10633677 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs3014712 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs3014712 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs768199 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs768199 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2982313 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2982313 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2982314 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2982314 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1889737 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1889737 there is information from one study or none -- so skipping this variant.
+* For rs1889737 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1889738 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1889738 there is information from one study or none -- so skipping this variant.
+* For rs1889738 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6662955 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11247593 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11247594 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11247594 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11581728 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11581728 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11581728 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7504 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7504 there is information from one study or none -- so skipping this variant.
+* For rs7504 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs150089 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs169447 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs204059 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs204058 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4654383 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2985317 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4578183 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs61402823 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6656832 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2985322 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2171051 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2985327 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs9426315 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs9426315 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7516787 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7516871 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7519256 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6684063 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6684063 there is information from one study or none -- so skipping this variant.
+* For rs6684063 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7537554 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7537554 there is information from one study or none -- so skipping this variant.
+* For rs7537554 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7544097 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7544097 there is information from one study or none -- so skipping this variant.
+* For rs7544097 the effective sample size = 0 -- so skipping this variant.
+* In FHS_m1, rs7544303 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7544303 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6425903 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6425903 there is information from one study or none -- so skipping this variant.
+* For rs6425903 the effective sample size = 0 -- so skipping this variant.
+* In FHS_m1, rs2205841 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2205841 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs2179163 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2179163 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6425910 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6425910 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1022490 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1022490 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs9628640 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs9628640 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12410874 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12410874 there is information from one study or none -- so skipping this variant.
+* For rs12410874 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1998011 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1998011 there is information from one study or none -- so skipping this variant.
+* For rs1998011 the effective sample size = 0 -- so skipping this variant.
+* In FHS_m1, rs6657022 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1874746 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs12031630 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7549197 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10914324 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10914325 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2889710 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10737355 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6699355 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6699355 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12048635 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12048635 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6425927 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs138072493 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, chr1:35436426:T_TA has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908316 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10908316 there is information from one study or none -- so skipping this variant.
+* For rs10908316 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11264001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11264001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11264001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11264001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264001 there is information from one study or none -- so skipping this variant.
+* For rs11264001 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7541269 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7521232 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10638422 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2101973 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2101973 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6658571 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12117002 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4411101 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11579023 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12131653 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12748507 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12748507 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908374 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11264100 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11264100 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11264100 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11264100 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264100 there is information from one study or none -- so skipping this variant.
+* For rs11264100 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3863722 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs3863722 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6665689 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908379 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11804572 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11264105 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10796917 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11589697 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11589697 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11264110 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11264110 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11264110 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11264110 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264110 there is information from one study or none -- so skipping this variant.
+* For rs11264110 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12049512 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12049512 there is information from one study or none -- so skipping this variant.
+* For rs12049512 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7549584 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7549584 there is information from one study or none -- so skipping this variant.
+* For rs7549584 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs668092 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs668092 there is information from one study or none -- so skipping this variant.
+* For rs668092 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs673604 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs673604 there is information from one study or none -- so skipping this variant.
+* For rs673604 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs201271114 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs201271114 there is information from one study or none -- so skipping this variant.
+* For rs201271114 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs71516386 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs71516386 there is information from one study or none -- so skipping this variant.
+* For rs71516386 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs593461 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs593461 there is information from one study or none -- so skipping this variant.
+* For rs593461 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12027439 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12027439 there is information from one study or none -- so skipping this variant.
+* For rs12027439 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2500228 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2500228 there is information from one study or none -- so skipping this variant.
+* For rs2500228 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4474213 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4474213 there is information from one study or none -- so skipping this variant.
+* For rs4474213 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs9426023 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs9426023 there is information from one study or none -- so skipping this variant.
+* For rs9426023 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6657092 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6657092 there is information from one study or none -- so skipping this variant.
+* For rs6657092 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs552564 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs552564 there is information from one study or none -- so skipping this variant.
+* For rs552564 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs502638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs502638 there is information from one study or none -- so skipping this variant.
+* For rs502638 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs616546 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs616546 there is information from one study or none -- so skipping this variant.
+* For rs616546 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs540172 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs540172 there is information from one study or none -- so skipping this variant.
+* For rs540172 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6695754 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6695754 there is information from one study or none -- so skipping this variant.
+* For rs6695754 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11581846 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11581846 there is information from one study or none -- so skipping this variant.
+* For rs11581846 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2479531 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2479531 there is information from one study or none -- so skipping this variant.
+* For rs2479531 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs479745 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs479745 there is information from one study or none -- so skipping this variant.
+* For rs479745 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs72327719 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs561905 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs561905 there is information from one study or none -- so skipping this variant.
+* For rs561905 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs667918 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs667918 there is information from one study or none -- so skipping this variant.
+* For rs667918 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs522821 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs522821 there is information from one study or none -- so skipping this variant.
+* For rs522821 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2458890 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2458890 there is information from one study or none -- so skipping this variant.
+* For rs2458890 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7540584 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7540584 there is information from one study or none -- so skipping this variant.
+* For rs7540584 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs631114 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs631114 there is information from one study or none -- so skipping this variant.
+* For rs631114 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs488676 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs488676 there is information from one study or none -- so skipping this variant.
+* For rs488676 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs574045 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs574045 there is information from one study or none -- so skipping this variant.
+* For rs574045 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2479528 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2479528 there is information from one study or none -- so skipping this variant.
+* For rs2479528 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs199637023 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs199637023 there is information from one study or none -- so skipping this variant.
+* For rs199637023 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs544621 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs544621 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs544621 there is information from one study or none -- so skipping this variant.
+* For rs544621 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7544416 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7544416 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7544416 there is information from one study or none -- so skipping this variant.
+* For rs7544416 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4652878 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4652878 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4652878 there is information from one study or none -- so skipping this variant.
+* For rs4652878 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11581809 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11581809 there is information from one study or none -- so skipping this variant.
+* For rs11581809 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12127537 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12127537 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12127537 there is information from one study or none -- so skipping this variant.
+* For rs12127537 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs566154 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs566154 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs566154 there is information from one study or none -- so skipping this variant.
+* For rs566154 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11365951 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1567954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1567954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1567954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1567954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1567954 there is information from one study or none -- so skipping this variant.
+* For rs1567954 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2182907 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2182907 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs2182907 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2182907 there is information from one study or none -- so skipping this variant.
+* For rs2182907 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs673293 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs673293 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs673293 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs673293 there is information from one study or none -- so skipping this variant.
+* For rs673293 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs548149 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs548149 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs548149 there is information from one study or none -- so skipping this variant.
+* For rs548149 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6671953 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6671953 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6671953 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6671953 there is information from one study or none -- so skipping this variant.
+* For rs6671953 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4653129 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4653129 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4653129 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4653129 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4653129 there is information from one study or none -- so skipping this variant.
+* For rs4653129 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4653130 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4653130 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4653130 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4653130 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4653130 there is information from one study or none -- so skipping this variant.
+* For rs4653130 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs500502 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs500502 there is information from one study or none -- so skipping this variant.
+* For rs500502 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1927651 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1927651 there is information from one study or none -- so skipping this variant.
+* For rs1927651 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs645886 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs645886 there is information from one study or none -- so skipping this variant.
+* For rs645886 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs494085 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs494085 there is information from one study or none -- so skipping this variant.
+* For rs494085 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs607003 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs607003 there is information from one study or none -- so skipping this variant.
+* For rs607003 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs542339 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs542339 there is information from one study or none -- so skipping this variant.
+* For rs542339 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs559986 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs559986 there is information from one study or none -- so skipping this variant.
+* For rs559986 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs615315 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs615315 there is information from one study or none -- so skipping this variant.
+* For rs615315 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs74640399 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs74640399 there is information from one study or none -- so skipping this variant.
+* For rs74640399 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1188620 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1188620 there is information from one study or none -- so skipping this variant.
+* For rs1188620 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1188627 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1188627 there is information from one study or none -- so skipping this variant.
+* For rs1188627 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1188626 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1188626 there is information from one study or none -- so skipping this variant.
+* For rs1188626 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs200601434 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs200601434 there is information from one study or none -- so skipping this variant.
+* For rs200601434 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, chr1:35876321:C_CTG has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For chr1:35876321:C_CTG there is information from one study or none -- so skipping this variant.
+* For chr1:35876321:C_CTG the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1764675 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1764675 there is information from one study or none -- so skipping this variant.
+* For rs1764675 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1211184 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1211184 there is information from one study or none -- so skipping this variant.
+* For rs1211184 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1764674 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1764674 there is information from one study or none -- so skipping this variant.
+* For rs1764674 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, chr1:35895547:T_TTC has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For chr1:35895547:T_TTC there is information from one study or none -- so skipping this variant.
+* For chr1:35895547:T_TTC the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3814302 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3814302 there is information from one study or none -- so skipping this variant.
+* For rs3814302 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1188633 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1188633 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1188633 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1188633 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1188633 there is information from one study or none -- so skipping this variant.
+* For rs1188633 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2275247 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2275247 there is information from one study or none -- so skipping this variant.
+* For rs2275247 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7539801 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7539801 there is information from one study or none -- so skipping this variant.
+* For rs7539801 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs201328144 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs201328144 there is information from one study or none -- so skipping this variant.
+* For rs201328144 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1768560 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1768560 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1768560 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1768560 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1768560 there is information from one study or none -- so skipping this variant.
+* For rs1768560 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs917105 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs917105 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs917105 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs917105 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs917105 there is information from one study or none -- so skipping this variant.
+* For rs917105 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203139 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1203139 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1203139 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1203139 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203139 there is information from one study or none -- so skipping this variant.
+* For rs1203139 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1768545 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1768545 there is information from one study or none -- so skipping this variant.
+* For rs1768545 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203137 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1203137 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1203137 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1203137 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203137 there is information from one study or none -- so skipping this variant.
+* For rs1203137 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203136 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203136 there is information from one study or none -- so skipping this variant.
+* For rs1203136 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203135 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203135 there is information from one study or none -- so skipping this variant.
+* For rs1203135 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203133 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203133 there is information from one study or none -- so skipping this variant.
+* For rs1203133 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203132 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203132 there is information from one study or none -- so skipping this variant.
+* For rs1203132 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203131 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203131 there is information from one study or none -- so skipping this variant.
+* For rs1203131 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10908397 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10908397 there is information from one study or none -- so skipping this variant.
+* For rs10908397 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs74527163 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs74527163 there is information from one study or none -- so skipping this variant.
+* For rs74527163 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6683661 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6683661 there is information from one study or none -- so skipping this variant.
+* For rs6683661 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1212907 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1212907 there is information from one study or none -- so skipping this variant.
+* For rs1212907 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203148 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203148 there is information from one study or none -- so skipping this variant.
+* For rs1203148 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203145 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203145 there is information from one study or none -- so skipping this variant.
+* For rs1203145 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203144 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203144 there is information from one study or none -- so skipping this variant.
+* For rs1203144 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1635718 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1635718 there is information from one study or none -- so skipping this variant.
+* For rs1635718 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs201721355 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs201721355 there is information from one study or none -- so skipping this variant.
+* For rs201721355 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1203129 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1203129 there is information from one study or none -- so skipping this variant.
+* For rs1203129 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1768551 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1768551 there is information from one study or none -- so skipping this variant.
+* For rs1768551 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1768552 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1768552 there is information from one study or none -- so skipping this variant.
+* For rs1768552 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs116146165 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs116146165 there is information from one study or none -- so skipping this variant.
+* For rs116146165 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1635717 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1635717 there is information from one study or none -- so skipping this variant.
+* For rs1635717 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1618735 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1618735 there is information from one study or none -- so skipping this variant.
+* For rs1618735 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12037235 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12037235 there is information from one study or none -- so skipping this variant.
+* For rs12037235 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12567278 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12567278 there is information from one study or none -- so skipping this variant.
+* For rs12567278 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6425946 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6425946 there is information from one study or none -- so skipping this variant.
+* For rs6425946 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11264174 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264174 there is information from one study or none -- so skipping this variant.
+* For rs11264174 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6662175 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6662175 there is information from one study or none -- so skipping this variant.
+* For rs6662175 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6702503 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6702503 there is information from one study or none -- so skipping this variant.
+* For rs6702503 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6425947 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6425947 there is information from one study or none -- so skipping this variant.
+* For rs6425947 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6703605 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6703605 there is information from one study or none -- so skipping this variant.
+* For rs6703605 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6696836 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6696836 there is information from one study or none -- so skipping this variant.
+* For rs6696836 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10796921 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10796921 there is information from one study or none -- so skipping this variant.
+* For rs10796921 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs28366020 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs28366020 there is information from one study or none -- so skipping this variant.
+* For rs28366020 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7518500 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7518500 there is information from one study or none -- so skipping this variant.
+* For rs7518500 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2074676 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2074676 there is information from one study or none -- so skipping this variant.
+* For rs2074676 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2074678 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2074678 there is information from one study or none -- so skipping this variant.
+* For rs2074678 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs58718331 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs58718331 there is information from one study or none -- so skipping this variant.
+* For rs58718331 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2107782 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2107782 there is information from one study or none -- so skipping this variant.
+* For rs2107782 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6425948 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6425948 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6425948 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6425948 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6425948 there is information from one study or none -- so skipping this variant.
+* For rs6425948 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs3944110 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs3944110 there is information from one study or none -- so skipping this variant.
+* For rs3944110 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12564147 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12564147 there is information from one study or none -- so skipping this variant.
+* For rs12564147 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6425949 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6425949 there is information from one study or none -- so skipping this variant.
+* For rs6425949 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7416348 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7416348 there is information from one study or none -- so skipping this variant.
+* For rs7416348 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs60907293 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11264179 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264179 there is information from one study or none -- so skipping this variant.
+* For rs11264179 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12082263 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12082263 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs12082263 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs12082263 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12082263 there is information from one study or none -- so skipping this variant.
+* For rs12082263 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6668196 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6668196 there is information from one study or none -- so skipping this variant.
+* For rs6668196 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs953035 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs953035 there is information from one study or none -- so skipping this variant.
+* For rs953035 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10908401 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10908401 there is information from one study or none -- so skipping this variant.
+* For rs10908401 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs574384 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs574384 there is information from one study or none -- so skipping this variant.
+* For rs574384 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs545929 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs545929 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs545929 there is information from one study or none -- so skipping this variant.
+* For rs545929 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs66519160 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2151529 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2151529 there is information from one study or none -- so skipping this variant.
+* For rs2151529 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs139284892 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs584598 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs584598 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs584598 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs584598 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs584598 there is information from one study or none -- so skipping this variant.
+* For rs584598 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs676614 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs676614 there is information from one study or none -- so skipping this variant.
+* For rs676614 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs535431 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs535431 there is information from one study or none -- so skipping this variant.
+* For rs535431 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs655590 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs655590 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs655590 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs655590 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs655590 there is information from one study or none -- so skipping this variant.
+* For rs655590 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs201143769 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs201143769 there is information from one study or none -- so skipping this variant.
+* For rs201143769 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs61250045 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs61250045 there is information from one study or none -- so skipping this variant.
+* For rs61250045 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs596471 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs596471 there is information from one study or none -- so skipping this variant.
+* For rs596471 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs677661 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs677661 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs677661 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs677661 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs677661 there is information from one study or none -- so skipping this variant.
+* For rs677661 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs665046 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs665046 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs665046 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs665046 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs665046 there is information from one study or none -- so skipping this variant.
+* For rs665046 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs570155 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs570155 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs570155 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs570155 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs570155 there is information from one study or none -- so skipping this variant.
+* For rs570155 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs793959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs793959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs793959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs793959 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs793959 there is information from one study or none -- so skipping this variant.
+* For rs793959 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs591001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs591001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs591001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs591001 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs591001 there is information from one study or none -- so skipping this variant.
+* For rs591001 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs57586469 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7367713 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7367713 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs7367713 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs7367713 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7367713 there is information from one study or none -- so skipping this variant.
+* For rs7367713 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11264188 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11264188 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11264188 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11264188 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264188 there is information from one study or none -- so skipping this variant.
+* For rs11264188 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4653145 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4653145 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4653145 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4653145 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4653145 there is information from one study or none -- so skipping this variant.
+* For rs4653145 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs35901000 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1333647 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1333647 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs1333647 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1333647 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1333647 there is information from one study or none -- so skipping this variant.
+* For rs1333647 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs960629 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs960629 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs960629 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs960629 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs960629 there is information from one study or none -- so skipping this variant.
+* For rs960629 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs960628 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs960628 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs960628 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs960628 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs960628 there is information from one study or none -- so skipping this variant.
+* For rs960628 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs756159 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs756159 there is information from one study or none -- so skipping this variant.
+* For rs756159 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6425953 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6688464 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6688464 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6688464 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6688464 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6688464 there is information from one study or none -- so skipping this variant.
+* For rs6688464 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4652889 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4652889 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs4652889 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs4652889 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4652889 there is information from one study or none -- so skipping this variant.
+* For rs4652889 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1831865 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1831865 there is information from one study or none -- so skipping this variant.
+* For rs1831865 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs66805870 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs66805870 there is information from one study or none -- so skipping this variant.
+* For rs66805870 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11264193 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11264193 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11264193 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11264193 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264193 there is information from one study or none -- so skipping this variant.
+* For rs11264193 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11580984 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11580984 there is information from one study or none -- so skipping this variant.
+* For rs11580984 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12084705 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12084705 there is information from one study or none -- so skipping this variant.
+* For rs12084705 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12077536 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12077536 there is information from one study or none -- so skipping this variant.
+* For rs12077536 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4653147 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4653147 there is information from one study or none -- so skipping this variant.
+* For rs4653147 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6425954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs6425954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs6425954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6425954 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6425954 there is information from one study or none -- so skipping this variant.
+* For rs6425954 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs577483 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs577483 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs577483 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs577483 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs577483 there is information from one study or none -- so skipping this variant.
+* For rs577483 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6688845 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6688845 there is information from one study or none -- so skipping this variant.
+* For rs6688845 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs535638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs535638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs535638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs535638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs535638 there is information from one study or none -- so skipping this variant.
+* For rs535638 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11264198 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264198 there is information from one study or none -- so skipping this variant.
+* For rs11264198 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12046482 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12046482 there is information from one study or none -- so skipping this variant.
+* For rs12046482 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6685439 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6685439 there is information from one study or none -- so skipping this variant.
+* For rs6685439 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7537203 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7537203 there is information from one study or none -- so skipping this variant.
+* For rs7537203 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10908409 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10908409 there is information from one study or none -- so skipping this variant.
+* For rs10908409 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2050246 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2050246 there is information from one study or none -- so skipping this variant.
+* For rs2050246 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6692612 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6692612 there is information from one study or none -- so skipping this variant.
+* For rs6692612 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs626953 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs626953 there is information from one study or none -- so skipping this variant.
+* For rs626953 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs612175 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs612175 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs612175 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs612175 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs612175 there is information from one study or none -- so skipping this variant.
+* For rs612175 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10908410 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10908410 there is information from one study or none -- so skipping this variant.
+* For rs10908410 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs641130 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs641130 there is information from one study or none -- so skipping this variant.
+* For rs641130 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11264206 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs11264206 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs11264206 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs11264206 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11264206 there is information from one study or none -- so skipping this variant.
+* For rs11264206 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs647548 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs647548 there is information from one study or none -- so skipping this variant.
+* For rs647548 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs538605 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs538605 there is information from one study or none -- so skipping this variant.
+* For rs538605 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs671816 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs671816 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs671816 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs671816 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs671816 there is information from one study or none -- so skipping this variant.
+* For rs671816 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs515346 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs515346 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs515346 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs515346 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs515346 there is information from one study or none -- so skipping this variant.
+* For rs515346 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs620125 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs620125 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs620125 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs620125 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs620125 there is information from one study or none -- so skipping this variant.
+* For rs620125 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs636671 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs636671 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs636671 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs636671 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs636671 there is information from one study or none -- so skipping this variant.
+* For rs636671 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs9426027 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs9426027 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs9426027 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs9426027 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs9426027 there is information from one study or none -- so skipping this variant.
+* For rs9426027 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs61125103 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs61125103 there is information from one study or none -- so skipping this variant.
+* For rs61125103 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11292136 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11292136 there is information from one study or none -- so skipping this variant.
+* For rs11292136 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs582845 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs582845 there is information from one study or none -- so skipping this variant.
+* For rs582845 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2791966 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2791966 there is information from one study or none -- so skipping this variant.
+* For rs2791966 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4652895 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4652895 there is information from one study or none -- so skipping this variant.
+* For rs4652895 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12119583 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs12119583 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs12119583 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs12119583 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12119583 there is information from one study or none -- so skipping this variant.
+* For rs12119583 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs634335 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs634335 there is information from one study or none -- so skipping this variant.
+* For rs634335 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs60167917 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs60167917 there is information from one study or none -- so skipping this variant.
+* For rs60167917 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs811114 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs811114 there is information from one study or none -- so skipping this variant.
+* For rs811114 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11263830 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11263830 there is information from one study or none -- so skipping this variant.
+* For rs11263830 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2765012 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2765012 there is information from one study or none -- so skipping this variant.
+* For rs2765012 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs653417 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs653417 there is information from one study or none -- so skipping this variant.
+* For rs653417 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs620956 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs620956 there is information from one study or none -- so skipping this variant.
+* For rs620956 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs636832 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs636832 there is information from one study or none -- so skipping this variant.
+* For rs636832 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs647690 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs647690 there is information from one study or none -- so skipping this variant.
+* For rs647690 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs661233 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs661233 there is information from one study or none -- so skipping this variant.
+* For rs661233 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs595961 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs595961 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs595961 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs595961 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs595961 there is information from one study or none -- so skipping this variant.
+* For rs595961 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs794222 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs794222 there is information from one study or none -- so skipping this variant.
+* For rs794222 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2791962 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2791962 there is information from one study or none -- so skipping this variant.
+* For rs2791962 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2791961 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2791961 there is information from one study or none -- so skipping this variant.
+* For rs2791961 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2765013 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2765013 there is information from one study or none -- so skipping this variant.
+* For rs2765013 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs581459 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs581459 there is information from one study or none -- so skipping this variant.
+* For rs581459 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs595055 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs595055 there is information from one study or none -- so skipping this variant.
+* For rs595055 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs654688 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs654688 there is information from one study or none -- so skipping this variant.
+* For rs654688 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs663163 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs663163 there is information from one study or none -- so skipping this variant.
+* For rs663163 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs111375913 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs111375913 there is information from one study or none -- so skipping this variant.
+* For rs111375913 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11263843 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11263843 there is information from one study or none -- so skipping this variant.
+* For rs11263843 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12031138 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12031138 there is information from one study or none -- so skipping this variant.
+* For rs12031138 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6665591 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6665591 there is information from one study or none -- so skipping this variant.
+* For rs6665591 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12041193 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12041193 there is information from one study or none -- so skipping this variant.
+* For rs12041193 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs67641270 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs67641270 there is information from one study or none -- so skipping this variant.
+* For rs67641270 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs716926 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs716926 there is information from one study or none -- so skipping this variant.
+* For rs716926 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs716925 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs716925 there is information from one study or none -- so skipping this variant.
+* For rs716925 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs10796876 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs10796876 there is information from one study or none -- so skipping this variant.
+* For rs10796876 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs60867325 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs60867325 there is information from one study or none -- so skipping this variant.
+* For rs60867325 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs645864 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs645864 there is information from one study or none -- so skipping this variant.
+* For rs645864 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs629773 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs629773 there is information from one study or none -- so skipping this variant.
+* For rs629773 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs649152 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs649152 there is information from one study or none -- so skipping this variant.
+* For rs649152 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs709309 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs709309 there is information from one study or none -- so skipping this variant.
+* For rs709309 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs686650 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs686650 there is information from one study or none -- so skipping this variant.
+* For rs686650 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs685370 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs685370 there is information from one study or none -- so skipping this variant.
+* For rs685370 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs682686 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs682686 there is information from one study or none -- so skipping this variant.
+* For rs682686 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs665521 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs665521 there is information from one study or none -- so skipping this variant.
+* For rs665521 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs630364 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs630364 there is information from one study or none -- so skipping this variant.
+* For rs630364 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs614235 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs614235 there is information from one study or none -- so skipping this variant.
+* For rs614235 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs625306 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs625306 there is information from one study or none -- so skipping this variant.
+* For rs625306 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs199816668 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs199816668 there is information from one study or none -- so skipping this variant.
+* For rs199816668 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs688833 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs688833 there is information from one study or none -- so skipping this variant.
+* For rs688833 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs688191 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs688191 there is information from one study or none -- so skipping this variant.
+* For rs688191 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7542179 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs7542179 there is information from one study or none -- so skipping this variant.
+* For rs7542179 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs139402479 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs619666 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs619666 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs619666 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs619666 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs619666 there is information from one study or none -- so skipping this variant.
+* For rs619666 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs684594 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs684594 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs684594 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs684594 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs684594 there is information from one study or none -- so skipping this variant.
+* For rs684594 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs603945 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs603945 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs603945 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs603945 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs603945 there is information from one study or none -- so skipping this variant.
+* For rs603945 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs679457 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs679457 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs679457 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs812106 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs812106 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs659761 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs659761 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs659761 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs538638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs538638 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs558120 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs558120 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4653157 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs4653157 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1967782 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1967782 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2274122 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs2274122 there is information from one study or none -- so skipping this variant.
+* For rs2274122 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6693322 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6693322 there is information from one study or none -- so skipping this variant.
+* For rs6693322 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs743015 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs743015 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs743015 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10752590 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908311 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10908311 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs12037681 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs12037681 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6678108 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6678108 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908312 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs10908312 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10908312 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908313 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10908313 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2207630 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2207630 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10908314 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs10908314 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs10908314 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6698514 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs6698514 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs2983117 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs2983117 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2983117 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs219012 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs219009 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1001880 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs1001880 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs1001880 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs219007 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs219007 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs219007 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs219004 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs219004 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs531639 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs709299 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs709299 there is information from one study or none -- so skipping this variant.
+* For rs709299 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs542405 has allele frequencies for A/T or C/G variants inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs542405 there is information from one study or none -- so skipping this variant.
+* For rs542405 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs7517575 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs7517575 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs10888603 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs10888603 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs10888603 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4660446 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4660446 there is information from one study or none -- so skipping this variant.
+* For rs4660446 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12566204 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs4596873 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4596873 there is information from one study or none -- so skipping this variant.
+* For rs4596873 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4311876 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4311876 there is information from one study or none -- so skipping this variant.
+* For rs4311876 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12756856 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12756856 there is information from one study or none -- so skipping this variant.
+* For rs12756856 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12741355 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12741355 there is information from one study or none -- so skipping this variant.
+* For rs12741355 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs11579762 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs11579762 there is information from one study or none -- so skipping this variant.
+* For rs11579762 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs4660948 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs4660948 there is information from one study or none -- so skipping this variant.
+* For rs4660948 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6669160 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6669160 there is information from one study or none -- so skipping this variant.
+* For rs6669160 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs6675720 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs6675720 there is information from one study or none -- so skipping this variant.
+* For rs6675720 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1258059 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs1258059 there is information from one study or none -- so skipping this variant.
+* For rs1258059 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs1150068 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs594118 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6671124 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6429607 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6429609 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs6698459 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs723690 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs7534179 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs11211354 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs1971519 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs635561 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In CHS_m1, rs635561 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs635561 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs635561 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs635561 there is information from one study or none -- so skipping this variant.
+* For rs635561 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs2993410 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In FHS_m1, rs2993410 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs2993410 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs608804 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In SORBS_m1, rs608804 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* In AEGS_m1, rs59182762 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs59182762 there is information from one study or none -- so skipping this variant.
+* For rs59182762 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs200175931 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs200175931 there is information from one study or none -- so skipping this variant.
+* For rs200175931 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs640041 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs640041 there is information from one study or none -- so skipping this variant.
+* For rs640041 the effective sample size = 0 -- so skipping this variant.
+* In AEGS_m1, rs12404496 has allele frequencies inconsistent with Reference frequencies -- skipping this variant for this study.
+* For rs12404496 there is information from one study or none -- so skipping this variant.
+* For rs12404496 the effective sample size = 0 -- so skipping this variant.

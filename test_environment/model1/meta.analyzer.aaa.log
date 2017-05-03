@@ -1,0 +1,165 @@
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+* Dear Dr. Sammy, you've successfully logged in on the HPC of the UMC Utrecht from somewhere in the Alpha Quadrant.
+
+* Today's: Thu Apr 27 17:19:23 CEST 2017
+* You are here: /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+[1m+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[00m
+[1m                                          META-ANALYZER OF GWAS[00m
+[1m[00m
+[1m* Version:      v1.0.2[00m
+[1m[00m
+[1m* Last update:  2017-04-25[00m
+[1m* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl.[00m
+[1m* Description:  Meta-analyses GWAS datasets.[00m
+[1m[00m
+[1m* REQUIRED: [00m
+[1m  - A high-performance computer cluster with a qsub system[00m
+[1m  - R v3.2+, Python 2.7+, Perl.[00m
+[1m  - Required Python 2.7+ modules: [pandas], [scipy], [numpy].[00m
+[1m  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long].[00m
+[1m  - Note: it will also work on a Mac OS X system with R and Python installed.[00m
+[1m[00m
+[1m+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++[00m
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Processing arguments...
+
+All arguments are passed. These are the settings:
+Main meta-analysis results directory..................: /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META
+The reference used....................................: 1Gp1
+The reference population..............................: PAN
+The dbSNP data........................................: /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz
+The Reference frequency file..........................: /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt.gz
+The genes file........................................: /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz
+Meta-analysis model (default: fixed)..................: RANDOM
+Verbose output (default: no)..........................: VERBOSE
+The parameter file....................................: /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.model1.params
+The variant list file.................................: /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split
+Processing chunk......................................: aaa
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+We will collect all unique variants across all GWAS cohorts...
+Performing meta-analysis using Z-score and fixed-effects models; and in addition a random-effects model.
+Results will be verbose -- all per-cohort data are added to the output.
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +
++                                 version 2.0 | 26-04-2017                               +
++                              (formely known as [ MANTEL ])                             +
++                                                                                        +
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+The current date and time is: Thu Apr 27 17:19:23 2017.
+
+
+Running with the following parameters:
+  --params         : /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.model1.params
+  --variants       : /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split
+  --dbsnp          : /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz
+  --freq           : /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt.gz
+  --genes          : /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz
+  --dist           : 250
+  --ref            : 1Gp1
+  --pop            : PAN
+  --freq-flip      : 0.3
+  --freq-warning   : 0.45
+  --out            : /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/meta.results.FABP4.1Gp1.PAN.aaa.out
+  --ext            : aaa
+  --no-header      : input files without headers.
+  --random-effects : also perform analysis using random-effects model.
+  --verbose        : add per-cohort summary statistics to meta-analysis output.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Reading in variant list.
+
+* Reading variant list from: [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/METAFABP4_1000G/MODEL1/META/TEMP/meta.all.unique.variants.reorder.split.aaa ]...
+Number of variants ready for meta-analysis: 125000.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Reading in study parameters.
+
+* Reading parameter file: [ /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.model1.params ]...
+
+          Study name     Lambda     Sample size     Correction factor     Number of variants     File name
+          ----------     ------     -----------     -----------------     ------------------     ---------
+           EPICNL_m1    1.00000             475               1.00000                 125000     METAFABP4_1000G/MODEL1/META/EPICNL_m1/EPICNL_m1.reorder.split.aaa [verified]
+             AEGS_m1    1.00300             769               1.00000                 125000     METAFABP4_1000G/MODEL1/META/AEGS_m1/AEGS_m1.reorder.split.aaa [verified]
+              CHS_m1    1.00000            2587               1.00000                 125000     METAFABP4_1000G/MODEL1/META/CHS_m1/CHS_m1.reorder.split.aaa [verified]
+              FHS_m1    1.01200            3548               1.00000                 125000     METAFABP4_1000G/MODEL1/META/FHS_m1/FHS_m1.reorder.split.aaa [verified]
+            SORBS_m1    1.01400             891               1.00000                 125000     METAFABP4_1000G/MODEL1/META/SORBS_m1/SORBS_m1.reorder.split.aaa [verified]
+                                    ===========
+                                           8270
+
+Total number of studies: 5.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Reading in Variant Annotation File.
+
+* Reading: [ /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz ]...
+Number of annotated variants: 0.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Checking existence in the Variant Annotation File of variants listed in this meta-analysis.
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Reading in alleles from Reference Frequency File.
+
+* Reading Reference Frequency File: [ /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt.gz ]...
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Reading in genes.
+
+* Reading file: /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz...
+Number of annotated genes: 99900
+Maximal distance to genes: 250 KB
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Starting the meta-analysis.
+
+Preparing the output file...
+Meta-analyzing this shizzle...
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+Summarizing this meta-analysis.
+
+* Number of variants in meta-analysis       : 124647.
+* Number of variants not in the Reference   : 0.
+* Number of uninformative variants skipped  : 688.
+
+          Study name     Allele flips     Sign [beta] flips     Informative variants
+          ----------     ------------     -----------------     --------------------
+           EPICNL_m1                0              0                    0
+             AEGS_m1               32             32               124516
+              CHS_m1               13             13                24398
+              FHS_m1               11             11                21312
+            SORBS_m1               13             13                22866
+
+This meta-analysis of GWAS was successfully finished!!!
+
+All done! Let's have a beer, buddy.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
++ The MIT License (MIT)                                                                                 +
++ Copyright (c) 2015-2017 Sander W. van der Laan                                                        +
++                                                                                                       +
++ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +
++ associated documentation files (the "Software"), to deal in the Software without restriction,         +
++ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +
++ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +
++ subject to the following conditions:                                                                  +
++                                                                                                       +
++ The above copyright notice and this permission notice shall be included in all copies or substantial  +
++ portions of the Software.                                                                             +
++                                                                                                       +
++ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +
++ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +
++ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +
++ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +
++ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +
++                                                                                                       +
++ Reference: http://opensource.org.                                                                     +
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
