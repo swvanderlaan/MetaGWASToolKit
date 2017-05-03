@@ -623,11 +623,13 @@ while(my $c = <REFFREQ>){
     if ( $reference eq "HM2") {
         my $a1 = $fields[3];  # minor allele (can be 0 if monomorphic)
         my $a2 = $fields[4];  # major allele
-      }
+        print STDOUT "allele A = $a1; allele B = $a2";
+    }
     elsif ( $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" || $reference eq "1Gp1" || $reference eq "1Gp3" ) {
         my $a1 = $fields[4];  # alternative allele, equals to AlleleB in 1000G and thus the coded/effect allele of 1000G imputed data
         my $a2 = $fields[3];  # reference allele
-      }
+        print STDOUT "allele A = $a1; allele B = $a2";
+    }
     else {
         die "*** ERROR *** You did not specify the reference (--ref); now we cannot determine the proper reference-based allele and frequency. Please double back.\n";
     }
