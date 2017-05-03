@@ -7,14 +7,14 @@
 #
 # Written by:	Sander W. van der Laan & Jacco Schaap; UMC Utrecht, Utrecht, the 
 #               Netherlands, s.w.vanderlaan-2@umcutrecht.nl or j.schaap-2@umcutrecht.nl.
-# Version:		1.0.1
-# Update date: 	2017-04-21
+# Version:		1.0.2
+# Update date: 	2017-05-03
 #
 # Usage:		parseVCF2dbSNP.pl --file [input.vcf.gz] --out [output.txt]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDERR "+                              PARSE VCF FILES TO DBSNP FORMAT                           +\n";
+print STDERR "+                              PARSE VCF FILES TO VAF FORMAT                             +\n";
 print STDERR "+                                         V1.0.1                                         +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";

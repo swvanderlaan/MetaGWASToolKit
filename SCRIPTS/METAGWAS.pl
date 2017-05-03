@@ -442,7 +442,7 @@ print STDOUT "Total number of studies: $nstudies.\n";
 ##########################################################################################
 ##########################################################################################
 ###
-### read in a dbSNP file to get inventory of markers, positions and annotation
+### read in a Variant Annotation File to get inventory of markers, positions and annotation
 ###
 ##########################################################################################
 ##########################################################################################
