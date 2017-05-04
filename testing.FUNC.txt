@@ -1,0 +1,1 @@
+Chr	ChrStart	ChrEnd	VariantID	Strand	Alleles	VariantClass	VariantFunction

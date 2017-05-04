@@ -1,20 +1,24 @@
-# Overlap some data with some other data
+#!/usr/bin/perl
+# 
+# VCF PARSER
 #
-# Description: 	this script parse VCF files of 1000G phase 1 or phase 3. It will make a new 
-#				file containing variantIDs, alleles and frequencies. Can be used to align
-#				GWAS results in terms of allele coding, and variantID nomenclature.
+# Description: 	this script parses VCF files of 1000G phase 1 or phase 3. It will make three
+#               new files:
+#               1) a list of alternate variantIDs to harmonize the GWAS cohorts,
+#               2) a file containing frequencies of the chosen reference and population,
+#               3) a reference-file used as a reference to map, allign, and annotate all GWAS to during meta-analysis. 
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
 #               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
 # Version:		1.3.0
 # Update date: 	2017-05-04
 #
-# Usage:		parseVCF.pl --file [input.vcf.gz] --out [output.txt]
+# Usage:		parseVCF.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.txt]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDERR "+                                     PARSE VCF FILES                                    +\n";
-print STDERR "+                                         V1.3.10                                        +\n";
+print STDERR "+                                        VCF PARSER                                      +\n";
+print STDERR "+                                          v1.3.1                                        +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -33,21 +37,42 @@ use Getopt::Long;
 # - the output file (output)
 print STDERR "Reading options...\n";
 
-my $file = "";
-my $output = "";
+my $file = ""; # input VCF file to generate output
+my $reference = ""; # reference you want to create
+my $population = ""; # population you want to use relative to the reference
+my $output = ""; # output files generated: info-file; freq-file; variantID-harmonizer file
 
 GetOptions(
            "file=s"	=> \$file,
+           "ref=s"	=> \$reference,
+           "pop=s"	=> \$population,
            "out=s"	=> \$output,
            );
 # IF STATEMENT TO CHECK CORRECT INPUT
-if ( $file eq "" || $output eq "" ) {
-    print "Usage: %>parseVCF.pl --file input.vcf.gz --out output.txt\n";
-    print "";
-    print "Parses the input file, expected to be a VCF file (format 4.1+) and outputs a file containing allele frequencies, and alternate variantIDs.\n";
-    exit();
+if ( $file eq "" || $reference eq "" || $population eq "" || $output eq "" ) {
+print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+print "Usage: 
+parseVCF.pl --file input.vcf.gz  --ref [reference] --pop [population] --out output.txt\n";
+print "";
+print "Parses the input file, expected to be a VCF file (format 4.1+) and outputs files  
+containing alternate variantIDs, allele frequencies, and variant information. Depending on 
+the reference, one needs to choose the proper population as the alleles and frequencies 
+might differ between references and accross populations. Choices are:\n";
+print "\n";
+print "Reference     Population\n";
+print "=========     ==========\n";
+print "1Gp1          PAN, AFR, AMR, ASN\n";
+print "1Gp3          PAN, EUR, AFR, AMR, EAS, SAS\n";
+print "[GoNL4         NL] - not available yet\n";
+print "[GoNL5         NL] - not available yet\n";
+print "1Gp3GONL5     PAN\n";
+print "";
+print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+print "The MIT License (MIT)\n";
+print "Copyright (c) 2016-2017 Sander W. van der Laan & Vinicius Tragante dó Ó\n";
+print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+exit();
 }
-
 
 #### SETTING OTHER VARIABLES -- see below for header of VCF-file
 print STDERR "Setting variables...\n";
@@ -56,23 +81,24 @@ print STDERR "Setting variables...\n";
 # of the GEN-file format, the most common format currently as IMPUTE2 is the leading imputation
 # algorithm, the ALT/AlleleB are the effect alleles.
 
-my $chr = "";
-my $bp = "";
+# File #1: a list of alternate variantIDs to harmonize the GWAS cohorts
 my $vid = ""; # type 1: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
 my $vid1 = ""; # type 2: 'chr[X]:bp[XXXXX]:A1_A2'
 my $vid2 = ""; # type 3: 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
 my $vid3 = ""; # type 4: 'chr[X]:bp[XXXXX]:R_[D/I]'
 
+# File #2: containing frequencies of the chosen reference and population
+my $chr = "";
+my $bp = "";
 my $REF = ""; # reference allele
 my $ALT = ""; # other allele
 my $AlleleA = ""; # reference allele, with [I/D] nomenclature
 my $AlleleB = ""; # other allele, with [I/D] nomenclature
 my $Minor = ""; # minor allele
 my $Major = ""; # major allele
-my $INFO = "";
-my $VT = ""; # type of variant
+my $INFO = ""; # needed to grep additional variant information
 my $AF = "";
-my $MAF = ""; # minor allele frequency based on AF
+my $MAF = ""; # minor allele frequency based on the population specific AF
 my $EURAF = "";
 my $EURMAF = ""; # minor allele frequency based on AF
 my $AFRAF = "";
@@ -87,6 +113,14 @@ my $SASAF = "";
 my $SASMAF = ""; # minor allele frequency based on AF
 my $ref_indel = "R";
 
+# File #3: a reference-file used as a reference to map, allign, and annotate all GWAS to during meta-analysis
+my $strand = "+"; # all these references are by definition on the PLU(+)-strand
+my $chrstart = "";
+my $chrend = "";
+my $alleles = ""; # these will be the alt/ref
+my $variantclass = ""; # these will be the alt/ref
+my $variantfunction = "unknown"; # variant function
+
 ### READING INPUT FILE
 print STDERR "Reading input file...\n";
 if ($file =~ /.gz$/) {
@@ -97,11 +131,13 @@ open(IN, $file) || die "* ERROR: Cannot open [ $file ]!";
 }
 
 ### CREATING OUTPUT FILE
-print STDERR "Creating output file...\n";
+print STDERR "Creating output files...\n";
 open(OUT, '>', $output) or die "* ERROR: Could not create the output file [ $output ]!";
 
 print STDERR "* create header...\n";
-print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tVT\tAF\tMAF\tEURAF\tEURMAF\tAFRAF\tAFRMAF\tAMRAF\tAMRMAF\tASNAF\tASNMAF\tEASAF\tEASMAF\tSASAF\tSASMAF\n";
+print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\n";
+#print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\tVT\tEURAF\tEURMAF\tAFRAF\tAFRMAF\tAMRAF\tAMRMAF\tASNAF\tASNMAF\tEASAF\tEASMAF\tSASAF\tSASMAF\n";
+#print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\tVT\tEURAF\tEURMAF\tAFRAF\tAFRMAF\tAMRAF\tAMRMAF\tASNAF\tASNMAF\tEASAF\tEASMAF\tSASAF\tSASMAF\n";
 
 print STDERR "* looping over file to extract relevant data...\n";
 my $dummy=<IN>;
@@ -265,8 +301,9 @@ while (my $row = <IN>) {
   				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
   				}
 
-print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$VT\t$AF\t$MAF\t$EURAF\t$EURMAF\t$AFRAF\t$AFRMAF\t$AMRAF\t$AMRMAF\t$ASNAF\t$ASNMAF\t$EASAF\t$EASMAF\t$SASAF\t$SASMAF\n";
-
+print OUT "$vid\t$vid1\t$vid2\t$vid3\n";
+#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$VT\t$AF\t$MAF\t$EURAF\t$EURMAF\t$AFRAF\t$AFRMAF\t$AMRAF\t$AMRMAF\t$ASNAF\t$ASNMAF\t$EASAF\t$EASMAF\t$SASAF\t$SASMAF\n";
+#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$VT\t$AF\t$MAF\t$EURAF\t$EURMAF\t$AFRAF\t$AFRMAF\t$AMRAF\t$AMRMAF\t$ASNAF\t$ASNMAF\t$EASAF\t$EASMAF\t$SASAF\t$SASMAF\n";
 }
 
 close OUT;
@@ -280,7 +317,7 @@ print STDERR "\n";
 print STDERR "\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2016-2017 Vinicius Tragante dó Ó & Sander W. van der Laan                +\n";
+print STDERR "+ Copyright (c) 2016-2017 Sander W. van der Laan & Vinicius Tragante dó Ó                +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
 print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";

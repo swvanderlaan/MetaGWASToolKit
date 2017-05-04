@@ -697,7 +697,7 @@ while(my $c = <REFFREQ>){
 		elsif ( $reference eq "1Gp3" && $population eq "SAS" ) { 
 			$reference_a1_freq{$variant} = $fields[11];
 		}
-		else {
+		else { 
 			die "*** ERROR *** You did not specify the population (--pop); now we cannot determine the proper reference-based allele frequency. Please double back.\n";
 		} 
 

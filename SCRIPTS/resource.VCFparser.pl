@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 # 
-# PARSE VCF FILES
+# VCF PARSER
 #
-# Description: 	this script parse VCF files of 1000G phase 1 or phase 3. It will make three
+# Description: 	this script parses VCF files of 1000G phase 1 or phase 3. It will make three
 #               new files:
 #               1) a list of alternate variantIDs to harmonize the GWAS cohorts,
 #               2) a file containing frequencies of the chosen reference and population,
@@ -13,12 +13,12 @@
 # Version:		1.3.0
 # Update date: 	2017-05-04
 #
-# Usage:		parseVCF.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.txt]
+# Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDERR "+                                     PARSE VCF FILES                                    +\n";
-print STDERR "+                                         v1.3.1                                         +\n";
+print STDERR "+                                        VCF PARSER                                      +\n";
+print STDERR "+                                          v1.3.1                                        +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -52,8 +52,8 @@ GetOptions(
 if ( $file eq "" || $reference eq "" || $population eq "" || $output eq "" ) {
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print "Usage: 
-parseVCF.pl --file input.vcf.gz  --ref [reference] --pop [population] --out output.txt\n";
-print "";
+resource.VCFparser.pl --file input.vcf.gz  --ref [reference] --pop [population] --out output.basename\n";
+print "\n";
 print "Parses the input file, expected to be a VCF file (format 4.1+) and outputs files  
 containing alternate variantIDs, allele frequencies, and variant information. Depending on 
 the reference, one needs to choose the proper population as the alleles and frequencies 
@@ -66,6 +66,11 @@ print "1Gp3          PAN, EUR, AFR, AMR, EAS, SAS\n";
 print "[GoNL4         NL] - not available yet\n";
 print "[GoNL5         NL] - not available yet\n";
 print "1Gp3GONL5     PAN\n";
+print "\n";
+print "The output files will contain the following:\n";
+print "* Alternate VariantIDs: [ output.basename.INFO.txt ]\n";
+print "* Reference and population specific allele information: [ output.basename.FREQ.txt ]\n";
+print "* Variant information for alligning and annotating: [ output.basename.FUNC.txt ]\n";
 print "";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print "The MIT License (MIT)\n";
@@ -73,7 +78,6 @@ print "Copyright (c) 2016-2017 Sander W. van der Laan & Vinicius Tragante dó Ó
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 exit();
 }
-
 
 #### SETTING OTHER VARIABLES -- see below for header of VCF-file
 print STDERR "Setting variables...\n";
@@ -119,11 +123,11 @@ my $strand = "+"; # all these references are by definition on the PLU(+)-strand
 my $chrstart = "";
 my $chrend = "";
 my $alleles = ""; # these will be the alt/ref
-my $variantclass = ""; # these will be the alt/ref
+my $variantclass = ""; # variant type
 my $variantfunction = "unknown"; # variant function
 
 ### READING INPUT FILE
-print STDERR "Reading input file...\n";
+print STDERR "\nReading input file...\n";
 if ($file =~ /.gz$/) {
 open(IN, "gunzip -c $file | grep -v '##' |") || die "* ERROR: Cannot open pipe to [ $file ]!";
 }
@@ -132,16 +136,21 @@ open(IN, $file) || die "* ERROR: Cannot open [ $file ]!";
 }
 
 ### CREATING OUTPUT FILE
-print STDERR "Creating output files...\n";
-open(OUT, '>', $output) or die "* ERROR: Could not create the output file [ $output ]!";
+print STDERR "\nCreating output files...\n";
+my $output_info = $output . ".INFO.txt";
+my $output_freq = $output . ".FREQ.txt";
+my $output_func = $output . ".FUNC.txt";
+
+print STDERR "* File #1: a list of alternate variantIDs to harmonize the GWAS cohorts...\n";
+open(OUT_INFO, '>', $output_info) or die "* ERROR: Could not create the [ $output_info ] file!";
 
 print STDERR "* create header...\n";
-print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\n";
-#print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\tVT\tEURAF\tEURMAF\tAFRAF\tAFRMAF\tAMRAF\tAMRMAF\tASNAF\tASNMAF\tEASAF\tEASMAF\tSASAF\tSASMAF\n";
-#print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\tVT\tEURAF\tEURMAF\tAFRAF\tAFRMAF\tAMRAF\tAMRMAF\tASNAF\tASNMAF\tEASAF\tEASMAF\tSASAF\tSASMAF\n";
+print OUT_INFO "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\n";
 
 print STDERR "* looping over file to extract relevant data...\n";
 my $dummy=<IN>;
+my $dummy2=<IN>;
+my $dummy3=<IN>;
 while (my $row = <IN>) {
 	  chomp $row;
 	  my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
@@ -149,126 +158,6 @@ while (my $row = <IN>) {
 	  $bp = $vareach[1]; # base pair position
 	  $REF = $vareach[3]; # reference allele
 	  $ALT = $vareach[4]; # alternate allele
-	  $INFO = $vareach[7]; # info column -- refer to below for information
-
-### adjust alleleA and alleleB when variantID is an INDEL
-  if (length($REF) == 1 and length($ALT) == 1){
-  	$AlleleA = $vareach[3];
-	$AlleleB = $vareach[4];
-  } elsif (length($REF) > 1){ 
-  		$AlleleA = "I";
-  		$AlleleB = "D";
-  		} elsif (length($ALT) > 1){ 
-  			$AlleleA = "D";
-  			$AlleleB = "I";
-  			} else { 
-  				$AlleleA = $vareach[3];
-  				$AlleleB = $vareach[4];
-  				}
-
-### adjust Minor and Major when ALT is the minor allele
-  if ($AF < 0.50){
-  	$Minor = $vareach[4]; # ALT allele is the minor allele
-	$Major = $vareach[3];
-  } else {
-  	$Minor = $vareach[3]; # REF allele is the minor allele
-  	$Major = $vareach[4]; #
-  	}
-
-
-### get variant type
-  if ($INFO =~ m/VT\=(SNP.*?)/){
-  	$VT = "SNP";
-  } elsif ($INFO =~ m/VT\=(INDEL.*?)/){
-  		$VT = "INDEL"
-  		} else {
-  		  $VT = "NA"
-  		  }
-
-### get allele frequencies
-  if ($INFO =~ m/\;AF\=(.*?)(;)/){
-	$AF = $1;
-  } else {
-  	$AF = "NA"
-  	}
-### get minor allele frequencies based on AF
-  if ($AF < 0.50){
-	$MAF = $AF;
-  } else {
-  	$MAF = 1-$AF
-  	}
-
-### get asian allele frequencies -- 1000Gp1v3
-  if ($INFO =~ m/ASN\_AF\=(.*?)(;)/){
-	$ASNAF = $1;
-  } else {
-  	$ASNAF = "NA"
-  	}
-### get minor allele frequencies based on ASNAF
-  if ($ASNAF < 0.50){
-	$ASNMAF = $ASNAF;
-  } else {
-  	$ASNMAF = 1-$ASNAF
-  	}
-
-### get EAST asian allele frequencies -- 1000Gp3v5
-  if ($INFO =~ m/EAS\_AF\=(.*?)(;)/){
-	$EASAF = $1;
-  } else {
-  	$EASAF = "NA"
-  	}
-### get minor allele frequencies based on EASAF
-  if ($EASAF < 0.50){
-	$EASMAF = $EASAF;
-  } else {
-  	$EASMAF = 1-$EASAF
-  	}
-  	  	
-### get SOUTH asian allele frequencies -- 1000Gp3v5
-  if ($INFO =~ m/SAS\_AF\=(.*?)(;)/){
-	$SASAF = $1;
-  } else {
-  	$SASAF = "NA"
-  	}
-### get minor allele frequencies based on SASAF
-  if ($SASAF < 0.50){
-	$SASMAF = $SASAF;
-  } else {
-  	$SASMAF = 1-$SASAF
-  	}
-
-### get european allele frequencies
-  if ($INFO =~ m/EUR\_AF\=(.*?)(;)/){
-	$EURAF = $1;
-  } else {
-  	$EURAF = "NA"
-  	}
-### get minor allele frequencies based on EURAF
-  if ($EURAF < 0.50){
-	$EURMAF = $EURAF;
-  } else {
-  	$EURMAF = 1-$EURAF
-  	}
-  	
-### get american allele frequencies
-  if ($INFO =~ m/AMR\_AF\=(.*?)(;)/){
-	$AMRAF = $1;
-  } else {
-  	$AMRAF = "NA"
-  	}
-### get minor allele frequencies based on AMRAF
-  if ($AMRAF < 0.50){
-	$AMRMAF = $AMRAF;
-  } else {
-  	$AMRMAF = 1-$AMRAF
-  	}
-
-### get african allele frequencies
-  if ($INFO =~ m/AFR\_AF\=(.*?)(;)/){
-	$AFRAF = $1;
-  } else {
-  	$AFRAF = "NA"
-  	}
 
 ### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
   if ($vareach[2] =~ m/(\.)/){
@@ -302,12 +191,118 @@ while (my $row = <IN>) {
   				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
   				}
 
-print OUT "$vid\t$vid1\t$vid2\t$vid3\n";
-#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$VT\t$AF\t$MAF\t$EURAF\t$EURMAF\t$AFRAF\t$AFRMAF\t$AMRAF\t$AMRMAF\t$ASNAF\t$ASNMAF\t$EASAF\t$EASMAF\t$SASAF\t$SASMAF\n";
-#print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$VT\t$AF\t$MAF\t$EURAF\t$EURMAF\t$AFRAF\t$AFRMAF\t$AMRAF\t$AMRMAF\t$ASNAF\t$ASNMAF\t$EASAF\t$EASMAF\t$SASAF\t$SASMAF\n";
+print OUT_INFO "$vid\t$vid1\t$vid2\t$vid3\n";
 }
+close OUT_INFO;
 
-close OUT;
+print STDERR "\n* File #2: containing frequencies of the chosen reference and population...\n";
+open(OUT_FREQ, '>', $output_freq) or die "* ERROR: Could not create the [ $output_freq ] file!";
+
+print STDERR "* create header...\n";
+print OUT_FREQ "VariantID\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\n";
+
+print STDERR "* looping over file to extract relevant data...\n";
+#my $dummy2=<IN>;
+while (my $row = <IN>) {
+	chomp $row;
+	my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
+	$chr = $vareach[0]; # chromosome
+	$bp = $vareach[1]; # base pair position
+	$REF = $vareach[3]; # reference allele
+	$ALT = $vareach[4]; # alternate allele
+
+### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+	if ($vareach[2] =~ m/(\.)/){
+		$vid = "chr$chr\:$bp\:$REF\_$ALT";
+	} else {
+		$vid = $vareach[2]
+	}
+
+### adjust alleleA and alleleB when variantID is an INDEL
+	if (length($REF) == 1 and length($ALT) == 1){
+		$AlleleA = $vareach[3];
+		$AlleleB = $vareach[4];
+	} elsif (length($REF) > 1){ 
+		$AlleleA = "I";
+		$AlleleB = "D";
+		} elsif (length($ALT) > 1){ 
+			$AlleleA = "D";
+			$AlleleB = "I";
+			} else { 
+				$AlleleA = $vareach[3];
+				$AlleleB = $vareach[4];
+	}
+
+### get allele frequencies
+	if ($INFO =~ m/\;AF\=(.*?)(;)/){
+		$AF = $1;
+	} else {
+		$AF = "NA"
+	}
+
+	if ( $reference eq "1Gp1" && $population eq "PAN" ){
+		## adjust Minor and Major when ALT is the minor allele
+		if ($AF < 0.50){
+			$Minor = $vareach[4]; # ALT allele is the minor allele
+			$Major = $vareach[3];
+		} else {
+			$Minor = $vareach[3]; # REF allele is the minor allele
+			$Major = $vareach[4]; #
+		}
+		
+		## get minor allele frequencies based on AF
+		if ($AF eq "NA") {
+			$MAF = $AF;
+		} elsif ($AF < 0.50){
+			$MAF = $AF;
+			} else {
+				$MAF = 1-$AF
+		}
+		
+	} else {
+		print " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
+		exit();
+	}
+	print OUT_FREQ "$vid\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$AF\t$MAF\n";
+}
+close OUT_FREQ;
+
+print STDERR "\n* File #3: a reference-file used to map, allign, and annotate all GWAS to during meta-analysis...\n";
+open(OUT_FUNC, '>', $output_func) or die "* ERROR: Could not create the [ $output_func ] file!";
+
+print STDERR "* create header...\n";
+print OUT_FUNC "Chr\tChrStart\tChrEnd\tVariantID\tStrand\tAlleles\tVariantClass\tVariantFunction\n";
+
+print STDERR "* looping over file to extract relevant data...\n";
+#my $dummy3=<IN>;
+while (my $row = <IN>) {
+	chomp $row;
+	my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
+	$chrstart = $vareach[0]; # start position
+	$chrend = $vareach[0] + 1; # end position
+	$alleles = $vareach[3] . "/" . $vareach[4]; # REF allele/ALT alleles
+	
+### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+	if ($vareach[2] =~ m/(\.)/){
+		$vid = "chr$chr\:$bp\:$REF\_$ALT";
+	} else {
+		$vid = $vareach[2]
+	}
+
+### get variant type
+	if ($INFO =~ m/VT\=(SNP.*?)/){
+		$variantclass = "SNP";
+	} elsif ($INFO =~ m/VT\=(INDEL.*?)/){
+		$variantclass = "INDEL"
+		} else {
+			$variantclass = "NA"
+	}
+
+print OUT_FUNC "$chr\t$chrstart\t$chrend\t$vid\t$strand\t$alleles\t$variantclass\t$variantfunction\n";
+}
+close OUT_FUNC;
+
+
 close IN;
 
 print STDERR "\n";
