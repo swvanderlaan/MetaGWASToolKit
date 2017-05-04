@@ -1,1 +1,0 @@
-VariantID	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	MinorAllele	MajorAllele	AF	MAF
