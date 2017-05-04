@@ -75,6 +75,10 @@ print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 exit();
 }
 
+### Add in a function to:
+### - check the right combination of reference and population
+### - write out the ref/pop dependent alleles and allele frequencies
+
 #### SETTING OTHER VARIABLES -- see below for header of VCF-file
 print STDERR "Setting variables...\n";
 
