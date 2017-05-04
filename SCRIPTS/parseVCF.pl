@@ -6,15 +6,15 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
 #               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
-# Version:		1.2.10
-# Update date: 	2017-04-24
+# Version:		1.3.0
+# Update date: 	2017-05-04
 #
 # Usage:		parseVCF.pl --file [input.vcf.gz] --out [output.txt]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                     PARSE VCF FILES                                    +\n";
-print STDERR "+                                         V1.2.10                                        +\n";
+print STDERR "+                                         V1.3.10                                        +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -67,15 +67,24 @@ my $REF = ""; # reference allele
 my $ALT = ""; # other allele
 my $AlleleA = ""; # reference allele, with [I/D] nomenclature
 my $AlleleB = ""; # other allele, with [I/D] nomenclature
+my $Minor = ""; # minor allele
+my $Major = ""; # major allele
 my $INFO = "";
 my $VT = ""; # type of variant
 my $AF = "";
+my $MAF = ""; # minor allele frequency based on AF
 my $EURAF = "";
+my $EURMAF = ""; # minor allele frequency based on AF
 my $AFRAF = "";
+my $AFRMAF = ""; # minor allele frequency based on AF
 my $AMRAF = "";
+my $AMRMAF = ""; # minor allele frequency based on AF
 my $ASNAF = "";
+my $ASNMAF = ""; # minor allele frequency based on AF
 my $EASAF = "";
+my $EASMAF = ""; # minor allele frequency based on AF
 my $SASAF = "";
+my $SASMAF = ""; # minor allele frequency based on AF
 my $ref_indel = "R";
 
 ### READING INPUT FILE
@@ -92,7 +101,7 @@ print STDERR "Creating output file...\n";
 open(OUT, '>', $output) or die "* ERROR: Could not create the output file [ $output ]!";
 
 print STDERR "* create header...\n";
-print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tVT\tAF\tEURAF\tAFRAF\tAMRAF\tASNAF\tEASAF\tSASAF\n";
+print OUT "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tVT\tAF\tMAF\tEURAF\tEURMAF\tAFRAF\tAFRMAF\tAMRAF\tAMRMAF\tASNAF\tASNMAF\tEASAF\tEASMAF\tSASAF\tSASMAF\n";
 
 print STDERR "* looping over file to extract relevant data...\n";
 my $dummy=<IN>;
@@ -120,6 +129,16 @@ while (my $row = <IN>) {
   				$AlleleB = $vareach[4];
   				}
 
+### adjust Minor and Major when ALT is the minor allele
+  if ($AF < 0.50){
+  	$Minor = $vareach[4]; # ALT allele is the minor allele
+	$Major = $vareach[3];
+  } else {
+  	$Minor = $vareach[3]; # REF allele is the minor allele
+  	$Major = $vareach[4]; #
+  	}
+
+
 ### get variant type
   if ($INFO =~ m/VT\=(SNP.*?)/){
   	$VT = "SNP";
@@ -135,12 +154,24 @@ while (my $row = <IN>) {
   } else {
   	$AF = "NA"
   	}
+### get minor allele frequencies based on AF
+  if ($AF < 0.50){
+	$MAF = $AF;
+  } else {
+  	$MAF = 1-$AF
+  	}
 
 ### get asian allele frequencies -- 1000Gp1v3
   if ($INFO =~ m/ASN\_AF\=(.*?)(;)/){
 	$ASNAF = $1;
   } else {
   	$ASNAF = "NA"
+  	}
+### get minor allele frequencies based on ASNAF
+  if ($ASNAF < 0.50){
+	$ASNMAF = $ASNAF;
+  } else {
+  	$ASNMAF = 1-$ASNAF
   	}
 
 ### get EAST asian allele frequencies -- 1000Gp3v5
@@ -149,12 +180,24 @@ while (my $row = <IN>) {
   } else {
   	$EASAF = "NA"
   	}
-  	
+### get minor allele frequencies based on EASAF
+  if ($EASAF < 0.50){
+	$EASMAF = $EASAF;
+  } else {
+  	$EASMAF = 1-$EASAF
+  	}
+  	  	
 ### get SOUTH asian allele frequencies -- 1000Gp3v5
   if ($INFO =~ m/SAS\_AF\=(.*?)(;)/){
 	$SASAF = $1;
   } else {
   	$SASAF = "NA"
+  	}
+### get minor allele frequencies based on SASAF
+  if ($SASAF < 0.50){
+	$SASMAF = $SASAF;
+  } else {
+  	$SASMAF = 1-$SASAF
   	}
 
 ### get european allele frequencies
@@ -163,12 +206,24 @@ while (my $row = <IN>) {
   } else {
   	$EURAF = "NA"
   	}
-
+### get minor allele frequencies based on EURAF
+  if ($EURAF < 0.50){
+	$EURMAF = $EURAF;
+  } else {
+  	$EURMAF = 1-$EURAF
+  	}
+  	
 ### get american allele frequencies
   if ($INFO =~ m/AMR\_AF\=(.*?)(;)/){
 	$AMRAF = $1;
   } else {
   	$AMRAF = "NA"
+  	}
+### get minor allele frequencies based on AMRAF
+  if ($AMRAF < 0.50){
+	$AMRMAF = $AMRAF;
+  } else {
+  	$AMRMAF = 1-$AMRAF
   	}
 
 ### get african allele frequencies
@@ -210,7 +265,7 @@ while (my $row = <IN>) {
   				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
   				}
 
-print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$VT\t$AF\t$EURAF\t$AFRAF\t$AMRAF\t$ASNAF\t$EASAF\t$SASAF\t\n";
+print OUT "$vid\t$vid1\t$vid2\t$vid3\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$VT\t$AF\t$MAF\t$EURAF\t$EURMAF\t$AFRAF\t$AFRMAF\t$AMRAF\t$AMRMAF\t$ASNAF\t$ASNMAF\t$EASAF\t$EASMAF\t$SASAF\t$SASMAF\n";
 
 }
 
