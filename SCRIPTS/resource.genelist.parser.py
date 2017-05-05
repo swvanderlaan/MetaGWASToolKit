@@ -16,7 +16,7 @@ print "* Last update      : 2017-05-05"
 print "* Written by       : Tim Bezemer (t.bezemer-2@umcutrecht.nl)."
 print "* Suggested for by : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print ""
-print "* Description      : This script will parse GENCODE and refseq genelists to have only 1 row per gene."
+print "* Description      : This script will parse GENCODE and refseq GeneLists to have only 1 row per gene."
 print ""
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -33,6 +33,7 @@ parser.add_argument("-i", "--input", help="The input file to inspect (text/gzipp
 parser.add_argument("-o", "--output", help="The name of the output file to write.", type=str)
 parser.add_argument("-t", "--type", help="The reference type <gencode/refseq>.", type=str)
 
+print "* All arguments passed."
 args = parser.parse_args()
 
 args.type = args.type.lower()
@@ -47,14 +48,15 @@ elif args.type == "refseq":
 else:
     print "Invalid reference type! Please double back. <gencode/refseq>"
     exit()
-    
 
+print "* Loading data ..."
 df = pd.read_table(args.input, sep='\s+', names=header_to_use).sample(100)
 
 genes = list( set(df.gene) )
 
 list_of_dicts = []
 
+print "* Looping over GeneList and uniquefying rows per gene ..."
 for gene in genes:
     
     this_gene = df[ df.gene == gene ]
@@ -73,12 +75,16 @@ for gene in genes:
     if args.type == "gencode": short_row['transcripts'] = ",".join(set(this_gene.ensembl))
 
     list_of_dicts.append(short_row)
-    
+
+print "* Collecting parsed data ..."
 result = pd.DataFrame(list_of_dicts)
 
 result = result[["chr", "start", "end", "gene", "strand", "transcripts"]] if args.type == "gencode" else result[["chr", "start", "end", "gene", "strand"]]
 
+print "* Writing parsed data ..."
 result.to_csv(args.output, sep=" ", index=False, header=False)
+
+print "\t ..." + strftime("%a, %H:%M:%S") + " All done parsing GeneList. Let's have a beer, buddy!"
 
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "+ The MIT License (MIT)                                                                                      +"
