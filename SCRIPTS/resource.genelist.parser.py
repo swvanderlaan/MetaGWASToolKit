@@ -89,7 +89,7 @@ print "* " + strftime("%a, %H:%M:%S") + " All done parsing GeneList. Let's have 
 
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "+ The MIT License (MIT)                                                                                      +"
-print "+ Copyright (c) 2016-2017 Tim Bezemer, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands        +"
+print "+ Copyright (c) 2017 Tim Bezemer, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands        +"
 print "+                                                                                                            +"
 print "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and          +"
 print "+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including    +"
