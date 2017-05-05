@@ -1,143 +1,246 @@
 #!/bin/bash
-#
-
-#$ -S /bin/bash 																			# the type of BASH you'd like to use
-#$ -N basic_bash_script  																	# the name of this script
-#$ -hold_jid some_other_basic_bash_script  													# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
-#$ -o /hpc/dhl_ec/svanderlaan/projects/basic_bash_script.log  								# the log file of this job
-#$ -e /hpc/dhl_ec/svanderlaan/projects/basic_bash_script.errors 							# the error file of this job
-#$ -l h_rt=00:08:00  																		# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
-#$ -l h_vmem=128G  																			#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
-#$ -l tmpspace=64G  																		# this is the amount of temporary space you think your script will use
-#$ -M s.w.vanderlaan-2@umcutrecht.nl  														# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
-#$ -m ea  																					# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
-#$ -cwd  																					# set the job start to the current directory - so all the things in this script are relative to the current directory!!!
-#
-# You can use the variables above (indicated by "#$") to set some things for the submission system.
-# Another useful tip: you can set a job to run after another has finished. Name the job 
-# with "-N SOMENAME" and hold the other job with -hold_jid SOMENAME". 
-# Further instructions: https://wiki.bioinformatics.umcutrecht.nl/bin/view/HPC/HowToS#Run_a_job_after_your_other_jobs
-#
-# It is good practice to properly name and annotate your script for future reference for
-# yourself and others. Trust me, you'll forget why and how you made this!!!
 
 ### Creating display functions
 ### Setting colouring
-### NONE='\033[00m'
-### BOLD='\033[1m'
-### OPAQUE='\033[2m'
-### FLASHING='\033[5m'
-### UNDERLINE='\033[4m'
-### 
-### RED='\033[01;31m'
-### GREEN='\033[01;32m'
-### YELLOW='\033[01;33m'
-### PURPLE='\033[01;35m'
-### CYAN='\033[01;36m'
-### WHITE='\033[01;37m'
-### Regarding changing the 'type' of the things printed with 'echo'
-### Refer to: 
-### - http://askubuntu.com/questions/528928/how-to-do-underline-bold-italic-strikethrough-color-background-and-size-i
-### - http://misc.flogisoft.com/bash/tip_colors_and_formatting
-### - http://unix.stackexchange.com/questions/37260/change-font-in-echo-command
+NONE='\033[00m'
+OPAQUE='\033[2m'
+FLASHING='\033[5m'
+BOLD='\033[1m'
+ITALIC='\033[3m'
+UNDERLINE='\033[4m'
+STRIKETHROUGH='\033[9m'
 
-### echo -e "\033[1mbold\033[0m"
-### echo -e "\033[3mitalic\033[0m" ### THIS DOESN'T WORK ON MAC!
-### echo -e "\033[4munderline\033[0m"
-### echo -e "\033[9mstrikethrough\033[0m"
-### echo -e "\033[31mHello World\033[0m"
-### echo -e "\x1B[31mHello World\033[0m"
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
 
-for i in $(seq 0 5) 7 8 $(seq 30 37) $(seq 41 47) $(seq 90 97) $(seq 100 107) ; do 
-	echo -e "\033["$i"mYou can change the font...\033[0m"; 
-done
-### Creating some function
-function echobold { #'echobold' is the function name
-    echo -e "\033[1m${1}\033[0m" # this is whatever the function needs to execute.
-}
 function echobold { #'echobold' is the function name
     echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
 }
-function echoitalic { #'echobold' is the function name
-    echo -e "\033[3m${1}\033[0m" # this is whatever the function needs to execute.
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+# errors no option
+function echoerrornooption { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
 }
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                         SOME BASH SCRIPT THAT EXECUTES SOMETHING"
-echo "                                  version 1.0 (20160302)"
-echo ""
-echoitalic "* Written by  : Sander W. van der Laan"
-echoitalic "* E-mail      : s.w.vanderlaan-2@umcutrecht.nl"
-echoitalic "* Last update : 2016-03-02"
-echoitalic "* Version     : somebashscript_v1_20160302"
-echo ""
-echoitalic "* Description : This script will set some directories, execute something in a for "
-echoitalic "                loop, and will then submit this in a job."
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "Today's: "$(date)
-TODAY=$(date +"%Y%m%d")
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "The following directories are set."
-ORIGINALS=/hpc/dhl_ec/data/_ae_originals/AEGS_COMBINED_IMPUTE2_BBMRI_1000Gp1v3
-GBS=/hpc/dhl_ec/svanderlaan/projects/gbs
-DOSAGES=${GBS}/dosages
-SOFTWARE=/hpc/local/CentOS7/dhl_ec/software
-QCTOOL=${SOFTWARE}/qctool_v1.5-linux-x86_64-static/qctool
-echo "Original data directory____ ${ORIGINALS}"
-echo "Project directory__________ ${GBS}"
-echo "Dosage directory___________ ${DOSAGES}"
-echo "Software directory_________ ${SOFTWARE}"
-echo "Where \"qctool\" resides_____ ${QCTOOL}"
-echo ""
+script_copyright_message() {
+	echo ""
+	THISYEAR=$(date +'%Y')
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "+ The MIT License (MIT)                                                                                 +"
+	echo "+ Copyright (c) 2015-${THISYEAR} Sander W. van der Laan                                                        +"
+	echo "+                                                                                                       +"
+	echo "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and     +"
+	echo "+ associated documentation files (the \"Software\"), to deal in the Software without restriction,         +"
+	echo "+ including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, +"
+	echo "+ and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, +"
+	echo "+ subject to the following conditions:                                                                  +"
+	echo "+                                                                                                       +"
+	echo "+ The above copyright notice and this permission notice shall be included in all copies or substantial  +"
+	echo "+ portions of the Software.                                                                             +"
+	echo "+                                                                                                       +"
+	echo "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT     +"
+	echo "+ NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND                +"
+	echo "+ NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES  +"
+	echo "+ OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN   +"
+	echo "+ CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                            +"
+	echo "+                                                                                                       +"
+	echo "+ Reference: http://opensource.org.                                                                     +"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+}
 
-### Make directories for script if they do not exist yet (!!!PREREQUISITE!!!)
-#if [ ! -d ${GBS}/rawdata/ ]; then
-#  mkdir -v ${GBS}/rawdata/
-#fi
-#RAW=${GBS}/rawdata
+script_arguments_error() {
+	echoerror "$1" # Additional message
+	echoerror "- Argument #1 is path_to/filename of the configuration file."
+	echoerror ""
+	echoerror "An example command would be: resource.creator.sh [arg1]"
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+ 	echo ""
+	script_copyright_message
+	exit 1
+}
 
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "Creating resources."
+echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+echobold "                                    MetaGWASToolKit: Resource Creator"
+echobold ""
+echobold "* Version:      v1.0.0"
+echobold ""
+echobold "* Last update:  2017-05-05"
+echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
+echobold "* Testers:      Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl."
+echobold "* Description:  Downloads, parses and creates the necessary resources for MetaGWASToolKit."
+echobold ""
+echobold "* REQUIRED: "
+echobold "  - A high-performance computer cluster with a qsub system"
+echobold "  - R v3.2+, Python 2.7+, Perl."
+echobold "  - Required Python 2.7+ modules: [pandas], [scipy], [numpy]."
+echobold "  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long]."
+echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
+### ADD-IN: function to check requirements...
+### This might be a viable option! https://gist.github.com/JamieMason/4761049
+echobold ""
+echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+##########################################################################################
+### SET THE SCENE FOR THE SCRIPT
+##########################################################################################
 
-### TO DO
-# We need to make scripts that automagically make required files when installing this
-# meta-analysis package.
-# DBSNPFILE 
-# could be 1000G based or a specific dbSNP download
-wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
-echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > dbSNP147_GRCh37_hg19_Feb2009.txt
-zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> dbSNP147_GRCh37_hg19_Feb2009.txt
-gzip -v dbSNP147_GRCh37_hg19_Feb2009.txt
-mkdir -v ORIGINALS
-mv -v dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz ORIGINALS/
+### START of if-else statement for the number of command-line arguments passed ###
+if [[ $# -lt 1 ]]; then 
+	echo ""
+	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echoerrorflash "               *** Oh, oh, computer says no! Number of arguments found "$#". ***"
+	echoerror "You must supply [1] arguments when running *** Resource Creator ***!"
+	script_arguments_error
+else
+	echo "These are the "$#" arguments that passed:"
+	echo "The configuration file.................: "$(basename ${1}) # argument 1
+	
+	### SETTING DIRECTORIES (from configuration file).
+	# Loading the configuration file (please refer to the MetaGWASToolKit-Manual for specifications of this file). 
+	source ${1} # Depends on arg1.
+	
+	CONFIGURATIONFILE=${1} # Depends on arg1 -- but also on where it resides!!!
+	SOFTWARE=${SOFTWARE} # from configuration file
+	
+	# Where MetaGWASToolKit resides
+	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
+	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
+	RESOURCES=${METAGWASTOOLKIT}/RESOURCES
+	
+	echobold "##########################################################################################"
+	echobold "### DOWNLOADING dbSNP GRCh37 v147 hg19 Feb2009"
+	echobold "##########################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'dbSNP GRCh37 v147 hg19 Feb2009'. "
+	echo ""
+	echo "* downloading [ dbSNP ] ..."
+	echo "wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " > ${RESOURCES}/resource.dbSNP.downloader.sh
+	qsub -S /bin/bash -N dbSNPdownloader -o ${RESOURCES}/resource.dbSNP.downloader.log -e ${RESOURCES}/resource.dbSNP.downloader.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.downloader.sh
+	### HEAD
+	### zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
+	### 585	chr1	10019	10020	rs775809821	0	+	A	A	-/A	genomic	deletion	unknown	0	0	near-gene-5	exact	1		1	SSMP,	0
+	### 585	chr1	10055	10055	rs768019142	0	+	-	-	-/A	genomic	insertion	unknown	0	0	near-gene-5	between	1		1	SSMP,	0
+	### 585	chr1	10107	10108	rs62651026	0	+	C	C	C/T	genomic	single	unknown	0	0	near-gene-5	exact	1		1	BCMHGSC_JDW,	0
+	
+	echo "* parsing [ dbSNP ] ..."
+	echo "echo \"Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction\" > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "gzip -v ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "rm -v ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	qsub -S /bin/bash -N dbSNPparser -hold_jid dbSNPdownloader -o ${RESOURCES}/resource.dbSNP.parser.log -e ${RESOURCES}/resource.dbSNP.parser.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.parser.sh
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing dbSNP reference! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-# REFFREQFILE
-# could be 1000G based or a specific dbSNP download
-# GENESFILE  -- probably use GENCODE as this is made based on a combination of manual and automatic work
+	echo ""
+	echobold "##########################################################################################"
+	echobold "### DOWNLOADING 1000G phase 1 and phase 3"
+	echobold "##########################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing '1000G phase 1 and phase 3'. "
 
-#wget ftp://ftp.sanger.ac.uk/pub/gencode/Gencode_human/release_19/gencode.v19.annotation.gtf.gz -O GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.gtf.gz
-cat GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt | awk '{ print $3, $5, $6, $13, $2, $4}' > gencode_v19_GRCh37_hg19_Feb2009.txt.temp
-cat gencode_v19_GRCh37_hg19_Feb2009.txt.temp | awk -F" " '{gsub(/chr/, "", $1)}1'  | tail -n +2 > gencode_v19_GRCh37_hg19_Feb2009.txt
-rm -v gencode_v19_GRCh37_hg19_Feb2009.txt.temp
-gzip -v gencode_v19_GRCh37_hg19_Feb2009.txt
-mkdir -v ORIGINALS
-mv -v GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt ORIGINALS/
-gzip -v ORIGINALS/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt
+	echo "* downloading [ 1000G phase 1 ] ..."
+	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/integrated_call_sets/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " > ${RESOURCES}/resource.1kG1.downloader.sh
+	qsub -S /bin/bash -N ThousandGp1downloader -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
+	echo "* downloading [ 1000G phase 3 ] ..."
+	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase3/integrated_sv_map/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " > ${RESOURCES}/resource.1kG3.downloader.sh
+	qsub -S /bin/bash -N ThousandGp3downloader -o ${RESOURCES}/resource.1kG3.downloader.log -e ${RESOURCES}/resource.1kG3.downloader.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG3.downloader.sh
+	echo "* parsing 1000G phase 1."
+	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop PAN --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "rm -v ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	qsub -S /bin/bash -N VCFparser -hold_jid VCFdownloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "* parsing 1000G phase 3."
+	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp1 --pop PAN --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "rm -v ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	qsub -S /bin/bash -N VCFparser -hold_jid VCFdownloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo ""
+	
+	echo "* updating function-information with dbSNP data."
+	echo "zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " > ${RESOURCES}/resource.dbSNPattrib.sh
+	echo "gzip -vf ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.dbSNPattrib.sh
+	qsub -S /bin/bash -N dbSNPattrib -hold_jid VCFparser -o ${RESOURCES}/resource.dbSNPattrib.log -e ${RESOURCES}/resource.dbSNPattrib.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNPattrib.sh
+	echo "* updating 1000G phase 1."
+	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	qsub -S /bin/bash -N VCFplusdbSNP -hold_jid dbSNPattrib -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	echo "* updating 1000G phase 3."
+	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	qsub -S /bin/bash -N VCFplusdbSNP -hold_jid dbSNPattrib -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 
-#wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O refseq_GRCh37_hg19_Feb2009.txt.gz
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing 1000G references! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	
+	echo ""
+	echobold "##########################################################################################"
+	echobold "### DOWNLOADING GENCODE and refseq gene lists"
+	echobold "##########################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'GENCODE and refseq gene lists'. "
+	
+	echo "* downloading [ GENCODE ] ... "
+	echo "wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/wgEncodeGencodeBasicV19.txt.gz -O ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz" > ${RESOURCES}/resource.GENCODEdownloader.sh
+	qsub -S /bin/bash -N GENCODEdownloader -o ${RESOURCES}/resource.GENCODEdownloader.log -e ${RESOURCES}/resource.GENCODEdownloader.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.GENCODEdownloader.sh
+	### HEAD
+	### 585	ENST00000456328.2	chr1	+	11868	14409	11868	11868	3	11868,12612,13220,	12227,12721,14409,	0	DDX11L1	none	none	-1,-1,-1,
+	### 585	ENST00000607096.1	chr1	+	30365	30503	30365	30365	1	30365,	30503,	0	MIR1302-11	none	none	-1,
+	### 585	ENST00000417324.1	chr1	-	34553	36081	34553	34553	3	34553,35276,35720,	35174,35481,36081,	0	FAM138A	none	none	-1,-1,-1,
+	### 585	ENST00000335137.3	chr1	+	69090	70008	69090	70008	1	69090,	70008,	0	OR4F5	cmpl	cmpl	0,
+	
+	echo "* parsing [ GENCODE ] ... "
+	echo "zcat ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13, $2, $4}' | awk -F\" \" '{gsub(/chr/, \"\", $1)}1' | tail -n +2 > ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.GENCODEparser.sh
+	echo "gzip -v ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt " >> ${RESOURCES}/resource.GENCODEparser.sh
+	echo "rm -v ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt " >> ${RESOURCES}/resource.GENCODEparser.sh
+	qsub -S /bin/bash -N GENCODEparser -hold_jid GENCODEdownloader -o ${RESOURCES}/resource.GENCODEparser.log -e ${RESOURCES}/resource.GENCODEparser.errors -l h_vmem=8G -l h_rt=00:30:00 -wd ${RESOURCES} ${RESOURCES}/resource.GENCODEparser.sh
+	
+	echo "* downloading [ refseq ] ... "
+	echo "wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz" > ${RESOURCES}/resource.refseqdownloader.sh
+	qsub -S /bin/bash -N refseqdownloader -o ${RESOURCES}/resource.refseqdownloader.log -e ${RESOURCES}/resource.refseqdownloader.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.refseqdownloader.sh
+	### HEAD
+	### 585	NR_046018	chr1	+	11873	14409	14409	14409	3	11873,12612,13220,	12227,12721,14409,	0	DDX11L1	unk	unk	-1,-1,-1,
+	### 585	NR_024540	chr1	-	14361	29370	29370	29370	11	14361,14969,15795,16606,16857,17232,17605,17914,18267,24737,29320,	14829,15038,15947,16765,17055,17368,17742,18061,18366,24891,29370,	0	WASH7P	unk	unk	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
 
-for CHR in $(seq 1 22) X; do 
-	echo "* processing chromosome [ ${CHR} ]..."
-	###echo "$QCTOOL -g $ORIGINALS/aegs_combo_1000g_RAW_chr${CHR}.bgen -og ${GBS}/dosages/aegs_1000Gp1v3_RAW.chr${CHR}.gen -incl-rsids ${GBS}/dosages/extractionlist.chr${CHR}.txt " > ${DOSAGES}/get1kgdos.chr${CHR}.CADLAS.sh
-	###echo "" >> ${DOSAGES}/get1kgdos.chr${CHR}.CADLAS.sh
-	###qsub -S /bin/bash -e ${DOSAGES}/get1kgdos.chr${CHR}.CADLAS.errors -o ${DOSAGES}/get1kgdos.chr${CHR}.CADLAS.output -l h_rt=24:00:00 -l h_vmem=8G -l tmpspace=64G -M s.w.vanderlaan-2@umcutrecht.nl -m ea -cwd ${DOSAGES}/get1kgdos.chr${CHR}.CADLAS.sh
-done
-echo ""
-echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "Wow. I'm all done buddy. What a job! let's have a beer!"
-date
+	echo "* parsing [ refseq ] ... "
+	echo "zcat ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13, $2, $4 }' | awk -F\" \" '{gsub(/chr/, \"\", $1)}1' > ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt" > ${RESOURCES}/resource.refseqparser.sh
+	qsub -S /bin/bash -N refseqparser -hold_jid refseqdownloader -o ${RESOURCES}/resource.refseqparser.log -e ${RESOURCES}/resource.refseqparser.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.refseqparser.sh
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+	### END of if-else statement for the number of command-line arguments passed ###
+fi 
+
+script_copyright_message
 
 ###	UtrechtSciencePark Colours Scheme
 ###
