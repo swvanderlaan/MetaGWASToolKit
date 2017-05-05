@@ -179,11 +179,6 @@ while (my $row = <IN>) {
 
 ### SPECIFIC TO FILE #1
 ### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-#   if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT is the minor allele!
-#   	$vid1 = "chr$chr\:$bp\:$ALT\_$REF"; 
-#   } else {
-# 	  	$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
-# 	  	}
   if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
   	$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
   } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
@@ -197,7 +192,6 @@ while (my $row = <IN>) {
   					} else { 
   						$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
   						}
-
 
 ### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
   if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
@@ -215,15 +209,6 @@ while (my $row = <IN>) {
   						}
 
 ### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-#   if ( length($REF) == 1 and length($ALT) == 1 ){
-#   	$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
-#   } elsif ( length($REF) > 1 ){ 
-#   		$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
-#   		} elsif ( length($ALT) > 1 ){ 
-#   			$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
-#   			} else { 
-#   				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
-#   				}
   if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
   	$vid3 = "chr$chr\:$bp\:$ALT\_$REF";
   } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = I, but is *NOT* the minor allele!
@@ -281,9 +266,29 @@ while (my $row = <IN>) {
 	}
 
 ### SPECIFIC TO FILE #3
-	$chrstart = $bp; # start position
-	$chrend = $bp + 1; # end position
+### get alleles
 	$alleles = $REF . "/" . $ALT; # REF allele/ALT alleles
+	
+### get variant length
+  if (length($REF) == 1 and length($ALT) == 1){
+  	$chrstart = $bp; # base pair start position
+  	$chrend = $bp; # base pair end position
+  
+  } elsif (length($REF) > 1){ 
+  	$chrstart = $bp; # base pair start position
+  	$chrend = $bp + length($REF); # base pair end position
+  	
+  	} elsif (length($ALT) > 1){ 
+  	$chrstart = $bp; # base pair start position
+  	$chrend = $bp + length($ALT); # base pair end position
+  	
+  		} else { 
+  			$chrstart = $bp; # base pair start position
+  			$chrend = $bp; # base pair end position
+  }
+
+	
+	
 
 ### get variant type
 	if ( $INFO =~ m/VT\=(SNP.*?)/ ){

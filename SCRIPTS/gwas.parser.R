@@ -533,7 +533,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   colnames(GWASDATA_PARSED) <- col.Names
   
   cat("\n- adding data to dataframe...")
-  cat("\n  > adding the new markers; these will have the form [ chr<#>:<#>:MinorAllele:MajorAllele] ...")
+  cat("\n  > adding the new markers; these will have the form [ chr<#>:<#>:MinorAllele_MajorAllele] ...")
   GWASDATA_PARSED$Marker <- as.character(paste("chr",GWASDATA_RAWSELECTION$CHR,":",
                                                GWASDATA_RAWSELECTION$BP,":",
                                                GWASDATA_RAWSELECTION$MinorAllele,"_",
