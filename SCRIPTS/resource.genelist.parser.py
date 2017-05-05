@@ -26,6 +26,7 @@ print "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ### - report that the requirements are met
 from sys import exit
 import pandas as pd
+from time import strftime
 
 import argparse
 parser = argparse.ArgumentParser(description="Parse GeneList to have only 1 row per gene.")
