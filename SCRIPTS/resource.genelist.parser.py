@@ -85,7 +85,7 @@ result = result[["chr", "start", "end", "gene", "strand", "transcripts"]] if arg
 print "* Writing parsed data ..."
 result.to_csv(args.output, sep=" ", index=False, header=False)
 
-print "\t ..." + strftime("%a, %H:%M:%S") + " All done parsing GeneList. Let's have a beer, buddy!"
+print "* " + strftime("%a, %H:%M:%S") + " All done parsing GeneList. Let's have a beer, buddy! 🖖"
 
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "+ The MIT License (MIT)                                                                                      +"
