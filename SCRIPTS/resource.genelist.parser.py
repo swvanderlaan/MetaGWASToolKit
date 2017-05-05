@@ -80,7 +80,7 @@ result = result[["chr", "start", "end", "gene", "strand", "transcripts"]] if arg
 
 result.to_csv(args.output, sep=" ", index=False, header=False)
 
-rint "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "+ The MIT License (MIT)                                                                                      +"
 print "+ Copyright (c) 2016-2017 Tim Bezemer, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands        +"
 print "+                                                                                                            +"
