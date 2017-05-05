@@ -75,9 +75,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                     GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.4"
+echobold "* Version:      v1.0.5"
 echobold ""
-echobold "* Last update:  2017-04-24"
+echobold "* Last update:  2017-05-05"
 echobold "* Written by:   Sander W. van der Laan - UMC Utrecht - s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Produce plots (PDF and PNG) for quick inspection and publication."
 echobold ""
@@ -167,16 +167,16 @@ else
 	fi
 	
 	### HEADER .pdat-file
-	### Marker MarkerOriginal CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P  N  N_cases N_controls Imputed
-	### 1	     2      	  3   4      5            6           7   8   9   10    11   12   13 14 15 16      17         18 19
+	### Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed
+	### 1	    2               3   4   5       6               7           8           9           10  11  12  13      14      15      16          17  18  19  20      21          22
 	
 	### HEADER .rdat-file
-	### VariantID MarkerOriginal	Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
-	### 1		  					2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
+	### VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference
+	### 1		    2       3               4   5   6       7               8           9           10          11  12  13  14      15	    16	    17          18  19  20  21      22          23      24
 	
 	### HEADER .cdat-file
-	### VariantID MarkerOriginal	Marker CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P    N   N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
-	### 1		  					2      3   4  5      6            7           8   9   10  11    12   13   14 15	16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34
+	### VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference
+	### 1		    2       3               4   5   6       7               8           9           10          11  12  13  14      15	    16	    17          18  19  20  21      22          23      24
 	
 	echo ""
 	### PREPARING FILES -- ARGUMENT DEPENDENT
@@ -216,22 +216,15 @@ else
 		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.sh		
 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.sh
 	
-		echo "- producing QQ-plots stratified by variant type..." # P-value, VT
-		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,VT | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt
-		echo "${SCRIPTS}/plotter.qqplot_by_type.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh
-		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh
-		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.sh		
-		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.sh
-	
 		echo "- producing histograms of the beta (effect size)..." # BETA
-		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col Beta | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col BetaMinor | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt
 		echo "${SCRIPTS}/plotter.effectsize.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.sh
 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.sh
 		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.sh		
 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.remover.sh
 
 		echo "- producing a correlation plot of the observed p-value and the p-value based on beta and standard error..." # BETA, SE, P-value
-		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col Beta,SE,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col BetaMinor,SE,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt
 		echo "${SCRIPTS}/plotter.p_z.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt --outputdir ${PROJECTDIR} --randomsample ${RANDOMSAMPLE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.sh
 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.P_Z -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.sh
 		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.remover.sh		
@@ -261,6 +254,20 @@ else
 # 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.sh
 # 		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.sh		
 # 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.remover.sh
+# 
+# 		echo "- producing QQ-plots stratified by minor allele frequency..." # P-value, MAF
+# 		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,MAF | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt
+# 		echo "${SCRIPTS}/plotter.qqplot_by_caf.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh
+# 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh
+# 		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.sh		
+# 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.remover.sh
+# 
+# 		echo "- producing QQ-plots stratified by variant type..." # P-value, VT
+# 		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,VT | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt
+# 		echo "${SCRIPTS}/plotter.qqplot_by_type.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh
+# 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh
+# 		echo "rm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.sh		
+# 		qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_TYPE.remover.sh
 
 	else 
 		echo ""

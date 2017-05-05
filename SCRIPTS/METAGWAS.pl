@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version: METAGWAS2.1.6"
+# Version: METAGWAS2.1.7"
 #
-# Last update			: 2017-05-03"
+# Last update			: 2017-05-05"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
@@ -57,8 +57,10 @@
 #    See [de Bakker PIW et al., Human Molecular Genetics, 2008] for more background 
 #    information on this topic.
 #
-#	 Note: 	Here a VariantID can be a single-nucleotide polymorphism or another type of 
-#           variant such as a INDEL or other structural variant.
+#	 Note #1: 	Here a VariantID can be a single-nucleotide polymorphism or another type of 
+#           	variant such as a INDEL or other structural variant.
+#	 Note #2: 	Here EAF is expected to be the minor allele frequency to maintain backward
+#				compatibility with HapMap 2 data!
 #
 # 2) [--params]	A plain-text file that contains study-specific parameters 
 #
@@ -169,7 +171,7 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.0 | 26-04-2017                               +\n";
+print STDOUT "+                                 version 2.0 | 05-05-2017                               +\n";
 print STDOUT "+                              (formely known as [ MANTEL ])                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -581,19 +583,33 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 ##########################################################################################
 ##########################################################################################
 #
+# Expected format of such a RefFreq HAPMAP file is the following:
+#
+# 	0		  	1	    2       3           4           5   6
+#	VariantID	CHR_REF	BP_REF	MinorAllele	MajorAllele	AF	MAF
+#	rs58108140	1	10583	A	G	0.14	0.14
+#	rs189107123	1	10611	G	C	0.02	0.02
+#	rs180734498	1	13302	T	C	0.11	0.11
+#	rs144762171	1	13327	C	G	0.03	0.03
+#	rs201747181	1	13957	T	TC	0.02	0.02
+#	rs151276478	1	13980	C	T	0.02	0.02
+#	rs140337953	1	30923	G	T	0.73	0.27
+#	rs199681827	1	46402	CTGT	C	0.0037	0.0037
+#	rs200430748	1	47190	GA	G	0.01	0.01
+#
 # Expected format of such a RefFreq file is the following:
 #
-# 	0		  1	      2      3   4   5  6     7     8     9     10    11
-#	VariantID CHR_REF BP_REF REF ALT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF
-#	rs58108140 1 10583 G A 0.14 NA 0.04 0.17 0.13 NA NA
-#	rs189107123 1 10611 C G 0.02 NA 0.01 0.03 0.01 NA NA
-#	rs180734498 1 13302 C T 0.11 NA 0.21 0.08 0.02 NA NA
-#	rs144762171 1 13327 G C 0.03 NA 0.02 0.03 0.02 NA NA
-#	rs201747181 1 13957 TC T 0.02 0.02 0.02 0.02 0.01 NA NA
-#	rs151276478 1 13980 T C 0.02 NA 0.01 0.02 0.02 NA NA
-#	rs140337953 1 30923 G T 0.73 NA 0.48 0.80 0.89 NA NA
-#	rs199681827 1 46402 C CTGT 0.0037 NA 0.01 NA 0.0017 NA NA
-#	rs200430748 1 47190 G GA 0.01 NA 0.06 0.0028 NA NA NA
+# 	0		  	1	    2       3   4   5       6       7           8           9     10
+#	VariantID	CHR_REF	BP_REF	REF	ALT	AlleleA	AlleleB	MinorAllele	MajorAllele	AF	MAF
+#	rs58108140	1	10583	G	A	G	A	A	G	0.14	0.14
+#	rs189107123	1	10611	C	G	C	G	G	C	0.02	0.02
+#	rs180734498	1	13302	C	T	C	T	T	C	0.11	0.11
+#	rs144762171	1	13327	G	C	G	C	C	G	0.03	0.03
+#	rs201747181	1	13957	TC	T	I	D	T	TC	0.02	0.02
+#	rs151276478	1	13980	T	C	T	C	C	T	0.02	0.02
+#	rs140337953	1	30923	G	T	G	T	G	T	0.73	0.27
+#	rs199681827	1	46402	C	CTGT	D	I	CTGT	C	0.0037	0.0037
+#	rs200430748	1	47190	G	GA	D	I	GA	G	0.01	0.01
 #
 print STDOUT "\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -622,23 +638,8 @@ while(my $c = <REFFREQ>){
     if ( $reference eq "HM2") {
 		my $a1 = $fields[3];  # minor allele (can be 0 if monomorphic)
 		my $a2 = $fields[4];  # major allele
-		
-		if ( $population eq "EUR" ) { 
-			$reference_a1_freq{$variant} = $fields[5];
-		}
-		elsif ( $population eq "AFR" ) { 
-			$reference_a1_freq{$variant} = $fields[6];
-		}
-		elsif ( $population eq "JPT" ) { 
-			$reference_a1_freq{$variant} = $fields[7];
-		}
-		elsif ( $population eq "CHB" ) { 
-			$reference_a1_freq{$variant} = $fields[8];
-		}
-		else {
-			die "*** ERROR *** You did not specify the population (--pop); now we cannot determine the proper reference-based allele frequency. Please double back.\n";
-		}   
-      	
+		$reference_a1_freq{$variant} = $fields[6];
+ 	
       	### Checking allele compared to reference
 		if ( $a1 eq $dbsnp_a1{$variant} && $a2 eq $dbsnp_a2{$variant} ) {
 			my $tmp1 = $dbsnp_a1{$variant};
@@ -673,33 +674,10 @@ while(my $c = <REFFREQ>){
 	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
 	}
     # 1000G based
-    if ( $reference eq "1Gp1" || $reference eq "1Gp3" || $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" ) {
-		my $a1 = $fields[4];  # alternative allele, equals to AlleleB in 1000G and thus the coded/effect allele of 1000G imputed data
-		my $a2 = $fields[3];  # reference allele
-		if ( $population eq "PAN" ) { 
-			$reference_a1_freq{$variant} = $fields[5];
-		}
-		elsif ( $reference eq "1Gp3" && $population eq "EUR" ) { 
-			$reference_a1_freq{$variant} = $fields[6];
-		}
-		elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AFR" ) { 
-			$reference_a1_freq{$variant} = $fields[7];
-		}
-		elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" && $population eq "AMR" ) { 
-			$reference_a1_freq{$variant} = $fields[8];
-		}
-		elsif ( $reference eq "1Gp1" && $population eq "ASN" ) { 
-			$reference_a1_freq{$variant} = $fields[9];
-		}
-		elsif ( $reference eq "1Gp3" && $population eq "EAS" ) { 
-			$reference_a1_freq{$variant} = $fields[10];
-		}
-		elsif ( $reference eq "1Gp3" && $population eq "SAS" ) { 
-			$reference_a1_freq{$variant} = $fields[11];
-		}
-		else { 
-			die "*** ERROR *** You did not specify the population (--pop); now we cannot determine the proper reference-based allele frequency. Please double back.\n";
-		} 
+    elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" || $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" ) {
+		my $a1 = $fields[7];  # minor allele; could be alternative or reference allele
+		my $a2 = $fields[8];  # major allele
+		$reference_a1_freq{$variant} = $fields[10];
 
 		### Checking allele compared to reference	
 		if ( $a1 eq $dbsnp_a1{$variant} && $a2 eq $dbsnp_a2{$variant} ) {
@@ -732,7 +710,7 @@ while(my $c = <REFFREQ>){
 		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
 		  $dbsnp_a2{$variant} = $tmp;
 		}
-# 	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
+ 	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
 	}
     else {
       print STDERR "* For the $variant, we cannot determine the Reference Frequency for alleles [ $a1/$a2 ] and annotated alleles [ $dbsnp_a1{$variant}/$dbsnp_a2{$variant} ] -- skipping it. Reference: [ $reference ]; population: [ $population ].\n";

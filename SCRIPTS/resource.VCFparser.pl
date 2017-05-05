@@ -82,11 +82,8 @@ exit();
 #### SETTING OTHER VARIABLES -- see below for header of VCF-file
 print STDERR "Setting variables...\n";
 
-# NOTE: for vid4, vid5, vid18, and vid19 the ALT/AlleleB is in the name; as per convention
-# of the GEN-file format, the most common format currently as IMPUTE2 is the leading imputation
-# algorithm, the ALT/AlleleB are the effect alleles.
-
 # File #1: a list of alternate variantIDs to harmonize the GWAS cohorts
+# Note: the alleles in the name are minor/major alleles
 my $vid = ""; # type 1: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
 my $vid1 = ""; # type 2: 'chr[X]:bp[XXXXX]:A1_A2'
 my $vid2 = ""; # type 3: 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
@@ -102,19 +99,19 @@ my $AlleleB = ""; # other allele, with [I/D] nomenclature
 my $Minor = ""; # minor allele
 my $Major = ""; # major allele
 my $INFO = ""; # needed to grep additional variant information
-my $AF = "";
+my $AF = ""; # ALT allele frequency!!!
 my $MAF = ""; # minor allele frequency based on the population specific AF
-my $EURAF = "";
+my $EURAF = ""; # ALT allele frequency!!!
 my $EURMAF = ""; # minor allele frequency based on EURAF
-my $AFRAF = "";
+my $AFRAF = ""; # ALT allele frequency!!!
 my $AFRMAF = ""; # minor allele frequency based on AFRAF
-my $AMRAF = "";
+my $AMRAF = ""; # ALT allele frequency!!!
 my $AMRMAF = ""; # minor allele frequency based on AMRAF
-my $ASNAF = "";
+my $ASNAF = ""; # ALT allele frequency!!!
 my $ASNMAF = ""; # minor allele frequency based on ASNAF
-my $EASAF = "";
+my $EASAF = ""; # ALT allele frequency!!!
 my $EASMAF = ""; # minor allele frequency based on EASAF
-my $SASAF = "";
+my $SASAF = ""; # ALT allele frequency!!!
 my $SASMAF = ""; # minor allele frequency based on SASAF
 my $ref_indel = "R";
 
@@ -163,40 +160,83 @@ while (my $row = <IN>) {
 	  $REF = $vareach[3]; # reference allele
 	  $ALT = $vareach[4]; # alternate allele
 	  $INFO = $vareach[7]; # info column -- refer to below for information
-	  #print "Chromosome $chr and $bp; ref: $REF and alt: $ALT; info: $INFO\n";
 
+### get allele frequencies
+	if ( $INFO =~ m/\;AF\=(.*?)(;)/ ){
+		$AF = $1;
+	} else {
+		$AF = "NA";
+	}
+	
 ### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-  if ( $vareach[2] =~ m/(\.)/ ){
-  	$vid = "chr$chr\:$bp\:$REF\_$ALT";
-  } else {
-  	$vid = $vareach[2];
-  	}
-
-### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-  $vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+  if ( $vareach[2] =~ m/(\.)/ and $AF < 0.50 and $AF ne "NA" ){
+  	$vid = "chr$chr\:$bp\:$ALT\_$REF";
+  } elsif ($vareach[2] =~ m/(\.)/ and $AF > 0.50 and $AF ne "NA") {
+  		$vid = "chr$chr\:$bp\:$REF\_$ALT";
+  		}	else {
+  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
+  				}
 
 ### SPECIFIC TO FILE #1
+### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
+#   if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT is the minor allele!
+#   	$vid1 = "chr$chr\:$bp\:$ALT\_$REF"; 
+#   } else {
+# 	  	$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+# 	  	}
+  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+  	$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+  } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
+  		$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+  		} elsif ( length($REF) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning REF = INSERTION, but is the minor allele!
+  			$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+  			} elsif ( length($ALT) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT = INSERTION, but is the minor allele!
+	  			$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+  				} elsif ( length($ALT) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
+  					$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+  					} else { 
+  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+  						}
+
+
 ### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-  if ( length($REF) == 1 and length($ALT) == 1 ){
-  	$vid2 = "chr$chr\:$bp\:$REF\_$ALT";
-  } elsif ( length($REF) > 1 ){ 
-  		$vid2 = "chr$chr\:$bp\:I\_D";
-  		} elsif ( length($ALT) > 1 ){ 
-  			$vid2 = "chr$chr\:$bp\:D\_I";
-  			} else { 
-  				$vid2 = "chr$chr\:$bp\:$REF\_$ALT";
-  				}
+  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+  	$vid2 = "chr$chr\:$bp\:$ALT\_$REF";
+  } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = I, but is *NOT* the minor allele!
+  		$vid2 = "chr$chr\:$bp\:D\_I";
+  		} elsif ( length($REF) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning REF = I, but is the minor allele!
+  			$vid2 = "chr$chr\:$bp\:I\_D";
+  			} elsif ( length($ALT) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is the minor allele!
+	  			$vid2 = "chr$chr\:$bp\:I\_D";
+  				} elsif ( length($ALT) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is *NOT* the minor allele!
+  					$vid2 = "chr$chr\:$bp\:D\_I";
+  					} else { 
+  						$vid2 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+  						}
 
 ### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-  if ( length($REF) == 1 and length($ALT) == 1 ){
-  	$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
-  } elsif ( length($REF) > 1 ){ 
-  		$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
-  		} elsif ( length($ALT) > 1 ){ 
-  			$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
-  			} else { 
-  				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
-  				}
+#   if ( length($REF) == 1 and length($ALT) == 1 ){
+#   	$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
+#   } elsif ( length($REF) > 1 ){ 
+#   		$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
+#   		} elsif ( length($ALT) > 1 ){ 
+#   			$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
+#   			} else { 
+#   				$vid3 = "chr$chr\:$bp\:$REF\_$ALT";
+#   				}
+  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+  	$vid3 = "chr$chr\:$bp\:$ALT\_$REF";
+  } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = I, but is *NOT* the minor allele!
+  		$vid3 = "chr$chr\:$bp\:D\_$ref_indel";
+  		} elsif ( length($REF) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning REF = I, but is the minor allele!
+  			$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
+  			} elsif ( length($ALT) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is the minor allele!
+	  			$vid3 = "chr$chr\:$bp\:I\_$ref_indel";
+  				} elsif ( length($ALT) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is *NOT* the minor allele!
+  					$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
+  					} else { 
+  						$vid3 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+  						}
 
 ### SPECIFIC TO FILE #2
 ### adjust alleleA and alleleB when variantID is an INDEL
@@ -214,14 +254,7 @@ while (my $row = <IN>) {
 				$AlleleB = $vareach[4];
 	}
 
-### get allele frequencies
-	if ( $INFO =~ m/\;AF\=(.*?)(;)/ ){
-		$AF = $1;
-	} else {
-		$AF = "NA";
-	}
-
-	if ( $reference eq "1Gp1" && $population eq "PAN" ){
+	if ( $reference eq "1Gp1" and $population eq "PAN" ){
 		## adjust Minor and Major when ALT is the minor allele
 		if ( $AF ne "NA" and $AF < 0.50 ){
 			$Minor = $vareach[4]; # ALT allele is the minor allele
@@ -237,7 +270,7 @@ while (my $row = <IN>) {
 		## get minor allele frequencies based on AF
 		if ( $AF eq "NA" ) {
 			$MAF = $AF;
-		} elsif ( $AF < 0.50 && $AF ne "NA" ){
+		} elsif ( $AF < 0.50 and $AF ne "NA" ){
 			$MAF = $AF;
 			} else {
 				$MAF = 1-$AF;
@@ -260,15 +293,6 @@ while (my $row = <IN>) {
 		} else {
 			$variantclass = "NA";
 	}
-
-# ### get variant length -- this might not work 
-# 	if ( $INFO =~ m/\;SVLEN\=(.*?)(;)/ and $INFO =~ m/VT\=(INDEL.*?)/ ){
-# 		$chrstart = $bp; # start position
-# 		$chrend = $bp + $1; 
-# 	} else {
-# 		$chrstart = $bp; # start position
-# 		$chrend = $bp + 1; 
-# 	}
 
 	print OUT_INFO "$vid\t$vid1\t$vid2\t$vid3\n";
 	print OUT_FREQ "$vid\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$AF\t$MAF\n";

@@ -141,8 +141,8 @@ else
 	zcat ${METAPREPDIRCOHORT}/${COHORT}.reorder.cdat.gz | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/${COHORT}.reorder.split.
 	
 	### HEADER .cdat-file
-	### VariantID Marker MarkerOriginal	CHR BP Strand EffectAllele OtherAllele EAF MAF MAC HWE_P Info Beta SE P 	N 	N_cases N_controls Imputed CHR_REF BP_REF REF ALT AlleleA AlleleB VT AF EURAF AFRAF AMRAF ASNAF EASAF SASAF Reference
-	### 1		  2      	3   		4   5      6            7           8   9   10  11    12   13   14 15 16	17      18         19      20      21     22  23  24      25      26 27 28    29    30    31    32    33    34	35
+	### VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference
+	### 1		    2       3               4   5   6       7               8           9           10          11  12  13  14      15	    16	    17          18  19  20  21      22          23      24
 
 	for SPLITFILE in ${METATEMPRESULTDIR}/${COHORT}.reorder.split.*; do
 		### determine basename of the splitfile
@@ -150,8 +150,8 @@ else
 		echo ""
 		echo "* Prepping split chunk [ ${BASESPLITFILE} ] while re-ordering columns..."
 		echo ""
-		### REQUIRED Columns: VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
-		cat ${SPLITFILE} | awk ' { print $1, $4, $5, $14, $15, $16, $7, $8, $9, $13 } ' > ${METAPREPDIRCOHORT}/tmp_file
+		### REQUIRED Columns: VariantID CHR BP BetaMino SE P MinorAllele MajorAllele MAF Info
+		cat ${SPLITFILE} | awk ' { print $1, $4, $5, $17, $18, $19, $9, $10, $12, $15 } ' > ${METAPREPDIRCOHORT}/tmp_file
 		echo " - renaming the temporary file."
 		mv -fv ${METAPREPDIRCOHORT}/tmp_file ${METAPREPDIRCOHORT}/${BASESPLITFILE}
 		rm -v ${SPLITFILE}

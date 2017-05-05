@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
-    * Version: v1.0.5
-    * Last edit: 2017-04-24
+    * Version: v1.0.6
+    * Last edit: 2017-05-05
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -290,9 +290,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   
   ### set columns class properly
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, CHR = as.integer(CHR)) # convert to integer
-  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, CHR_REF = as.integer(CHR_REF)) # convert to integer
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, BP = as.integer(BP)) # convert to integer
-  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, BP_REF = as.integer(BP_REF)) # convert to integer
   
   report.variants <- function(DATASET){
     no_variants=length(DATASET$VariantID)
