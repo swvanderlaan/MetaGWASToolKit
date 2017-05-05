@@ -153,6 +153,20 @@ else
 
 	echo ""
 	echobold "##########################################################################################"
+	echobold "### DOWNLOADING HapMap 2 reference b36 hg18"
+	echobold "##########################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'HapMap 2 b36 hg18'. "
+
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing HapMap 2 reference! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+
+	echo ""
+	echobold "##########################################################################################"
 	echobold "### DOWNLOADING 1000G phase 1 and phase 3"
 	echobold "##########################################################################################"
 	echobold "#"
@@ -236,6 +250,21 @@ else
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+	echo ""
+	echobold "##########################################################################################"
+	echobold "### DOWNLOADING Recombination Maps for b36 and b37"
+	echobold "##########################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'Recombination Maps'. "
+
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+
 
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

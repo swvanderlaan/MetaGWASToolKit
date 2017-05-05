@@ -16,7 +16,7 @@ print "* Last update      : 2017-05-05"
 print "* Written by       : Tim Bezemer (t.bezemer-2@umcutrecht.nl)."
 print "* Suggested for by : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print ""
-print "* Description      : This script will parse GENCODE and refseq genelists."
+print "* Description      : This script will parse GENCODE and refseq genelists to have only 1 row per gene."
 print ""
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -28,10 +28,10 @@ from sys import exit
 import pandas as pd
 
 import argparse
-parser = argparse.ArgumentParser()
-parser.add_argument("input", help="The input file to inspect (text/gzipped).")
-parser.add_argument("output", help="The name of the output file to write.")
-parser.add_argument("type", help="The reference type <gencode/refseq>.")
+parser = argparse.ArgumentParser(description="Parse GeneList to have only 1 row per gene.")
+parser.add_argument("-i", "--input", help="The input file to inspect (text/gzipped).", type=str)
+parser.add_argument("-o", "--output", help="The name of the output file to write.", type=str)
+parser.add_argument("-t", "--type", help="The reference type <gencode/refseq>.", type=str)
 
 args = parser.parse_args()
 
