@@ -1,4 +1,23 @@
 #!/bin/bash
+#
+#$ -S /bin/bash 																	# the type of BASH you'd like to use
+#$ -N resource.creator  															# the name of this script
+#$ -hold_jid some_other_basic_bash_script  											# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
+#$ -o /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/resource.creator.log  		# the log file of this job
+#$ -e /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/resource.creator.errors	# the error file of this job
+#$ -l h_rt=04:00:00  																# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
+#$ -l h_vmem=8G  																	#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
+# -l tmpspace=64G  																	# this is the amount of temporary space you think your script will use
+#$ -M s.w.vanderlaan-2@umcutrecht.nl  												# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
+#$ -m beas  																		# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
+#$ -cwd  																			# set the job start to the current directory - so all the things in this script are relative to the current directory!!!
+#
+# You can use the variables above (indicated by "#$") to set some things for the submission system.
+# Another useful tip: you can set a job to run after another has finished. Name the job 
+# with "-N SOMENAME" and hold the other job with -hold_jid SOMENAME". 
+#
+# It is good practice to properly name and annotate your script for future reference for
+# yourself and others. Trust me, you'll forget why and how you made this!!!
 
 ### Creating display functions
 ### Setting colouring
@@ -69,9 +88,9 @@ script_copyright_message() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                    MetaGWASToolKit: Resource Creator"
 echobold ""
-echobold "* Version:      v1.0.0"
+echobold "* Version:      v1.0.2"
 echobold ""
-echobold "* Last update:  2017-05-05"
+echobold "* Last update:  2017-05-07"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Testers:      Jessica van Setten | UMC Utrecht | j.vansetten@umcutrecht.nl."
 echobold "* Description:  Downloads, parses and creates the necessary resources for MetaGWASToolKit."
@@ -105,8 +124,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "Downloading and parsing 'dbSNP GRCh37 v147 hg19 Feb2009'. "
 	echo ""
 	echo "* downloading [ dbSNP ] ..."
-#  	echo "wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " > ${RESOURCES}/resource.dbSNP.downloader.sh
-#  	qsub -S /bin/bash -N dbSNPdownloader -o ${RESOURCES}/resource.dbSNP.downloader.log -e ${RESOURCES}/resource.dbSNP.downloader.errors -l h_vmem=4G -l h_rt=00:30:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.downloader.sh
+	wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
 	### HEAD
 	### zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
 	### 585	chr1	10019	10020	rs775809821	0	+	A	A	-/A	genomic	deletion	unknown	0	0	near-gene-5	exact	1		1	SSMP,	0
@@ -116,11 +134,12 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "* parsing [ dbSNP ] ..."
 	echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
 	zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
-	cat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt	
-	echo "gzip -v ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
-	echo "rm -v ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	cat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt
+	
+	echo "gzip -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "rm -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
 	echo "gzip -vf ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
-	qsub -S /bin/bash -N dbSNPparser -hold_jid dbSNPdownloader -o ${RESOURCES}/resource.dbSNP.parser.log -e ${RESOURCES}/resource.dbSNP.parser.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.parser.sh
+	qsub -S /bin/bash -N dbSNPparser -o ${RESOURCES}/resource.dbSNP.parser.log -e ${RESOURCES}/resource.dbSNP.parser.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.parser.sh
 
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing dbSNP reference! 🖖"
@@ -128,7 +147,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	echo ""
 	echobold "#########################################################################################################"
-	echobold "### DOWNLOADING HapMap 2 reference b36 hg18"
+	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING HapMap 2 reference b36 hg18"
 	echobold "#########################################################################################################"
 	echobold "#"
 	echo ""
@@ -138,7 +157,6 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing HapMap 2 reference! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-
 
 	echo ""
 	echobold "#########################################################################################################"
@@ -151,34 +169,34 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	echo "* downloading [ 1000G phase 1 ] ..."
 	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/integrated_call_sets/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " > ${RESOURCES}/resource.1kG1.downloader.sh
-	qsub -S /bin/bash -N ThousandGp1downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
+	qsub -S /bin/bash -N ThousandGp1downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
 	echo "* downloading [ 1000G phase 3 ] ..."
 	echo "wget ftp://ftp.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " > ${RESOURCES}/resource.1kG3.downloader.sh
-	qsub -S /bin/bash -N ThousandGp3downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG3.downloader.log -e ${RESOURCES}/resource.1kG3.downloader.errors -l h_vmem=4G -l h_rt=00:15:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG3.downloader.sh
+	qsub -S /bin/bash -N ThousandGp3downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG3.downloader.log -e ${RESOURCES}/resource.1kG3.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG3.downloader.sh
 	echo "* parsing 1000G phase 1."
 	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop PAN --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-	echo "rm -v ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "rm -fv ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
 	echo "* parsing 1000G phase 3."
 	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp1 --pop PAN --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	echo "rm -v ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
 	echo ""
 	
 	echo "* updating 1000G phase 1."
 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
-	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 	echo "* updating 1000G phase 3."
 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing 1000G references! 🖖"
@@ -203,8 +221,8 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	
 	echo "* parsing [ GENCODE ] ... "
 	zcat ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13, $2, $4}' | awk -F" " '{gsub(/chr/, "", $1)}1' | tail -n +2 > ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
-	gzip -v ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
-	rm -v ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
+	gzip -fv ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
+	rm -fv ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
 	
 	echo "* downloading [ refseq ] ... "
 	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
@@ -214,21 +232,25 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 	echo "* parsing [ refseq ] ... "
 	zcat ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13, $2, $4 }' | awk -F" " '{gsub(/chr/, "", $1)}1' > ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
-	gzip -v ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
-	rm -v ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
+	gzip -fv ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
+	rm -fv ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 	echo ""
 	echobold "#########################################################################################################"
-	echobold "### DOWNLOADING Recombination Maps for b36 and b37"
+	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
 	echobold "#########################################################################################################"
 	echobold "#"
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Downloading and parsing 'Recombination Maps'. "
-
+	#http://www.shapeit.fr/files/genetic_map_b37.tar.gz
+	#http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
+	#wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
+	#tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
+	#mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"

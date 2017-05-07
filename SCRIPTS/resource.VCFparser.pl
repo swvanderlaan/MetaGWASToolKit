@@ -10,15 +10,15 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
 #               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
-# Version:		1.3.2
-# Update date: 	2017-05-04
+# Version:		1.3.4
+# Update date: 	2017-05-07
 #
 # Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                        VCF PARSER                                      +\n";
-print STDERR "+                                          v1.3.2                                        +\n";
+print STDERR "+                                          v1.3.4                                        +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -57,11 +57,11 @@ might differ between references and accross populations. Choices are:\n";
 print "\n";
 print "Reference     Population\n";
 print "=========     ==========\n";
-print "1Gp1          PAN, AFR, AMR, ASN\n";
-print "1Gp3          PAN, EUR, AFR, AMR, EAS, SAS\n";
+print "1Gp1          PAN, EUR, AFR, AMR, ASN\n";
+print "[1Gp3          PAN, EUR, AFR, AMR, EAS, SAS] - not available yet\n";
 print "[GoNL4         NL] - not available yet\n";
 print "[GoNL5         NL] - not available yet\n";
-print "1Gp3GONL5     PAN\n";
+print "[1Gp3GONL5     PAN] - not available yet\n";
 print "\n";
 print "The output files will contain the following:\n";
 print "* Alternate VariantIDs: [ output.basename.INFO.txt ]\n";
@@ -78,153 +78,169 @@ exit();
 ### Add in a function to:
 ### - check the right combination of reference and population
 ### - write out the ref/pop dependent alleles and allele frequencies
-
-#### SETTING OTHER VARIABLES -- see below for header of VCF-file
-print STDERR "Setting variables...\n";
-
-# File #1: a list of alternate variantIDs to harmonize the GWAS cohorts
-# Note: the alleles in the name are minor/major alleles
-my $vid = ""; # type 1: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-my $vid1 = ""; # type 2: 'chr[X]:bp[XXXXX]:A1_A2'
-my $vid2 = ""; # type 3: 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-my $vid3 = ""; # type 4: 'chr[X]:bp[XXXXX]:R_[D/I]'
-
-# File #2: containing frequencies of the chosen reference and population
-my $chr = "";
-my $bp = "";
-my $REF = ""; # reference allele
-my $ALT = ""; # other allele
-my $AlleleA = ""; # reference allele, with [I/D] nomenclature
-my $AlleleB = ""; # other allele, with [I/D] nomenclature
-my $Minor = ""; # minor allele
-my $Major = ""; # major allele
-my $INFO = ""; # needed to grep additional variant information
-my $AF = ""; # ALT allele frequency!!!
-my $MAF = ""; # minor allele frequency based on the population specific AF
-my $EURAF = ""; # ALT allele frequency!!!
-my $EURMAF = ""; # minor allele frequency based on EURAF
-my $AFRAF = ""; # ALT allele frequency!!!
-my $AFRMAF = ""; # minor allele frequency based on AFRAF
-my $AMRAF = ""; # ALT allele frequency!!!
-my $AMRMAF = ""; # minor allele frequency based on AMRAF
-my $ASNAF = ""; # ALT allele frequency!!!
-my $ASNMAF = ""; # minor allele frequency based on ASNAF
-my $EASAF = ""; # ALT allele frequency!!!
-my $EASMAF = ""; # minor allele frequency based on EASAF
-my $SASAF = ""; # ALT allele frequency!!!
-my $SASMAF = ""; # minor allele frequency based on SASAF
-my $ref_indel = "R";
-
-# File #3: a reference-file used as a reference to map, allign, and annotate all GWAS to during meta-analysis
-my $strand = "+"; # all these references are by definition on the PLUS(+)-strand
-my $chrstart = "";
-my $chrend = "";
-my $alleles = ""; # these will be the alt/ref
-my $variantclass = ""; # variant type
-my $variantfunction = "unknown"; # variant function
-
-### READING INPUT FILE
-print STDERR "\nReading input file...\n";
-if ($file =~ /.gz$/) {
-	open(IN, "gunzip -c $file | grep -v '##' |") or die " *** ERROR *** Cannot open pipe to [ $file ]!\n";
-	} else {
-		open(IN, "cat $file | grep -v '##' |") or die " *** ERROR *** Cannot open [ $file ]!\n";
-}
-
-### CREATING OUTPUT FILE
-print STDERR "\nCreating output files...\n";
-my $output_info = $output . ".INFO.txt";
-my $output_freq = $output . ".FREQ.txt";
-my $output_func = $output . ".FUNC.txt";
-
-print STDERR "* File #1: a list of alternate variantIDs to harmonize the GWAS cohorts...\n";
-open(OUT_INFO, '>', $output_info) or die " *** ERROR *** Could not create the [ $output_info ] file!\n";
-print STDERR "* File #2: containing frequencies of the chosen reference and population...\n";
-open(OUT_FREQ, '>', $output_freq) or die " *** ERROR *** Could not create the [ $output_freq ] file!";
-print STDERR "* File #3: a reference-file used to map, allign, and annotate all GWAS to during meta-analysis...\n";
-open(OUT_FUNC, '>', $output_func) or die " *** ERROR *** Could not create the [ $output_func ] file!";
-
-print STDERR "* Create header...\n";
-print OUT_INFO "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\n";
-print OUT_FREQ "VariantID\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\n";
-print OUT_FUNC "Chr\tChrStart\tChrEnd\tVariantID\tStrand\tAlleles\tVariantClass\tVariantFunction\n";
-
-print STDERR "* Looping over file to extract relevant data...\n";
-my $dummy=<IN>;
-while (my $row = <IN>) {
-### General part needed for all files
-	  chomp $row;
-	  my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
-	  $chr = $vareach[0]; # chromosome
-	  $bp = $vareach[1]; # base pair position
-	  $REF = $vareach[3]; # reference allele
-	  $ALT = $vareach[4]; # alternate allele
-	  $INFO = $vareach[7]; # info column -- refer to below for information
-
-### get allele frequencies
-	if ( $INFO =~ m/\;AF\=(.*?)(;)/ ){
-		$AF = $1;
-	} else {
-		$AF = "NA";
+if ( $reference eq "1Gp1" ) {
+	#### SETTING OTHER VARIABLES -- see below for header of VCF-file
+	print STDERR "Setting variables...\n";
+	
+	# File #1: a list of alternate variantIDs to harmonize the GWAS cohorts
+	# Note: the alleles in the name are minor/major alleles
+	my $vid = ""; # type 1: 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+	my $vid1 = ""; # type 2: 'chr[X]:bp[XXXXX]:A1_A2'
+	my $vid2 = ""; # type 3: 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
+	my $vid3 = ""; # type 4: 'chr[X]:bp[XXXXX]:R_[D/I]'
+	
+	# File #2: containing frequencies of the chosen reference and population
+	my $chr = "";
+	my $bp = "";
+	my $REF = ""; # reference allele
+	my $ALT = ""; # other allele
+	my $AlleleA = ""; # reference allele, with [I/D] nomenclature
+	my $AlleleB = ""; # other allele, with [I/D] nomenclature
+	my $Minor = ""; # minor allele
+	my $Major = ""; # major allele
+	my $INFO = ""; # needed to grep additional variant information
+	my $AF = ""; # ALT allele frequency!!!
+	my $MAF = ""; # minor allele frequency based on the population specific AF
+	my $ref_indel = "R";
+	
+	# File #3: a reference-file used as a reference to map, allign, and annotate all GWAS to during meta-analysis
+	my $strand = "+"; # all these references are by definition on the PLUS(+)-strand
+	my $chrstart = "";
+	my $chrend = "";
+	my $alleles = ""; # these will be the alt/ref
+	my $variantclass = ""; # variant type
+	my $variantfunction = "unknown"; # variant function
+	
+	### READING INPUT FILE
+	print STDERR "\nReading input file...\n";
+	if ($file =~ /.gz$/) {
+		open(IN, "gunzip -c $file | grep -v '##' | ") or die " *** ERROR *** Cannot open pipe to [ $file ]!\n";
+		} else {
+			open(IN, "cat $file | grep -v '##' | ") or die " *** ERROR *** Cannot open [ $file ]!\n";
 	}
 	
-### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-  if ( $vareach[2] =~ m/(\.)/ and $AF < 0.50 and $AF ne "NA" ){
-  	$vid = "chr$chr\:$bp\:$ALT\_$REF";
-  } elsif ($vareach[2] =~ m/(\.)/ and $AF > 0.50 and $AF ne "NA") {
-  		$vid = "chr$chr\:$bp\:$REF\_$ALT";
-  		}	else {
-  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
-  				}
-
-### SPECIFIC TO FILE #1
-### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-  	$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
-  } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
-  		$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
-  		} elsif ( length($REF) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning REF = INSERTION, but is the minor allele!
-  			$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
-  			} elsif ( length($ALT) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT = INSERTION, but is the minor allele!
-	  			$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
-  				} elsif ( length($ALT) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
-  					$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
-  					} else { 
-  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
-  						}
-
-### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-  	$vid2 = "chr$chr\:$bp\:$ALT\_$REF";
-  } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = I, but is *NOT* the minor allele!
-  		$vid2 = "chr$chr\:$bp\:D\_I";
-  		} elsif ( length($REF) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning REF = I, but is the minor allele!
-  			$vid2 = "chr$chr\:$bp\:I\_D";
-  			} elsif ( length($ALT) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is the minor allele!
+	### CREATING OUTPUT FILE
+	print STDERR "\nCreating output files...\n";
+	my $output_info = $output . "." . $population . ".INFO.txt";
+	my $output_freq = $output . "." . $population . ".FREQ.txt";
+	my $output_func = $output . "." . $population . ".FUNC.txt";
+	
+	print STDERR "* File #1: a list of alternate variantIDs to harmonize the GWAS cohorts...\n";
+	open(OUT_INFO, '>', $output_info) or die " *** ERROR *** Could not create the [ $output_info ] file!\n";
+	print STDERR "* File #2: containing frequencies of the chosen reference and population...\n";
+	open(OUT_FREQ, '>', $output_freq) or die " *** ERROR *** Could not create the [ $output_freq ] file!";
+	print STDERR "* File #3: a reference-file used to map, allign, and annotate all GWAS to during meta-analysis...\n";
+	open(OUT_FUNC, '>', $output_func) or die " *** ERROR *** Could not create the [ $output_func ] file!";
+	
+	print STDERR "* Create header...\n";
+	print OUT_INFO "VariantID\tVariantID_alt1\tVariantID_alt2\tVariantID_alt3\n";
+	print OUT_FREQ "VariantID\tCHR_REF\tBP_REF\tREF\tALT\tAlleleA\tAlleleB\tMinorAllele\tMajorAllele\tAF\tMAF\n";
+	print OUT_FUNC "Chr\tChrStart\tChrEnd\tVariantID\tStrand\tAlleles\tVariantClass\tVariantFunction\n";
+	
+	print STDERR "* Looping over file to extract relevant data...\n";
+	my $dummy=<IN>;
+	while (my $row = <IN>) {
+	### General part needed for all files
+		  chomp $row;
+		  my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
+		  $chr = $vareach[0]; # chromosome
+		  $bp = $vareach[1]; # base pair position
+		  $REF = $vareach[3]; # reference allele
+		  $ALT = $vareach[4]; # alternate allele
+		  $INFO = $vareach[7]; # info column -- refer to below for information
+	
+	### get allele frequencies
+	if ( $population eq "PAN" ) {
+		if ( $INFO =~ m/\;AF\=(.*?)(;)/ ){
+			$AF = $1;
+		} else {
+			$AF = "NA";
+		} 
+		} elsif ( $population eq "EUR" ) {
+			if ( $INFO =~ m/\;EUR_AF\=(.*?)(;)/ ){
+				$AF = $1;
+			} else {
+				$AF = "NA";
+			} 
+			} elsif ( $population eq "AFR" ) {
+				if ( $INFO =~ m/\;AFR_AF\=(.*?)(;)/ ){
+					$AF = $1;
+				} else {
+					$AF = "NA";
+				} 
+				} elsif ( $population eq "AMR" ) {
+					if ( $INFO =~ m/\;AMR_AF\=(.*?)(;)/ ){
+						$AF = $1;
+					} else {
+						$AF = "NA";
+					} 
+					} elsif ( $population eq "ASN" ) {
+						if ( $INFO =~ m/\;ASN_AF\=(.*?)(;)/ ){
+							$AF = $1;
+						} else {
+							$AF = "NA";
+						} 
+					} else {
+		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
+		}
+		
+	### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+	  if ( $vareach[2] =~ m/(\.)/ and $AF ne "NA" and $AF < 0.50 ){
+	  	$vid = "chr$chr\:$bp\:$ALT\_$REF";
+	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF ne "NA" and $AF > 0.50 ) {
+	  		$vid = "chr$chr\:$bp\:$REF\_$ALT";
+	  		}	else {
+	  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
+	  				}
+	
+	### SPECIFIC TO FILE #1
+	### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+	  } elsif ( length($REF) > 1  and $AF ne "NA" and $AF < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
+	  		$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+	  		} elsif ( length($REF) > 1  and $AF ne "NA" and $AF > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
+	  			$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+	  			} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
+		  			$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+	  				} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
+	  					$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+	  					} else { 
+	  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+	  						}
+	
+	### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid2 = "chr$chr\:$bp\:$ALT\_$REF";
+	  } elsif ( length($REF) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
+	  		$vid2 = "chr$chr\:$bp\:D\_I";
+	  		} elsif ( length($REF) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
 	  			$vid2 = "chr$chr\:$bp\:I\_D";
-  				} elsif ( length($ALT) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is *NOT* the minor allele!
-  					$vid2 = "chr$chr\:$bp\:D\_I";
-  					} else { 
-  						$vid2 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
-  						}
-
-### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-  	$vid3 = "chr$chr\:$bp\:$ALT\_$REF";
-  } elsif ( length($REF) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning REF = I, but is *NOT* the minor allele!
-  		$vid3 = "chr$chr\:$bp\:D\_$ref_indel";
-  		} elsif ( length($REF) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning REF = I, but is the minor allele!
-  			$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
-  			} elsif ( length($ALT) > 1 and $AF < 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is the minor allele!
-	  			$vid3 = "chr$chr\:$bp\:I\_$ref_indel";
-  				} elsif ( length($ALT) > 1 and $AF > 0.50 and $AF ne "NA" ){ # meaning ALT = I, but is *NOT* the minor allele!
-  					$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
-  					} else { 
-  						$vid3 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
-  						}
-
-### SPECIFIC TO FILE #2
-### adjust alleleA and alleleB when variantID is an INDEL
+	  			} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
+		  			$vid2 = "chr$chr\:$bp\:I\_D";
+	  				} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
+	  					$vid2 = "chr$chr\:$bp\:D\_I";
+	  					} else { 
+	  						$vid2 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+	  						}
+	
+	### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid3 = "chr$chr\:$bp\:$ALT\_$REF";
+	  } elsif ( length($REF) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
+	  		$vid3 = "chr$chr\:$bp\:D\_$ref_indel";
+	  		} elsif ( length($REF) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
+	  			$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
+	  			} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
+		  			$vid3 = "chr$chr\:$bp\:I\_$ref_indel";
+	  				} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
+	  					$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
+	  					} else { 
+	  						$vid3 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+	  						}
+	
+	### SPECIFIC TO FILE #2
+	### adjust alleleA and alleleB when variantID is an INDEL
 	if ( length($REF) == 1 and length($ALT) == 1 ){
 		$AlleleA = $vareach[3];
 		$AlleleB = $vareach[4];
@@ -238,59 +254,51 @@ while (my $row = <IN>) {
 				$AlleleA = $vareach[3];
 				$AlleleB = $vareach[4];
 	}
-
-	if ( $reference eq "1Gp1" and $population eq "PAN" ){
-		## adjust Minor and Major when ALT is the minor allele
-		if ( $AF ne "NA" and $AF < 0.50 ){
-			$Minor = $vareach[4]; # ALT allele is the minor allele
-			$Major = $vareach[3];
-		} elsif ( $AF ne "NA" and $AF > 0.50 ) {
+	
+	## adjust Minor and Major when ALT is the minor allele
+	if ( $AF ne "NA" and $AF < 0.50 ){
+		$Minor = $vareach[4]; # ALT allele is the minor allele
+		$Major = $vareach[3];
+	} elsif ( $AF ne "NA" and $AF > 0.50 ) {
+		$Minor = $vareach[3]; # REF allele is the minor allele
+		$Major = $vareach[4]; #
+		} else {
 			$Minor = $vareach[3]; # REF allele is the minor allele
 			$Major = $vareach[4]; #
-			} else {
-				$Minor = $vareach[3]; # REF allele is the minor allele
-				$Major = $vareach[4]; #
-		}
-		
-		## get minor allele frequencies based on AF
-		if ( $AF eq "NA" ) {
-			$MAF = $AF;
-		} elsif ( $AF < 0.50 and $AF ne "NA" ){
-			$MAF = $AF;
-			} else {
-				$MAF = 1-$AF;
-		}
-		
-	} else {
-		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
 	}
-
-### SPECIFIC TO FILE #3
-### get alleles
-	$alleles = $REF . "/" . $ALT; # REF allele/ALT alleles
 	
-### get variant length
-  if (length($REF) == 1 and length($ALT) == 1){
-  	$chrstart = $bp; # base pair start position
-  	$chrend = $bp; # base pair end position
-  
-  } elsif (length($REF) > 1){ 
-  	$chrstart = $bp; # base pair start position
-  	$chrend = $bp + length($REF); # base pair end position
-  	
-  	} elsif (length($ALT) > 1){ 
-  	$chrstart = $bp; # base pair start position
-  	$chrend = $bp + length($ALT); # base pair end position
-  	
-  		} else { 
-  			$chrstart = $bp; # base pair start position
-  			$chrend = $bp; # base pair end position
-  }
-
+	## get minor allele frequencies based on AF
+	if ( $AF eq "NA" ) {
+		$MAF = $AF;
+	} elsif ( $AF < 0.50 and $AF ne "NA" ){
+		$MAF = $AF;
+		} else {
+			$MAF = 1-$AF;
+	}
+			
+	### SPECIFIC TO FILE #3
+	### get alleles
+		$alleles = $REF . "/" . $ALT; # REF allele/ALT alleles
+		
+	### get variant length
+	if (length($REF) == 1 and length($ALT) == 1){
+		$chrstart = $bp; # base pair start position
+		$chrend = $bp; # base pair end position
 	
+	} elsif (length($REF) > 1){ 
+		$chrstart = $bp; # base pair start position
+		$chrend = $bp + length($REF); # base pair end position
+		
+		} elsif (length($ALT) > 1){ 
+		$chrstart = $bp; # base pair start position
+		$chrend = $bp + length($ALT); # base pair end position
+		
+			} else { 
+				$chrstart = $bp; # base pair start position
+				$chrend = $bp; # base pair end position
+	}
 	
-
-### get variant type
+	### get variant type
 	if ( $INFO =~ m/VT\=(SNP.*?)/ ){
 		$variantclass = "SNP";
 	} elsif ( $INFO =~ m/VT\=(INDEL.*?)/ ){
@@ -298,19 +306,27 @@ while (my $row = <IN>) {
 		} else {
 			$variantclass = "NA";
 	}
-
+	
 	print OUT_INFO "$vid\t$vid1\t$vid2\t$vid3\n";
 	print OUT_FREQ "$vid\t$chr\t$bp\t$REF\t$ALT\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$AF\t$MAF\n";
 	print OUT_FUNC "$chr\t$chrstart\t$chrend\t$vid\t$strand\t$alleles\t$variantclass\t$variantfunction\n";
-}
-### Closing output files
-close OUT_INFO;
-close OUT_FREQ;
-close OUT_FUNC;
-
-### Closing input file
-close IN;
-
+	}
+	### Closing output files
+	close OUT_INFO;
+	close OUT_FREQ;
+	close OUT_FUNC;
+	
+	### Closing input file
+	close IN;
+} elsif ( $reference eq "1Gp3" and ( $population eq "PAN" or $population eq "EUR" or $population eq "AFR" or $population eq "AMR" or $population eq "EAS" or $population eq "SAS" ) ) {
+	die " *** ERROR *** Parsing of 1000G phase 3 type references is not available yet. We need to
+think about how to handle multi-allelic variants. One option is to split the fields in to
+multiple rows, one for each variant. The variantID should as a consequence be chr<#>:<#>:MinorAllele_MajorAllele.\n";
+	} elsif ( $reference eq "GoNL4" or $reference eq "GoNL5" or $reference eq "1Gp3GONL5" ) {
+	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented yet.\n";
+		} else {
+		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
+		}
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
 my $newtime = localtime; # scalar context
@@ -628,5 +644,22 @@ print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ### ##INFO=<ID=MULTI_ALLELIC,Number=0,Type=Flag,Description="indicates whether a site is multi-allelic">
 ### ##INFO=<ID=OLD_VARIANT,Number=1,Type=String,Description="old variant location. Format chrom:position:REF_allele/ALT_allele">
 ### #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
-### 
-### 
+### 1	10177	rs367896724	A	AC	100	PASS	AC=2130;AF=0.425319;AN=5008;NS=2504;DP=103152;EAS_AF=0.3363;AMR_AF=0.3602;AFR_AF=0.4909;EUR_AF=0.4056;SAS_AF=0.4949;AA=|||unknown(NO_COVERAGE);VT=INDEL
+### 1	10235	rs540431307	T	TA	100	PASS	AC=6;AF=0.00119808;AN=5008;NS=2504;DP=78015;EAS_AF=0;AMR_AF=0.0014;AFR_AF=0;EUR_AF=0;SAS_AF=0.0051;AA=|||unknown(NO_COVERAGE);VT=INDEL
+### 1	10352	rs555500075	T	TA	100	PASS	AC=2191;AF=0.4375;AN=5008;NS=2504;DP=88915;EAS_AF=0.4306;AMR_AF=0.4107;AFR_AF=0.4788;EUR_AF=0.4264;SAS_AF=0.4192;AA=|||unknown(NO_COVERAGE);VT=INDEL
+### 1	10505	rs548419688	A	T	100	PASS	AC=1;AF=0.000199681;AN=5008;NS=2504;DP=9632;EAS_AF=0;AMR_AF=0;AFR_AF=0.0008;EUR_AF=0;SAS_AF=0;AA=.|||;VT=SNP
+### 1	10506	rs568405545	C	G	100	PASS	AC=1;AF=0.000199681;AN=5008;NS=2504;DP=9676;EAS_AF=0;AMR_AF=0;AFR_AF=0.0008;EUR_AF=0;SAS_AF=0;AA=.|||;VT=SNP
+### 1	10511	rs534229142	G	A	100	PASS	AC=1;AF=0.000199681;AN=5008;NS=2504;DP=9869;EAS_AF=0;AMR_AF=0.0014;AFR_AF=0;EUR_AF=0;SAS_AF=0;AA=.|||;VT=SNP
+### 1	10539	rs537182016	C	A	100	PASS	AC=3;AF=0.000599042;AN=5008;NS=2504;DP=9203;EAS_AF=0;AMR_AF=0.0014;AFR_AF=0;EUR_AF=0.001;SAS_AF=0.001;AA=.|||;VT=SNP
+### 1	10542	rs572818783	C	T	100	PASS	AC=1;AF=0.000199681;AN=5008;NS=2504;DP=9007;EAS_AF=0.001;AMR_AF=0;AFR_AF=0;EUR_AF=0;SAS_AF=0;AA=.|||;VT=SNP
+### 1	10579	rs538322974	C	A	100	PASS	AC=1;AF=0.000199681;AN=5008;NS=2504;DP=5502;EAS_AF=0;AMR_AF=0;AFR_AF=0.0008;EUR_AF=0;SAS_AF=0;AA=.|||;VT=SNP
+### 1	15274	rs62636497	A	G,T	100	PASS	AC=1739,3210;AF=0.347244,0.640974;AN=5008;NS=2504;DP=23255;EAS_AF=0.4812,0.5188;AMR_AF=0.2752,0.7205;AFR_AF=0.323,0.6369;EUR_AF=0.2922,0.7078;SAS_AF=0.3497,0.6472;AA=g|||;VT=SNP;MULTI_ALLELIC
+### 1	66381	rs538833530;rs545426917	TATATA	AATATA,T	100	PASS	AC=55,30;AF=0.0109824,0.00599042;AN=5008;NS=2504;DP=1165;EAS_AF=0,0.003;AMR_AF=0.0058,0;AFR_AF=0.0386,0.0204;EUR_AF=0,0;SAS_AF=0,0;VT=SNP,INDEL;MULTI_ALLELIC
+### 1	536895	rs202171574	T	C,G	100	PASS	AC=173,31;AF=0.0345447,0.0061901;AN=5008;NS=2504;DP=17880;EAS_AF=0.0079,0;AMR_AF=0.0144,0.0029;AFR_AF=0.1142,0.0219;EUR_AF=0.001,0;SAS_AF=0.0031,0;AA=T|||;VT=SNP;MULTI_ALLELIC
+### 1	565736	rs547638081	A	G,T	100	PASS	AC=3,15;AF=0.000599042,0.00299521;AN=5008;NS=2504;DP=425888;EAS_AF=0.002,0;AMR_AF=0,0;AFR_AF=0,0.003;EUR_AF=0.001,0;SAS_AF=0,0.0112;AA=-|||;VT=SNP;MULTI_ALLELIC
+### 1	567747	rs532762852	C	A,T	100	PASS	AC=50,4;AF=0.00998403,0.000798722;AN=5008;NS=2504;DP=558565;EAS_AF=0.0228,0;AMR_AF=0.0375,0;AFR_AF=0.0008,0.003;EUR_AF=0,0;SAS_AF=0,0;AA=-|||;VT=SNP;MULTI_ALLELIC
+### 1	569333	rs544971870	A	G,T	100	PASS	AC=29,3;AF=0.00579073,0.000599042;AN=5008;NS=2504;DP=1083257;EAS_AF=0,0;AMR_AF=0,0;AFR_AF=0.0091,0;EUR_AF=0,0;SAS_AF=0.0174,0.0031;AA=-|||;VT=SNP;MULTI_ALLELIC
+### 1	680024	rs560732492	G	A,T	100	PASS	AC=5,27;AF=0.000998403,0.00539137;AN=5008;NS=2504;DP=13364;EAS_AF=0,0;AMR_AF=0.0014,0.0014;AFR_AF=0.0023,0.0182;EUR_AF=0.001,0;SAS_AF=0,0.002;AA=.|||;VT=SNP;MULTI_ALLELIC
+### 1	706332	rs373669380	G	C,T	100	PASS	AC=14,4;AF=0.00279553,0.000798722;AN=5008;NS=2504;DP=20243;EAS_AF=0,0;AMR_AF=0,0;AFR_AF=0.0106,0.003;EUR_AF=0,0;SAS_AF=0,0;AA=.|||;VT=SNP;MULTI_ALLELIC
+### 1	720968	rs184456771	G	C,T	100	PASS	AC=20,11;AF=0.00399361,0.00219649;AN=5008;NS=2504;DP=10780;EAS_AF=0,0;AMR_AF=0,0.0014;AFR_AF=0.0144,0.0076;EUR_AF=0.001,0;SAS_AF=0,0;AA=.|||;VT=SNP;MULTI_ALLELIC
+### 1	723753	rs576104692;rs373480363	AGAGAGAGG	AGAGAGAGGGAGAGAGG,A	100	PASS	AC=41,96;AF=0.0081869,0.0191693;AN=5008;NS=2504;DP=23051;EAS_AF=0,0.0327;AMR_AF=0.0043,0.0058;AFR_AF=0.0287,0.0227;EUR_AF=0,0.0139;SAS_AF=0,0.0153;VT=INDEL;MULTI_ALLELIC
