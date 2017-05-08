@@ -73,9 +73,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          META-ANALYZER OF GWAS"
 echobold ""
-echobold "* Version:      v1.0.3"
+echobold "* Version:      v1.0.4"
 echobold ""
-echobold "* Last update:  2017-05-01"
+echobold "* Last update:  2017-05-08"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Meta-analyses GWAS datasets."
 echobold ""
@@ -107,6 +107,8 @@ else
 	echo "Processing arguments..."
 	source ${1} # depends on arg1
 	GENESDISTANCE=${GENESDISTANCE} # depends on contents of arg1
+	FREQFLIP=${FREQFLIP} # depends on contents of arg1
+	FREQWARNING=${FREQWARNING} # depends on contents of arg1
 	POPULATION=${POPULATION} # depends on contents of arg1
 	METAMODEL=${METAMODEL} # depends on contents of arg1
 	VERBOSE=${VERBOSE} # depends on contents of arg1
@@ -133,7 +135,10 @@ else
 	echo "The dbSNP data........................................: "${DBSNPFILE}
 	echo "The Reference frequency file..........................: "${REFFREQFILE}
 	echo "The genes file........................................: "${GENESFILE}
+	echo "The gene distance to variant .........................: "${GENESDISTANCE}
 	echo "Meta-analysis model (default: fixed)..................: "${METAMODEL}
+	echo "Frequency allele flipping (default: 0.30).............: "${FREQFLIP}
+	echo "Frequency allele warning (default: 0.45)..............: "${FREQWARNING}
 	echo "Verbose output (default: no)..........................: "${VERBOSE}
 	echo "The parameter file....................................: "${PARAMSFILE}
 	echo "The variant list file.................................: "${VARIANTSFILE}
@@ -143,7 +148,7 @@ else
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "We will collect all unique variants across all GWAS cohorts..."
 
-	METACOMMAND="${SCRIPTS}/METAGWAS.pl --params ${PARAMSFILE} --variants ${VARIANTSFILE} --dbsnp ${DBSNPFILE} --freq ${REFFREQFILE} --genes ${GENESFILE} --dist ${GENESDISTANCE} --out ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out --ext ${EXTENSION} --ref ${REFERENCE} --pop ${POPULATION} --no-header" 
+	METACOMMAND="${SCRIPTS}/METAGWAS.pl --params ${PARAMSFILE} --variants ${VARIANTSFILE} --dbsnp ${DBSNPFILE} --freq ${REFFREQFILE} --genes ${GENESFILE} --dist ${GENESDISTANCE} --out ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out --ext ${EXTENSION} --ref ${REFERENCE} --pop ${POPULATION} --freq-flip ${FREQFLIP} --freq-warning ${FREQWARNING} --no-header" 
 	
 	if [[ ${METAMODEL} == "RANDOM" && ${VERBOSE} == "VERBOSE" ]]; then
 		echo "Performing meta-analysis using Z-score and fixed-effects models; and in addition a random-effects model."

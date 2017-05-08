@@ -1,14 +1,15 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version: METAGWAS2.1.7"
+# Version: METAGWAS2.1.8"
 #
-# Last update			: 2017-05-05"
+# Last update			: 2017-05-08"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
+#						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl).
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
 #						  Sara Pulit | UMC Utrecht, s.l.pulit@umcutrecht.nl);
-#						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl);
+#						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl).
 #
 # Note					: Originally based on MANTEL.pl, but heavily edited to accomodate 
 #						  the new era of 1000G and Haplotype Reference Consortium (HRC) 
@@ -34,7 +35,7 @@
 #
 #    Expected file format (where the number indicates the column):
 #
-#	 VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF  Info
+#	 VariantID CHR BP Beta SE P CodedAllele OtherAllele MAF  Info
 #	 1         2   3  4    5  6 7            8           9    10
 #
 #    where:
@@ -42,9 +43,9 @@
 #    - 'BP' is the chromosomal basepair position of the variant, 
 #	 - 'Beta' is the computed estimate parameter of the effect of the given variant,
 #    - 'SE' is the standard error around that Beta estimate,
-#    - 'EffectAllele' represents the effect allele that the Beta and SE are referring to, 
+#    - 'CodedAllele' represents the effect allele that the Beta and SE are referring to, 
 #    - 'OtherAllele' is the other allele,
-#    - 'EAF' refers to the allele frequency of the effect allele (EffectAllele), 
+#    - 'MAF' refers to the minor allele frequency relative to the effect allele (CodedAllele), 
 #    - 'Info' is the ratio of the observed variance of the dosage to the expected (binomial) 
 #    variance (i.e. the imputation quality, info-score).
 #
@@ -92,43 +93,38 @@
 #
 #    Expected file format:
 #
-#    chrom	chromStart	chromEnd	name		strand	observed			class	func
-#	 chr1	6946796		6946821		rs57898978	+		A/G					single	intron
-#	 chr1	8912885		8912910		rs57188530	+		C/G					single	unknown
-#	 chr1	34340790	34340885	rs6143185	+		(LARGEDELETION)/-	named	intron
-#	 chr1	102891517	102891542	rs56752146	+		A/G					single	unknown
-#
-# 5) [--freq ]	A PLINK generated file (--freq) which is used as the reference to resolve
-#    ambiguities in allele coding; can be based on HapMap or 1000G, or any other reference.
-#
-#    Expected file format:
-#
-#    CHR          VariantID   A1   A2          MAF  NCHROBS
-#      1            2    3    4            5        6
+#    Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction
+#    chr1 62914560 62914560 rs538775156 + -/T insertion intron
+#    chr1 40370176 40370176 rs564192510 + -/T insertion unknown
+#    chr1 61341695 61341699 rs146746778 + -/TTTA deletion unknown
+#    chr1 71827455 71827460 rs774608072 + -/TCTTA deletion unknown
+#    chr1 88342516 88342533 rs777906343 + -/ACATTTAGGTTATTTCC deletion unknown
 #
 # 5) [--freq ]	A file which is used as the reference to resolve ambiguities in allele 
 #    coding; can be based on HapMap or 1000G, or any other reference.
 #
-#	HapMap version			1000G version
-#	ColumnName	ColumNo.	ColumnName	ColumNo.
-#	VariantID	1			VariantID	1
-#	CHR_REF		2			CHR_REF		2
-#	BP_REF		3			BP_REF		3
-#	REF			4			REF			4
-#	ALT			5			ALT			5
-#	AF			6			AF			6
-#							EURAF		7
-#							AFRAF		8
-#							AMRAF		9
-#							ASNAF		10
-#							EASAF		11
-#							SASAF		12
-#
+#    HapMap version			1000G version
+#    ColumnName	ColumNo.	ColumnName	ColumNo.
+#    VariantID	1			VariantID	1
+#    CHR_REF	2			CHR_REF		2
+#    BP_REF		3			BP_REF		3
+#    REF		4			REF			4
+#    ALT		5			ALT			5
+#    AF			6			ALLELEA		6
+#    MAF		7			ALLELEB		7
+#    						MINOR		8
+#    						MAJOR		9
+#    						AF			10
+#    						MAF			11
+#    
 # 6) [--genes]	Gene annotations
 #
 #    Expected file format:
 #
-#    CHR START STOP GENE_SYMBOL
+#    Chr TxStart		TxEnd		Gene		EnsemblID			Strand
+#    1 	66999065 	67213982 	SGIP1 		ENST00000237247.6,ENST00000371039.1,ENST00000371035.3,ENST00000468286.1,ENST00000371036.3,ENST00000371037.4 	+
+#    1 	8377885 	8404227 	SLC45A1 	ENST00000471889.1,ENST00000377479.2,ENST00000289877.8 	+
+#    1 	16767166	16786573 	NECAP2 		ENST00000337132.5 	+
 #
 # 7) [--ref]	Reference to be used. This can either be [HM2/1Gp1/1Gp3/GoNL4/GoNL5/1Gp3GONL5],
 #				for HapMap 2 (release 22), 1000G phase 1 (version 3), 1000G phase 3 (version 5),
@@ -171,7 +167,7 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.0 | 05-05-2017                               +\n";
+print STDOUT "+                                 version 2.0 | 08-05-2017                               +\n";
 print STDOUT "+                              (formely known as [ MANTEL ])                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -193,12 +189,12 @@ my $extractFile; # obligatory
 my $dbsnpFile; # obligatory
 my $freqFile; # obligatory
 my $genesFile; # obligatory
-my $extension = ""; # command-line option
-my $gene_dist = 200; # command-line option
+my $extension = ''; # command-line option
+my $gene_dist = '200'; # command-line option
 my $reference; # obligatory
 my $population; # obligatory
-my $freq_flip = 0.30; # command-line option
-my $freq_warning = 0.45; # command-line option
+my $freq_flip = '0.30'; # command-line option
+my $freq_warning = '0.45'; # command-line option
 my $low_freq_warning = $freq_warning;
 my $hifreq_warning = 1-$freq_warning;
 my $no_header = ''; # command-line option
@@ -216,8 +212,8 @@ GetOptions(
 	   "dist=i"         => \$gene_dist,
 	   "ref=s"          => \$reference,
 	   "pop=s"          => \$population,
-	   "freq-flip=i"    => \$freq_flip,
-	   "freq-warning=i" => \$freq_warning,
+	   "freq-flip=f"     => \$freq_flip,
+	   "freq-warning=f"  => \$freq_warning,
 	   "out=s"          => \$outFile,
 	   "ext=s"          => \$extension,
 	   "no-header"      => \$no_header,
@@ -225,7 +221,7 @@ GetOptions(
 	   "verbose"        => \$verbose
            );
 
-if ( ! $paramsFile || ! $variantFile || ! $dbsnpFile || ! $freqFile || ! $genesFile  || ! $reference  || ! $population || ! $freq_flip || ! $freq_warning ) {
+if ( ! $paramsFile || ! $variantFile || ! $dbsnpFile || ! $freqFile || ! $genesFile  || ! $reference  || ! $population ) {
 	print STDERR "*** ERROR *** You didn't supply the required arguments.\n";
 	print STDERR "\n";
 	print STDERR "Usage: metagwas.pl --params params_file --variants variants_file --dbsnp dbsnp_file --freq freq_file --genes genes_file --ref reference --pop population\n";
@@ -251,8 +247,8 @@ print STDOUT "  --genes          : $genesFile\n"; # a gene-list
 print STDOUT "  --dist           : $gene_dist\n"; # distance to consider genes linked to variants (default = 2000kb)
 print STDOUT "  --ref            : $reference\n"; # reference to be used
 print STDOUT "  --pop            : $population\n"; # population within the reference
-print STDOUT "  --freq-flip      : $freq_flip\n"; # frequency at which alleles are flipped
-print STDOUT "  --freq-warning   : $freq_warning\n"; # frequency at which a warning is given
+print STDOUT "  --freq-flip       : $freq_flip\n"; # frequency at which alleles are flipped
+print STDOUT "  --freq-warning    : $freq_warning\n"; # frequency at which a warning is given
 print STDOUT "  --out            : $outFile\n"; # name of the output file
 
 if ( $extension ne "" ) {
@@ -671,7 +667,7 @@ while(my $c = <REFFREQ>){
 			$dbsnp_a1{$variant} = $dbsnp_a2{$variant};
 			$dbsnp_a2{$variant} = $tmp;
 		}
-	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
+# 	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A1 = $a1; allele A2 = $a2.\n";
 	}
     # 1000G based
     elsif ( $reference eq "1Gp1" || $reference eq "1Gp3" || $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" ) {
@@ -691,6 +687,7 @@ while(my $c = <REFFREQ>){
 		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
 		  $dbsnp_a2{$variant} = $tmp;
 		}
+		# We have edited the allele_flip() function such that it will also handle INDELs of the form [ATCG]_[ATCG]
 		elsif ( allele_flip( $a2 ) eq $dbsnp_a1{$variant} && allele_flip( $a1 ) eq $dbsnp_a2{$variant} ) {
 		  my $tmp = $dbsnp_a1{$variant};
 		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
@@ -705,12 +702,13 @@ while(my $c = <REFFREQ>){
 		  $dbsnp_a1{$variant} = $dbsnp_a1{$variant};
 		  $dbsnp_a2{$variant} = $dbsnp_a2{$variant};
 		}
+		# We have edited the allele_flip() function such that it will also handle INDELs of the form [ATCG]_[ATCG]
 		elsif ( $a1 eq "0" && allele_flip( $a2 ) eq $dbsnp_a1{$variant} ) { 
 		  my $tmp = $dbsnp_a1{$variant};
 		  $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
 		  $dbsnp_a2{$variant} = $tmp;
 		}
- 	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
+#  	print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
 	}
     else {
       print STDERR "* For the $variant, we cannot determine the Reference Frequency for alleles [ $a1/$a2 ] and annotated alleles [ $dbsnp_a1{$variant}/$dbsnp_a2{$variant} ] -- skipping it. Reference: [ $reference ]; population: [ $population ].\n";
@@ -734,15 +732,8 @@ close (REFFREQ);
 #
 # Column 	Chr TxStart		TxEnd		Gene		EnsemblID			Strand
 # Column# 	0	1	        2         	3			4					5
-#			1 	66999065 	67210057 	SGIP1 		ENST00000237247.6 	+
-#			1 	66999274 	67210768 	SGIP1 		ENST00000371039.1 	+
-#			1 	66999822 	67208882 	SGIP1 		ENST00000371035.3 	+
-#			1 	66999838 	67142779 	SGIP1 		ENST00000468286.1 	+
-#			1 	66999868 	67213982 	SGIP1 		ENST00000371036.3 	+
-#			1 	66999964 	67213982 	SGIP1 		ENST00000371037.4 	+
-#			1 	8377885 	8404225 	SLC45A1 	ENST00000471889.1 	+
-#			1 	8378168 	8404227 	SLC45A1 	ENST00000377479.2 	+
-#			1 	8384389 	8404227 	SLC45A1 	ENST00000289877.8 	+
+#			1 	66999065 	67213982 	SGIP1 		ENST00000237247.6,ENST00000371039.1,ENST00000371035.3,ENST00000468286.1,ENST00000371036.3,ENST00000371037.4 	+
+#			1 	8377885 	8404227 	SLC45A1 	ENST00000471889.1,ENST00000377479.2,ENST00000289877.8 	+
 #			1 	16767166	16786573 	NECAP2 		ENST00000337132.5 	+
 #
 print STDOUT "\n";
@@ -796,7 +787,7 @@ if ( $reference eq "HM2") {
     print OUT "VARIANTID CHR POS MINOR MAJOR MAF"; # these are based on the reference!
 }
 elsif ( $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" || $reference eq "1Gp1" || $reference eq "1Gp3" ) {
-    print OUT "VARIANTID CHR POS REF ALT REFFREQ"; # these are based on the reference!
+    print OUT "VARIANTID CHR POS MINOR MAJOR MAF"; # these are based on the reference/population!
 }
 else {
     die "*** ERROR *** You did not specify the reference (--ref); now we cannot properly print the header. Please double back.\n";
@@ -826,7 +817,7 @@ print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE NEAREST_GENE_ENSEM
 # Expected input file format
 #
 # Column#	0		  1	  2  3    4  5 6            7           8   9
-#			VariantID CHR BP Beta SE P EffectAllele OtherAllele EAF Info
+#			VariantID CHR BP Beta SE P CodedAllele OtherAllele MAF Info
 #			rs61769339 1 662622 0.064738 0.151472 0.669216 A G 0.0813265 0.314296
 #			rs61769350 1 693731 0.0809252 0.125964 0.520777 G A 0.0959278 0.395173
 #			rs189800799 1 701835 -0.29061 0.256943 0.258402 C T 0.0204806 0.419007
@@ -1379,7 +1370,7 @@ sub allele_flip($)
 } ### END OF allele_flip
 
 ### Function for flipping INDELs of the form R/D/I
-sub indels_flip($)
+sub indel_flip($)
 {
 	my $indel_a1 = shift;
 	my $indel_a2 = shift;
@@ -1396,7 +1387,7 @@ sub indels_flip($)
 	} elsif( $indel_pos eq "a2" ) {
         return $flipped_indel_a2;
 	} else {
-        return "Oh_crap._Something_is_wrong_with_flipping_this_INDEL.";
+        return "Oh_crap_something_is_wrong_with_flipping_this_INDEL.";
 	}
 }
 
