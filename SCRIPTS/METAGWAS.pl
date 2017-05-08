@@ -1316,7 +1316,7 @@ print STDOUT "          ----------     ------------     -----------------     --
 
 for (my $study = 0; $study < $nstudies; $study++) {
   close $fh[$study]; 
-  printf STDOUT "%20s %16d %14d %20d\n", $study_name[$study], $allele_flips[$study], $sign_flips[$study], $n_informative_variants[$study];
+  printf STDOUT "%20s %16d %22d %25d\n", $study_name[$study], $allele_flips[$study], $sign_flips[$study], $n_informative_variants[$study];
 }
 
 print STDOUT "\n";
