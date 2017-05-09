@@ -152,7 +152,7 @@ if ( $reference eq "1Gp1" ) {
 		$INFO = $vareach[7]; # info column -- refer to below for information
 	
 	### get allele frequencies
-	if ( $INFO =~ m/\;AF\=(.*?)(;)/ or $INFO =~ m/\;AF\=(.*?0)/ ){
+	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
 		$AF = $1;
   	} else {
@@ -167,22 +167,22 @@ if ( $reference eq "1Gp1" ) {
 		$AF = $tmp;
 		
 		} elsif ( $population eq "EUR" ){
-			if ( $INFO =~ m/(?<=;EUR_AF=)\d+(\.\d+)?/ ){
+			if ( $INFO =~ m/(?:^|;)EUR_AF=([^;]*)/ ){
 # 			print " ***DEBUG*** Population: $population. So looking for EUR_AF in $INFO for $vareach[2]; should be: $1. \n";
 			$AF = $1;
   			}
   			} elsif ( $population eq "AFR" ){
-				if ($INFO =~ m/(?<=;AFR_AF=)\d+(\.\d+)?/){
+				if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
 # 				print " ***DEBUG*** Population: $population. So looking for AFR_AF in $INFO for $vareach[2]; should be: $1. \n";
 				$AF = $1;
   				}
   				} elsif ( $population eq "AMR" ){
-					if ($INFO =~ m/(?<=;AMR_AF=)\d+(\.\d+)?/){
+					if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
 # 					print " ***DEBUG*** Population: $population. So looking for AMR_AF in $INFO for $vareach[2]; should be: $1. \n";
 					$AF = $1;
   					}
   					} elsif ( $population eq "ASN" ){
-						if ($INFO =~ m/(?<=;ASN_AF=)\d+(\.\d+)?/){
+						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
 # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 						$AF = $1;
   						}
