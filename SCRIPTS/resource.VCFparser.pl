@@ -30,6 +30,7 @@ print STDERR "\n";
 use strict;
 use warnings;
 use Getopt::Long;
+use Scalar::Util 'looks_like_number';
 
 print STDERR "Reading options...\n";
 
@@ -139,106 +140,129 @@ if ( $reference eq "1Gp1" ) {
 	
 	print STDERR "* Looping over file to extract relevant data...\n";
 	my $dummy=<IN>;
+	my $tmp = "";
 	while (my $row = <IN>) {
 	### General part needed for all files
-		  chomp $row;
-		  my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
-		  $chr = $vareach[0]; # chromosome
-		  $bp = $vareach[1]; # base pair position
-		  $REF = $vareach[3]; # reference allele
-		  $ALT = $vareach[4]; # alternate allele
-		  $INFO = $vareach[7]; # info column -- refer to below for information
+		chomp $row;
+		my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
+		$chr = $vareach[0]; # chromosome
+		$bp = $vareach[1]; # base pair position
+		$REF = $vareach[3]; # reference allele
+		$ALT = $vareach[4]; # alternate allele
+		$INFO = $vareach[7]; # info column -- refer to below for information
 	
 	### get allele frequencies
-	if ( $population eq "PAN" ) {
-		if ( $INFO =~ m/\;AF\=(.*?)(;)/ ){
-			$AF = $1;
-		} else {
-			$AF = "NA";
-		} 
-		} elsif ( $population eq "EUR" ) {
-			if ( $INFO =~ m/\;EUR_AF\=(.*?)(;)/ ){
-				$AF = $1;
-			} else {
-				$AF = "NA";
-			} 
-			} elsif ( $population eq "AFR" ) {
-				if ( $INFO =~ m/\;AFR_AF\=(.*?)(;)/ ){
-					$AF = $1;
-				} else {
-					$AF = "NA";
-				} 
-				} elsif ( $population eq "AMR" ) {
-					if ( $INFO =~ m/\;AMR_AF\=(.*?)(;)/ ){
-						$AF = $1;
-					} else {
-						$AF = "NA";
-					} 
-					} elsif ( $population eq "ASN" ) {
-						if ( $INFO =~ m/\;ASN_AF\=(.*?)(;)/ ){
-							$AF = $1;
-						} else {
-							$AF = "NA";
-						} 
-					} else {
-		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
-		}
+	if ( $INFO =~ m/\;AF\=(.*?)(;)/ or $INFO =~ m/\;AF\=(.*?0)/ ){
+# 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
+		$AF = $1;
+  	} else {
+  		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
+  		$AF = "NA";
+  	}
 		
+	### get allele frequencies
+	if ( $population eq "PAN" ){
+# 		print " ***DEBUG*** Population: $population. So looking for AF in $INFO for $vareach[2]; should be: $1. \n";
+		$tmp = $AF; 
+		$AF = $tmp;
+		
+		} elsif ( $population eq "EUR" ){
+			if ( $INFO =~ m/(?<=;EUR_AF=)\d+(\.\d+)?/ ){
+# 			print " ***DEBUG*** Population: $population. So looking for EUR_AF in $INFO for $vareach[2]; should be: $1. \n";
+			$AF = $1;
+  			}
+  			} elsif ( $population eq "AFR" ){
+				if ($INFO =~ m/(?<=;AFR_AF=)\d+(\.\d+)?/){
+# 				print " ***DEBUG*** Population: $population. So looking for AFR_AF in $INFO for $vareach[2]; should be: $1. \n";
+				$AF = $1;
+  				}
+  				} elsif ( $population eq "AMR" ){
+					if ($INFO =~ m/(?<=;AMR_AF=)\d+(\.\d+)?/){
+# 					print " ***DEBUG*** Population: $population. So looking for AMR_AF in $INFO for $vareach[2]; should be: $1. \n";
+					$AF = $1;
+  					}
+  					} elsif ( $population eq "ASN" ){
+						if ($INFO =~ m/(?<=;ASN_AF=)\d+(\.\d+)?/){
+# 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
+						$AF = $1;
+  						}
+  						} else {
+  	  						print STDERR " *** WARNING *** Could not find the population allele frequency for [ $vareach[2] ] and population [ $population ] where info: $INFO. Check your reference-file.\n"; 
+  							$tmp = $AF; 
+							$AF = $tmp;
+  	}
+
 	### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-	  if ( $vareach[2] =~ m/(\.)/ and $AF ne "NA" and $AF < 0.50 ){
+	if( looks_like_number($AF) ) {
+		if ( $vareach[2] =~ m/(\.)/ and $AF < 0.50 ){
 	  	$vid = "chr$chr\:$bp\:$ALT\_$REF";
-	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF ne "NA" and $AF > 0.50 ) {
+	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF > 0.50 ) {
 	  		$vid = "chr$chr\:$bp\:$REF\_$ALT";
 	  		}	else {
 	  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
 	  				}
-	
+	} else { 
+		$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
+		}
+		
 	### SPECIFIC TO FILE #1
 	### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	if( looks_like_number($AF) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
-	  } elsif ( length($REF) > 1  and $AF ne "NA" and $AF < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
-	  		$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
-	  		} elsif ( length($REF) > 1  and $AF ne "NA" and $AF > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
-	  			$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
-	  			} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
-		  			$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
-	  				} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
-	  					$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
-	  					} else { 
-	  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
-	  						}
+	  	} elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
+	  			$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+	  			} elsif ( length($REF) > 1  and $AF > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
+	  				$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+	  				} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
+			  			$vid1 = "chr$chr\:$bp\:$ALT\_$REF";
+	  					} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
+	  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT";
+	  						} else { 
+	  							$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+	  							}
+	} else { 
+		$vid1 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+		}
 	
 	### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	if( looks_like_number($AF) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid2 = "chr$chr\:$bp\:$ALT\_$REF";
-	  } elsif ( length($REF) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
+	  } elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
 	  		$vid2 = "chr$chr\:$bp\:D\_I";
-	  		} elsif ( length($REF) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
+	  		} elsif ( length($REF) > 1 and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
 	  			$vid2 = "chr$chr\:$bp\:I\_D";
-	  			} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
+	  			} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
 		  			$vid2 = "chr$chr\:$bp\:I\_D";
-	  				} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
+	  				} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
 	  					$vid2 = "chr$chr\:$bp\:D\_I";
 	  					} else { 
 	  						$vid2 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
 	  						}
+	} else { 
+		$vid2 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+		}
 	
 	### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	if( looks_like_number($AF) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid3 = "chr$chr\:$bp\:$ALT\_$REF";
-	  } elsif ( length($REF) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
+	  } elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
 	  		$vid3 = "chr$chr\:$bp\:D\_$ref_indel";
-	  		} elsif ( length($REF) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
+	  		} elsif ( length($REF) > 1 and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
 	  			$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
-	  			} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
+	  			} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
 		  			$vid3 = "chr$chr\:$bp\:I\_$ref_indel";
-	  				} elsif ( length($ALT) > 1 and $AF ne "NA" and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
+	  				} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
 	  					$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
 	  					} else { 
 	  						$vid3 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
 	  						}
-	
+	} else { 
+		$vid3 = "chr$chr\:$bp\:$REF\_$ALT"; # meaning REF is a SNP, but is the minor allele!
+		}
+			
 	### SPECIFIC TO FILE #2
 	### adjust alleleA and alleleB when variantID is an INDEL
 	if ( length($REF) == 1 and length($ALT) == 1 ){
@@ -256,29 +280,38 @@ if ( $reference eq "1Gp1" ) {
 	}
 	
 	## adjust Minor and Major when ALT is the minor allele
-	if ( $AF ne "NA" and $AF < 0.50 ){
-		$Minor = $vareach[4]; # ALT allele is the minor allele
-		$Major = $vareach[3];
-	} elsif ( $AF ne "NA" and $AF > 0.50 ) {
-		$Minor = $vareach[3]; # REF allele is the minor allele
-		$Major = $vareach[4]; #
-		} else {
+	if( looks_like_number($AF) ) {
+		if ( $AF < 0.50 ){
+			$Minor = $vareach[4]; # ALT allele is the minor allele
+			$Major = $vareach[3];
+		} elsif ( $AF > 0.50 ) {
 			$Minor = $vareach[3]; # REF allele is the minor allele
 			$Major = $vareach[4]; #
+			} else {
+				$Minor = $vareach[3]; # REF allele is the minor allele
+				$Major = $vareach[4]; #
+		}
+	} else { 
+		$Minor = $vareach[3]; # REF allele is the minor allele
+		$Major = $vareach[4]; #
 	}
-	
+		
 	## get minor allele frequencies based on AF
-	if ( $AF eq "NA" ) {
-		$MAF = $AF;
-	} elsif ( $AF < 0.50 and $AF ne "NA" ){
-		$MAF = $AF;
+	if ( looks_like_number($AF) ) {
+		if ( $AF < 0.50 ){
+			$MAF = $AF;
 		} else {
 			$MAF = 1-$AF;
+		} 
+	} else { 
+		$tmp = $AF; 
+		$AF = $tmp;
+		$MAF = $tmp;
 	}
 			
 	### SPECIFIC TO FILE #3
 	### get alleles
-		$alleles = $REF . "/" . $ALT; # REF allele/ALT alleles
+	$alleles = $REF . "/" . $ALT; # REF allele/ALT alleles
 		
 	### get variant length
 	if (length($REF) == 1 and length($ALT) == 1){
@@ -388,6 +421,18 @@ print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ### ##INFO=<ID=SNPSOURCE,Number=.,Type=String,Description="indicates if a snp was called when analysing the low coverage or exome alignment data">
 ### ##reference=GRCh37
 ### #CHROM	POS	ID	REF	ALT	QUAL	FILTER	INFO
+### 1	10583	rs58108140	G	A	100	PASS	AVGPOST=0.7707;RSQ=0.4319;LDAF=0.2327;ERATE=0.0161;AN=2184;VT=SNP;AA=.;THETA=0.0046;AC=314;SNPSOURCE=LOWCOV;AF=0.14;ASN_AF=0.13;AMR_AF=0.17;AFR_AF=0.04;EUR_AF=0.21
+### 1	10611	rs189107123	C	G	100	PASS	AN=2184;THETA=0.0077;VT=SNP;AA=.;AC=41;ERATE=0.0048;SNPSOURCE=LOWCOV;AVGPOST=0.9330;LDAF=0.0479;RSQ=0.3475;AF=0.02;ASN_AF=0.01;AMR_AF=0.03;AFR_AF=0.01;EUR_AF=0.02
+### 1	13302	rs180734498	C	T	100	PASS	THETA=0.0048;AN=2184;AC=249;VT=SNP;AA=.;RSQ=0.6281;LDAF=0.1573;SNPSOURCE=LOWCOV;AVGPOST=0.8895;ERATE=0.0058;AF=0.11;ASN_AF=0.02;AMR_AF=0.08;AFR_AF=0.21;EUR_AF=0.14
+### 1	13327	rs144762171	G	C	100	PASS	AVGPOST=0.9698;AN=2184;VT=SNP;AA=.;RSQ=0.6482;AC=59;SNPSOURCE=LOWCOV;ERATE=0.0012;LDAF=0.0359;THETA=0.0204;AF=0.03;ASN_AF=0.02;AMR_AF=0.03;AFR_AF=0.02;EUR_AF=0.04
+### 1	13957	rs201747181	TC	T	28	PASS	AA=TC;AC=35;AF=0.02;AFR_AF=0.02;AMR_AF=0.02;AN=2184;ASN_AF=0.01;AVGPOST=0.8711;ERATE=0.0065;EUR_AF=0.02;LDAF=0.0788;RSQ=0.2501;THETA=0.0100;VT=INDEL
+### 1	13980	rs151276478	T	C	100	PASS	AN=2184;AC=45;ERATE=0.0034;THETA=0.0139;RSQ=0.3603;LDAF=0.0525;VT=SNP;AA=.;AVGPOST=0.9221;SNPSOURCE=LOWCOV;AF=0.02;ASN_AF=0.02;AMR_AF=0.02;AFR_AF=0.01;EUR_AF=0.02
+### 1	30923	rs140337953	G	T	100	PASS	AC=1584;AA=T;AN=2184;RSQ=0.5481;VT=SNP;THETA=0.0162;SNPSOURCE=LOWCOV;ERATE=0.0183;LDAF=0.6576;AVGPOST=0.7335;AF=0.73;ASN_AF=0.89;AMR_AF=0.80;AFR_AF=0.48;EUR_AF=0.73
+### 1	46402	rs199681827	C	CTGT	31	PASS	AA=.;AC=8;AF=0.0037;AFR_AF=0.01;AN=2184;ASN_AF=0.0017;AVGPOST=0.8325;ERATE=0.0072;LDAF=0.0903;RSQ=0.0960;THETA=0.0121;VT=INDEL
+### 1	47190	rs200430748	G	GA	192	PASS	AA=G;AC=29;AF=0.01;AFR_AF=0.06;AMR_AF=0.0028;AN=2184;AVGPOST=0.9041;ERATE=0.0041;LDAF=0.0628;RSQ=0.2883;THETA=0.0153;VT=INDEL
+### 1	51476	rs187298206	T	C	100	PASS	ERATE=0.0021;AA=C;AC=18;AN=2184;VT=SNP;THETA=0.0103;LDAF=0.0157;SNPSOURCE=LOWCOV;AVGPOST=0.9819;RSQ=0.5258;AF=0.01;ASN_AF=0.01;AMR_AF=0.01;AFR_AF=0.01;EUR_AF=0.01
+### 1	51479	rs116400033	T	A	100	PASS	RSQ=0.7414;AVGPOST=0.9085;AA=T;AN=2184;THETA=0.0131;AC=235;VT=SNP;LDAF=0.1404;SNPSOURCE=LOWCOV;ERATE=0.0012;AF=0.11;ASN_AF=0.0035;AMR_AF=0.16;AFR_AF=0.03;EUR_AF=0.22
+### 1	51914	rs190452223	T	G	100	PASS	ERATE=0.0004;AVGPOST=0.9985;THETA=0.0159;AA=T;AN=2184;VT=SNP;SNPSOURCE=LOWCOV;AC=1;RSQ=0.4089;LDAF=0.0012;AF=0.0005;ASN_AF=0.0017
 
 
 ### HEADER of VCF-file, version 4.1 -- 1000G, PHASE 3, VERSION 5
