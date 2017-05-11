@@ -848,7 +848,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 #  my $ref2 = "0";
   my $ref1 = $dbsnp_a1{$variant};
   my $ref2 = $dbsnp_a2{$variant};
-  my $effect_allele = $ref1;
+  my $coded_allele = $ref1;
   my $other_allele = $ref2;
   my @study_okay = ();
   my @flip_alleles = ();
@@ -868,9 +868,9 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my @beta = ();
   my @se = ();
   my @pval = ();
-  my @a1 = (); # coded/effect allele, i.e. in case HM2 minor, in case of 1000G ALT-allele
+  my @a1 = (); # coded/effect allele, i.e. minor allele
   my @a2 = ();
-  my @af1 = (); # coded/effect allele frequency; i.e. in case HM2 minor allele frequency, in case of 1000G ALT-allele frequency
+  my @af1 = (); # coded/effect allele frequency; i.e. minor allele frequency
   my @ratio = (); # i.e. imputation quality
  
   ###
@@ -1157,7 +1157,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     my $p_sqrtn = Statistics::Distributions::chisqrprob( 1, $z_sqrtn * $z_sqrtn );
 
     ### print stuff out
-    printf OUT " %s %s %.3f", $effect_allele, $other_allele, $af_weighted;
+    printf OUT " %s %s %.3f", $coded_allele, $other_allele, $af_weighted;
     printf OUT " %.1f %.4f %.4e", $n_eff, $z_sqrtn, $p_sqrtn;
     printf OUT " %.4f %.4f %.4f %.4e %.3f %.3f ", $weighted_mean_beta, $se_mean_beta, $z, $p, $beta_lower, $beta_upper;
 
