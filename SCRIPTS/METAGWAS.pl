@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version: METAGWAS2.1.8"
+# Version               : 2.1.9"
 #
-# Last update			: 2017-05-08"
+# Last update			: 2017-05-11"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 #						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl).
@@ -167,7 +167,7 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.0 | 08-05-2017                               +\n";
+print STDOUT "+                                 version 2.0 | 11-05-2017                               +\n";
 print STDOUT "+                              (formely known as [ MANTEL ])                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -833,9 +833,6 @@ my $n_skipped_uninformative = 0;
 my %reference_present = ();
 
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
-  $nvariants_in_meta++;
-  $not_on_reference++;
-  $n_skipped_uninformative++;
 
   my $variant = $variant_name[$nvariant];
  

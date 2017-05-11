@@ -87,19 +87,19 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 #--------------------------------------------------------------------------
 
-### FOR LOCAL DEBUGGING
-### MacBook Pro
-#MACDIR="/Users/swvanderlaan/PLINK/analyses"
-### Mac Pro
-MACDIR="/Volumes/EliteProQx2Media/PLINK/analyses/meta_gwasfabp4"
-
-opt$inputfile=paste0(MACDIR, "/test_environment/test.p_val_corr.out")
-opt$outputfile=paste0(MACDIR, "/test_environment/test.p_corrected.out")#
-
-#test.gc_p_val_corr.out
-#test.p_val_corr.out
-### FOR LOCAL DEBUGGING
-
+# ### FOR LOCAL DEBUGGING
+# ### MacBook Pro
+# #MACDIR="/Users/swvanderlaan/PLINK/analyses"
+# ### Mac Pro
+# MACDIR="/Volumes/EliteProQx2Media/PLINK/analyses/meta_gwasfabp4"
+# 
+# opt$inputfile=paste0(MACDIR, "/test_environment/test.p_val_corr.out")
+# opt$outputfile=paste0(MACDIR, "/test_environment/test.p_corrected.out")#
+# 
+# #test.gc_p_val_corr.out
+# #test.p_val_corr.out
+# ### FOR LOCAL DEBUGGING
+ 
 #--------------------------------------------------------------------------
 
 if (opt$verbose) {
