@@ -833,6 +833,9 @@ my $n_skipped_uninformative = 0;
 my %reference_present = ();
 
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
+  $nvariants_in_meta++;
+  $not_on_reference++;
+  $n_skipped_uninformative++;
 
   my $variant = $variant_name[$nvariant];
  
@@ -921,6 +924,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
    
   ### check if this variant has a Reference frequency 
   if ( ! defined( $reference_a1_freq{$variant} ) ) {
+    print STDERR " ***DEBUG***  This [ $variant ] does not have a reference frequency.\n";
     $not_on_reference++;
     $reference_present{$variant} = 0;
     $caveat{$variant} .= "not_in_reference";
@@ -1045,13 +1049,13 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   } ### END OF FOR-LOOP
 
   if ( $n_okay_studies == 0 ) { 
-    print STDERR "* For $variant there is information from one study or none -- so skipping this variant.\n";
     $n_skipped_uninformative++;
+    print STDERR "* For $variant there is information from one study or none -- so skipping this variant.\n";
   }
   
   if ( $n_eff == 0 ) { 
-    print STDERR "* For $variant the effective sample size = 0 -- so skipping this variant.\n";
     $n_skipped_uninformative++;
+    print STDERR "* For $variant the effective sample size = 0 -- so skipping this variant.\n";
   }
 
   if ( $n_okay_studies > 0 && $n_eff > 0 ) {  
@@ -1316,7 +1320,7 @@ print STDOUT "          ----------     ------------     -----------------     --
 
 for (my $study = 0; $study < $nstudies; $study++) {
   close $fh[$study]; 
-  printf STDOUT "%20s %16d %22d %25d\n", $study_name[$study], $allele_flips[$study], $sign_flips[$study], $n_informative_variants[$study];
+  printf STDOUT "%20s %16d %21d %24d\n", $study_name[$study], $allele_flips[$study], $sign_flips[$study], $n_informative_variants[$study];
 }
 
 print STDOUT "\n";
