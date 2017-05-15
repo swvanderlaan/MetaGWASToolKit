@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
-    * Version: v1.0.6
-    * Last edit: 2017-05-05
+    * Version: v1.0.7
+    * Last edit: 2017-05-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -327,9 +327,16 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P) | HWE_P == 0)
-  report.variants(GWASDATA_RAW_CLEANED)
-  
+  if(GWASDATA_RAW_CLEANED$CHR < 22) {
+  	cat(paste0("\n  - processing autosomal chromosomes..."))
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P) | HWE_P == 0)
+  	report.variants(GWASDATA_RAW_CLEANED)
+  	} else {
+	cat(paste0("\n  - processing non-autosomal chromosomes..."))
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, is.na(HWE_P) | HWE_P == 0)
+  	report.variants(GWASDATA_RAW_CLEANED)
+  	}
+  	
   cat("\nAll done cleaning the dataset.")
   ### SAVE NEW DATA ###
   cat("\n\nSaving cleaned data...\n")

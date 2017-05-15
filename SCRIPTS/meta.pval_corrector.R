@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-values Corrector -- MetaGWASToolKit
     \n
-    * Version: v1.0.0
-    * Last edit: 2017-05-01
+    * Version: v1.0.1
+    * Last edit: 2017-05-15
     * Created by: Sara L. Pulit | s.l.pulit@umcutrecht.nl; Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS. 
@@ -141,16 +141,16 @@ if(!is.na(opt$inputfile) & !is.na(opt$outputfile)) {
   cat("  - making updated dataset for export\n")
   data.updated <- data.frame(data[,1], P1, P2, P3)
 
-  cat("\nAll done creating the final parsed dataset.")
+  cat("\nAll done correcting p-values in the dataset.")
   ### SAVE NEW DATA ###
-  cat("\n\nSaving parsed data...\n")
+  cat("\n\nSaving corrected data...\n")
   write.table(data.updated, 
               file = opt$outputfile, 
               quote = FALSE , row.names = FALSE, col.names = TRUE, 
               sep = "\t", na = "NA", dec = ".")
   
   ### CLOSING MESSAGE
-  cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$inputfile), compression = TRUE),"].\n"))
+  cat(paste("\nAll done correcting p-values in [",file_path_sans_ext(basename(opt$inputfile), compression = TRUE),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
 } else {

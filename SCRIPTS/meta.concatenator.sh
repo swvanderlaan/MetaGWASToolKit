@@ -68,13 +68,14 @@ script_arguments_error() {
 }
 
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                                          META-CONCATENATOR OF GWAS"
+echobold "                     META-CONCATENATOR OF META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.2"
+echobold "* Version:      v1.0.3"
 echobold ""
-echobold "* Last update:  2017-05-02"
+echobold "* Last update:  2017-05-15"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
-echobold "* Description:  Concatenates all chunks with meta-analyzed results into one file and gzips it."
+echobold "* Description:  Checks errors- and log-files for consistency, prior to concatenating all chunks with "
+echobold "                meta-analyzed results into one file and gzips it."
 echobold ""
 echobold "* REQUIRED: "
 echobold "  - A high-performance computer cluster with a qsub system"
@@ -116,23 +117,130 @@ else
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "We will create the concatenated data file."
+	echo "Checking consistency of meta-analysis results."
 	
-	cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.aaa.corrected_p.out | head -1 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
+	echo "* Making necessary 'readme' files..."
+	echo "Chunk Skipped Flipped Success" > ${METARESULTDIR}/meta.analysis.readme
+	echo "Chunk PvalCorrected Success" > ${METARESULTDIR}/meta.p_corrector.readme
 
-	echo "* Processing each meta-analyzed chunk ..."
+	### Setting the patterns to look for -- never change this
+	METASKIPPEDPATTERN="skipping"
+	METAFLIPPEDPATTERN="Flipping"
+	METASUCCESSPATTERN="This meta-analysis of GWAS was successfully finished"
+	
+	PCORRERRORPATTERN="File is empty"
+	PCORRSUCCESSPATTERN="All done correcting p-values in the dataset."
+	
 	while IFS='' read -r VARIANTFILE || [[ -n "$VARIANTFILE" ]]; do  
 	
 		EXTENSION="${VARIANTFILE##*.}"
-	 	VARIANTFILEBASE=${METATEMPRESULTDIR}/${VARIANTFILE%.*}
- 		echo "  - wrapping results for chunk [ ${EXTENSION} ] ..."
-		cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
-	
+		VARIANTFILEBASE=${METATEMPRESULTDIR}/${VARIANTFILE%.*}
+		METAERRORFILE=${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors
+		METALOGFILE=${METARESULTDIR}/meta.analyzer.${EXTENSION}.log
+ 		PCORRERRORFILE=${METARESULTDIR}/meta.p_corrector.${EXTENSION}.errors
+ 		PCORRLOGFILE=${METARESULTDIR}/meta.p_corrector.${EXTENSION}.log
+		
+		### determine basename of the ERRORFILE
+		BASENAMEERRORFILE=$(basename ${METAERRORFILE})
+		BASENAMELOGFILE=$(basename ${METALOGFILE})
+		echo ""
+		echo "* checking split chunk: [ ${EXTENSION} ] for pattern \"${METASUCCESSPATTERN}\"..."
+		echo "Error file...........................:" $(basename ${BASENAMEERRORFILE})
+		echo "Log file.............................:" $(basename ${BASENAMELOGFILE})
+		if [[ ! -z $(grep "${METASUCCESSPATTERN}" "${METALOGFILE}") ]] ; then 
+			SUCCESSMESSAGE=$(echosucces "successfully meta-analyzed")
+			SUCCESSMESSAGEREADME=$(echo "success")
+			NSKIPPED=$(grep "${METASKIPPEDPATTERN}" "${METAERRORFILE}" | wc -l)
+			NFLIPPED=$(grep "${METAFLIPPEDPATTERN}" "${METAERRORFILE}" | wc -l)
+			echo "Meta-analysis report...................................: ${SUCCESSMESSAGE}"
+			echo "Number of variants skipped in meta-analysis "
+			echo "(not in reference, allele frequency issues, etc.)......: ${NSKIPPED}"
+			echo "Number of variants flipped skipped in meta-analysis....: ${NFLIPPED}"
+			echo "${EXTENSION} ${NSKIPPED} ${NFLIPPED} ${SUCCESSMESSAGEREADME}" >> ${METARESULTDIR}/meta.analysis.readme
+			
+			### p-value corrections
+			if [[ ! -z $(grep "${PCORRSUCCESSPATTERN}" "${PCORRLOGFILE}") ]] ; then 
+				SUCCESSMESSAGE=$(echosucces "p-values successfully corrected")
+				SUCCESSMESSAGEREADME=$(echo "success")
+				echo "Meta-analysis report...................................: ${SUCCESSMESSAGE}"
+				echo "${EXTENSION} yes ${SUCCESSMESSAGEREADME}" >> ${METARESULTDIR}/meta.p_corrector.readme
+				
+			else
+				echoerrorflash "*** Warning *** There were no p-values corrected..."
+				echoerror "Reported in the [ ${PCORRERRORFILE} ]:      "
+				echoerror "####################################################################################"
+				head ${PCORRERRORFILE}
+				tail ${PCORRERRORFILE}
+				echoerror "####################################################################################"
+				FAILUREMESSAGE=$(echosucces "no p-values corrected")
+				FAILUREMESSAGEREADME=$(echo "no_pval_correction")
+				echo "Meta-analysis report...................................: ${FAILUREMESSAGE}"
+				echo "${EXTENSION} no ${FAILUREMESSAGEREADME}" >> ${METARESULTDIR}/meta.p_corrector.readme
+		
+			fi
+			
+			echo "- removing files [ ${METARESULTDIR}/meta.analyzer.${EXTENSION}[.sh/.errors/.log] ]..."
+			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
+			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors
+			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log
+			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.sh
+			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.errors
+			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.log
+
+		else
+			echoerrorflash "*** Error *** The pattern \"${METASUCCESSPATTERN}\" was NOT found in [ ${METALOGFILE} ]..."
+			echoerror "Reported in the [ ${METAERRORFILE} ]:      "
+			echoerror "####################################################################################"
+			head ${METAERRORFILE}
+			tail ${METAERRORFILE}
+			echoerror "####################################################################################"
+			FAILUREMESSAGE=$(echosucces "meta-analysis failure")
+			FAILUREMESSAGEREADME=$(echo "failure")
+			NSKIPPED=$(grep "${METASKIPPEDPATTERN}" "${METAERRORFILE}" | wc -l)
+			NFLIPPED=$(grep "${METAFLIPPEDPATTERN}" "${METAERRORFILE}" | wc -l)
+			echo "Meta-analysis report...................................: ${FAILUREMESSAGE}"
+			echo "${EXTENSION} ${NSKIPPED} ${NFLIPPED} ${FAILUREMESSAGEREADME}" >> ${METARESULTDIR}/meta.analysis.readme
+		fi
+
 	done < ${VARIANTSFILES}
+
+	if [[ ! -z $(grep "success" ${METARESULTDIR}/meta.analysis.readme) ]]; then 
 	
-	echo ""
-	echo "* Gzipping the shizzle..."
-	gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
+		echo ""
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echo "There were no errors in the meta-analysis. We will create the concatenated data file."
+		
+		cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.aaa.corrected_p.out | head -1 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
+	
+		echo "* Processing each meta-analyzed chunk ..."
+		while IFS='' read -r VARIANTFILE || [[ -n "$VARIANTFILE" ]]; do  
+		
+			EXTENSION="${VARIANTFILE##*.}"
+		 	VARIANTFILEBASE=${METATEMPRESULTDIR}/${VARIANTFILE%.*}
+	 		echo "  - wrapping results for chunk [ ${EXTENSION} ] ..."
+			cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
+			echo "  - gzipping results for chunk [ ${EXTENSION} ] ..."
+			echo "    > original ..."
+			gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out
+			echo "    > p-value corrected ..."
+ 		gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out
+		done < ${VARIANTSFILES}
+		
+		echo ""
+		echo "* Gzipping the shizzle..."
+		gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
+		ls -lh ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.fixed_headed.out
+		ls -lh ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.needs_p_fixing.out
+	
+	else
+		echoerrorflash "*** Error *** The meta-analysis of one of the chunks failed..."
+		echoerror "Reported in the [ meta.analysis.readme ]:      "
+		echoerror "####################################################################################"
+		cat ${METARESULTDIR}/meta.analysis.readme
+		echoerror "####################################################################################"
+		echo ""
+		echoerror "We will not concatenate the meta-analysis results."
+	fi
 	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
