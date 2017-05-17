@@ -10,7 +10,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
     * Version: v1.0.7
-    * Last edit: 2017-05-15
+    * Last edit: 2017-05-17
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -100,11 +100,11 @@ option_list = list(
 opt = parse_args(OptionParser(option_list=option_list))
 
 # #--------------------------------------------------------------------------
-# # 
-# # ### FOR LOCAL DEBUGGING
-# # ### MacBook Pro
-# # #MACDIR="/Users/swvanderlaan"
-# # ### Mac Pro
+# 
+# ### FOR LOCAL DEBUGGING
+# ### MacBook Pro
+# MACDIR="/Users/swvanderlaan"
+# ### Mac Pro
 # MACDIR="/Volumes/MyBookStudioII/Backup"
 # # 
 # opt$effectsize=10
@@ -114,12 +114,12 @@ opt = parse_args(OptionParser(option_list=option_list))
 # opt$info=0.3
 # opt$hwe_p=1E-6
 # 
-# # opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
-# # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
-# # opt$filename="EPICNL_m1"
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
+# opt$filename="EPICNL_m1"
 # 
-# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1")
-# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.rdat.gz")
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODEL1/RAW/AEGS_m1")
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODEL1/RAW/AEGS_m1/AEGS_m1.rdat.gz")
 # opt$filename="AEGS_m1"
 # 
 # ### FOR LOCAL DEBUGGING
@@ -292,6 +292,12 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, CHR = as.integer(CHR)) # convert to integer
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAW, BP = as.integer(BP)) # convert to integer
   
+  ### Create new column to count SNPs and INDELs
+  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, 
+                                  VT = ifelse((nchar(GWASDATA_RAWSELECTION$EffectAllele) == 1 & nchar(GWASDATA_RAWSELECTION$OtherAllele) == 1), 
+                                              "SNP", 
+                                              "INDEL"))
+
   report.variants <- function(DATASET){
     no_variants=length(DATASET$VariantID)
     no_variants_snp=length(grep(TRUE, DATASET$VT == "SNP"))
@@ -303,7 +309,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
 
   cat("\nCleaning dataset.")
   cat(paste0("\n* removing variants where -",opt$effectsize," < effect size < ",opt$effectsize," or 'NA'..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW, Beta > -opt$effectsize & Beta < opt$effectsize & !is.na(Beta))
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAWSELECTION, Beta > -opt$effectsize & Beta < opt$effectsize & !is.na(Beta))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants where ",-opt$standarderror," < standard error < ",opt$standarderror," or 'NA'..."))
@@ -327,7 +333,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"..."))
-  if(GWASDATA_RAW_CLEANED$CHR < 22) {
+  if(any(GWASDATA_RAW_CLEANED$CHR < 22) == TRUE) {
   	cat(paste0("\n  - processing autosomal chromosomes..."))
   	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P) | HWE_P == 0)
   	report.variants(GWASDATA_RAW_CLEANED)
