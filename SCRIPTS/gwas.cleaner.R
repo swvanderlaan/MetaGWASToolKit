@@ -103,24 +103,24 @@ opt = parse_args(OptionParser(option_list=option_list))
 # 
 # ### FOR LOCAL DEBUGGING
 # ### MacBook Pro
-MACDIR="/Users/swvanderlaan"
+# MACDIR="/Users/swvanderlaan"
 # ### Mac Pro
 # MACDIR="/Volumes/MyBookStudioII/Backup"
 # # 
-opt$effectsize=10
-opt$standarderror=10
-opt$maf=0.005
-opt$mac=30
-opt$info=0.3
-opt$hwe_p=1E-6
+# opt$effectsize=10
+# opt$standarderror=10
+# opt$maf=0.005
+# opt$mac=30
+# opt$info=0.3
+# opt$hwe_p=1E-6
 # 
 # opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
 # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
 # opt$filename="EPICNL_m1"
 # 
-opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1")
-opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1/AEGS.WHOLE.FABP4.20150125.alz.ref.pdat")
-opt$filename="AEGS_m1"
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1")
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1/AEGS.WHOLE.FABP4.20150125.alz.ref.pdat")
+# opt$filename="AEGS_m1"
 # 
 # ### FOR LOCAL DEBUGGING
 # 
