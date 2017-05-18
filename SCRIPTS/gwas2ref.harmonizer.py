@@ -10,9 +10,9 @@
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 print "                                          GWAS TO REFERENCE HARMONIZER "
 print ""
-print "* Version          : v2.2.4"
+print "* Version          : v2.2.5"
 print ""
-print "* Last update      : 2017-04-24"
+print "* Last update      : 2017-05-18"
 print "* Written by       : Tim Bezemer (t.bezemer-2@umcutrecht.nl)."
 print "* Suggested for by : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl"
 print ""
@@ -35,7 +35,7 @@ import random
 import operator
 
 alt_ids = ["VariantID_alt1", "VariantID_alt2", "VariantID_alt3"]
-load_columns = ["VariantID","VariantID_alt1","VariantID_alt2","VariantID_alt3","CHR_REF","BP_REF","REF","ALT","AlleleA","AlleleB","VT","AF","EURAF","AFRAF","AMRAF","ASNAF","EASAF","SASAF"]
+load_columns = ["VariantID","VariantID_alt1","VariantID_alt2","VariantID_alt3"]
 
 parser = argparse.ArgumentParser(description="Look up 'Marker' in GWAS dataset and find associated data in 1000G reference.")
 parser.add_argument("-i", "--identifier", help="The VariantID identifier to use (" + ", ".join(["VariantID"] + alt_ids) + ").", type=str)
