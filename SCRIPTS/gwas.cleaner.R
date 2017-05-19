@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
-    * Version: v1.0.8
-    * Last edit: 2017-05-18
+    * Version: v1.0.9
+    * Last edit: 2017-05-19
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -336,14 +336,14 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, (Info > opt$info & Info < 1.1) | !is.na(Info) )
   report.variants(GWASDATA_RAW_CLEANED)
 
-  cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"..."))
+  cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"... (note: HWE p could potentially be 'NA')"))
   if(any(GWASDATA_RAW_CLEANED$CHR < 22) == TRUE) {
   	cat(paste0("\n  - processing autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P < opt$hwe_p | !is.na(HWE_P) | HWE_P != 0)
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P < opt$hwe_p | HWE_P != 0)
   	report.variants(GWASDATA_RAW_CLEANED)
   	} else {
 	cat(paste0("\n  - processing non-autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, !is.na(HWE_P) | HWE_P != 0)
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P != 0)
   	report.variants(GWASDATA_RAW_CLEANED)
   	}
   
