@@ -274,7 +274,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Downloading and parsing 'LD-Score reference variants'. "
 	wget http://ldsc.broadinstitute.org/static/media/w_hm3.noMHC.snplist.zip -O ${RESOURCES}/w_hm3.noMHC.snplist.zip
-	unzip ${RESOURCES}/w_hm3.noMHC.snplist.zip
+	unzip ${RESOURCES}/w_hm3.noMHC.snplist.zip ${RESOURCES}/w_hm3.noMHC.snplist
 	mv -v ${RESOURCES}/w_hm3.noMHC.snplist ${RESOURCES}/ldsc.refSNPs.HM3.noMHC.txt 
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
