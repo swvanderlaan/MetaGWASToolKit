@@ -73,7 +73,7 @@ echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-W
 echobold ""
 echobold "* Version:      v1.0.7"
 echobold ""
-echobold "* Last update:  2017-05-05"
+echobold "* Last update:  2017-05-19"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Produce concatenated parsed, harmonized, and cleaned GWAS data."
 echobold ""
@@ -258,7 +258,7 @@ else
 			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.log
 			rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
 			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}
-			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
+#			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
 		else
 			echoerrorflash "*** Error *** The pattern \"${CLEANEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "

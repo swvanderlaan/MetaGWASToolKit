@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Parser -- MetaGWASToolKit
     \n
-    * Version: v1.2.0
-    * Last edit: 2017-05-05
+    * Version: v1.2.2
+    * Last edit: 2017-05-21
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -406,24 +406,21 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat("\n* Removing leading 'zeros' from chromosome number...")
   GWASDATA_RAWSELECTION$CHR <- gsub("(?<![0-9])0+", "", GWASDATA_RAWSELECTION$CHR, perl = TRUE)
   
-  cat("\n* Changing X to 23, Y to 24, XY to 25, and MT to 26...")
-  ### Renaming chromosomes -- 'PLINK' standard: 
-  ### X    X chromosome                    -> 23
-  ### Y    Y chromosome                    -> 24
-  ### XY   Pseudo-autosomal region of X    -> 25
-  ### MT   Mitochondrial                   -> 26
+  cat("\n* Changing 23 to X, 24 to Y, 25 to XY, and 26 to MT...")
+  ### Renaming chromosomes
+  ### 1000G standard  Description                   'PLINK' standard
+  ### X               X chromosome                    <-> 23
+  ### Y               Y chromosome                    <-> 24
+  ### XY              Pseudo-autosomal region of X    <-> 25
+  ### MT              Mitochondrial                   <-> 26
   
   ### Rename chromosomes
-  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "X" | GWASDATA_RAWSELECTION$CHR == "x"] <- 23
-  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "Y" | GWASDATA_RAWSELECTION$CHR == "y"] <- 24
-  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "XY" | 
-                              GWASDATA_RAWSELECTION$CHR == "xY" | 
-                              GWASDATA_RAWSELECTION$CHR == "Xy" | 
-                              GWASDATA_RAWSELECTION$CHR == "xy"] <- 25
-  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "MT" | 
-                              GWASDATA_RAWSELECTION$CHR == "Mt" | 
-                              GWASDATA_RAWSELECTION$CHR == "mT" | 
-                              GWASDATA_RAWSELECTION$CHR == "mt"] <- 26
+  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "x" | GWASDATA_RAWSELECTION$CHR == "23"] <- "X"
+  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "y" | GWASDATA_RAWSELECTION$CHR == "24"] <- "Y"
+  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "xY" | GWASDATA_RAWSELECTION$CHR == "Xy" | 
+                              GWASDATA_RAWSELECTION$CHR == "xy" | GWASDATA_RAWSELECTION$CHR == "xy"] <- "XY"
+  GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "Mt" | GWASDATA_RAWSELECTION$CHR == "mT" | 
+                              GWASDATA_RAWSELECTION$CHR == "mt"] <- "MT"
   
   ### set 'chromosome' column to integer
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
@@ -461,12 +458,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
           GWASDATA_RAWSELECTION$MAF <- ifelse(GWASDATA_RAWSELECTION$EAF < 0.50, 
                                               GWASDATA_RAWSELECTION$EAF, 1-GWASDATA_RAWSELECTION$EAF)
           GWASDATA_RAWSELECTION$MinorAllele <- ifelse(GWASDATA_RAWSELECTION$EAF < 0.50, 
-                                              GWASDATA_RAWSELECTION$EffectAllele, GWASDATA_RAWSELECTION$OtherAllele)
+                                                      GWASDATA_RAWSELECTION$EffectAllele, GWASDATA_RAWSELECTION$OtherAllele)
           GWASDATA_RAWSELECTION$MajorAllele <- ifelse(GWASDATA_RAWSELECTION$EAF > 0.50, 
                                                       GWASDATA_RAWSELECTION$EffectAllele, GWASDATA_RAWSELECTION$OtherAllele)
           GWASDATA_RAWSELECTION$BetaMinor <- ifelse(GWASDATA_RAWSELECTION$EAF < 0.50, 
-                                                      GWASDATA_RAWSELECTION$Beta, -1*GWASDATA_RAWSELECTION$Beta)
-
+                                                    GWASDATA_RAWSELECTION$Beta, -1*GWASDATA_RAWSELECTION$Beta)
+          
         } else if("RAF" %in% colnames(GWASDATA_RAWSELECTION)) {
           cat("\n- calculating 'MAF' using 'risk allele frequency'...")
           GWASDATA_RAWSELECTION$MAF <- ifelse(GWASDATA_RAWSELECTION$RAF < 0.50, 
@@ -567,9 +564,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_PARSED$MAC <- ifelse(GWASDATA_RAWSELECTION$MAC != "NA", GWASDATA_RAWSELECTION$MAC, "NA")
   
   if(("HWE_P" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
-    GWASDATA_PARSED$HWE_P <- ifelse(GWASDATA_RAWSELECTION$HWE_P != "NA", GWASDATA_RAWSELECTION$HWE_P, "NA")
+    GWASDATA_PARSED$HWE_P <- ifelse(GWASDATA_RAWSELECTION$HWE_P != "NA", GWASDATA_RAWSELECTION$HWE_P, "1") # this is not always present, hence we set it at "1"
   } else {
-    GWASDATA_PARSED$HWE_P <- "NA" # this is not always present
+    GWASDATA_PARSED$HWE_P <- "1" # this is not always present, hence we set it at "1"
   } 
   
   if(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){

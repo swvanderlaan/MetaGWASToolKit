@@ -70,9 +70,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                     META-CONCATENATOR OF META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.3"
+echobold "* Version:      v1.0.5"
 echobold ""
-echobold "* Last update:  2017-05-15"
+echobold "* Last update:  2017-05-21"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Checks errors- and log-files for consistency, prior to concatenating all chunks with "
 echobold "                meta-analyzed results into one file and gzips it."
@@ -219,18 +219,19 @@ else
 		 	VARIANTFILEBASE=${METATEMPRESULTDIR}/${VARIANTFILE%.*}
 	 		echo "  - wrapping results for chunk [ ${EXTENSION} ] ..."
 			cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
-			echo "  - gzipping results for chunk [ ${EXTENSION} ] ..."
+			echo "  - removing results for chunk [ ${EXTENSION} ] (note: we do not need this anymore)..."
 			echo "    > original ..."
-			gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out
+			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out
 			echo "    > p-value corrected ..."
- 		gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out
+ 			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out
+ 			echo "    > other intermediate files ..."
+ 			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.fixed_headed.out
+			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.needs_p_fixing.out
 		done < ${VARIANTSFILES}
 		
 		echo ""
 		echo "* Gzipping the shizzle..."
 		gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
-		ls -lh ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.fixed_headed.out
-		ls -lh ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.needs_p_fixing.out
 	
 	else
 		echoerrorflash "*** Error *** The meta-analysis of one of the chunks failed..."
