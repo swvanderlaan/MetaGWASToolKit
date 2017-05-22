@@ -422,8 +422,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION$CHR[GWASDATA_RAWSELECTION$CHR == "Mt" | GWASDATA_RAWSELECTION$CHR == "mT" | 
                               GWASDATA_RAWSELECTION$CHR == "mt"] <- "MT"
   
-  ### set 'chromosome' column to integer
-  GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
+  # ### set 'chromosome' column to integer
+  # GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, BP = as.integer(BP)) # convert to numeric
   
   ### Calculating general statistics if not available
