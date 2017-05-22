@@ -106,13 +106,15 @@ opt = parse_args(OptionParser(option_list=option_list))
 # MACDIR="/Users/swvanderlaan"
 # ### Mac Pro
 # MACDIR="/Volumes/MyBookStudioII/Backup"
-# # 
+# ### HPC
+# MACDIR="/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/test_environment"
+#
 # opt$effectsize=10
 # opt$standarderror=10
 # opt$maf=0.005
 # opt$mac=30
 # opt$info=0.3
-# opt$hwe_p=1E-6
+# opt$hwe_p=1E-3
 # 
 # opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1")
 # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
@@ -122,6 +124,10 @@ opt = parse_args(OptionParser(option_list=option_list))
 # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1/AEGS.WHOLE.FABP4.20150125.alz.ref.pdat")
 # opt$filename="AEGS_m1"
 # 
+# opt$outputdir=paste0(MACDIR, "/")
+# opt$datagwas=paste0(MACDIR, "/FHS_m1.rdat")
+# opt$filename="FHS_m1"
+#
 # ### FOR LOCAL DEBUGGING
 # 
 # #--------------------------------------------------------------------------
@@ -336,14 +342,14 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, (Info > opt$info & Info < 1.1) | !is.na(Info) )
   report.variants(GWASDATA_RAW_CLEANED)
 
-  cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"... (note: HWE p could potentially be 'NA')"))
+  cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"... (note: HWE p could potentially be 'NA'.)"))
   if(any(GWASDATA_RAW_CLEANED$CHR < 22) == TRUE) {
   	cat(paste0("\n  - processing autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P < opt$hwe_p | HWE_P != 0)
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P < opt$hwe_p | is.na(HWE_P) | HWE_P != 0 )
   	report.variants(GWASDATA_RAW_CLEANED)
   	} else {
 	cat(paste0("\n  - processing non-autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P != 0)
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, is.na(HWE_P) | HWE_P != 0 )
   	report.variants(GWASDATA_RAW_CLEANED)
   	}
   
