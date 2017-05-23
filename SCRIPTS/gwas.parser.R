@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Parser -- MetaGWASToolKit
     \n
-    * Version: v1.2.2
-    * Last edit: 2017-05-21
+    * Version: v1.2.3
+    * Last edit: 2017-05-22
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -597,7 +597,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   }
   
   if(("Imputed" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
-    GWASDATA_PARSED$Imputed <- ifelse(GWASDATA_RAWSELECTION$Imputed != "NA", GWASDATA_RAWSELECTION$Imputed, "NA")
+    GWASDATA_PARSED$Imputed <- ifelse(GWASDATA_RAWSELECTION$Imputed != "NA", GWASDATA_RAWSELECTION$Imputed, "2")
   } else {
     GWASDATA_PARSED$Imputed <- "2" # 2 = no information, 1 = imputed, 0 = genotyped
   }
