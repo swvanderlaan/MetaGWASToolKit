@@ -74,7 +74,7 @@ echobold "                                          META-PREPARATOR OF GWAS"
 echobold ""
 echobold "* Version:      v1.1.1"
 echobold ""
-echobold "* Last update:  2017-05-05"
+echobold "* Last update:  2017-05-29"
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "* Description:  Collects all variants into one file."
 echobold ""
@@ -150,7 +150,7 @@ else
 		echo ""
 		echo "* Prepping split chunk [ ${BASESPLITFILE} ] while re-ordering columns..."
 		echo ""
-		### REQUIRED Columns: VariantID CHR BP BetaMino SE P MinorAllele MajorAllele MAF Info
+		### REQUIRED Columns: VariantID CHR BP BetaMinor SE P MinorAllele MajorAllele MAF Info
 		cat ${SPLITFILE} | awk ' { print $1, $4, $5, $17, $18, $19, $9, $10, $12, $15 } ' > ${METAPREPDIRCOHORT}/tmp_file
 		echo " - renaming the temporary file."
 		mv -fv ${METAPREPDIRCOHORT}/tmp_file ${METAPREPDIRCOHORT}/${BASESPLITFILE}

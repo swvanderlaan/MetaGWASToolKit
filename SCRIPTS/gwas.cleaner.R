@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
-    * Version: v1.0.9
-    * Last edit: 2017-05-19
+    * Version: v1.0.10
+    * Last edit: 2017-05-29
     * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -338,8 +338,8 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, MAC > opt$mac)
   report.variants(GWASDATA_RAW_CLEANED)
   
-  cat(paste0("\n* removing variants where ",opt$info," < imputation quality < 1.1..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, (Info > opt$info & Info < 1.1) | !is.na(Info) )
+  cat(paste0("\n* removing variants where imputation quality < ",opt$info,"..."))
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, Info > opt$info | !is.na(Info) )
   report.variants(GWASDATA_RAW_CLEANED)
 
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"... (note: HWE p could potentially be 'NA'.)"))

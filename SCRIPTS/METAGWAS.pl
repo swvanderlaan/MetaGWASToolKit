@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version               : 2.1.10"
+# Version               : 2.1.11"
 #
-# Last update			: 2017-05-22"
+# Last update			: 2017-05-29"
 # Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
 #						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
 #						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl).
@@ -892,26 +892,33 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $beta[$study] = $fields[3];
     $se[$study] = $fields[4];
     $pval[$study] = $fields[5];
-    $a1[$study] = allele_1234_to_ACGT( $fields[6] ); # coded/effect allele which is compared to the minor allele from HapMap2 or ALT-allele from 1000G
-    $a2[$study] = allele_1234_to_ACGT( $fields[7] ); # other/reference allele
+    $a1[$study] = allele_1234_to_ACGT( $fields[6] ); # coded/effect allele which is compared to the minor allele from HapMap2/1000G
+    $a2[$study] = allele_1234_to_ACGT( $fields[7] ); # other/reference/major allele
     $af1[$study] = $fields[8];  
 
-	# checking how many fields we have to determine the value of $ratio
-#     print STDERR " ***DEBUG***  A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
-    if ( $#fields == 9 ) { 
-    	if ( $fields[9] != "NA" ) {
-#      		print STDERR " - Imputation quality = [ $fields[9] ].\n";
+	### checking how many fields we have to determine the value of $ratio
+# 	print STDERR " ***DEBUG***  A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
+	if ( $#fields == 9 ) { 
+    	if ( $fields[9] == "NA" ) {
+#     		print STDERR " - Imputation quality = [ $fields[9] ] for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ]. Setting to 1.\n";
+    		$ratio[$study] = 1;
+#        		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+    	}
+    	elsif ( $fields[9] < 0 ) {
+#     		print STDERR " - Imputation quality has a negative value ($fields[9]) for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ]. Setting to 0.1.\n";
+    		$ratio[$study] = 0.1;
+#        		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+    	} 
+    	else {
+#        		print STDERR " - Imputation quality = [ $fields[9] ] for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ].\n";
     		$ratio[$study] = $fields[9];
-#      		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
-    		} else {
-#      		print STDERR " - Imputation quality = [ $fields[9] ]. Setting to 1.\n";
-    		$ratio[$study] = 1; 
-#      		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
-    		}
-    	} else { 
-#      		print STDERR "* There is no measure of imputation quality for [ $variant ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
-    		$ratio[$study] = 1; 
-#      		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+#  			print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
+    	}
+    }
+    else { 
+# 		print STDERR "* There is no measure of imputation quality for [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ]. Assuming the data is genotyped. Setting to 1.\n";
+		$ratio[$study] = 1; 
+# 		print STDERR " ***DEBUG***  ratio = $ratio[$study].\n"
     }
     
   }
