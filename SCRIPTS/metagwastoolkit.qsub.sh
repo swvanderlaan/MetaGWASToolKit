@@ -1,12 +1,12 @@
 #!/bin/bash
 #
 #$ -S /bin/bash 																				# the type of BASH you'd like to use
-#$ -N metagwastoolkit.qsub 																		# the name of this script
+#$ -N qsub.metagwastoolkit 																		# the name of this script
 # -hold_jid some_other_basic_bash_script 														# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
-#$ -o /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.alphaMETA_TESTv27.log 				# the log file of this job
-#$ -e /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.alphaMETA_TESTv27.errors 			# the error file of this job
-#$ -l h_rt=00:15:00 																			# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
-#$ -l h_vmem=4G 																				#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
+#$ -o /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.PostMetaLDMR.log 						# the log file of this job
+#$ -e /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.PostMetaLDMR.errors 					# the error file of this job
+#$ -l h_rt=04:00:00 																			# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
+#$ -l h_vmem=4G 																				# h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
 # -l tmpspace=64G 																				# this is the amount of temporary space you think your script will use
 #$ -M s.w.vanderlaan-2@umcutrecht.nl 															# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
 #$ -m a 																						# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
@@ -26,40 +26,15 @@ PROJECTDIR=/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4
 ORIGINALDATA=${PROJECTDIR}/DATA_UPLOAD_FREEZE/1000G
 REFERENCE_1KG=/hpc/dhl_ec/data/references/1000G
 
+#####################################################################################################
+
+${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model1.conf $(pwd)/metagwastoolkit.files.model1.list
+${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model2.conf $(pwd)/metagwastoolkit.files.model2.list
+${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model3.conf $(pwd)/metagwastoolkit.files.model3.list
+
 ####################################################################################################
 ### THIS SHOULD ONLY BE RUN ONCE || THIS SHOULD ONLY BE RUN ONCE || THIS SHOULD ONLY BE RUN ONCE ###
 ###
-# echo "Making reference file..."
-# echo "* 1000G phase 1."
-# echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${REFERENCE_1KG}/Phase1/VCF_format/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop PAN --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# qsub -S /bin/bash -N VCFparser -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# echo "* 1000G phase 3."
-# echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${REFERENCE_1KG}/Phase3/VCF_format/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp1 --pop PAN --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# qsub -S /bin/bash -N VCFparser -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# echo ""
-# echo "Gzipping reference files."
-# echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt " > ${RESOURCES}/resource.zipper.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt " >> ${RESOURCES}/resource.zipper.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.zipper.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt " >> ${RESOURCES}/resource.zipper.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt " >> ${RESOURCES}/resource.zipper.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.zipper.sh
-# qsub -S /bin/bash -N resource.zipper -hold_jid VCFparser -o ${RESOURCES}/resource.zipper.log -e ${RESOURCES}/resource.zipper.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.zipper.sh
-# echo ""
-
-# echo "Updating function-information with dbSNP data."
-# echo "zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " > ${RESOURCES}/resource.VCFplusDBSNP147.attrib.sh
-# echo "gzip -vf ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.VCFplusDBSNP147.attrib.sh
-# qsub -S /bin/bash -N attrib.VCFplusDBSNP147 -hold_jid resource.zipper -o ${RESOURCES}/resource.VCFplusDBSNP147.attrib.log -e ${RESOURCES}/resource.VCFplusDBSNP147.attrib.errors -l h_vmem=8G -l h_rt=02:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusDBSNP147.attrib.sh
-# echo "* 1000G phase 1."
-# echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " > ${RESOURCES}/resource.VCFplusDBSNP147.1kGp1.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFplusDBSNP147.1kGp1.sh
-# qsub -S /bin/bash -N VCFplusDBSNP -hold_jid attrib.VCFplusDBSNP147 -o ${RESOURCES}/resource.VCFplusDBSNP147.1kGp1.log -e ${RESOURCES}/resource.VCFplusDBSNP147.1kGp1.errors -l h_vmem=128G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusDBSNP147.1kGp1.sh
-# echo "* 1000G phase 3."
-# echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " > ${RESOURCES}/resource.VCFplusDBSNP147.1kGp3.sh
-# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt " >> ${RESOURCES}/resource.VCFplusDBSNP147.1kGp3.sh
-# qsub -S /bin/bash -N VCFplusDBSNP -hold_jid attrib.VCFplusDBSNP147 -o ${RESOURCES}/resource.VCFplusDBSNP147.1kGp3.log -e ${RESOURCES}/resource.VCFplusDBSNP147.1kGp3.errors -l h_vmem=128G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusDBSNP147.1kGp3.sh
-
 ### REFORMATTING SORBS -- because that is shitty formatted
 ### SORBS.WHOLE.FABP4.20141117.txt.gz
 ### SORBS.WHOLE.FABP4adjBMI.20141117.txt.gz
@@ -185,19 +160,101 @@ REFERENCE_1KG=/hpc/dhl_ec/data/references/1000G
 # 	echo "Moving the shizzle..."
 # 	mv -v ${ORIGINALDATA}/${SORBS}.txt.gz ${ORIGINALDATA}/SORBS_old/
 # done
+# 
+# 
+# echo "We need to edit the post-QC SORBS data for meta-analysis."
+# for NUMBER in 1 2 3 ; do
+# 	echo "Moving original data for model no. [ ${NUMBER} ]..."
+# 	mv -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER} ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}_original
+# 	mv -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femauto ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femauto_original
+# 	mv -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femnoauto ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femnoauto_original
+# 	mv -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}malnoauto ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}malnoauto_original
+# 	
+# 	echo "Making a new staging directory for model no. [ ${NUMBER} ]..."
+# 	mkdir -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}
+# 	mkdir -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femauto
+# 	mkdir -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femnoauto
+# 	mkdir -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}malnoauto
+# 	
+# 	echo "Concatenating autosomal with female autosomal-like chromosome X data for model no. [ ${NUMBER} ]..."
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}_original/SORBS_m${NUMBER}.cdat.gz > ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femauto_original/SORBS_m${NUMBER}femauto.cdat.gz | tail -n +2 >> ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	echo ""
+# 	echo "Getting a head..."
+# 	head ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	echo ""
+# 	echo "Tailing that shizzle..."
+# 	tail ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	echo ""
+# 	echo "Counting the variants..."
+# 	echo " - 'old' tally..."
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}_original/SORBS_m${NUMBER}.cdat.gz | tail -n +2 | wc -l
+# 	echo " - 'new' tally..."
+# 	cat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat | tail -n +2 | wc -l
+# 	
+# 	echo "Copying female and male non-PAR chromosome X data for model no. [ ${NUMBER} ]..."
+# 	cp -Rv ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femnoauto_original/* ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}femnoauto/
+# 	cp -Rv ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}malnoauto_original/* ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}malnoauto/
+# 
+# done
+#  
+# ### FIRST round: meta-analysis preparator
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model1.sorbsnoauto.conf $(pwd)/metagwastoolkit.files.model1.sorbsnoauto.list
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model2.sorbsnoauto.conf $(pwd)/metagwastoolkit.files.model2.sorbsnoauto.list
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model3.sorbsnoauto.conf $(pwd)/metagwastoolkit.files.model3.sorbsnoauto.list
+# 
+# ### SECOND round: meta-analysis
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model1.sorbsnoauto.conf $(pwd)/metagwastoolkit.files.model1.sorbsnoauto.list
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model2.sorbsnoauto.conf $(pwd)/metagwastoolkit.files.model2.sorbsnoauto.list
+# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model3.sorbsnoauto.conf $(pwd)/metagwastoolkit.files.model3.sorbsnoauto.list
+# 
+# ### NOTE TO SELF: In the end I did the part below mostly by hand... not via this script that is.
+# echo "Here we concatenate the meta-analysis results of the female/male non-PAR chromosome X to SORBS_m*"
+# 
+# 	### Output meta-analysis
+# ###	VARIANTID CHR POS MINOR MAJOR MAF 
+# ###	CODEDALLELE_SORBS_m1femnoauto OTHERALLELE_SORBS_m1femnoauto ALLELES_FLIPPED_SORBS_m1femnoauto SIGN_FLIPPED_SORBS_m1femnoauto CAF_SORBS_m1femnoauto BETA_SORBS_m1femnoauto SE_SORBS_m1femnoauto P_SORBS_m1femnoauto Info_SORBS_m1femnoauto NEFF_SORBS_m1femnoauto 
+# ###	CODEDALLELE_SORBS_m1malnoauto OTHERALLELE_SORBS_m1malnoauto ALLELES_FLIPPED_SORBS_m1malnoauto SIGN_FLIPPED_SORBS_m1malnoauto CAF_SORBS_m1malnoauto BETA_SORBS_m1malnoauto SE_SORBS_m1malnoauto P_SORBS_m1malnoauto Info_SORBS_m1malnoauto NEFF_SORBS_m1malnoauto 
+# ###	CODEDALLELE OTHERALLELE CAF N_EFF Z_SQRTN P_SQRTN BETA_FIXED SE_FIXED Z_FIXED P_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED 
+# ###	BETA_RANDOM SE_RANDOM Z_RANDOM P_RANDOM BETA_LOWER_RANDOM BETA_UPPER_RANDOM 
+# ###	COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED DIRECTIONS GENES_250KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND 
+# ###	VARIANT_FUNCTION CAVEAT
+# 
+# 	### Head cdat.gz
+# 	###	VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference
+# for NUMBER in 1 2 3 ; do
+# 	echo ""
+# 	### We will first parse the meta-analysis results into the proper format
+# 	echo "Parsing meta-analysis results for female/male non-PAR chromosome X..."
+# 	echo ""
+# 	echo "VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference" > ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/META/SORBS_m${NUMBER}.meta.chrX.cdat
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/META/meta.results.FABP4.1Gp1.EUR.txt.gz | 
+# 	${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,MINOR,MAJOR,CAF,MAF,Info_SORBS_m${NUMBER}femnoauto,Info_SORBS_m${NUMBER}malnoauto,BETA_FIXED,SE_FIXED,P_FIXED,NEFF_SORBS_m${NUMBER}femnoauto,NEFF_SORBS_m${NUMBER}malnoauto |
+# 	awk '{ print $1,$1,$1,$2,$3,"+",$4,$5,$6,$7,$8,$9,($9*($15+$16)*2),"1",($10+$11/2),$12,$12,$13,$14,($15+$16),"NA","NA","1","maybe" }' | tail -n +2 >> ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/META/SORBS_m${NUMBER}.meta.chrX.cdat
+# 	head ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/META/SORBS_m${NUMBER}.meta.cdat
+# 	### Than we will concatenate
+# 	echo "Concatenating parsed meta-analysis results to autosomal/PAR data for SORBS..."
+# 	echo "* nothing to do: variants not in reference!?!"
+# 	echo "Gzipping the new shizzle..."
+# 	mkdir -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}
+# 	cp -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW_all/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	cat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/META/SORBS_m${NUMBER}.meta.chrX.cdat | tail -n +2 >> ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	gzip -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat
+# 	echo ""
+# 	echo "- getting a head..."
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat.gz | head
+# 	echo "- getting a tail..."
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat.gz | tail
+# 	echo "- getting a tally..."
+# 	zcat ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}/SORBS_m${NUMBER}.cdat.gz | tail -n +2 | wc -l
+# 	echo ""
+# 	echo "We will clean up this sub-meta-analysis..."
+# 	mkdir -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/subMETA
+# 	mv -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/RAW/SORBS_m${NUMBER}_MetaAuto ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/subMETA/SORBS_m${NUMBER}_MetaAuto
+# 	mv -v ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/META/* ${PROJECTDIR}/METAFABP4_1000G/MODEL${NUMBER}/subMETA/
+# 	
+# done
 
 
 
-#####################################################################################################
-# 
-# ### REDOs
-# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.conf $(pwd)/metagwastoolkit.files.redo.list 1Gp1
-
-### ALL
-# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model1.conf $(pwd)/metagwastoolkit.files.model1.list
-# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model2.conf $(pwd)/metagwastoolkit.files.model2.list
-# ${PROJECTDIR}/metagwastoolkit.run.sh $(pwd)/metagwastoolkit.model3.conf $(pwd)/metagwastoolkit.files.model3.list
-# 
-# 
-# 
 

@@ -82,9 +82,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.5.1"
+echobold "* Version:      v1.5.3"
 echobold ""
-echobold "* Last update:  2017-05-18"
+echobold "* Last update:  2017-05-29"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
 echobold "                Sara Pulit | UMC Utrecht | s.l.pulit@umcutrecht.nl; "
@@ -306,216 +306,216 @@ else
 		script_copyright_message
 		exit 1
 	fi
-	
-	echobold "#########################################################################################################"
-	echobold "### REFORMAT, PARSE, HARMONIZE, CLEAN, AND PLOT ORIGINAL GWAS DATA"
-	echobold "#########################################################################################################"
-	echobold "#"
-	echo ""
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
-	echo ""
-	
-	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			
-		LINE=${GWASCOHORT}
-		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-		FILE=$(echo "${LINE}" | awk '{ print $2 }')
-		VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
-		
-		BASEFILE=$(basename ${FILE} .txt.gz)
-		
-		if [ ! -d ${RAWDATA}/${COHORT} ]; then
-	  		echo "Making subdirectory for ${COHORT}..."
-	  		mkdir -v ${RAWDATA}/${COHORT}
-		else
-			echo "Directory for ${COHORT} already there."
-		fi
-		RAWDATACOHORT=${RAWDATA}/${COHORT}
-		
-		echobold "#========================================================================================================"
-		echobold "#== REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA"
-		echobold "#========================================================================================================"
-		echobold "#"
-		echo ""
-		echo "* Chopping up GWAS summary statistics into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
-		
-		### Split up the file in increments of 1000K -- note: the period at the end of '${BASEFILE}' is a separator character
-		zcat ${ORIGINALS}/${FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
-		
-		### Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
-		for SPLITFILE in ${RAWDATACOHORT}/${BASEFILE}.*; do
-			### determine basename of the splitfile
-			BASESPLITFILE=$(basename ${SPLITFILE} .pdat)
-			echo ""
-			echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
-			echo ""
-			echo " - heading a temporary file." 
-			zcat ${ORIGINALS}/${FILE} | head -1 > ${RAWDATACOHORT}/tmp_file
-			echo " - adding the split data to the temporary file."
-			cat ${SPLITFILE} >> ${RAWDATACOHORT}/tmp_file
-			echo " - renaming the temporary file."
-			mv -fv ${RAWDATACOHORT}/tmp_file ${SPLITFILE}
-			
-			echobold "#========================================================================================================"
-			echobold "#== PARSING THE GWAS DATA"
-			echobold "#========================================================================================================"
-			echobold "#"
-			echo ""
-			echo "* Parsing data for cohort ${COHORT} [ file: ${BASESPLITFILE} ]."
-			### FOR DEBUGGING LOCALLY -- Mac OS X
-			### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} 
-			echo "Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} " > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
-			qsub -S /bin/bash -N gwas.parser.${BASESPLITFILE} -hold_jid run_metagwastoolkit -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEPARSER} -l h_vmem=${QMEMPARSER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
-			
-			echobold "#========================================================================================================"
-			echobold "#== HARMONIZING THE PARSED GWAS DATA"
-			echobold "#========================================================================================================"
-			echobold "#"
-			echo ""
-			echo "* Harmonising parsed [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}..."
-			### FOR DEBUGGING LOCALLY -- Mac OS X
-			### module load python
-			### ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
-			echo "module load python" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-			echo "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-			qsub -S /bin/bash -N gwas2ref.harmonizer.${BASEFILE} -hold_jid gwas.parser.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-		
-			echobold "#========================================================================================================"
-			echobold "#== CLEANING UP THE REFORMATTED GWAS DATA"
-			echobold "#========================================================================================================"
-			echobold "#"
-			echo ""
-			echo "* Cleaning harmonized data for [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}"
-			echo "  using the following pre-specified settings:"
-			echo "  - MAF  = ${MAF}"
-			echo "  - MAC  = ${MAC}"
-			echo "  - HWE  = ${HWE}"
-			echo "  - INFO = ${INFO}"
-			echo "  - BETA = ${BETA}"
-			echo "  - SE   = ${SE}"
-			## FOR DEBUGGING LOCALLY -- Mac OS X
-			### ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
-			echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-			qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASEFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-
-		done
-
-		echobold "#========================================================================================================"
-		echobold "#== WRAPPING THE REFORMATTED GWAS DATA"
-		echobold "#========================================================================================================"
-		echobold "#"
-
-		echo ""
-		echo "* Wrapping up parsed and harmonized data for cohort ${COHORT}..."
-		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
-		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-		qsub -S /bin/bash -N gwas.wrapper -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-		
-		echobold "#========================================================================================================"
-		echobold "#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA"
-		echobold "#========================================================================================================"
-		echobold "#"
-		#### Add in functions based on Winkler et al. (frequency plot among others) for 
-		#### both types of data, i.e. raw and cleaned.
-		echo ""
-		echo "* Plotting harmonized data for cohort [ ${COHORT} ]..."
-		DATAFORMAT="RAW"
-		IMAGEFORMAT="PNG"
-		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
- 		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
- 		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.raw -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-
-		echobold "#========================================================================================================"
-		echobold "#== PLOTTING THE CLEANED GWAS DATA"
-		echobold "#========================================================================================================"
-		echobold "#"
-
-		echo ""
-		echo "* Plotting the cleaned and harmonized data for cohort [ ${COHORT} ]..."
-		DATAFORMAT="QC"
-		IMAGEFORMAT="PNG"
-		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
- 		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
- 		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.qc -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-
-	done < ${GWASFILES}
-	
-					### !!! THIS PART STILL REQUIRES MANUAL START !!! ###
-					          ### can we make it automatic? ###
-
-	echobold "#########################################################################################################"
-	echobold "### META-ANALYSIS"
-	echobold "#########################################################################################################"
-	echobold "#" 	 
-	echo ""
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Starting the meta-analysis. "
-	echo ""
-	
-	echobold "#========================================================================================================"
-	echobold "#== CHECK INDIVIDUAL COHORTS PRE-META-ANALYSIS -- WILL BE ADDED TO FUTURE VERSION"
-	echobold "#========================================================================================================"
-	echobold "#"
-	echonooption "#### Add in functions that goes over each cohort and:" 
-	echonooption "#### - checks whether it should be included,"
-	echonooption "#### - changes the list of cohorts that should go forward into the meta-analysis,"
-	echonooption "#### - creates param-files automatically."
-	
-	echobold "#========================================================================================================"
-	echobold "#== COLLECT ALL UNIQUE VARIANTS ACROSS ALL GWAS COHORTS"
-	echobold "#========================================================================================================"
-	echobold "#"
-	
-	echo ""
-	echo "We will collect all unique variants across all GWAS cohorts."
-	### FOR DEBUGGING LOCALLY -- Mac OS X
-	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}	
-	echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
- 	qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.wrapper -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
-
-	echobold "#========================================================================================================"
-	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
-	echobold "#========================================================================================================"
-	echobold "#"
-	
-	echo ""
-	echo "We will prepare each cleaned cohort for meta-analysis."
-	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			
-		LINE=${GWASCOHORT}
-		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-		FILE=$(echo "${LINE}" | awk '{ print $2 }')
-		VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
-		
-		BASEFILE=$(basename ${FILE} .txt.gz)
-		
-		echo ""
-		if [ ! -d ${METARESULTDIR}/${COHORT} ]; then
-	  		echo "Making subdirectory for ${COHORT}..."
-	  		mkdir -v ${METARESULTDIR}/${COHORT}
-		else
-			echo "Directory for ${COHORT} already there."
-		fi
-		
-		# Set the rawdata for the cohort
-		RAWDATACOHORT=${RAWDATA}/${COHORT}
-		
-		# Set the meta-analysis preparation-stage directory for the cohort
-		METAPREPDIRCOHORT=${METARESULTDIR}/${COHORT}
-
-		echo ""
-		echo "* Reordering [ ${COHORT} ]..."
-		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}
-		echo "${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
- 		qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
-	
-	done < ${GWASFILES}
+# 	
+# 	echobold "#########################################################################################################"
+# 	echobold "### REFORMAT, PARSE, HARMONIZE, CLEAN, AND PLOT ORIGINAL GWAS DATA"
+# 	echobold "#########################################################################################################"
+# 	echobold "#"
+# 	echo ""
+# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+# 	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
+# 	echo ""
+# 	
+# 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+# 			
+# 		LINE=${GWASCOHORT}
+# 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+# 		FILE=$(echo "${LINE}" | awk '{ print $2 }')
+# 		VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
+# 		
+# 		BASEFILE=$(basename ${FILE} .txt.gz)
+# 		
+# 		if [ ! -d ${RAWDATA}/${COHORT} ]; then
+# 	  		echo "Making subdirectory for ${COHORT}..."
+# 	  		mkdir -v ${RAWDATA}/${COHORT}
+# 		else
+# 			echo "Directory for ${COHORT} already there."
+# 		fi
+# 		RAWDATACOHORT=${RAWDATA}/${COHORT}
+# 		
+# 		echobold "#========================================================================================================"
+# 		echobold "#== REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA"
+# 		echobold "#========================================================================================================"
+# 		echobold "#"
+# 		echo ""
+# 		echo "* Chopping up GWAS summary statistics into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
+# 		
+# 		### Split up the file in increments of 1000K -- note: the period at the end of '${BASEFILE}' is a separator character
+# 		zcat ${ORIGINALS}/${FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
+# 		
+# 		## Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
+# 		for SPLITFILE in ${RAWDATACOHORT}/${BASEFILE}.*; do
+# 			### determine basename of the splitfile
+# 			BASESPLITFILE=$(basename ${SPLITFILE} .pdat)
+# 			echo ""
+# 			echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
+# 			echo ""
+# 			echo " - heading a temporary file." 
+# 			zcat ${ORIGINALS}/${FILE} | head -1 > ${RAWDATACOHORT}/tmp_file
+# 			echo " - adding the split data to the temporary file."
+# 			cat ${SPLITFILE} >> ${RAWDATACOHORT}/tmp_file
+# 			echo " - renaming the temporary file."
+# 			mv -fv ${RAWDATACOHORT}/tmp_file ${SPLITFILE}
+# 			
+# 			echobold "#========================================================================================================"
+# 			echobold "#== PARSING THE GWAS DATA"
+# 			echobold "#========================================================================================================"
+# 			echobold "#"
+# 			echo ""
+# 			echo "* Parsing data for cohort ${COHORT} [ file: ${BASESPLITFILE} ]."
+# 			### FOR DEBUGGING LOCALLY -- Mac OS X
+# 			### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} 
+# 			echo "Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} " > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
+# 			qsub -S /bin/bash -N gwas.parser.${BASESPLITFILE} -hold_jid run_metagwastoolkit -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEPARSER} -l h_vmem=${QMEMPARSER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
+# 			
+# 			echobold "#========================================================================================================"
+# 			echobold "#== HARMONIZING THE PARSED GWAS DATA"
+# 			echobold "#========================================================================================================"
+# 			echobold "#"
+# 			echo ""
+# 			echo "* Harmonising parsed [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}..."
+# 			### FOR DEBUGGING LOCALLY -- Mac OS X
+# 			### module load python
+# 			### ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
+# 			echo "module load python" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
+# 			echo "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
+# 			qsub -S /bin/bash -N gwas2ref.harmonizer.${BASEFILE} -hold_jid gwas.parser.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
+# 		
+# 			echobold "#========================================================================================================"
+# 			echobold "#== CLEANING UP THE REFORMATTED GWAS DATA"
+# 			echobold "#========================================================================================================"
+# 			echobold "#"
+# 			echo ""
+# 			echo "* Cleaning harmonized data for [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}"
+# 			echo "  using the following pre-specified settings:"
+# 			echo "  - MAF  = ${MAF}"
+# 			echo "  - MAC  = ${MAC}"
+# 			echo "  - HWE  = ${HWE}"
+# 			echo "  - INFO = ${INFO}"
+# 			echo "  - BETA = ${BETA}"
+# 			echo "  - SE   = ${SE}"
+# 			### FOR DEBUGGING LOCALLY -- Mac OS X
+# 			### ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
+# 			echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+# 			qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASEFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 # 
+# 		done
+# 
+# 		echobold "#========================================================================================================"
+# 		echobold "#== WRAPPING THE REFORMATTED GWAS DATA"
+# 		echobold "#========================================================================================================"
+# 		echobold "#"
+# 
+# 		echo ""
+# 		echo "* Wrapping up parsed and harmonized data for cohort ${COHORT}..."
+# 		### FOR DEBUGGING LOCALLY -- Mac OS X
+# 		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
+# 		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+# 		qsub -S /bin/bash -N gwas.wrapper -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+# 		
+# 		echobold "#========================================================================================================"
+# 		echobold "#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA"
+# 		echobold "#========================================================================================================"
+# 		echobold "#"
+# 		#### Add in functions based on Winkler et al. (frequency plot among others) for 
+# 		#### both types of data, i.e. raw and cleaned.
+# 		echo ""
+# 		echo "* Plotting harmonized data for cohort [ ${COHORT} ]..."
+# 		DATAFORMAT="RAW"
+# 		IMAGEFORMAT="PNG"
+# 		### FOR DEBUGGING LOCALLY -- Mac OS X
+# 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
+#  		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+#  		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.raw -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+# 
+# 		echobold "#========================================================================================================"
+# 		echobold "#== PLOTTING THE CLEANED GWAS DATA"
+# 		echobold "#========================================================================================================"
+# 		echobold "#"
+# 
+# 		echo ""
+# 		echo "* Plotting the cleaned and harmonized data for cohort [ ${COHORT} ]..."
+# 		DATAFORMAT="QC"
+# 		IMAGEFORMAT="PNG"
+# 		### FOR DEBUGGING LOCALLY -- Mac OS X
+# 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
+#  		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+#  		qsub -S /bin/bash -N gwas.plotter.${BASEFILE}.qc -hold_jid gwas.wrapper -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+# 
+# 	done < ${GWASFILES}
+#  	
+# 					### !!! THIS PART STILL REQUIRES MANUAL START !!! ###
+# 					          ### can we make it automatic? ###
+# 
+# 	echobold "#########################################################################################################"
+# 	echobold "### META-ANALYSIS"
+# 	echobold "#########################################################################################################"
+# 	echobold "#" 	 
+# 	echo ""
+# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+# 	echo "Starting the meta-analysis. "
+# 	echo ""
+# 	
+# 	echobold "#========================================================================================================"
+# 	echobold "#== CHECK INDIVIDUAL COHORTS PRE-META-ANALYSIS -- WILL BE ADDED TO FUTURE VERSION"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	echonooption "#### Add in functions that goes over each cohort and:" 
+# 	echonooption "#### - checks whether it should be included,"
+# 	echonooption "#### - changes the list of cohorts that should go forward into the meta-analysis,"
+# 	echonooption "#### - creates param-files automatically."
+# 	
+# 	echobold "#========================================================================================================"
+# 	echobold "#== COLLECT ALL UNIQUE VARIANTS ACROSS ALL GWAS COHORTS"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	
+# 	echo ""
+# 	echo "We will collect all unique variants across all GWAS cohorts."
+# 	### FOR DEBUGGING LOCALLY -- Mac OS X
+# 	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}	
+# 	echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
+#  	qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.wrapper -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
+# 
+# 	echobold "#========================================================================================================"
+# 	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	
+# 	echo ""
+# 	echo "We will prepare each cleaned cohort for meta-analysis."
+# 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+# 			
+# 		LINE=${GWASCOHORT}
+# 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+# 		FILE=$(echo "${LINE}" | awk '{ print $2 }')
+# 		VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
+# 		
+# 		BASEFILE=$(basename ${FILE} .txt.gz)
+# 		
+# 		echo ""
+# 		if [ ! -d ${METARESULTDIR}/${COHORT} ]; then
+# 	  		echo "Making subdirectory for ${COHORT}..."
+# 	  		mkdir -v ${METARESULTDIR}/${COHORT}
+# 		else
+# 			echo "Directory for ${COHORT} already there."
+# 		fi
+# 		
+# 		# Set the rawdata for the cohort
+# 		RAWDATACOHORT=${RAWDATA}/${COHORT}
+# 		
+# 		# Set the meta-analysis preparation-stage directory for the cohort
+# 		METAPREPDIRCOHORT=${METARESULTDIR}/${COHORT}
+# 
+# 		echo ""
+# 		echo "* Reordering [ ${COHORT} ]..."
+# 		### FOR DEBUGGING LOCALLY -- Mac OS X
+# 		### ${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}
+# 		echo "${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
+#  		qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
+# 	
+# 	done < ${GWASFILES}
+#  
 # 					### !!! THIS PART STILL REQUIRES MANUAL START !!! ###
 # 					          ### can we make it automatic? ###
 # 
@@ -583,15 +583,15 @@ else
 # 	### ${SCRIPTS}/meta.concatenator.sh ${CONFIGURATIONFILE} ${VARIANTSFILES} ${METARESULTDIR}
 # 	echo "${SCRIPTS}/meta.concatenator.sh ${CONFIGURATIONFILE} ${VARIANTSFILES} ${METARESULTDIR} " > ${METARESULTDIR}/meta.concatenator.${PROJECTNAME}.${REFERENCE}.${POPULATION}.sh
 #  	qsub -S /bin/bash -N meta.concatenator -hold_jid meta.p_corrector -o ${METARESULTDIR}/meta.concatenator.${PROJECTNAME}.${REFERENCE}.${POPULATION}.log -e ${METARESULTDIR}/meta.concatenator.${PROJECTNAME}.${REFERENCE}.${POPULATION}.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.concatenator.${PROJECTNAME}.${REFERENCE}.${POPULATION}.sh
-# 	
-# 	echobold "#========================================================================================================"
-# 	echobold "#== PLOTTING THE CORRECTED META-ANALYSIS RESULTS"
-# 	echobold "#========================================================================================================"
-# 	echobold "#"
-# 
-# 	#### Perhaps a separate plotter script for this?
-# 	echo "Plotting the corrected meta-analysis results..."
-# 	IMAGEFORMAT="PNG"
+#  	
+	echobold "#========================================================================================================"
+	echobold "#== PLOTTING THE CORRECTED META-ANALYSIS RESULTS"
+	echobold "#========================================================================================================"
+	echobold "#"
+
+	#### Perhaps a separate plotter script for this?
+	echo "Plotting the corrected meta-analysis results..."
+	IMAGEFORMAT="PNG"
 # 	
 # 	echo "* Producing Manhattan-plots..." # CHR, BP, P-value (P_SQRTN P_FIXED P_RANDOM)
 # 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col CHR,POS,P_SQRTN | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.P_SQRTN.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.sh
@@ -602,38 +602,48 @@ else
 # 	echo "${SCRIPTS}/plotter.manhattan.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.P_RANDOM.txt --outputdir ${METARESULTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT} --title ${PROJECTNAME}.${SUBPROJECTDIRNAME}.P_RANDOM" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.sh
 # 	qsub -S /bin/bash -N META.MANHATTAN.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.MANHATTAN.sh
 # 
-# 	echo "* Producing normal QQ-plots..."
-# 	echo "  - p-value based on square root of N" # P_SQRTN
-# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_SQRTN | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
-# 	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
-# 	qsub -S /bin/bash -N META.QQ_SQRTN.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
-# 	
-# 	echo "  - based on fixed-effects p-value..." # P_FIXED
-# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_FIXED | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
-# 	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
-# 	qsub -S /bin/bash -N META.QQ_FIXED.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn..log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
-# 
-# 	echo "  - based on random-effects p-value..." # P_RANDOM
-# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_RANDOM | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
-# 	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
-# 	qsub -S /bin/bash -N META.QQ_RANDOM.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
-# 
-# 	echo "  - to make histograms of N_EFF and DF+1"
-# 	### adjust number of bins in histogram with number of contributing studies 
-# 	### (i.e. -CL -inputfile -number.of.studies -output.file)
-# 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic determination of number of studies
-# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col N_EFF,DF --no-header | grep -v NA > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
-# 	echo "R CMD BATCH -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt -4 -${METARESULTDIR} ${SCRIPTS}/histograms.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
+	echo "* Producing normal QQ-plots..."
+	echo "  - p-value based on square root of N" # P_SQRTN
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_SQRTN | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_SQRTN,CAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn_by_CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
+	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
+	echo "${SCRIPTS}/plotter.qqplot_by_caf.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn_by_CAF.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
+	qsub -S /bin/bash -N META.QQ_SQRTN.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
+	
+	echo "  - based on fixed-effects p-value..." # P_FIXED
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_FIXED | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_FIXED,CAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed_by_CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
+	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
+	echo "${SCRIPTS}/plotter.qqplot_by_caf.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed_by_CAF.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
+	qsub -S /bin/bash -N META.QQ_FIXED.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
+
+	echo "  - based on random-effects p-value..." # P_RANDOM
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_RANDOM | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_RANDOM,CAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random_by_CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
+	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
+	echo "${SCRIPTS}/plotter.qqplot_by_caf.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random_by_CAF.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
+	qsub -S /bin/bash -N META.QQ_RANDOM.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
+
+### THIS PART NEEDS FIXING ####
+	echo "  - to make histograms of N_EFF and DF+1"
+	### adjust number of bins in histogram with number of contributing studies 
+	### (i.e. -CL -inputfile -number.of.studies -output.file)
+	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic determination of number of studies
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col N_EFF,DF --no-header | grep -v NA > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
+	echo "R CMD BATCH -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt -4 -${METARESULTDIR} ${SCRIPTS}/histograms.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 # 	qsub -S /bin/bash -N META.N_EFF.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
-# 	
-# 	### Add in functions based on Winkler et al. (SE-Lambda-Plot, frequency plot among others)
-# 	echo "  - to make SE-N-lambda plot"
-# 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic making of the *studyfile
-# 	### 
-# 	echo "perl ${SCRIPTS}/se-n-lambda.pl ${PROJECTDIR}/metagwastoolkit.${SUBPROJECTDIRNAME}.studyfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
-# 	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/se_n_lambda_plot.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
+	
+	### Add in functions based on Winkler et al. (SE-Lambda-Plot, frequency plot among others)
+	echo "  - to make SE-N-lambda plot"
+	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic making of the *studyfile
+	### 
+	echo "perl ${SCRIPTS}/se-n-lambda.pl ${PROJECTDIR}/metagwastoolkit.${SUBPROJECTDIRNAME}.studyfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
+	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/se_n_lambda_plot.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 # 	qsub -S /bin/bash -N META.SE_N_LAMBDA.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
-# 
+
+### THIS PART NEEDS FIXING ####
+
+#### CONSIDER REMOVING THIS PART -- OR MAKING IT OPTIONAL ####
 # 	echobold "#========================================================================================================"
 # 	echobold "#== GENOMIC CONTROL *AFTER* META-ANALYSIS USING LAMBDA CORRECTION -- NEEDS UPDATING"
 # 	echobold "#========================================================================================================"
@@ -657,36 +667,100 @@ else
 # 	mv foo $OUT.all.manhattan.GC.txt
 # 	R CMD BATCH -CL -$OUT.all.manhattan.GC.txt -$OUT.all.manhattan.GC.pdf $SCRIPTS/manhattan_plot.R
 # 
-#
-# 	echobold "#========================================================================================================"
-# 	echobold "#== META-ANALYSIS SUMMARIZER"
-# 	echobold "#========================================================================================================"
-# 	echobold "#"
-#	#### Add in functions that will summarize the whole meta-analysis
-#	#### - it will remove intermediate files,
-#	#### - and creates a summary of each individual cohort
-#	#### - and creates a summary of each individual cohort
-#
-# 	echobold "#========================================================================================================"
-# 	echobold "#== CLUMPING AND ANNOTATING META-ANALYSIS RESULTS"
-# 	echobold "#========================================================================================================"
-# 	echobold "#"
-#	### TAKE from fastQTLToolKit:
-#	### - clumper
-#	### - LocusZoom plotter
-#	### CREATE
-#	### - annotator using HaploReg?
-#	### - input for VEGAS2
+#### CONSIDER REMOVING THIS PART -- OR MAKING IT OPTIONAL ####
 
-# 	echobold "#========================================================================================================"
-# 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS"
-# 	echobold "#========================================================================================================"
-# 	echobold "#"
-
-	###
-	###  - see run_clumps.csh for downstream analyses (e.g. finding independent hits) and creating regional assocation plots
-	###
+### THIS PART IS UNDER CONSTRUCTION ####
+	echobold "#========================================================================================================"
+	echobold "#== META-ANALYSIS SUMMARIZER"
+	echobold "#========================================================================================================"
+	echobold "#"
+	#### Add in functions that will summarize the whole meta-analysis
+	#### - it will remove intermediate files,
+	#### - and creates a summary 
+	echo "Creating meta-analysis summary file..." 
+	echo "Two weirdly formated variants -- beta version!!! should rerun meta-analysis to make sure; weirdly it only concerns results from model 2 and model 3..."
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | sed 'rs200207705d' | sed 'rs141152220d' | sed 'rs61773985d' | sed 'rs17284982d' | sed 'rs62276488d' | sed 'rs9359288d' | sed 'rs10891334d' | sed 'rs56232565d' | sed 'rs28565118d' | sed 'rs200981990d' | sed 'rs184392557d' > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.update.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.update.txt  " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh
+  	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.update.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,Z_SQRTN,P_SQRTN,BETA_FIXED,SE_FIXED,Z_FIXED,P_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,BETA_RANDOM,SE_RANDOM,Z_RANDOM,P_RANDOM,BETA_LOWER_RANDOM,BETA_UPPER_RANDOM,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh
+	qsub -S /bin/bash -N METASUM -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh
 	
+# 	echobold "#========================================================================================================"
+# 	echobold "#== CLUMPING & REGIONAL ASSOCIATION PLOTTING OF META-ANALYSIS RESULTS -- NOT IMPLEMENTED YET"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	### TAKE from fastQTLToolKit:
+# 	### - clumper
+# 	### - LocusZoom plotter
+# 	
+# 	echobold "#========================================================================================================"
+# 	echobold "#== ANNOTATING META-ANALYSIS RESULTS -- NOT IMPLEMENTED YET"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	### CREATE
+# 	### - annotator using HaploReg?
+# 
+# 	echobold "#========================================================================================================"
+# 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2 -- BETA"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	# REQUIRED: VEGAS/VEGAS2 settings.
+# 	echo "Creating VEGAS input files..." 
+# 	mkdir -v ${METARESULTDIR}/vegas
+# 	VEGASDIR=${METARESULTDIR}/vegas
+# 	echo " - per chromosome..."	
+#  	for CHR in $(seq 1 23); do
+# 		if [[ $CHR -le 22 ]]; then 
+# 			echo "Processing chromosome ${CHR}..."
+# 			zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk '$2==${CHR}' | awk '{ print $1, $3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt
+# 	  		echo "$VEGAS2 -G -snpandp ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+# 	  		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+# 		elif [[ $CHR -eq 23 ]]; then  
+# 			echo "Processing chromosome X..."
+# 			zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk '$2=="X"' | awk '{ print $1, $3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt
+# 	  		echo "$VEGAS2 -G -snpandp ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+# 	  		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+# 		else
+# 			echo "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please."	
+# 			exit 1
+# 		fi
+# 
+# 	done
+
+	echobold "#========================================================================================================"
+	echobold "#== LD SCORE REGRESSION PREPARATION"
+	echobold "#========================================================================================================"
+	echobold "#"
+	echo "We will make use of LD-Hub (http://ldsc.broadinstitute.org) to calculate genetic correlation with other traits."
+	echo ""
+	echo "Generating LD-Hub input file."
+	mkdir -v ${METARESULTDIR}/ldscore
+	LDSCOREDIR=${METARESULTDIR}/ldscore
+	echo "echo \"snpid A1 A2 Zscore N P-value\" > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CODEDALLELE,OTHERALLELE,Z_FIXED,N_EFF,P_FIXED | tail -n +2 >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	echo "${SCRIPTS}/mergeTables.pl --file1 ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp --file2 ${RESOURCES}/w_hm3.noMHC.snplist.txt.gz --index snpid --format GZIP2 | awk '{ print \$1, \$4, \$5, \$6, \$7, \$8 }' > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	### LD-Hub expects a ZIPPED file!!!
+	echo "cd ${LDSCOREDIR}" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	echo "zip -v meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt.zip meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+ 	echo "rm -v ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+# 	qsub -S /bin/bash -N LDSCORE.${PROJECTNAME} -hold_jid METASUM -o ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.log -e ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.errors -l h_vmem=${QMEMLDSCORE} -l h_rt=${QRUNTIMELDSCORE} -wd ${LDSCOREDIR} ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+
+	echobold "#========================================================================================================"
+	echobold "#== MR BASE PREPARATION -- BETA"
+	echobold "#========================================================================================================"
+	### add in p-value selection in configuration
+	### add in units of exposure
+	echobold "#"
+	echo "We will make use of MR-Base (http://www.mrbase.org/) to infer causality to other traits."
+	echo ""
+	echo "Generating MR-Base input file, based on p-value <= ${MRBASEPVAL}."
+	mkdir -v ${METARESULTDIR}/mrbase
+	MRBASEDIR=${METARESULTDIR}/mrbase
+	echo "echo \"SNP beta se pval effect_allele other_allele eaf samplesize Phenotype\" > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,BETA_FIXED,SE_FIXED,P_FIXED,CODEDALLELE,OTHERALLELE,CAF,N_EFF > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	echo "cat ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp | tail -n +2 | awk '\$4 <= ${MRBASEPVAL}' | awk '{ print \$0, \"${PROJECTNAME}\" }' >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+#  	qsub -S /bin/bash -N MRBASE.${PROJECTNAME} -hold_jid METASUM -o ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.log -e ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.errors -l h_vmem=${QMEMMRBASE} -l h_rt=${QRUNTIMEMRBASE} -wd ${MRBASEDIR} ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
