@@ -11,7 +11,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     \n
     * Version: v1.0.1
     * Last edit: 2017-05-30
-    * Created by: Sara L. Pulit | s.l.pulit@umcutrecht.nl; Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
+    * Created by: Sara L. Pulit; Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS and applies genomic
     control. The lambda-value is calculated based on the given effect size and standard errors.

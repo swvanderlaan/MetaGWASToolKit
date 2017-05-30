@@ -9,8 +9,8 @@
 # 		* Paul I.W. de Bakker, piwdebakker@mac.com
 #		* 4 July 2009
 #
-# Written by:	Sander W. van der Laan; UMC Utrecht, Utrecht, the Netherlands; 
-#               s.w.vanderlaan-2@umcutrecht.nl.
+# Written by:	Sander W. van der Laan; Utrecht, the Netherlands; 
+#               s.w.vanderlaan@gmail.com.
 # Version:		2.0
 # Update date: 	2017-04-17
 #

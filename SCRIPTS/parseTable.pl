@@ -5,7 +5,7 @@
 # Version				: v1.1
 #
 # Last update			: 2017-04-24
-# Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl).
+# Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com.
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl.
 #
 # Website				: http://www.atheroexpress.nl/software

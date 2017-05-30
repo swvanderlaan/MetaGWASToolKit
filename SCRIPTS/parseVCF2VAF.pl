@@ -5,10 +5,10 @@
 #				to check GWAS results in terms of variant-existence compared to the 
 #				reference.
 #
-# Written by:	Sander W. van der Laan & Jacco Schaap; UMC Utrecht, Utrecht, the 
-#               Netherlands, s.w.vanderlaan-2@umcutrecht.nl or j.schaap-2@umcutrecht.nl.
+# Written by:	Sander W. van der Laan & Jacco Schaap; Utrecht, the 
+#               Netherlands, s.w.vanderlaan@gmail.com.
 # Version:		1.0.2
-# Update date: 	2017-05-03
+# Update date: 	2017-05-30
 #
 # Usage:		parseVCF2dbSNP.pl --file [input.vcf.gz] --out [output.txt]
 

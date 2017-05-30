@@ -10,8 +10,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-Z Plotter -- MetaGWASToolKit
     \n
     * Version: v1.1.4
-    * Last edit: 2017-04-24
-    * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
+    * Last edit: 2017-05-30
+    * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  P-Z-plotter for GWAS (meta-analysis) results. Will plot the
     p-value based on the analysis and calculated from the Z-score. Can produce 

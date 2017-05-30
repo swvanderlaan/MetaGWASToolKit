@@ -26,7 +26,7 @@ use FileHandle;
 ###			Data from Table 3, Winkler TW ea, Nature Protocols, 2014.
 ###
 ### Last update: 2015-02-19
-### Written by: Jessica van Setten (j.vansetten@umcutrecht.nl), Sander W. van der Laan (s.w.vanderlaan-2@umcutrecht.nl)
+### Written by: Jessica van Setten & Sander W. van der Laan (s.w.vanderlaan@gmail.com)
 ### 
 ### Usage:
 ### perl se-n-lambda.pl path_to_studyfile path_to_outputfile [HM2/1Gp1]

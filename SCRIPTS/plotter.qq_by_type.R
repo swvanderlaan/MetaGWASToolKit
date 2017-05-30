@@ -10,8 +10,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ by TYPE Plotter -- MetaGWASToolKit
     \n
     * Version: v1.1.5
-    * Last edit: 2017-04-24
-    * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
+    * Last edit: 2017-05-30
+    * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
     by variant type (SNV or INDEL -- at the moment). Can produce output in different colours 

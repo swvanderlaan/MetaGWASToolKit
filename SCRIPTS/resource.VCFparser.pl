@@ -8,10 +8,10 @@
 #               2) a file containing frequencies of the chosen reference and population,
 #               3) a reference-file used as a reference to map, allign, and annotate all GWAS to during meta-analysis. 
 #
-# Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
-#               Netherlands, v.tragantew@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
+# Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; Utrecht, the 
+#               Netherlands, s.w.vanderlaan@gmail.com.
 # Version:		1.3.5
-# Update date: 	2017-05-09
+# Update date: 	2017-05-30
 #
 # Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 

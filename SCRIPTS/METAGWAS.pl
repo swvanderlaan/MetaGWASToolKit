@@ -3,13 +3,13 @@
 #
 # Version               : 2.1.11"
 #
-# Last update			: 2017-05-29"
-# Updated by			: Sander W. van der Laan | UMC Utrecht, s.w.vanderlaan-2@umcutrecht.nl);
-#						  Jacco Schaap | UMC Utrecht, j.schaap-2@umcutrecht.nl);
-#						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl).
-# Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl; 
-#						  Sara Pulit | UMC Utrecht, s.l.pulit@umcutrecht.nl);
-#						  Jessica van Setten | UMC Utrecht, j.vansetten@umcutrecht.nl).
+# Last update			: 2017-05-30"
+# Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com;
+#						  Jacco Schaap;
+#						  Jessica van Setten.
+# Originally written by	: Paul I.W. de Bakker; 
+#						  Sara L. Pulit;
+#						  Jessica van Setten.
 #
 # Note					: Originally based on MANTEL.pl, but heavily edited to accomodate 
 #						  the new era of 1000G and Haplotype Reference Consortium (HRC) 

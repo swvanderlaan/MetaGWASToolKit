@@ -7,8 +7,8 @@
 #               [COLUMN#]. The whole line of the [SOURCE.txt] will be printed to the 
 #               standard out
 #
-# Written by:	Jessica van Setten & Sander W. van der Laan; UMC Utrecht, Utrecht, the 
-#               Netherlands, j.vansetten@umcutrecht.nl or s.w.vanderlaan-2@umcutrecht.nl.
+# Written by:	Jessica van Setten & Sander W. van der Laan; Utrecht, the 
+#               Netherlands, s.w.vanderlaan@gmail.com.
 #
 # Version:		2.0
 # Update date: 	2017-04-17

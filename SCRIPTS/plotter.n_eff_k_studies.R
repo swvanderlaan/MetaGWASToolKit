@@ -21,7 +21,7 @@
 #
 # Update: 2015-02-25
 # Editor(s): Sander W. van der Laan
-# E-mail(s): s.w.vanderlaan-2@umcutrecht.nl
+# E-mail(s): s.w.vanderlaan@gmail.com
 
 ### READS INPUT OPTIONS ###
 	rm(list=ls())

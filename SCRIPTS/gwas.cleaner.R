@@ -10,8 +10,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Cleaner -- MetaGWASToolKit
     \n
     * Version: v1.0.10
-    * Last edit: 2017-05-29
-    * Created by: Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
+    * Last edit: 2017-05-30
+    * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Cleaning of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
