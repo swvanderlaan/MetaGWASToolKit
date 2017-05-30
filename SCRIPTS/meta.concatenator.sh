@@ -180,12 +180,12 @@ else
 			fi
 			
 			echo "- removing files [ ${METARESULTDIR}/meta.analyzer.${EXTENSION}[.sh/.errors/.log] ]..."
-			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
-			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors
-			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log
-			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.sh
-			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.errors
-			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.log
+# 			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
+# 			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors
+# 			rm -v ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log
+# 			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.sh
+# 			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.errors
+# 			rm -v ${METARESULTDIR}/meta.p_corrector.${EXTENSION}.log
 
 		else
 			echoerrorflash "*** Error *** The pattern \"${METASUCCESSPATTERN}\" was NOT found in [ ${METALOGFILE} ]..."
@@ -221,12 +221,12 @@ else
 			cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt
 			echo "  - removing results for chunk [ ${EXTENSION} ] (note: we do not need this anymore)..."
 			echo "    > original ..."
-			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out
+# 			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out
 			echo "    > p-value corrected ..."
- 			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out
+#  			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.corrected_p.out
  			echo "    > other intermediate files ..."
- 			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.fixed_headed.out
-			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.needs_p_fixing.out
+#  			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.fixed_headed.out
+# 			rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.needs_p_fixing.out
 		done < ${VARIANTSFILES}
 		
 		echo ""
