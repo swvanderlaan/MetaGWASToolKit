@@ -5,11 +5,14 @@ MetaGWASToolKit
 
 ### Introduction
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
-This repository contains a ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (**MetaGWASToolKit**): various scripts in Perl, BASH, and Python scripts to use in meta-analysis of GWAS of any number of cohorts.
+This repository contains a ToolKit to perform a Meta-analysis of (any number of) Genome-Wide Association Studies (**MetaGWASToolKit**) and comprises various scripts in Perl, Python, R, and BASH.
 
 Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). 
 
-All scripts are annotated for debugging purposes - and future reference. The only script the user should edit is the `metagwastoolkit.qsub.sh` script, and two text-files: `metagwastoolkit.conf` (a configuration file with some system and analytical settings), and `metagwastoolkit.list` (containing a list of all the GWAS datasets).
+All scripts are annotated for debugging purposes - and future reference. The only scripts the user should edit are: 
+- the main job submission script `metagwastoolkit.qsub.sh`, 
+- `metagwastoolkit.conf`, a configuration file with some system and analytical settings, and 
+- `metagwastoolkit.list` which contains a list of all the GWAS datasets.
 
 The installation procedure is quite straightforward, and only entails four steps consisting of command one-liners that are *easy* to read. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
 
@@ -27,7 +30,7 @@ Multiline commands end with a dash \
 
 Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so. 
 
-We have tested **MetaGWASToolKit** on CentOS7, and OS X Sierra (version 10.11.[x]). 
+In addition to testing **MetaGWASToolKit** on CentOS7, we have tested it on OS X Sierra (version 10.11.[x]) too. 
 
 
 --------------
@@ -57,17 +60,23 @@ if [ -d ~/git/MetaGWASToolKit/.git ]; then \
 
 
 #### Step 4: Create necessary databases. These include:
-- DBSNPFILE     -- a dbSNP/Reference file containing information per variant.
-- REFFREQFILE   -- a file containing reference frequencies per variant.
-- GENESFILE     -- a file containing chromosomal basepair positions per gene.
+You will have to download and create some data needed for **MetaGWASToolKit** to function. The `resource.creator.sh` script will automagically create the necessary files. These include:
+- DBSNPFILE    -- a dbSNP file containing information per variant based on dbSNP b147.
+- REFFREQFILE  -- a file containing reference frequencies per variant for the chosen reference and population.
+- VINFOFILE    -- a file needed to harmonize all the cohorts in terms of variant ID, contains various *variantID* versions (rs[XXXX], chr[X]:bp[XXX]:A1_A2, *etc.*). The resulting file is used by `gwas2ref.harmonizer.py` later on during harmonization.
+- GENESFILE    -- a file containing chromosomal basepair positions per gene, default is `Gencode`.
+- REFERENCEVCF -- needed for downstream analyses, such as clumping of genome-wide significant hits, etc. 
 
-[text and codes forthcoming]
+To download and install please run the following code, this should submit various jobs to create the necessary databases.
 
+```
+cd ~/git/MetaGWASToolKit && bash resource.creator.sh
+```
 
 --------------
 
 ### Meta-analysis of GWAS
-**MetaGWASToolKit** will (semi-)automatically perform a meta-analysis of GWAS. It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
+**MetaGWASToolKit** will (semi-)automatically perform a meta-analysis of genome-wide association studies (GWAS). It will reformat, clean, plot, and analyze the data based on some required user-specificied configuration settings. Some relevant statistics, such as HWE, minor allele count (MAC), and coded allele frequency (CAF) will also be added to the final summarized result. The QC and reporting is based on the paper by [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786).
 
 The main script, which is controlled by `metagwastoolkit.qsub.sh`, `metagwastoolkit.conf`, and `metagwastoolkit.list`, is `metagwastoolkit.run.sh`. `metagwastoolkit.run.sh` will automagically chunk up data, submit jobs, and set things so that your meta-analysis will run smoothly. 
 The premier step is at the 'reformatting' stage. Any weirdly formatted GWAS dataset will immediately throw errors, and effectively throwing out that particular GWAS dataset from the meta-analysis. Such errors will be reported.
@@ -97,70 +106,88 @@ Both the *un*cleaned and the cleaned reformatted data will be visualized: **Meta
 - Histograms of the 'effect size', including lines at the ±4 standard deviation, and the 'imputation quality'.
 
 #### Perform meta-analysis
-[Some text here]
-- random effects model
-- fixed effects model
-- Z-score based model
+After cleaned datasets are obtained, `metagwastoolkit.run.sh` will prepare the meta-analysis by chunking up the harmonized and cleaned datasets in smaller subsets. Upon completion of the chunking, `metagwastoolkit.run.sh` will perform meta-analyses based on three models:
+- random effects
+- fixed effects
+- Z-score based
+We should note, that as a default, the meta-analysis is done in a `--verbose` mode, *i.e.* all relevant data of each cohort is added to the final meta-analysis output. This can be troublesome when tens or hundres of GWAS datasets are analyzed. This behaviour can be changed by setting the appropriate flag in `metagwastoolkit.conf`. *Note: this script needs fixing.* :construction:
 
 #### Plotting meta-analysis results
-[Some text here]
-- QQ plots
-- Manhattan
-- LocusZoom
-- Effective Sample Size
-- SE-N lambda
+After the meta-analysis is complete for each chunk, the data is checked, and if deemed okay, it will be concatenated into one file. After concatenation of the data, various plots of each model result for visual inspection (and publication) are made.
+- QQ-plots, both normal and stratified by coded allele frequency
+- Manhattan-plots
+- Effective Sample Size, for the whole analysis. *Note: this script needs fixing.* :construction:
+- SE-N-lambda, as per [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786). *Note: this script needs fixing.* :construction:
+- Locuszoom plots. After concatenation of the meta-analysis results, these will be clumped using the appropriate reference as downloaded (see above 'Installing the scripts locally'). Based on the particular clumping settings (indicated in `metagwastoolkit.conf`) regional association plots will be generated using an installment of [LocusZoom v1.3](http://genome.sph.umich.edu/wiki/LocusZoom_Standalone). *Note: this script needs fixing.* :construction:
+- Genomic control, using the results from the fixed effects model, genomic control will be applied to the meta-analysis results. These lambda-corrected results will also be plotted (Manhattan, and [stratified] QQ-plots). *Note: this script needs fixing.* :construction:
+
+#### Downstream analyses & annotation
+##### Gene-based association study
+Low power and heterogeneity can negatively impact the results of a meta-analysis of GWAS, therefore we have implemented `A versatile gene-based association study` ([Mishra A. et al.](http://journals.cambridge.org/abstract_S1832427414000796?) and [Liu J.Z. et al.](http://www.sciencedirect.com/science/article/pii/S0002929710003125)) to derive emperical p-values for genes. :construction:
+
+##### LD score
+To examine heritability of the trait under investigation and the genetic correlation with other traits, we have implemented LD score. Refer to [Zheng J. et al.](http://bioinformatics.oxfordjournals.org/content/early/2016/09/22/bioinformatics.btw613.abstract), [Bulik-Sullivan B. et al.](http://www.nature.com/ng/journal/vaop/ncurrent/full/ng.3211.html), and [LDSC on GitHub](https://github.com/bulik/ldsc) and for more information. :construction:
+
+##### MR base
+To derive causal effects we have added the [MR base](http://www.mrbase.org) scripts to the work-flow. See also: [Hemani G. et al.](https://doi.org/10.1101/078972). :construction:
 
 #### References and other datasebases
 ##### Creating references
-One can create the reference from VCF-files (version 4.1+) using `parseVCF.pl`, and in fact doing so is an option in the `metagwastoolkit.qsub.sh`. This script will automagically create various *variantID* versions, and add in information per variant. The resulting file is used by `gwas2ref.harmonizer.py` for harmonization. 
-[more text and codes forthcoming]
+One is obliged to create the reference from VCF-files (version 4.1+) using `resource.creator.sh`, see above. 
 
 ##### Available references
 There are a couple of reference available per standard, these are:
-- **HapMap 2 [`HM2`], version 2, release 22, b36.**        -- HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature.
+- **HapMap 2 [`HM2`], version 2, release 22, b36.**        -- HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature. [NOT AVAILABLE YET] :large_blue_diamond:
 - **1000G phase 1, version 3 [`1Gp1`], b37.**              -- 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
-- **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
-- **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
-- **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
-- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).
-
-#### Something
-[Some text here]
+- **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes. [NOT AVAILABLE YET] :large_orange_diamond:
+- **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+- **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
 
 --------------
 
-### Things to do
+### Things to do for future versions
+:ballot_box_with_check: *implemented*
+:x: *skipped*
+:construction: *working on it*
+:large_orange_diamond: *next version, high priority*
+:large_blue_diamond: *next version, low priority*
+
+#### Meta-analysis 
+- add in trans-ethnic meta-analysis option :large_orange_diamond:
+- ~~add in option to choose reference to use~~ :ballot_box_with_check:
+- ~~make Perl-script that generates the frequency file (perhaps while using gwas2harmonize?)~~ :ballot_box_with_check:
+- add in automagical checking of each cohort after cleaning :construction:
+- add in params-file generator (cohort-name, lambda [after QC], avg. sample size, beta-correction factor) :construction:
+- add in option to include/exclude special chromosomes (X, Y, XY, MT) :large_blue_diamond:
+- add in more extensive annotation of variants - perhaps HaploReg; eQTL/mQTL/pQTL; ENCODE? :large_blue_diamond:
+- add `--verbose` and other flags of `METAGWAS.pl` to `metagwastoolkit.conf`. :construction:
+- add in LD score functionality :construction:
+- add in MR base functionality :construction:
+- add in VEGAS2 functionality :construction:
+- add in VEGAS2 based pathway enrichment analysis :construction:
+- add in a relevant annotation function :construction:
+
 #### Manhattan
-- add in option to give the output a specific name (now it's based on the filename)
-- highlight a specific region (previous/novel loci)
-- add in a gene name at the most significant peaks (previous/novel loci)
-- add in option on test-statistics (Z-score, Chi^2, or P-value)
-- add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female)
-- add in option to make it horizontal, vertical or circular
-- better outline chr X, XY, Y, MT
-- add in option to change the title of the plot
+- add in option to give the output a specific name (now it's based on the filename) :large_orange_diamond:
+- highlight a specific region (previous/novel loci) :large_blue_diamond:
+- add in a gene name at the most significant peaks (previous/novel loci) :large_orange_diamond:
+- add in option on test-statistics (Z-score, Chi^2, or P-value) :large_orange_diamond:
+- add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female) :large_orange_diamond:
+- add in option to make it horizontal, vertical or circular :large_blue_diamond:
+- better outline chr X, XY, Y, MT :large_blue_diamond:
+- add in option to change the title of the plot :large_orange_diamond:
 - ~~change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes~~ :ballot_box_with_check:
 
 #### QQ-plots
-- add in confidence interval as option, and also an improved one
-- add in more options for variant-types, currently only SNV and INDEL; one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation
-- add in option to cut-off the maximum -log10(P), for instance everything p < 5.0e-10 is set to p = 5.0e-10; while at the same time lambdas are calculate based on the original p-values.
-
-#### Meta-analysis 
-- add in trans-ethnic meta-analysis option
-- ~~add in option to choose reference to use~~ :ballot_box_with_check:
-- ~~make Perl-script that generates the frequency file (perhaps while using gwas2harmonize?)~~ :ballot_box_with_check:
-- add in params-file generator (cohort-name, lambda [after QC], avg. sample size, beta-correction factor)
-- add in option to include/exclude special chromosomes (X, Y, XY, MT)
-- add in more extensive annotation of variants - perhaps HaploReg; eQTL/mQTL/pQTL; ENCODE?
-
-#### Something
-- [some text here]
+- ~~add in confidence interval as option, and also an improved one~~ :x: SKIPPED
+- add in more options for variant-types, currently only SNV and INDEL; one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation :large_blue_diamond:
+- add in option to cut-off the maximum -log10(P), for instance everything p < 5.0e-10 is set to p = 5.0e-10; while at the same time lambdas are calculate based on the original p-values. :large_orange_diamond:
 
 --------------
 
 #### The MIT License (MIT)
-##### Copyright (c) 2015-2017 Sander W. van der Laan | s.w.vanderlaan-2 [at] umcutrecht.nl
+##### Copyright (c) 2015-2017 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:   
 
