@@ -105,7 +105,7 @@ opt = parse_args(OptionParser(option_list=option_list))
 # ### MacBook Pro
 # MACDIR="/Users/swvanderlaan"
 # ### Mac Pro
-# MACDIR="/Volumes/MyBookStudioII/Backup"
+# MACDIR="/Volumes/EliteProQx2Media"
 # ### HPC
 # MACDIR="/hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/test_environment"
 #
@@ -120,8 +120,8 @@ opt = parse_args(OptionParser(option_list=option_list))
 # opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/EPICNL_m1/EPICNL_m1.rdat.gz")
 # opt$filename="EPICNL_m1"
 # 
-# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1")
-# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODELX/RAW/AEGS_m1/AEGS.WHOLE.FABP4.20150125.alz.ref.pdat")
+# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODEL1/RAW/AEGS_m1")
+# opt$datagwas=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/MODEL1/RAW/AEGS_m1/AEGS_m1.rdat.gz")
 # opt$filename="AEGS_m1"
 # 
 # opt$outputdir=paste0(MACDIR, "/")
@@ -300,7 +300,14 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   
   ### Create new column to count SNPs and INDELs
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, 
-                                  VT = ifelse((nchar(GWASDATA_RAWSELECTION$EffectAllele) > 1 | nchar(GWASDATA_RAWSELECTION$OtherAllele) > 1 | GWASDATA_RAWSELECTION$EffectAllele == "D" |  GWASDATA_RAWSELECTION$OtherAllele == "D" ), 
+                                  VT = ifelse((nchar(GWASDATA_RAWSELECTION$EffectAllele) > 1 | 
+                                                 nchar(GWASDATA_RAWSELECTION$OtherAllele) > 1 | 
+                                                 GWASDATA_RAWSELECTION$EffectAllele == "D" | 
+                                                 GWASDATA_RAWSELECTION$OtherAllele == "D" |
+                                                 GWASDATA_RAWSELECTION$OtherAllele == "R" |
+                                                 GWASDATA_RAWSELECTION$OtherAllele == "R" | 
+                                                 GWASDATA_RAWSELECTION$OtherAllele == "I" | 
+                                                 GWASDATA_RAWSELECTION$OtherAllele == "I"), 
                                               "INDEL", 
                                               "SNP"))
 
@@ -314,6 +321,7 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   }
   cat("\nContents of the raw, parsed, and harmonized data.")
   report.variants(GWASDATA_RAWSELECTION)
+  head(GWASDATA_RAWSELECTION)
   
   cat("\nCleaning dataset.")
   cat(paste0("\n* removing variants where -",opt$effectsize," < effect size < ",opt$effectsize," or 'NA'..."))
