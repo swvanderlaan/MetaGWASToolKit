@@ -300,9 +300,9 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   
   ### Create new column to count SNPs and INDELs
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, 
-                                  VT = ifelse((nchar(GWASDATA_RAWSELECTION$EffectAllele) == 1 & nchar(GWASDATA_RAWSELECTION$OtherAllele) == 1), 
-                                              "SNP", 
-                                              "INDEL"))
+                                  VT = ifelse((nchar(GWASDATA_RAWSELECTION$EffectAllele) > 1 | nchar(GWASDATA_RAWSELECTION$OtherAllele) > 1 | GWASDATA_RAWSELECTION$EffectAllele == "D" |  GWASDATA_RAWSELECTION$OtherAllele == "D" ), 
+                                              "INDEL", 
+                                              "SNP"))
 
   report.variants <- function(DATASET){
     no_variants=length(DATASET$VariantID)
