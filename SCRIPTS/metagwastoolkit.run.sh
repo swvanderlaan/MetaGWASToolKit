@@ -629,45 +629,42 @@ else
 	### adjust number of bins in histogram with number of contributing studies 
 	### (i.e. -CL -inputfile -number.of.studies -output.file)
 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic determination of number of studies
-	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col N_EFF,DF --no-header | grep -v NA > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
-	echo "R CMD BATCH -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt -4 -${METARESULTDIR} ${SCRIPTS}/histograms.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col N_EFF,DF | tail -n +2 | grep -v NA > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
+	echo "R CMD BATCH -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt -5 -${METARESULTDIR} ${SCRIPTS}/histograms.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 # 	qsub -S /bin/bash -N META.N_EFF.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 	
 	### Add in functions based on Winkler et al. (SE-Lambda-Plot, frequency plot among others)
 	echo "  - to make SE-N-lambda plot"
-	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic making of the *studyfile
+	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL';
 	### 
 	echo "perl ${SCRIPTS}/se-n-lambda.pl ${PROJECTDIR}/metagwastoolkit.${SUBPROJECTDIRNAME}.studyfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/se_n_lambda_plot.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 # 	qsub -S /bin/bash -N META.SE_N_LAMBDA.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
-
+### 
+### 	echobold "#========================================================================================================"
+### 	echobold "#== GENOMIC CONTROL *AFTER* META-ANALYSIS USING LAMBDA CORRECTION -- NEEDS UPDATING"
+### 	echobold "#========================================================================================================"
+### 	echobold "#"
+### 	echobold "# You have to specify the lambda value as the third commandline argument "
+### 	echobold "# (after -CL -input_file) the lambda is output on the QQ plots (see above)"
+### 	echobold "#"
+### 	
+### 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,BETA_FIXED,SE_FIXED > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.beta_se.txt" > ${METARESULTDIR}/meta.genomic_control.sh
+### 	echo "for OUTFILE in $(ls ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.*.corrected_p.out); do echo \" * Processing [ ${OUTFILE} ]...\"; cat ${OUTFILE} | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt ; done" >> ${METARESULTDIR}/meta.genomic_control.sh
+### 	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt" >> ${METARESULTDIR}/meta.concatenator.sh
+### 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic making of the *lambda
+### 	R CMD BATCH -CL -$OUT.all.beta_se.txt -1.002 -$OUT.all.beta_se.lambda_corrected.txt $SCRIPTS/lambda_correct.R
+### 	sed -i 's/foo.SNP P SE Z/SNP P_GC SE_GC Z_GC/g' $OUT.all.beta_se.lambda_corrected.txt
+### 	$SCRIPTS/merge_tables.pl --file1 $OUT.all.beta_se.lambda_corrected.txt --file2 $OUT.all.txt --index SNP > $OUT.lambda_corrected.txt
+### 	qsub -S /bin/bash -N meta.genomic_control -hold_jid meta.p_corrector -o ${METARESULTDIR}/meta.genomic_control.log -e ${METARESULTDIR}/meta.genomic_control.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.genomic_control.sh
+### 		
+### 	### make pretty Manhattan plots
+### 	cat $OUT.lambda_corrected.txt | $SCRIPTS/parse_table.pl --col CHR,POS,P_GC | grep -v NA > $OUT.all.manhattan.GC.txt
+### 	awk ' { if($1=="X") print 23, $2, $3; else if($1=="Y") print 24, $1, $2; else print $0 } ' $OUT.all.manhattan.GC.txt > foo
+### 	mv foo $OUT.all.manhattan.GC.txt
+### 	R CMD BATCH -CL -$OUT.all.manhattan.GC.txt -$OUT.all.manhattan.GC.pdf $SCRIPTS/manhattan_plot.R
+### 
 ### THIS PART NEEDS FIXING ####
-
-#### CONSIDER REMOVING THIS PART -- OR MAKING IT OPTIONAL ####
-# 	echobold "#========================================================================================================"
-# 	echobold "#== GENOMIC CONTROL *AFTER* META-ANALYSIS USING LAMBDA CORRECTION -- NEEDS UPDATING"
-# 	echobold "#========================================================================================================"
-# 	echobold "#"
-# 	echobold "# You have to specify the lambda value as the third commandline argument "
-# 	echobold "# (after -CL -input_file) the lambda is output on the QQ plots (see above)"
-# 	echobold "#"
-# 	
-# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,BETA_FIXED,SE_FIXED > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.beta_se.txt" > ${METARESULTDIR}/meta.genomic_control.sh
-# 	echo "for OUTFILE in $(ls ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.*.corrected_p.out); do echo \" * Processing [ ${OUTFILE} ]...\"; cat ${OUTFILE} | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt ; done" >> ${METARESULTDIR}/meta.genomic_control.sh
-# 	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt" >> ${METARESULTDIR}/meta.concatenator.sh
-# 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic making of the *lambda
-# 	R CMD BATCH -CL -$OUT.all.beta_se.txt -1.002 -$OUT.all.beta_se.lambda_corrected.txt $SCRIPTS/lambda_correct.R
-# 	sed -i 's/foo.SNP P SE Z/SNP P_GC SE_GC Z_GC/g' $OUT.all.beta_se.lambda_corrected.txt
-# 	$SCRIPTS/merge_tables.pl --file1 $OUT.all.beta_se.lambda_corrected.txt --file2 $OUT.all.txt --index SNP > $OUT.lambda_corrected.txt
-# 	qsub -S /bin/bash -N meta.genomic_control -hold_jid meta.p_corrector -o ${METARESULTDIR}/meta.genomic_control.log -e ${METARESULTDIR}/meta.genomic_control.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.genomic_control.sh
-# 		
-# 	### make pretty Manhattan plots
-# 	cat $OUT.lambda_corrected.txt | $SCRIPTS/parse_table.pl --col CHR,POS,P_GC | grep -v NA > $OUT.all.manhattan.GC.txt
-# 	awk ' { if($1=="X") print 23, $2, $3; else if($1=="Y") print 24, $1, $2; else print $0 } ' $OUT.all.manhattan.GC.txt > foo
-# 	mv foo $OUT.all.manhattan.GC.txt
-# 	R CMD BATCH -CL -$OUT.all.manhattan.GC.txt -$OUT.all.manhattan.GC.pdf $SCRIPTS/manhattan_plot.R
-# 
-#### CONSIDER REMOVING THIS PART -- OR MAKING IT OPTIONAL ####
 
 ### THIS PART IS UNDER CONSTRUCTION ####
 	echobold "#========================================================================================================"
