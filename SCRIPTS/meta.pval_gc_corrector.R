@@ -9,18 +9,18 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Genomic Control of P-values -- MetaGWASToolKit
     \n
-    * Version: v1.0.0
-    * Last edit: 2017-05-01
+    * Version: v1.0.1
+    * Last edit: 2017-05-30
     * Created by: Sara L. Pulit | s.l.pulit@umcutrecht.nl; Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl
     \n
     * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS and applies genomic
-    control. The lambda-value should be given (--lambda). 
+    control. The lambda-value is calculated based on the given effect size and standard errors.
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-### Usage: ./meta.pval_gc_corrector.R -i inputfile -l lambda -o outputfile [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-###        ./meta.pval_gc_corrector.R --inputfile inputfile --lambda lambda --outputfile outputfile [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+### Usage: ./meta.pval_gc_corrector.R -i inputfile -o outputfile [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+###        ./meta.pval_gc_corrector.R --inputfile inputfile --outputfile outputfile [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 ### CLEAR THE BOARD
@@ -75,8 +75,6 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 option_list = list(
   make_option(c("-i", "--inputfile"), action="store", default=NA, type='character',
               help="Path to the input file."),
-  make_option(c("-l", "--lambda"), action="store", default=NA, type='numeric',
-              help="Lambda-value to correct the data by."),
   make_option(c("-o", "--outputfile"), action="store", default=NA, type='character',
               help="Path to the output file."),
   make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
@@ -97,7 +95,6 @@ opt = parse_args(OptionParser(option_list=option_list))
 # MACDIR="/Volumes/EliteProQx2Media/PLINK/analyses/meta_gwasfabp4"
 # 
 # opt$inputfile=paste0(MACDIR, "/test_environment/test.gc_p_val_corr.out")
-# opt$lambda=1.16
 # opt$outputfile=paste0(MACDIR, "/test_environment/test.p_corrected.out")#
 # 
 # #test.gc_p_val_corr.out
@@ -113,8 +110,8 @@ if (opt$verbose) {
   cat("* Checking the settings as given through the flags.")
   cat("\n - The input file.........................: ")
   cat(opt$inputfile)
-  cat("\n - The correction factor, 'lambda'........: ")
-  cat(opt$lambda)
+#  cat("\n - The correction factor, 'lambda'........: ")
+#  cat(opt$lambda)
   cat("\n - The output file........................: ")
   cat(opt$outputfile)
   cat("\n\n")
@@ -124,10 +121,9 @@ cat("Starting \"Genomic Control of P-values\".")
 
 ### START OF THE PROGRAM
 ### main point of program is here, do this whether or not "verbose" is set
-if(!is.na(opt$inputfile) & !is.na(opt$lambda) & !is.na(opt$outputfile)) {
+if(!is.na(opt$inputfile) & !is.na(opt$outputfile)) {
   cat(paste("\n\nWe are going to apply genomic control on a given list of p-values (from a meta-analysis of GWAS.
             \nCorrecting p-values of these results...........: '",basename(opt$inputfile),"'
-            \nThe correction factor, 'lambda' used is........: '",basename(opt$lambda),"'
             Corrected results will be saved here.............: '", opt$outputfile, "'.\n",sep=''))
   
 ### GENERAL SETUP
@@ -138,10 +134,13 @@ cat("\nReading data and performing some calculations.\n")
 cat("* Loading data.\n")
 data = fread(opt$inputfile, header = TRUE, dec = ".", blank.lines.skip = TRUE)
 
-cat("* Setting lambda.\n")
-lambdavalue <- opt$lambda
+cat("* Calculating lambda (based on given effect size and standard error).\n")
+Z_forlamba <- data$BETA_FIXED / data$SE_FIXED
+lambdavalue = round(median(Z_forlamba^2)/qchisq(0.5, df = 1),3)
 
 cat("* Performing some calculations...\n")
+cat("  - effect size (beta)\n")
+BETA <- data$BETA_FIXED
 cat("  - standard error\n")
 SE <- data$SE_FIXED * as.numeric(sqrt(lambdavalue))
 cat("  - Z-score\n")
@@ -149,7 +148,7 @@ Z <- data$BETA_FIXED / SE
 cat("  - P-value\n")
 P <- pnorm(-(abs(Z))) * 2;
 cat("  - making updated dataset for export\n")
-data.updated <- data.frame(data$VARIANTID, P, SE, Z)
+data.updated <- data.frame(data$VARIANTID, BETA, SE, Z, P)
 
 names(data.updated)[names(data.updated) == 'data.VARIANTID'] <- 'VARIANTID'
 
@@ -169,7 +168,6 @@ cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n*** ERROR *** You didn't specify all variables:\n
       - --i/inputfile    : Path to the input file.
-      - --l/lambda       : Lambda-value to correct the data by.
       - --o/outputfile   : Path to the output file.",
       file=stderr()) # print error messages to stderr
 }
