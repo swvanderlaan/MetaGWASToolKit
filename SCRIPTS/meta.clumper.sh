@@ -1,6 +1,32 @@
 #!/bin/bash
 
-### MESSAGE FUNCTIONS
+### Creating display functions
+### Setting colouring
+NONE='\033[00m'
+BOLD='\033[1m'
+FLASHING='\033[5m'
+UNDERLINE='\033[4m'
+
+RED='\033[01;31m'
+GREEN='\033[01;32m'
+YELLOW='\033[01;33m'
+PURPLE='\033[01;35m'
+CYAN='\033[01;36m'
+WHITE='\033[01;37m'
+
+function echobold { #'echobold' is the function name
+    echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
+}
+function echoerrorflash { 
+    echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
+}
+function echoerror { 
+    echo -e "${RED}${1}${NONE}"
+}
+function echosucces { 
+    echo -e "${YELLOW}${1}${NONE}"
+}
+
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -26,20 +52,14 @@ script_copyright_message() {
 	echo "+ Reference: http://opensource.org.                                                                     +"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 }
+
 script_arguments_error() {
 	echo "$1" # ERROR MESSAGE
 	echo ""
-	echo "- Argument #1 is path_to the output directory."
-	echo "- Argument #2 is name of the phenotype."
-	echo "- Argument #3 is the maximum (largest) p-value to clump [CLUMP_P2]."
-	echo "- Argument #4 is the minimum (smallest) p-value to clump [CLUMP_P1]."
-	echo "- Argument #5 is the R^2 to use for clumping [CLUMP_R2]."
-	echo "- Argument #6 is the KB range used for clumping [CLUMP_KB]."
-	echo "- Argument #7 indicates the name of the clumping field to use (default: P) [CLUMP_FIELD]."
-	echo "- Argument #8 indicates the reference to be used [1kGp3v5GoNL5/1kGp1v3/GoNL4]."
-	echo "- Argument #9 indicates the study type to be used [AEGS/AAAGS/CTMM]."
+	echo "- Argument #1 is path_to the configuration file."
+	echo "- Argument #2 is path_to the output/result directory."
 	echo ""
-	echo "An example command would be: snptest_clumper.v1.sh [arg1: path_to_output_dir] [arg2: phenotype] [arg3: CLUMP_P2] [arg4: CLUMP_P1] [arg5: CLUMP_R2] [arg6: CLUMP_KB] [arg7: CLUMP_FIELD] [arg8: REFERENCE]"
+	echo "An example command would be: meta.clumper.sh [arg1: path_to_output_dir] [arg2: phenotype] "
 	echo ""
   	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
@@ -52,9 +72,12 @@ script_arguments_error_reference() {
 	echo "$1" # ERROR MESSAGE
 	echo ""
 	echo " You must supply the correct argument:"
-	echo " * [1kGp3v5GoNL5] -- for use of 1000G (phase 3, version 5, \"Final release\") plus GoNL5 as reference | DEFAULT."
-	echo " * [1kGp1v3]      -- for use of 1000G (phase 1, version 3) as reference."
+	echo " * [HM2]          -- for use of HapMap 2 release 22, b36 as reference | LEGACY."
+	echo " * [1Gp1]         -- for use of 1000G (phase 1, version 3) as reference."
+	echo " * [1Gp3]         -- for use of 1000G (phase 3, version 5) as reference | CURRENTLY UNAVAILABLE"
 	echo " * [GoNL4]        -- for use of GoNL4 as reference | CURRENTLY UNAVAILABLE"
+	echo " * [GoNL5]        -- for use of GoNL5 as reference | CURRENTLY UNAVAILABLE"
+	echo " * [1Gp3GONL5] -- for use of 1000G (phase 3, version 5, \"Final release\") plus GoNL5 as reference."
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
@@ -63,62 +86,61 @@ script_arguments_error_reference() {
 }
 
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "                                             SNPTEST_CLUMPER"
-echo "                                  CLUMPING OF SNPTEST ANALYSIS RESULTS"
+echo "                                             META-CLUMPER"
+echo "                              CLUMPING OF META-ANALYSIS OF GWAS RESULTS"
 echo ""
-echo " Version    : v1.2.3"
+echo " Version    : v1.0.0"
 echo ""
 echo " Last update: 2017-05-30"
 echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
-echo " Testers    : - Saskia Haitjema"
-echo "              - Aisha Gohar"
-echo "              - Jessica van Setten"
+echo " Testers    : - Jessica van Setten"
 echo ""
-echo " Description: Clumping of a genome-wide SNPTEST analysis."
+echo " Description: Clumping of a meta-analysis of genome-wide association studies results."
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 10 ]]; then 
+if [[ $# -lt 2 ]]; then 
 	echo "Oh, computer says no! Number of arguments found "$#"."
-	script_arguments_error "You must supply at least [10] arguments when clumping a *** GENOME-WIDE ANALYSIS ***!"
+	script_arguments_error "You must supply at least [2] arguments when clumping with *** META-CLUMPER ***!"
 	echo ""
 	script_copyright_message
 else
-	echo "All arguments are passed. These are the settings:"
-	### SET INPUT-DATA
-	OUTPUT_DIR=${1} # depends on arg1
-	PHENOTYPE=${2} 
-	CLUMP_P1=${3} # e.g.5.0e-06 Significance threshold for index SNPs
-	CLUMP_P2=${4} # e.g. 0.05 Secondary significance threshold for clumped SNPs
-	CLUMP_R2=${5} # LD threshold for clumping
-	CLUMP_KB=${6} # Physical distance threshold for clumping
-	CLUMP_FIELD=${7}
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Processing arguments..."
+	source ${1} # depends on arg1
 	
-	### ANALYSIS SETTINGS
-	### Set location of [imputed] genotype data
-	REFERENCE=${8} # depends on arg1  [1kGp3v5GoNL5/1kGp1v3/GoNL4] 
+	### Directories & Software
+	RESOURCES=${METAGWASTOOLKITDIR}/RESOURCES # depends on contents of arg1
+	PLINK2=${PLINK2} # depends on contents of arg1
+	METARESULTDIR=${2} # depends on arg2
+	REFERENCE=${REFERENCE} # depends on contents of arg1
+	POPULATION=${POPULATION} # depends on contents of arg1
+	PROJECTNAME=${PROJECTNAME} # depends on contents of arg1
 	
-	### Study type used
-	STUDY_TYPE=${9}
-
-	### Study type used
-	ANALYSIS_TYPE=${10}
-	
-	### THIS SHOULD BE PART OF THE GWASToolKit
-	RESOURCES=/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES
-	
-	### THERE SHOULD BE A CHECK ON THIS AS A PREREQUISITE
-	PLINK2=/hpc/local/CentOS7/dhl_ec/software/plink_v1.9
+	### Clump settings
+	CLUMP_P1=${CLUMP_P1} # e.g.5.0e-06 Significance threshold for index SNPs; # depends on contents of arg1
+	CLUMP_P2=${CLUMP_P2} # e.g. 0.05 Secondary significance threshold for clumped SNPs; # depends on contents of arg1
+	CLUMP_R2=${CLUMP_R2} # LD threshold for clumping; # depends on contents of arg1
+	CLUMP_KB=${CLUMP_KB} # Physical distance threshold for clumping; # depends on contents of arg1
+	CLUMP_FIELD=${CLUMP_FIELD} # Column name of p-value; # depends on contents of arg1
+	CLUMP_SNP_FIELD=${CLUMP_SNP_FIELD} # Column name of variantIDs; # depends on contents of arg1
 	
 	### Determine which reference and thereby input data to use, arg1 [1kGp3v5GoNL5/1kGp1v3/GoNL4] 
-		if [[ ${REFERENCE} = "1kGp1v3" ]]; then
+		if [[ ${REFERENCE} = "HM2" ]]; then
+			REFERENCE_HM2=${RESOURCES}/HAPMAP 
+		elif [[ ${REFERENCE} = "1Gp1" ]]; then
 			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
-		elif [[ ${REFERENCE} = "1kGp3v5GoNL5" ]]; then
-			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
+		elif [[ ${REFERENCE} = "1Gp3" ]]; then
+			echo "Apologies: currently it is not possible to clump based on 1000G phase 3."
+		elif [[ ${REFERENCE} = "GoNL5" ]]; then
+			echo "Apologies: currently it is not possible to clump based on GoNL5."
 		elif [[ ${REFERENCE} = "GoNL4" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL4"
+		elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs		
 		else
 		### If arguments are not met than the 
 			echo "Oh, computer says no! Number of arguments found "$#"."
@@ -128,39 +150,50 @@ else
 		fi
 		
 	echo ""
-	echo "The output directory is.................................................: ${OUTPUT_DIR}"
-	echo "The phenotype to clump for is...........................................: ${PHENOTYPE}"
+	echo "The results & output directory is.......................................: ${METARESULTDIR}"
+	echo "The project name is.....................................................: ${PROJECTNAME}"
 	echo "We will use the following reference.....................................: ${REFERENCE}"
-	echo "The following dataset will be used......................................: ${STUDY_TYPE}"
-	echo "The following analysis type will be run.................................: ${ANALYSIS_TYPE}"
+	echo "We will use the following population (of the reference).................: ${POPULATION}"
 	echo "Maximum (largest) p-value to clump......................................: ${CLUMP_P2}"
 	echo "Minimum (smallest) p-value to clump.....................................: ${CLUMP_P1}"
 	echo "R^2 to use for clumping.................................................: ${CLUMP_R2}"
 	echo "The KB range used for clumping..........................................: ${CLUMP_KB}"
 	echo "Indicate the name of the clumping field to use (default: p-value, P)....: ${CLUMP_FIELD}"
+	echo "Indicate the name of column with the variantID..........................: ${CLUMP_SNP_FIELD}"
 	echo ""
 	
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Preparing clumping of genome-wide analysis results using the P-values."	
+	echo "Preparing clumping of genome-wide analysis results using the P-values."
+
+	### HEADER summary file
+	### VARIANTID CHR POS MINOR MAJOR MAF CODEDALLELE OTHERALLELE CAF N_EFF Z_SQRTN P_SQRTN BETA_FIXED SE_FIXED Z_FIXED P_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED BETA_GC SE_GC Z_GC P_GC BETA_RANDOM SE_RANDOM Z_RANDOM P_RANDOM BETA_LOWER_RANDOM BETA_UPPER_RANDOM COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED DIRECTIONS GENES_250KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT
+	### 1		  2   3   4     5     6   7           8           9   10    11      12      13         14       15      16      17               18               19      20    21   22   23          24        25       26       27                28                29         30 31           32        33          34         35          36           37                     38                  39               40 
+	
 	# what is the basename of the file?
-	RESULTS=${OUTPUT_DIR}/${STUDY_TYPE}.${ANALYSIS_TYPE}.${REFERENCE}.${PHENOTYPE}.summary_results.QC.txt.gz
+	#meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz
+	RESULTS=${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz
 	FILENAME=$(basename ${RESULTS} .txt.gz)
 	echo "The basename is: [ ${FILENAME} ]."
 	echo ""
 	echo "Un-Gzipping the results for clumping..."
-	gzip -dv ${OUTPUT_DIR}/${FILENAME}.txt.gz
+	gzip -dv ${METARESULTDIR}/${FILENAME}.txt.gz
 	echo "Clumping..."
-	if [[ ${REFERENCE} = "1kGp1v3" ]]; then
+	if [[ ${REFERENCE} = "HM2" ]]; then
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "1Gp1" ]]; then
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp1v3 # 1000Gp1v3.20101123.EUR
-		$PLINK2 --bfile $REFERENCE_1kGp1v3/1000Gp1v3.20101123.EUR --memory 168960 --clump ${OUTPUT_DIR}/${FILENAME}.txt --clump-snp-field "RSID" --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${OUTPUT_DIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CodedAlleleB,OtherAlleleA,CAF,MAF,MAC,HWE,AvgMaxPostCall,Info,BETA,SE 
-		echo "The reference is ${REFERENCE}."
-	elif [[ ${REFERENCE} = "1kGp3v5GoNL5" ]]; then
+		$PLINK2 --bfile ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CODEDALLELE,OTHERALLELE,CAF,MAF,N_EFF,BETA_FIXED,SE_FIXED,Z_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,GENES_250KB,VARIANT_FUNCTION,CAVEAT 
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
-		$PLINK2 --bfile $REFERENCE_1kGp3v5GoNL5/1000Gp3v5.20130502.EUR --memory 168960 --clump ${OUTPUT_DIR}/${FILENAME}.txt --clump-snp-field "RSID" --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${OUTPUT_DIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CodedAlleleB,OtherAlleleA,CAF,MAF,MAC,HWE,AvgMaxPostCall,Info,BETA,SE 
+		$PLINK2 --bfile ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CODEDALLELE,OTHERALLELE,CAF,MAF,N_EFF,BETA_FIXED,SE_FIXED,Z_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,GENES_250KB,VARIANT_FUNCTION,CAVEAT 
 	elif [[ ${REFERENCE} = "GoNL4" ]]; then
-		echo "Apologies: currently it is not possible to clump based on GoNL4"
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "GoNL5" ]]; then
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
 	else
 	### If arguments are not met than the 
 		echo "Oh, computer says no! Number of arguments found "$#"."
@@ -170,27 +203,28 @@ else
 	fi
 		
 	echo "Done clumping; gzipping the results for [ ${FILENAME} ]..."
-	gzip -v ${OUTPUT_DIR}/${FILENAME}.txt
+	gzip -v ${METARESULTDIR}/${FILENAME}.txt
 	echo ""
 	
 	echo "After clumping, pull out the index variants..."
-	grep "INDEX" ${OUTPUT_DIR}/${FILENAME}.${CLUMP_R2}.clumped.clumped | awk ' { print $2 } ' > ${OUTPUT_DIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt
+	grep "INDEX" ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped.clumped | awk ' { print $2 } ' > ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt
 	echo "Number of index variants..." 
-	cat ${OUTPUT_DIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt | wc -l
+	cat ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt | wc -l
 	
 	echo ""
 	echo "Copying to a working file..."
-	cp -v ${OUTPUT_DIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt ${OUTPUT_DIR}/${FILENAME}.clumped_hits.txt.foo
+	cp -v ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo
 	echo ""
 	
-	echo "Counting the total of number of index variants to look at."
-	cat ${OUTPUT_DIR}/${FILENAME}.clumped_hits.txt.foo | wc -l
-	cat ${OUTPUT_DIR}/${FILENAME}.clumped_hits.txt.foo | sort -u > ${OUTPUT_DIR}/${FILENAME}.clumped_hits.txt
-	#rm -v ${OUTPUT_DIR}/${FILENAME}.clumped_hits.txt.foo
+	echo "Counting the total of number of index variants to look at:"
+	cat ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo | wc -l
+	echo "Sorting the total number of unique index variants"
+	cat ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo | sort -u > ${METARESULTDIR}/${FILENAME}.clumped_hits.txt
+	rm -v ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo
 	echo ""
 	
-	echo "Making a list of TOP-variants based on p < ${CLUMP_P1}."
-	zcat ${OUTPUT_DIR}/${FILENAME}.txt.gz | awk '$1=="ALTID" || $17<='${CLUMP_P1}'' > ${OUTPUT_DIR}/${FILENAME}.TOP_based_on_p${CLUMP_P1}.txt
+	echo "Making a list of TOP-variants based on p <= ${CLUMP_P1}."
+	zcat ${METARESULTDIR}/${FILENAME}.txt.gz | awk '$1=="VARIANTID" || $16 <= '${CLUMP_P1}'' > ${METARESULTDIR}/${FILENAME}.TOP_based_on_p${CLUMP_P1}.txt
 	echo ""
 	
 ### END of if-else statement for the number of command-line arguments passed ###

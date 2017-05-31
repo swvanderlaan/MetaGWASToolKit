@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+                              MedianSE-Lambda-Mean_N CALCULATOR                         +\n";
-print STDOUT "+                                 version 2.1 | 11-05-2017                               +\n";
+print STDOUT "+                                 version 2.1 | 30-05-2017                               +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
@@ -81,8 +81,8 @@ while(<COHORT>){
 	       
 	    while( <IN> ){
 	    ### Head of CDAT file
-	    # VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference
-	    # 0         1       2               3   4   5       6               7           8           9           10  11  12  13      14      15      16          17  18  19  20      21          22      23
+	    # VariantID Marker MarkerOriginal CHR BP Strand EffectAllele OtherAllele MinorAllele MajorAllele EAF MAF MAC HWE_P Info Beta BetaMinor SE P 	N 	N_cases N_controls Imputed Reference VT
+	    # 0         1      2              3   4  5      6            7           8           9           10  11  12  13    14   15   16        17 18	19	20      21         22      23		 24
 		
 			if ($_ =~ m/CHR/)  { 
 			$parameterFound = 1 ;

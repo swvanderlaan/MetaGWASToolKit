@@ -3,8 +3,8 @@
 #$ -S /bin/bash 																				# the type of BASH you'd like to use
 #$ -N qsub.metagwastoolkit 																		# the name of this script
 # -hold_jid some_other_basic_bash_script 														# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
-#$ -o /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.PostMetaLDMR.log 						# the log file of this job
-#$ -e /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.PostMetaLDMR.errors 					# the error file of this job
+#$ -o /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.PostMetaFixNEFF.log 						# the log file of this job
+#$ -e /hpc/dhl_ec/svanderlaan/projects/meta_gwasfabp4/metagwastoolkit.PostMetaFixNEFF.errors 					# the error file of this job
 #$ -l h_rt=04:00:00 																			# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
 #$ -l h_vmem=4G 																				# h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
 # -l tmpspace=64G 																				# this is the amount of temporary space you think your script will use

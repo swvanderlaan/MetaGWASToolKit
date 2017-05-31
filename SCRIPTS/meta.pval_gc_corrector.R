@@ -140,15 +140,15 @@ lambdavalue = round(median(Z_forlamba^2)/qchisq(0.5, df = 1),3)
 
 cat("* Performing some calculations...\n")
 cat("  - effect size (beta)\n")
-BETA <- data$BETA_FIXED
+BETA_GC <- data$BETA_FIXED
 cat("  - standard error\n")
-SE <- data$SE_FIXED * as.numeric(sqrt(lambdavalue))
+SE_GC <- data$SE_FIXED * as.numeric(sqrt(lambdavalue))
 cat("  - Z-score\n")
-Z <- data$BETA_FIXED / SE
+Z_GC <- data$BETA_FIXED / SE_GC
 cat("  - P-value\n")
-P <- pnorm(-(abs(Z))) * 2;
+P_GC <- pnorm(-(abs(Z_GC))) * 2;
 cat("  - making updated dataset for export\n")
-data.updated <- data.frame(data$VARIANTID, BETA, SE, Z, P)
+data.updated <- data.frame(data$VARIANTID, BETA_GC, SE_GC, Z_GC, P_GC)
 
 names(data.updated)[names(data.updated) == 'data.VARIANTID'] <- 'VARIANTID'
 
