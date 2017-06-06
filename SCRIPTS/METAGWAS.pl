@@ -1,9 +1,9 @@
 #!/usr/bin/perl
 ##########################################################################################
 #
-# Version               : 2.1.11"
+# Version               : 2.1.12"
 #
-# Last update			: 2017-05-30"
+# Last update			: 2017-06-06"
 # Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com;
 #						  Jacco Schaap;
 #						  Jessica van Setten.
@@ -527,7 +527,8 @@ while(my $c = <DBSNP>){
 
     $fields[0] =~ s/chr//;
     $dbsnp_chr{$variant} = $fields[0];
-    $dbsnp_pos{$variant} = $fields[1] + 1;
+    $dbsnp_pos{$variant} = $fields[1];
+#     $dbsnp_pos{$variant} = $fields[1] + 1;
     $dbsnp_function{$variant} = $fields[7];
 #     $dbsnp_alleles{$variant} = [ @alleles ];
     $dbsnp_a1{$variant} = $alleles[0]; # reference allele

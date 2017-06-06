@@ -321,12 +321,10 @@ if ( $reference eq "1Gp1" ) {
 	} elsif (length($REF) > 1){ 
 		$chrstart = $bp; # base pair start position
 		$chrend = $bp + length($REF); # base pair end position
-# 		$chrend = $bp; # base pair end position
 		
 		} elsif (length($ALT) > 1){ 
 		$chrstart = $bp; # base pair start position
 		$chrend = $bp + length($ALT); # base pair end position
-# 		$chrend = $bp; # base pair end position
 		
 			} else { 
 				$chrstart = $bp; # base pair start position
