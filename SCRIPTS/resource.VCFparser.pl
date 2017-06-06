@@ -10,15 +10,15 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; Utrecht, the 
 #               Netherlands, s.w.vanderlaan@gmail.com.
-# Version:		1.3.5
-# Update date: 	2017-05-30
+# Version:		1.3.6
+# Update date: 	2017-06-05
 #
 # Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                        VCF PARSER                                      +\n";
-print STDERR "+                                          v1.3.5                                        +\n";
+print STDERR "+                                          v1.3.6                                        +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -320,11 +320,13 @@ if ( $reference eq "1Gp1" ) {
 	
 	} elsif (length($REF) > 1){ 
 		$chrstart = $bp; # base pair start position
-		$chrend = $bp + length($REF); # base pair end position
+# 		$chrend = $bp + length($REF); # base pair end position
+		$chrend = $bp; # base pair end position
 		
 		} elsif (length($ALT) > 1){ 
 		$chrstart = $bp; # base pair start position
-		$chrend = $bp + length($ALT); # base pair end position
+# 		$chrend = $bp + length($ALT); # base pair end position
+		$chrend = $bp; # base pair end position
 		
 			} else { 
 				$chrstart = $bp; # base pair start position
