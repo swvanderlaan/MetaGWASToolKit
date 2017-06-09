@@ -80,7 +80,7 @@ There are a couple of reference available per standard, these are:
 - **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes. [NOT AVAILABLE YET] :large_orange_diamond:
 - **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
 - **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
-- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_orange_diamond:
 
 #### Step 5: Installation of necessary software
 **MetaGWASToolKit** requires you to install several software packages. 
@@ -127,7 +127,8 @@ After cleaned datasets are obtained, `metagwastoolkit.run.sh` will prepare the m
 - random effects
 - fixed effects
 - Z-score based
-We should note, that as a default, the meta-analysis is done in a `--verbose` mode, *i.e.* all relevant data of each cohort is added to the final meta-analysis output. This can be troublesome when tens or hundres of GWAS datasets are analyzed. This behaviour can be changed by setting the appropriate flag in `metagwastoolkit.conf`. *Note: this script needs fixing.* :construction:
+
+We should note, that currently as a default, the meta-analysis is done in a `--verbose` mode, *i.e.* all relevant data of each cohort is added to the final meta-analysis output. This can be troublesome when tens or hundreds of GWAS datasets are analyzed. In the next version this behaviour can be changed by setting the appropriate flag in `metagwastoolkit.conf`. *Note: this script needs fixing.* :construction:
 
 #### Plotting meta-analysis results
 After the meta-analysis is complete for each chunk, the data is checked, and if deemed okay, it will be concatenated into one file. After concatenation of the data, various plots of each model result for visual inspection (and publication) are made.
@@ -142,7 +143,7 @@ After the meta-analysis is complete for each chunk, the data is checked, and if 
 #### Downstream analyses & annotation
 ##### Gene-based association study
 Low power and heterogeneity can negatively impact the results of a meta-analysis of GWAS. Therefore we have implemented in **MetaGWASToolKit** two different approaches to gene-based association analyses. 
-- *VEGAS2*: `A versatile gene-based association study` which will sum Z-scores accross variants mapped to a gene to derive emperical p-values for genes taking into account LD-structure. Reference: ([Mishra A. et al.](http://journals.cambridge.org/abstract_S1832427414000796?) and [Liu J.Z. et al.](http://www.sciencedirect.com/science/article/pii/S0002929710003125)). 
+- *VEGAS2*: `A versatile gene-based association study` which will sum Z-scores accross variants mapped to a gene to derive emperical p-values for genes taking into account LD-structure. VEGAS2 will also run pathway analyses using the gene-based analysis results. Reference: ([Mishra A. et al.](http://journals.cambridge.org/abstract_S1832427414000796?) and [Liu J.Z. et al.](http://www.sciencedirect.com/science/article/pii/S0002929710003125)). :construction:
 - *MAGMA*: which takes a similar approach as *VEGAS2* to derive emperical p-values. In addition MAGMA will automatically perform a set-based gene-set enrichement analysis. Reference: https://ctg.cncr.nl/software/magma and [de Leeuw C. et al.](http://journals.plos.org/ploscompbiol/article?id=10.1371%2Fjournal.pcbi.1004219).
 
 *Note: The installation of MAGMA and VEGAS2 are required for this function to work.*
@@ -172,19 +173,19 @@ FUMA was recently developed by the lab of [Danielle Posthuma](https://ctg.cncr.n
 - add in automagical checking of each cohort after cleaning :construction:
 - add in params-file generator (cohort-name, lambda [after QC], avg. sample size, beta-correction factor) :construction:
 - add in option to include/exclude special chromosomes (X, Y, XY, MT) :large_blue_diamond:
-- add in more extensive annotation of variants - perhaps HaploReg; eQTL/mQTL/pQTL; ENCODE? :large_blue_diamond:
+- ~~add in more extensive annotation of variants - perhaps HaploReg; eQTL/mQTL/pQTL; ENCODE?~~ :ballot_box_with_check:
 - add `--verbose` and other flags of `METAGWAS.pl` to `metagwastoolkit.conf`. :construction:
-- add in LocusTrack functionality :ballot_box_with_check:
-- add in LD score functionality :ballot_box_with_check:
-- add in MR base functionality :ballot_box_with_check:
-- add in MAGMA functionality :ballot_box_with_check:
-- add in VEGAS2 functionality :ballot_box_with_check:
+- ~~add in LocusTrack functionality~~ :ballot_box_with_check:
+- ~~add in LD score functionality~~ :ballot_box_with_check:
+- ~~add in MR base functionality~~ :ballot_box_with_check:
+- ~~add in MAGMA functionality~~ :ballot_box_with_check:
+- ~~add in VEGAS2 functionality~~ :ballot_box_with_check:
 - add in VEGAS2 based pathway enrichment analysis :construction:
-- add in a relevant annotation function :ballot_box_with_check:
+- ~~add in a relevant annotation function~~ :ballot_box_with_check:
 
 #### Manhattan
 - add in option to give the output a specific name (now it's based on the filename) :large_orange_diamond:
-- highlight a specific region (previous/novel loci) :large_blue_diamond:
+- automatically highlight a specific region (previous/novel loci) :large_blue_diamond:
 - add in a gene name at the most significant peaks (previous/novel loci) :large_orange_diamond:
 - add in option on test-statistics (Z-score, Chi^2, or P-value) :large_orange_diamond:
 - add in option to choose for a stratified Manhattan (bottom vs. upper for instance male vs. female) :large_orange_diamond:
@@ -195,8 +196,8 @@ FUMA was recently developed by the lab of [Danielle Posthuma](https://ctg.cncr.n
 
 #### QQ-plots
 - ~~add in confidence interval as option, and also an improved one~~ :x: SKIPPED
-- add in more options for variant-types, currently only SNV and INDEL; one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation :large_blue_diamond:
-- add in option to cut-off the maximum -log10(P), for instance everything p < 5.0e-10 is set to p = 5.0e-10; while at the same time lambdas are calculate based on the original p-values. :large_orange_diamond:
+- ~~add in more options for variant-types, currently only SNV and INDEL; one might think in terms missense/nonsense/etc., or eQTL/mQTL/pQTL, or other annotation~~ :skipped:
+- add in option to cut-off the maximum -log10(P), for instance everything p < 5.0e-10 is set to p = 5.0e-10; while at the same time lambdas are calculated based on the original p-values. :large_orange_diamond:
 
 --------------
 
