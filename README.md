@@ -60,7 +60,7 @@ if [ -d ~/git/MetaGWASToolKit/.git ]; then \
 
 
 #### Step 4: Create necessary databases. These include:
-You will have to download and create some data needed for **MetaGWASToolKit** to function. The `resource.creator.sh` script will automagically create the necessary files. These include:
+You will have to download and create some data needed for **MetaGWASToolKit** to function. The `resource.creator.sh` script will automagically create the necessary files. For some of these files, it is necessary to supply the proper reference data in VCF-format (version 4.1+). The files created by `resource.creator.sh` include:
 - DBSNPFILE    -- a dbSNP file containing information per variant based on dbSNP b147.
 - REFFREQFILE  -- a file containing reference frequencies per variant for the chosen reference and population.
 - VINFOFILE    -- a file needed to harmonize all the cohorts in terms of variant ID, contains various *variantID* versions (rs[XXXX], chr[X]:bp[XXX]:A1_A2, *etc.*). The resulting file is used by `gwas2ref.harmonizer.py` later on during harmonization.
@@ -72,6 +72,23 @@ To download and install please run the following code, this should submit variou
 ```
 cd ~/git/MetaGWASToolKit && bash resource.creator.sh
 ```
+
+##### Available references
+There are a couple of reference available per standard, these are:
+- **HapMap 2 [`HM2`], version 2, release 22, b36.**        -- HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature. [NOT AVAILABLE YET] :large_blue_diamond:
+- **1000G phase 1, version 3 [`1Gp1`], b37.**              -- 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
+- **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes. [NOT AVAILABLE YET] :large_orange_diamond:
+- **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+- **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+
+#### Step 5: Installation of necessary software
+**MetaGWASToolKit** requires you to install several software packages. 
+- *PLINK2* for LD-calculations; reference: https://www.cog-genomics.org/plink2. 
+- *LocusZoom v1.3* for automatic regional association plotting; reference: http://genome.sph.umich.edu/wiki/LocusZoom_Standalone. 
+- *VEGAS2*; for gene-based association analysis; reference: https://vegas2.qimrberghofer.edu.au. 
+- *MAGMA* for gene-based association analysis, and gene-set enrichment analyses; reference: https://ctg.cncr.nl/software/magma. 
+
 
 --------------
 
@@ -118,31 +135,26 @@ After the meta-analysis is complete for each chunk, the data is checked, and if 
 - Manhattan-plots
 - Effective Sample Size, for the whole analysis. *Note: this script needs fixing.* :construction:
 - SE-N-lambda, as per [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786). *Note: this script needs fixing.* :construction:
-- Locuszoom plots. After concatenation of the meta-analysis results, these will be clumped using the appropriate reference as downloaded (see above 'Installing the scripts locally'). Based on the particular clumping settings (indicated in `metagwastoolkit.conf`) regional association plots will be generated using an installment of [LocusZoom v1.3](http://genome.sph.umich.edu/wiki/LocusZoom_Standalone). *Note: this script needs fixing.* :construction:
+- *LocusZoom* plots. After concatenation of the meta-analysis results, these will be clumped using the appropriate reference as downloaded (see above 'Installing the scripts locally'). Based on the particular clumping settings (indicated in `metagwastoolkit.conf`) regional association plots will be generated using an installment of [LocusZoom v1.3](http://genome.sph.umich.edu/wiki/LocusZoom_Standalone). *Note: this script needs fixing.* :construction:
+- *LocusTrack* plots. In addition to making LocusZoom plots (for which you will have to install LocusZoom) **MetaGWASToolKit** also generates files appropriate for [LocusTrack plots](https://gump.qimr.edu.au/general/gabrieC/LocusTrack/); this online tool can plot many additional informative tracks underneath the regional association plot. Reference: [Cuellar-Partida G. et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4351846/).
 - Genomic control, using the results from the fixed effects model, genomic control will be applied to the meta-analysis results. These lambda-corrected results will also be plotted (Manhattan, and [stratified] QQ-plots). *Note: this script needs fixing.* :construction:
 
 #### Downstream analyses & annotation
 ##### Gene-based association study
-Low power and heterogeneity can negatively impact the results of a meta-analysis of GWAS, therefore we have implemented `A versatile gene-based association study` ([Mishra A. et al.](http://journals.cambridge.org/abstract_S1832427414000796?) and [Liu J.Z. et al.](http://www.sciencedirect.com/science/article/pii/S0002929710003125)) to derive emperical p-values for genes. :construction:
+Low power and heterogeneity can negatively impact the results of a meta-analysis of GWAS. Therefore we have implemented in **MetaGWASToolKit** two different approaches to gene-based association analyses. 
+- *VEGAS2*: `A versatile gene-based association study` which will sum Z-scores accross variants mapped to a gene to derive emperical p-values for genes taking into account LD-structure. Reference: ([Mishra A. et al.](http://journals.cambridge.org/abstract_S1832427414000796?) and [Liu J.Z. et al.](http://www.sciencedirect.com/science/article/pii/S0002929710003125)). 
+- *MAGMA*: which takes a similar approach as *VEGAS2* to derive emperical p-values. In addition MAGMA will automatically perform a set-based gene-set enrichement analysis. Reference: https://ctg.cncr.nl/software/magma and [de Leeuw C. et al.](http://journals.plos.org/ploscompbiol/article?id=10.1371%2Fjournal.pcbi.1004219).
+
+*Note: The installation of MAGMA and VEGAS2 are required for this function to work.*
 
 ##### LD score
-To examine heritability of the trait under investigation and the genetic correlation with other traits, we have implemented LD score. Refer to [Zheng J. et al.](http://bioinformatics.oxfordjournals.org/content/early/2016/09/22/bioinformatics.btw613.abstract), [Bulik-Sullivan B. et al.](http://www.nature.com/ng/journal/vaop/ncurrent/full/ng.3211.html), and [LDSC on GitHub](https://github.com/bulik/ldsc) and for more information. :construction:
+To examine heritability of the trait under investigation and the genetic correlation with other traits, **MetaGWASToolKit** will make the appropriate input file for [LD-Hub](http://ldsc.broadinstitute.org/ldhub/). Reference: [Zheng J. et al.](http://bioinformatics.oxfordjournals.org/content/early/2016/09/22/bioinformatics.btw613.abstract), [Bulik-Sullivan B. et al.](http://www.nature.com/ng/journal/vaop/ncurrent/full/ng.3211.html). See also [LDSC on GitHub](https://github.com/bulik/ldsc) for more information.
 
 ##### MR base
-To derive causal effects we have added the [MR base](http://www.mrbase.org) scripts to the work-flow. See also: [Hemani G. et al.](https://doi.org/10.1101/078972). :construction:
+To derive causal effects **MetaGWASToolKit** will make the appropriate input file for [MR base](http://www.mrbase.org). Reference: [Hemani G. et al.](https://doi.org/10.1101/078972).
 
-#### References and other datasebases
-##### Creating references
-One is obliged to create the reference from VCF-files (version 4.1+) using `resource.creator.sh`, see above. 
-
-##### Available references
-There are a couple of reference available per standard, these are:
-- **HapMap 2 [`HM2`], version 2, release 22, b36.**        -- HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature. [NOT AVAILABLE YET] :large_blue_diamond:
-- **1000G phase 1, version 3 [`1Gp1`], b37.**              -- 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
-- **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes. [NOT AVAILABLE YET] :large_orange_diamond:
-- **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
-- **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
-- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
+##### Annotation
+FUMA was recently developed by the lab of [Danielle Posthuma](https://ctg.cncr.nl/people/danielle_posthuma), and can be used to annotate results with per-variant functional information on location, QTL, genes, etc. Reference: http://fuma.ctglab.nl.
 
 --------------
 
@@ -162,11 +174,13 @@ There are a couple of reference available per standard, these are:
 - add in option to include/exclude special chromosomes (X, Y, XY, MT) :large_blue_diamond:
 - add in more extensive annotation of variants - perhaps HaploReg; eQTL/mQTL/pQTL; ENCODE? :large_blue_diamond:
 - add `--verbose` and other flags of `METAGWAS.pl` to `metagwastoolkit.conf`. :construction:
-- add in LD score functionality :construction:
-- add in MR base functionality :construction:
-- add in VEGAS2 functionality :construction:
+- add in LocusTrack functionality :ballot_box_with_check:
+- add in LD score functionality :ballot_box_with_check:
+- add in MR base functionality :ballot_box_with_check:
+- add in MAGMA functionality :ballot_box_with_check:
+- add in VEGAS2 functionality :ballot_box_with_check:
 - add in VEGAS2 based pathway enrichment analysis :construction:
-- add in a relevant annotation function :construction:
+- add in a relevant annotation function :ballot_box_with_check:
 
 #### Manhattan
 - add in option to give the output a specific name (now it's based on the filename) :large_orange_diamond:
