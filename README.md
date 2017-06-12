@@ -1,7 +1,9 @@
 MetaGWASToolKit
 ============
 
-**NOTE: these scripts and the readme are under heavy development, check back frequently.**
+** Preliminary release v1.0.0 **
+
+**NOTE: For a meta-analysis using 1000G phase 1 everything should work. We are updating some items, so please check back. For a list of items we are working on check the bottom of this readme.**
 
 ### Introduction
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
