@@ -692,7 +692,85 @@ else
 # 	echo "Clumping meta-analysis summary file..." 
 # 	echo "${SCRIPTS}/meta.clumper.sh ${CONFIGURATIONFILE} ${METARESULTDIR} " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
 # 	qsub -S /bin/bash -N METACLUMP -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
-# 	echo "Plotting clumped hits - note: will not plot if there are no clumped hits..." 
+# 
+	echo "Parsing clumped results..." 
+	INDEXVARIANTS="${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.0.2.indexvariants.txt"
+	if [[ -s ${INDEXVARIANTS} ]] ; then
+		echo "There are indexed variants after clumping in [ "$(basename ${INDEXVARIANTS})" ]."
+		VARIANTLIST="${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.0.2.indexvariants.txt" 
+		while read VARIANTS; do 
+			for VARIANT in ${VARIANTS}; do
+				echo "* ${VARIANT}"
+			done
+		done < ${VARIANTLIST}
+		echo ""
+		while IFS='' read -r VARIANTS || [[ -n "$VARIANTS" ]]; do
+					
+			LINE=${VARIANTS}
+			VARIANT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "* Extracting clumped data for ${VARIANT}..."
+			${SCRIPTS}/parseClumps.pl --file ${METARESULTDIR}/meta.results.FABP4.1Gp1.EUR.summary.0.2.clumped.clumped --variant ${VARIANT} > ${METARESULTDIR}/meta.results.FABP4.1Gp1.EUR.summary.0.2.${VARIANT}.txt
+			
+		done < ${VARIANTLIST}
+		
+	else
+		echo "There are no clumped variants. We will not produce regional associations plots."
+	fi
+
+
+# 	echo "Plotting clumped hits - note: will not plot if there are no clumped hits..."
+# 	LDMAP="--pop EUR --build hg19 --source 1000G_March2012"
+# 	LOCUSZOOM_SETTINGS="ldColors=\"#595A5C,#4C81BF,#1396D8,#C5D220,#F59D10,red,#9A3480\" showRecomb=TRUE drawMarkerNames=FALSE refsnpTextSize=1.0 showRug=FALSE showAnnot=TRUE showRefsnpAnnot=TRUE showGenes=TRUE clean=TRUE bigDiamond=TRUE refsnpLineWidth=2 axisSize=1.25 axisTextSize=1.25 refsnpLineWidth=1.25 geneFontSize=1.25"
+# 	echo "MarkerName P-value" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+# 	zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,P_FIXED | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+# 
+# 	INDEXVARIANTS="${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.0.2.indexvariants.txt"
+# 	if [[ -s ${INDEXVARIANTS} ]] ; then
+# 		echo "There are indexed variants after clumping in [ "$(basename ${INDEXVARIANTS})" ]."
+# 		VARIANTLIST="${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.0.2.indexvariants.txt" 
+# 		while read VARIANTS; do 
+# 			for VARIANT in ${VARIANTS}; do
+# 				echo "* ${VARIANT}"
+# 			done
+# 		done < ${VARIANTLIST}
+# 		
+# 		### Determine the range
+# 		LZRANGE=${LZRANGE}
+# 		echo ""
+# 		N_VARIANTS=$(cat ${VARIANTLIST} | wc -l)
+# 		echo "Number of variants to plot...: ${N_VARIANTS} variants"
+# 		echo "Investigating range..........: ${LZRANGE}kb around each of these variants."
+# 		
+# 		echo ""
+# 		echo "* Creating output directory for regional association plots..."
+# 		if [ ! -d ${METARESULTDIR}/locuszoom ]; then
+# 	  		echo " - making subdirectory ..."
+# 	  		mkdir -v ${METARESULTDIR}/locuszoom
+# 		else
+# 			echo " - subdirectory already there ..."
+# 		fi
+# 		
+# 		### Set the rawdata for the cohort
+# 		VARIANTOUTPUTDIR=${METARESULTDIR}/locuszoom
+# 
+# 		echo ""
+# 		while IFS='' read -r VARIANTS || [[ -n "$VARIANTS" ]]; do
+# 					
+# 			LINE=${VARIANTS}
+# 			VARIANT=$(echo "${LINE}" | awk '{ print $1 }')
+# 			echo "Starting plotting ${VARIANT} ± ${LZRANGE}kb..."
+# 			
+# 			echo "* Actual plotting of ${VARIANT}..."
+# 			cd ${VARIANTOUTPUTDIR}
+# 			${LZv13} --metal ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom --markercol MarkerName --delim space --refsnp ${VARIANT} --flank ${LZRANGE}kb ${LDMAP} theme=publication title="${VARIANT} for project: ${PROJECTNAME}" --prefix=${PROJECTNAME}.${REFERENCE}.${POPULATION}.${VARIANT} ${LOCUSZOOM_SETTINGS}
+# 			
+# 		done < ${VARIANTLIST}
+# 		
+# 	else
+# 		echo "There are no clumped variants. We will not produce regional associations plots."
+# 	fi
+# 	qsub -S /bin/bash -N Regional.Plotting -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LZ.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LZ.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LZ.sh
+
 # 	echobold "#========================================================================================================"
 # 	echobold "#== FOREST PLOTTER OF META-ANALYSIS RESULTS -- NOT IMPLEMENTED YET"
 # 	echobold "#========================================================================================================"
@@ -707,12 +785,30 @@ else
 #	### - R: meta-analysis
 #	### - R: forest plot
 #	### - R: include heterogeneity
-#
+# 
 # 	echobold "#========================================================================================================"
 # 	echobold "#== ANNOTATING META-ANALYSIS RESULTS "
 # 	echobold "#========================================================================================================"
 # 	echobold "#"
-# 	echo "Many online tools are available, for your convenience, we will create input files for several popular ones."
+# 	echo "Many online tools are available, for your convenience, we will create input files for a/several popular one(s)."
+# 
+# 	echo ""
+# 	echo "* Creating input file for FUMAGWAS -- http://fuma.ctglab.nl/snp2gene"
+# 	### We will collect the following information for the summarized data.
+# 	### Column name -- FUMA column name
+# 	### VARIANTID 		-- SNP | snpid | markername | rsID: rsID
+# 	### CHR 			-- CHR | chromosome | chrom: chromosome
+# 	### POS 			-- BP | pos | position: genomic position (hg19)
+# 	### CODEDALLELE 	-- A1 | alt | effect_allele | allele1 | alleleB: affected allele
+# 	### OTHERALLELE 	-- A2 | ref | non_effect_allele | allele2 | alleleA: another allele
+# 	### P_FIXED 		-- P | pvalue | p-value | p_value | frequentist_add_pvalue | pval: P-value (Mandatory)
+# 	### BETA_FIXED 		-- Beta | be: Beta
+# 	### SE_FIXED 		-- SE: Standard error
+# 	### N_EFF 			-- N: sample size
+# 	echo "echo \"SNP CHR BP A1 A2 P Beta SE N\" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,P_FIXED,BETA_FIXED,SE_FIXED,N_EFF | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+# 	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+# 	qsub -S /bin/bash -N Annot.FUMA -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
 # 
 #	### THIS DOES NOT SEEM TO WORK -- WEBSITE IS MEGA-SLOW !!!
 # 	### echo ""
@@ -722,12 +818,6 @@ else
 # 	### qsub -S /bin/bash -N Annot.LocusTrack -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
 #	### THIS DOES NOT SEEM TO WORK -- WEBSITE IS MEGA-SLOW !!!
 # 
-# 	echo ""
-# 	echo "* Creating input file for FUMAGWAS -- http://fuma.ctglab.nl/snp2gene"
-# 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col CHR,POS,VARIANTID,P_FIXED,CODEDALLELE,OTHERALLELE,BETA_FIXED,SE_FIXED,N_EFF > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-# 	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-# 	qsub -S /bin/bash -N Annot.FUMA -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-
 #	### THINK ABOUT THIS ### 
 #	### Should I annotate everything? Or just the clumps? Latter seems logical.
 # 	### echo ""
@@ -736,7 +826,6 @@ else
 # 	### echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
 # 	### qsub -S /bin/bash -N Annot.LocusTrack -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
 #	### THINK ABOUT THIS ###
-
 # 
 # 	echobold "#========================================================================================================"
 # 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2"
@@ -746,16 +835,17 @@ else
 # 	echo "Creating VEGAS input files..." 
 # 	mkdir -v ${METARESULTDIR}/vegas
 # 	VEGASDIR=${METARESULTDIR}/vegas
+# 	chmod -Rv a+rwx ${VEGASDIR}
 # 	echo " - per chromosome..."	
 #  	for CHR in $(seq 1 23); do
 # 		if [[ $CHR -le 22 ]]; then 
 # 			echo "Processing chromosome ${CHR}..."
-# 			zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk '$2==${CHR}' | awk '{ print $1, $3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt
+# 			echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==${CHR} ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 # 	  		echo "$VEGAS2 -G -snpandp ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 # 	  		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 # 		elif [[ $CHR -eq 23 ]]; then  
 # 			echo "Processing chromosome X..."
-# 			zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk '$2=="X"' | awk '{ print $1, $3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt
+# 			echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==\"X\" ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 # 	  		echo "$VEGAS2 -G -snpandp ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 # 	  		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 # 		else
@@ -765,6 +855,25 @@ else
 # 
 # 	done
 # 
+# 	echobold "#========================================================================================================"
+# 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING MAGMA"
+# 	echobold "#========================================================================================================"
+# 	echobold "#"
+# 	### REQUIRED: MAGMA settings.
+# 	### Head for MAGMA input
+# 	### SNP CHR BP P NOBS 
+# 	echo "Creating MAGMA input files..." 
+# 	mkdir -v ${METARESULTDIR}/magma
+# 	MAGMARESULTDIR=${METARESULTDIR}/magma
+# 	chmod -Rv a+rwx ${MAGMARESULTDIR}
+# 	echo " - whole-genome..."
+#  	echo "echo \"SNP CHR BP P NOBS\" > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+#  	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED,N_EFF | tail -n +2 | awk '{ print \$1, \$2, \$3, \$4, int(\$5) }' >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+# 	echo "${MAGMA} --annotate --snp-loc ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt --gene-loc ${MAGMAGENES} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+# 	echo "${MAGMA} --bfile ${MAGMAPOP} synonyms=${MAGMADBSNP} synonym-dup=drop-dup --pval ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt ncol=NOBS --gene-annot ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated.genes.annot --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+#  	echo "${MAGMA} --gene-results ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated.genes.raw --set-annot ${MAGMAGENESETS} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.gsea " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+#  	qsub -S /bin/bash -N MAGMA.${PROJECTNAME} -hold_jid METASUM -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+#  
 # 	echobold "#========================================================================================================"
 # 	echobold "#== LD SCORE REGRESSION -- currently only the *input* files for LD-Hub are created --"
 # 	echobold "#========================================================================================================"

@@ -88,9 +88,9 @@ script_copyright_message() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                    MetaGWASToolKit: Resource Creator"
 echobold ""
-echobold "* Version:      v1.0.3"
+echobold "* Version:      v1.0.4"
 echobold ""
-echobold "* Last update:  2017-05-30"
+echobold "* Last update:  2017-06-12"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Testers:      Jessica van Setten."
 echobold "* Description:  Downloads, parses and creates the necessary resources for MetaGWASToolKit."
@@ -248,22 +248,22 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-	echo ""
-	echobold "#########################################################################################################"
-	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
-	echobold "#########################################################################################################"
-	echobold "#"
-	echo ""
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Downloading and parsing 'Recombination Maps'. "
-	#http://www.shapeit.fr/files/genetic_map_b37.tar.gz
-	#http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
-	#wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
-	#tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
-	#mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
-	echo ""	
-	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+# 	echo ""
+# 	echobold "#########################################################################################################"
+# 	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
+# 	echobold "#########################################################################################################"
+# 	echobold "#"
+# 	echo ""
+# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+# 	echo "Downloading and parsing 'Recombination Maps'. "
+# 	http://www.shapeit.fr/files/genetic_map_b37.tar.gz
+# 	http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
+# 	wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
+# 	tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
+# 	mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
+# 	echo ""	
+# 	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
+# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 	echo ""
 	echobold "#########################################################################################################"
@@ -276,7 +276,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	wget http://ldsc.broadinstitute.org/static/media/w_hm3.noMHC.snplist.zip -O ${RESOURCES}/w_hm3.noMHC.snplist.zip
 	echo "snpid A1 A2" > ${RESOURCES}/w_hm3.noMHC.snplist.txt
 	unzip -p ${RESOURCES}/w_hm3.noMHC.snplist.zip | tail -n +2 >> ${RESOURCES}/w_hm3.noMHC.snplist.txt
-	gzip -v ${RESOURCES}/w_hm3.noMHC.snplist.txt
+	gzip -fv ${RESOURCES}/w_hm3.noMHC.snplist.txt
 	rm -v ${RESOURCES}/w_hm3.noMHC.snplist.zip
 	echo ""	
 	echo "All done submitting jobs for downloading and parsing LD-Score reference variant list! 🖖"
