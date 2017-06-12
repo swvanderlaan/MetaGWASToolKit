@@ -132,13 +132,15 @@ We should note, that currently as a default, the meta-analysis is done in a `--v
 
 #### Plotting meta-analysis results
 After the meta-analysis is complete for each chunk, the data is checked, and if deemed okay, it will be concatenated into one file. After concatenation of the data, various plots of each model result for visual inspection (and publication) are made.
-- QQ-plots, both normal and stratified by coded allele frequency
-- Manhattan-plots
-- Effective Sample Size, for the whole analysis. *Note: this script needs fixing.* :construction:
-- SE-N-lambda, as per [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786). *Note: this script needs fixing.* :construction:
-- *LocusZoom* plots. After concatenation of the meta-analysis results, these will be clumped using the appropriate reference as downloaded (see above 'Installing the scripts locally'). Based on the particular clumping settings (indicated in `metagwastoolkit.conf`) regional association plots will be generated using an installment of [LocusZoom v1.3](http://genome.sph.umich.edu/wiki/LocusZoom_Standalone). *Note: this script needs fixing.* :construction:
-- *LocusTrack* plots. In addition to making LocusZoom plots (for which you will have to install LocusZoom) **MetaGWASToolKit** also generates files appropriate for [LocusTrack plots](https://gump.qimr.edu.au/general/gabrieC/LocusTrack/); this online tool can plot many additional informative tracks underneath the regional association plot. Reference: [Cuellar-Partida G. et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4351846/).
-- Genomic control, using the results from the fixed effects model, genomic control will be applied to the meta-analysis results. These lambda-corrected results will also be plotted (Manhattan, and [stratified] QQ-plots). *Note: this script needs fixing.* :construction:
+- *QQ-plots*  -- These are both regular including the total number and lambda, as well as stratified by coded allele frequency.
+- *Manhattan-plots*  -- Good old Manhattan plots. 
+- *Effective Sample Size*  -- For the whole analysis the effective sample size will be calculated and plotted. *Note: this script needs fixing.* :construction:
+- *SE-N-lambda*  -- Plotting the standard error accross cohorts as a function of sample size and inflation factor. Reference: [Winkler T.W. et al.](https://www.ncbi.nlm.nih.gov/pubmed/24762786). *Note: this script needs fixing.* :construction:
+- *LocusZoom plots*  -- After concatenation of the meta-analysis results, these will be clumped using the appropriate reference as downloaded (see above 'Installing the scripts locally'). Based on the particular clumping settings (indicated in `metagwastoolkit.conf`) regional association plots will be generated using an installment of [LocusZoom v1.3](http://genome.sph.umich.edu/wiki/LocusZoom_Standalone). *Note: this script needs fixing.* :construction:
+- *LocusTrack plots*  -- In addition to making LocusZoom plots (for which you will have to install LocusZoom) **MetaGWASToolKit** also generates files appropriate for [LocusTrack plots](https://gump.qimr.edu.au/general/gabrieC/LocusTrack/); this online tool can plot many additional informative tracks underneath the regional association plot. Reference: [Cuellar-Partida G. et al.](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC4351846/).
+- *Genomic control*  -- Using the results from the fixed effects model, genomic control will be applied to the meta-analysis results. These lambda-corrected results will also be plotted (Manhattan, and [stratified] QQ-plots). 
+
+*Note: The installation of LocusZoom v1.3 is required for this function to work.*
 
 #### Downstream analyses & annotation
 ##### Gene-based association study
@@ -193,6 +195,7 @@ FUMA was recently developed by the lab of [Danielle Posthuma](https://ctg.cncr.n
 - better outline chr X, XY, Y, MT :large_blue_diamond:
 - add in option to change the title of the plot :large_orange_diamond:
 - ~~change numbers (23, 24, 25, 26) to letters (X, XY, Y, MT) for these chromosomes~~ :ballot_box_with_check:
+- ~~Fix issues with genomic control on final results~~ :ballot_box_with_check:
 
 #### QQ-plots
 - ~~add in confidence interval as option, and also an improved one~~ :x: SKIPPED
