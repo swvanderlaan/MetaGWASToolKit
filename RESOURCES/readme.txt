@@ -51,7 +51,7 @@ File containing per-variant strand orientation, variant type, class and function
 	chr10 3178864 3178865 rs543 + A/G snp utr-variant-3-prime,utr-variant-3-prime
 	
 ### dbSNP rsID update files ###
-# dbsnp129_rsIDs.txt
+# rsIDs2dbsnp129rsIDs.txt.gz
 File containing rsIDs pre-dbSNP129 which are mapped to other rsIDs in dbSNP129. To update the summary statistics
 files for HapMap 2 based studies.
 	SNP Build129
@@ -65,7 +65,7 @@ files for HapMap 2 based studies.
 	
 ### RefSeq files ###
 # hg18/b36
-==> refseq_hg18.footprints.txt <==
+==> refseq_hg18.footprints.txt.gz <==
 Includes refseq genes, the so called 'footprints' which also notes the strand orientation. 
 See head below.
 	C9orf152 chr9 - 112001666 112010234
@@ -73,14 +73,14 @@ See head below.
 	RPS11 chr19 + 54691445 54694756
 	CREB3L1 chr11 + 46255803 46299548
 	PNMA1 chr14 - 73248238 73250881
-==> refseq_hg18.genes.short.txt <==
+==> refseq_hg18.genes.short.txt.gz <==
 Includes refseq genes, but without duplicates. See head below.
 	1 4224 19233 WASH5P
 	1 24474 25944 FAM138A
 	1 24474 25944 FAM138F
 	1 24474 25944 FAM138C
 	1 58953 59871 OR4F5
-==> refseq_hg18.txt <==
+==> refseq_hg18.txt.gz <==
 Includes extended refseq information, including strand orientation, transcription start/end,
 and exon start/end. See head below.
 	#geneName	chrom	strand	txStart	txEnd	exonStarts	exonEnds
@@ -90,7 +90,7 @@ and exon start/end. See head below.
 	FAM138C	chr1	-	24474	25944	24474,25139,25583,	25037,25344,25944,
 
 # hg19/b37
-==> refseq_hg19.footprints.txt <==
+==> refseq_hg19.footprints.txt.gz <==
 Includes refseq genes, the so called 'footprints' which also notes the strand orientation. 
 See head below.
 	C9orf152 chr9 - 112963230 112969859
@@ -98,14 +98,14 @@ See head below.
 	RPS11 chr19 + 49999713 50002889
 	ELMO2 chr20 - 44996001 45023121
 	PNMA1 chr14 - 74179283 74180342
-==> refseq_hg19.genes.short.extended.txt <==
+==> refseq_GRCh37_hg19_Feb2009.txt.gz <==
 Includes refseq genes, but with duplicates. See head below.
 	X 99885797 99891691 TSPAN6
 	X 99840015 99854711 TNMD
 	20 49551671 49575060 DPM1
 	20 49551671 49575060 DPM1
 	20 49551671 49575060 DPM1
-==> refseq_hg19.genes.short.txt <==
+==> refseq_hg19.genes.short.txt.gz <==
 Includes refseq genes, but without duplicates. See head below.
 	9 112963230 112969859 C9orf152
 	11 46299662 46342293 CREB3L1
