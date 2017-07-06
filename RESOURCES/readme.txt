@@ -12,9 +12,6 @@ Folder containing frequencies of 1000G phase 1, release 3 (20101123, EUR populat
 combined with GoNL5 (N=499). Contains 51,349,608 variants; chromosome 1-22 and 
 including X chromosome (X from 1000G).
 
-# GoNL5/
-Folder containing frequencies of GoNL5 (N=499). Contains 19,562,005 variants; chromosome 1-22 only.
-
 # HAPMAP/
 Folder containing PLINK-formatted files and frequencies of HapMap 2, release 27 of the CEU population (N=174).
 Includes 3,907,239 variants; chromosome 1-22 only.
