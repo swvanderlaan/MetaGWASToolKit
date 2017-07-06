@@ -45,3 +45,4 @@ RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.PAN.INFO.txt.gz
 RESOURCES/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz
 RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz
 RESOURCES/refseq_GRCh37_hg19_Feb2009.txt.gz
+RESOURCES/w_hm3.noMHC.snplist.txt.gz

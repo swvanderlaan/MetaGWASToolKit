@@ -2,11 +2,6 @@
 
 
 ### FOLDERS ###
-# 1000Gp1v3_CEU/
-Folder containing PLINK-formatted files and frequencies of 1000G phase 1, release 3 (20101123)
-of the CEU population (N=170). Contains 38,248,779 variants; chromosome 1-22 and 
-including X chromosome.
-
 # 1000Gp1v3_EUR/
 Folder containing PLINK-formatted files and frequencies of 1000G phase 1, release 3 (20101123)
 of the EUR populations (CEU, FIN, GBR, IBS, TSI, N=379). Contains 38,248,779 variants; chromosome 
@@ -28,7 +23,7 @@ Includes 3,907,239 variants; chromosome 1-22 only.
 Folder containing HapMap 2, release 22 based genetic maps for hg18 (b36) and hg19 (b37). The genetic map
 for the X chromosome is only available in build 37.
 
-### dbSNP/1000G/GoNL5 variant information files ###
+### dbSNP, h18/hg19 variant information files ###
 # dbsnp129_hg18.txt.gz
 File containing per-variant strand orientation, variant type, class and functional information. See head below.
 	#chrom	chromStart	chromEnd	SNP	strand	observed	class	func
@@ -55,28 +50,6 @@ File containing per-variant strand orientation, variant type, class and function
 	chr10 3178907 3178908 rs542 - A/G snp utr-variant-3-prime,utr-variant-3-prime
 	chr10 3178864 3178865 rs543 + A/G snp utr-variant-3-prime,utr-variant-3-prime
 	
-# 1000Gp1v3_gonl5.snv_indels_sv.txt.gz
-File containing per-variant strand orientation, variant type, class and functional information. 
-Contains 43,476,545 variants. See head below.
-	#chrom chromStart chromEnd SNP strand obs class function
-	chr1 46401 46402 rs199681827 + C/CTGT indel unknown
-	chr1 47189 47190 rs200430748 + G/GA indel unknown
-	chr1 51913 51914 rs190452223 + T/G snp unknown
-	chr1 52143 52144 rs190291950 + T/A snp unknown
-	chr1 52184 52185 rs201374420 + TTAA/T indel unknown
-	chr1 54352 54353 rs140052487 + C/A snp unknown
-	
-# gonl5.snv_indels_sv.txt.gz
-File containing per-variant strand orientation, variant type, class and functional information. 
-Contain 19,763,454 variants. See head below.
-	chr10 60493 60494 10:60494 + A/G snp unknown
-	chr10 60968 60969 10:60969 + C/A snp unknown
-	chr10 61333 61334 10:61334 + G/A snp unknown
-	chr10 61851 61852 10:61852 + T/C snp unknown
-	chr10 62056 62057 10:62057 + G/A snp unknown
-	chr10 63577 63578 10:63578 + A/G snp unknown
-	chr10 64773 64774 10:64774 + C/T snp unknown
-	
 ### dbSNP rsID update files ###
 # dbsnp129_rsIDs.txt
 File containing rsIDs pre-dbSNP129 which are mapped to other rsIDs in dbSNP129. To update the summary statistics
@@ -90,19 +63,6 @@ files for HapMap 2 based studies.
 	rs10008617 rs2646294
 	rs10008938 rs2654751
 	
-# 1000Gp1r3_20101123_chrbp2variantIDs.txt
-File containing chr[chr]:[bp]:[alleles] IDs mapped to corresponding 1000G (phase 1, release 3) formatted
-marker/variant IDs, either dbSNP rsIDs (b137) or chr[chr]:[bp]:[D/I]. To update the summary statistics
-files for 1000G phase 1, release 3 based studies.
-	SNP Build129
-	rs10002216 rs1439262
-	rs10002282 rs2567954
-	rs10002813 rs4420991
-	rs10003544 rs2956616
-	rs10007155 rs1128427
-	rs10008617 rs2646294
-	rs10008938 rs2654751
-
 ### RefSeq files ###
 # hg18/b36
 ==> refseq_hg18.footprints.txt <==
