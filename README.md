@@ -5,38 +5,18 @@ MetaGWASToolKit
 
 ** Preliminary release v1.0.0 **
 
-https://swvanderlaan.github.io/MetaGWASToolKit/
-
 **NOTE: For a meta-analysis using 1000G phase 1 everything should work. We are updating some items, so please check back. For a list of items we are working on check the bottom of this readme.**
 
 ### Introduction
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
 This repository contains a ToolKit to perform a Meta-analysis of (any number of) Genome-Wide Association Studies (**MetaGWASToolKit**) and comprises various scripts in Perl, Python, R, and BASH.
 
-Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). 
-
 All scripts are annotated for debugging purposes - and future reference. The only scripts the user should edit are: 
 - the main job submission script `metagwastoolkit.qsub.sh`, 
 - `metagwastoolkit.conf`, a configuration file with some system and analytical settings, and 
 - `metagwastoolkit.list` which contains a list of all the GWAS datasets.
 
-The installation procedure is quite straightforward, and only entails four steps consisting of command one-liners that are *easy* to read. You can copy/paste each example command, per block of code. For some steps you need administrator privileges. Follow the steps in consecutive order.
-
-```
-these `mono-type font` illustrate commands illustrate terminal commands. You can copy & paste these.
-```
-
-To make it easier to copy and paste, long commands that stretch over multiple lines are structered as follows:
-
-```
-Multiline commands end with a dash \
-	indent 4 spaces, and continue on the next line. \
-	Copy & paste these whole blocks of code.
-```
-
-Although we made it easy to just select, copy and paste and run these blocks of code, it is not a good practise to blindly copy and paste commands. Try to be aware about what you are doing. And never, never run `sudo` commands without a good reason to do so. 
-
-In addition to testing **MetaGWASToolKit** on CentOS7, we have tested it on OS X Sierra (version 10.11.[x]) too. 
+Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). In addition to testing **MetaGWASToolKit** on CentOS7, we have tested it on OS X Sierra (version 10.11.[x]) too. 
 
 
 --------------
