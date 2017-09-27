@@ -1,7 +1,11 @@
 MetaGWASToolKit
 ============
 
+[![DOI](https://zenodo.org/badge/75635714.svg)](https://zenodo.org/badge/latestdoi/75635714)
+
 ** Preliminary release v1.0.0 **
+
+https://swvanderlaan.github.io/MetaGWASToolKit/
 
 **NOTE: For a meta-analysis using 1000G phase 1 everything should work. We are updating some items, so please check back. For a list of items we are working on check the bottom of this readme.**
 
