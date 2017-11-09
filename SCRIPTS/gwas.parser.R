@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Parser -- MetaGWASToolKit
     \n
-    * Version: v1.2.3
-    * Last edit: 2017-05-30
+    * Version: v1.2.4
+    * Last edit: 2017-11-09
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -276,7 +276,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat("\n* Selecting required columns, and creating them if not present...")
   VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", 
                              "^chr$", "^chrom$", "^chromosome$", 
-                             "^position$", "^bp$",
+                             "^position$", "^bp$", "^pos$",
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", 
                              "^effectallele$", "^minorallele$", "^riskallele$", "^codedallele$",
                              "^other[_]allele$", "^major[_]allele$", "^non[_]effect[_]allele$", "^non[_]coded[_]allele$", 
@@ -391,6 +391,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Rename columns -- base pair position
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^position$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^bp$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^pos$"), everything())
   
   ### Rename columns -- chromosome
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chr$"), everything())
