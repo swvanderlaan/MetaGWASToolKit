@@ -104,9 +104,9 @@ script_arguments_error() {
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "                                           LOCUSZOOM PLOTTER"
 echo ""
-echo " Version    : v1.4.3"
+echo " Version    : v1.4.4"
 echo ""
-echo " Last update: 2017-05-30"
+echo " Last update: 2018-03-06"
 echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
 echo " Description: Plot a LocusZoom for (imputed) (meta-)ExomeChip or (meta-)GWAS hits "
@@ -250,7 +250,7 @@ echo "                                             MAKE LOCUSZOOM PLOTS"
 	PVALUE=${7} # depends on arg7
 	LZVERSION=${8} # depends on arg8
 	
-	LOCUSZOOM_SETTINGS="ldColors=\"#595A5C,#4C81BF,#1396D8,#C5D220,#F59D10,red,#9A3480\" showRecomb=TRUE dCol='r^2' drawMarkerNames=FALSE refsnpTextSize=0.8 showRug=TRUE showAnnot=TRUE showRefsnpAnnot=TRUE showGenes=TRUE clean=FALSE bigDiamond=TRUE ymax=8 rfrows=10 refsnpLineWidth=2"
+	LOCUSZOOM_SETTINGS="ldColors=\"#595A5C,#4C81BF,#1396D8,#C5D220,#F59D10,red,#9A3480\" showRecomb=TRUE dCol='r^2' drawMarkerNames=FALSE refsnpTextSize=1.25 showRug=TRUE showAnnot=TRUE showRefsnpAnnot=TRUE showGenes=TRUE clean=FALSE bigDiamond=TRUE ymax=8 rfrows=10 refsnpLineWidth=2 "
 
 		### Which variant to look at.
 		echo "We will lookup the following variants:"
@@ -287,12 +287,17 @@ echo "                                             MAKE LOCUSZOOM PLOTS"
 				if [[ ${LZVERSION} = "LZ13" ]]; then
 					echo "Using LocusZoom v1.3..."
 					cd ${OUTPUTDIR}
-					${LOCUSZOOM13} --metal ${OUTPUTDIR}/${STUDY_TYPE}.${ANALYSIS_TYPE}.${REFERENCE}.${PHENOTYPE}.summary_results.QC.locuszoom --markercol MarkerName --delim space --refsnp ${VARIANT} --flank ${RANGE}kb ${LDMAP} theme=publication title="${VARIANT} in ${PHENOTYPE}" ${LOCUSZOOM_SETTINGS}
+					${LOCUSZOOM13} --metal ${OUTPUTDIR}/${STUDY_TYPE}.${ANALYSIS_TYPE}.${REFERENCE}.${PHENOTYPE}.summary_results.QC.locuszoom --markercol MarkerName --delim space --refsnp ${VARIANT} --flank ${RANGE}kb ${LDMAP} --gene-table gencode theme=publication title="${VARIANT} in ${PHENOTYPE}" ${LOCUSZOOM_SETTINGS}
 				
 				elif [[ ${LZVERSION} = "LZ12" ]]; then
 					echo "Using LocusZoom v1.2..."
 					cd ${OUTPUTDIR}
 					${LOCUSZOOM12} --metal ${OUTPUTDIR}/${STUDY_TYPE}.${ANALYSIS_TYPE}.${REFERENCE}.${PHENOTYPE}.summary_results.QC.locuszoom --markercol MarkerName --delim space --refsnp ${VARIANT} --flank ${RANGE}kb ${LDMAP} theme=publication title="${VARIANT} in ${PHENOTYPE}" ${LOCUSZOOM_SETTINGS}
+				
+				elif [[ ${LZVERSION} = "LZ14" ]]; then
+					echo "Using LocusZoom v1.4..."
+					cd ${OUTPUTDIR}
+					${LOCUSZOOM13} --metal ${OUTPUTDIR}/${STUDY_TYPE}.${ANALYSIS_TYPE}.${REFERENCE}.${PHENOTYPE}.summary_results.QC.locuszoom --markercol MarkerName --delim space --refsnp ${VARIANT} --flank ${RANGE}kb ${LDMAP} --gene-table gencode theme=publication title="${VARIANT} in ${PHENOTYPE}" ${LOCUSZOOM_SETTINGS}
 				
 				else
 				### If arguments are not met than the 
@@ -300,6 +305,7 @@ echo "                                             MAKE LOCUSZOOM PLOTS"
 					echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
 					echo ""
 					echo " You must supply the correct argument:"
+					echonooption " *** FUTURE VERSION *** * [LZ14]      -- uses LocusZoom version 1.4 | THIS IS THE DEFAULT."
 					echo " * [LZ13]      -- uses LocusZoom version 1.3 | THIS IS THE DEFAULT."
 					echo " * [LZ12]      -- uses LocusZoom version 1.2."
 					echo ""

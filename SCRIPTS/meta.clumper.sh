@@ -195,7 +195,7 @@ else
 	elif [[ ${REFERENCE} = "GoNL5" ]]; then
 		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
 	else
-	### If arguments are not met than the 
+		### If arguments are not met than the 
 		echo "Oh, computer says no! Number of arguments found "$#"."
 		script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
 		echo ""

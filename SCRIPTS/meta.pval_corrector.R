@@ -4,13 +4,13 @@
 ### #!/usr/local/bin/Rscript --vanilla
 
 ### Linux version
-### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
+### #!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-values Corrector -- MetaGWASToolKit
     \n
-    * Version: v1.0.2
-    * Last edit: 2018-03-01
+    * Version: v1.0.3
+    * Last edit: 2018-03-08
     * Created by: Sara L. Pulit; Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS. 
