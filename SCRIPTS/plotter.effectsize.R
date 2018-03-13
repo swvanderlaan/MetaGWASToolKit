@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Effect Size Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.3.4
-    * Last edit: 2017-05-30
+    * Version: v1.3.5
+    * Last edit: 2018-03-01
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  EffectSize-plotter for GWAS (meta-analysis) results. Can produce output 

@@ -122,9 +122,10 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	### "[1Gp3          PAN, EUR, AFR, AMR, EAS, SAS] - not available yet\n";
 # 	### "[GoNL4         NL] - not available yet\n";
 # 	### "[GoNL5         NL] - not available yet\n";
-# 	### "[1Gp3GONL5     PAN] - not available yet\n";
-# 	POPULATION="EUR"
-# 	POPULATION1Gp3="EUR"
+# 	### "[1Gp3GONL5     PAN]\n";
+
+	POPULATION="EUR"
+	POPULATION1Gp3="EUR"
 	POPULATION1Gp3GONL5="PAN"
 # 	
 # 	echobold "#########################################################################################################"
@@ -202,19 +203,6 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
 # 	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
 # 	echo ""
-	
-	echo "* parsing 1000G phase 3 + GoNL5."
-	for CHR in $(seq 1 22); do
-		echo "* Processing chromosome [ ${CHR} ]."
-		echo "${QCTOOL} -g ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.vcf.gz -snp-stats 1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.stats " > ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
-		qsub -S /bin/bash -N VCFSTATS1Gp3GONL5.chr${CHR} -hold_jid ThousandGp3GONL5downloader -o ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
-# 		echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.vcf.gz --ref 1Gp3GONL5 --pop ${POPULATION1Gp3GONL5} --out ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR} " > ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.sh
-# 		qsub -S /bin/bash -N VCFparser1Gp3GONL5.chr${CHR} -hold_jid ThousandGp3GONL5downloader -o ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1Gp3GONL5.chr${CHR}.sh
-		echo ""
-	done
 		
 # 	echo "* updating 1000G phase 1."
 # 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
@@ -225,6 +213,45 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 # 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 # 	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+
+	
+	echo "* parsing 1000G phase 3 + GoNL5."
+	echo "  - generating the necessary per-variant descriptive statistics."
+
+# 	for CHR in $(seq 1 22); do
+# 		echo "* Processing chromosome [ ${CHR} ]."
+# 		echo "${QCTOOL} -g ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.vcf.gz -snp-stats ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.stats " > ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
+# 		qsub -S /bin/bash -N VCFSTATS1Gp3GONL5 -hold_jid ThousandGp3GONL5downloader -o ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
+# 	done
+		
+	### EXAMPLE HEAD OF STATS files
+	### SNPID	RSID	chromosome	position	A_allele	B_allele	minor_allele	major_allele	AA	AB	BB	AA_calls	AB_calls	BB_calls	MAF	HWE	missing	missing_calls	information
+	### 1:10177:A:AC	1:10177:A:AC	NA	10177	A	AC	AC	A	885	1725	393	885	1725	393	0.41808	22.523	0	0	1
+	### 1:10235:T:TA	1:10235:T:TA	NA	10235	T	TA	TA	T	2997	6	0	2997	6	0	0.000999	-0	0	0	1
+	### rs145072688:10352:T:TA	rs145072688:10352:T:TA	NA	10352	T	TA	TA	T	556	2278	169	556	2278	169	0.43556	209.87	0	0	1
+	### 1:10505:A:T	1:10505:A:T	NA	10505	A	T	T	A	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
+	### 1:10506:C:G	1:10506:C:G	NA	10506	C	G	G	C	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
+	### 1:10511:G:A	1:10511:G:A	NA	10511	G	A	A	G	3001	2	0	3001	2	0	0.000333	-0	0	0	1
+	### rs62636508	rs62636508	NA	10519	G	C	C	G	2976	27	0	2976	27	0	0.0044955	4.8216e-17	0	0	1
+	### chr1:10539	chr1:10539	NA	10539	C	A	A	C	2998	5	0	2998	5	0	0.0008325	-0	0	0	1
+	### 1:10542:C:T	1:10542:C:T	NA	10542	C	T	T	C	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
+
+	echo "  - concatenating per-variant descriptive statistics."
+	echo "#CHROM POS ID A_Allele B_Allele MinorAllele MajorAllele MAF" > ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.txt
+	for CHR in $(seq 1 22); do
+		echo "* Processing chromosome [ ${CHR} ]."
+		cat ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.stats | awk '{ print '$CHR', $4, $2, $5, $6, $7, $8, $15 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto.txt
+	done
+	gzip -v ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto.txt	
+
+# 	echo "  - parsing the new reference dataset."
+# 		echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto.txt.gz --ref 1Gp3GONL5 --pop ${POPULATION1Gp3GONL5} --out ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto " > ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+# 		qsub -S /bin/bash -N VCFparser1Gp3GONL5 -hold_jid STATS21Gp3GONL5 -o ${RESOURCES}/resource.VCFparser.1Gp3GONL5.log -e ${RESOURCES}/resource.VCFparser.1Gp3GONL5.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+# 		echo ""
+
 
 # 	echo "* updating 1000G phase 3 + GoNL5."
 # 	for CHR in $(seq 1 22); do

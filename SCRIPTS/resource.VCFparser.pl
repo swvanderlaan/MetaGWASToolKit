@@ -10,15 +10,15 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; Utrecht, the 
 #               Netherlands, s.w.vanderlaan@gmail.com.
-# Version:		1.4.0
-# Update date: 	2017-09-29
+# Version:		1.5.0
+# Update date: 	2017-10-09
 #
 # Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 
 # Starting parsing
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+                                        VCF PARSER                                      +\n";
-print STDERR "+                                          v1.4.0                                        +\n";
+print STDERR "+                                          v1.5.0                                        +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "\n";
@@ -62,7 +62,7 @@ print "1Gp1          PAN, EUR, AFR, AMR, ASN\n";
 print "[1Gp3          PAN, EUR, AFR, AMR, EAS, SAS] - not available yet\n";
 print "[GoNL4         NL] - not available yet\n";
 print "[GoNL5         NL] - not available yet\n";
-print "[1Gp3GONL5     PAN] - not available yet\n";
+print "[1Gp3GONL5     PAN]\n";
 print "\n";
 print "The output files will contain the following:\n";
 print "* Alternate VariantIDs: [ output.basename.INFO.txt ]\n";
@@ -423,30 +423,32 @@ if ( $reference eq "1Gp1" ) {
 		my @vareach=split(/(?<!,)\t/,$row); # splitting based on tab '\t'
 		$chr = $vareach[0]; # chromosome
 		$bp = $vareach[1]; # base pair position
-		$REF = $vareach[3]; # reference allele
-		$ALT = $vareach[4]; # alternate allele
-		$INFO = $vareach[7]; # info column -- refer to below for information
+		$REF = $vareach[3]; # A allele
+		$ALT = $vareach[4]; # B allele
+		$Minor = $vareach[5]; # minor allele
+		$Major = $vareach[6]; # major allele
+		$MAF = $vareach[7]; # MAF column
 	
 	### get allele frequencies
-	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
+	if ( $Minor == $REF ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
-		$AF = $1;
+		$AF = $MAF;
   	} else {
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
-  		$AF = "NA";
+  		$AF = 1-$MAF;
   	}
-		
-	### get allele frequencies
-	if ( $population eq "PAN" ){
-# 		print " ***DEBUG*** Population: $population. So looking for AF in $INFO for $vareach[2]; should be: $1. \n";
-		$tmp = $AF; 
-		$AF = $tmp;
-		
-		} else {
-  	  		print STDERR " *** WARNING *** Could not find the population allele frequency for [ $vareach[2] ] and population [ $population ] where info: $INFO. Check your reference-file.\n"; 
-  			$tmp = $AF; 
-			$AF = $tmp;
-  	}
+# 		
+# 	### get allele frequencies
+# 	if ( $population eq "PAN" ){
+# # 		print " ***DEBUG*** Population: $population. So looking for AF in $INFO for $vareach[2]; should be: $1. \n";
+# 		$tmp = $AF; 
+# 		$AF = $tmp;
+# 		
+# 		} else {
+#   	  		print STDERR " *** WARNING *** Could not find the population allele frequency for [ $vareach[2] ] and population [ $population ] where info: $INFO. Check your reference-file.\n"; 
+#   			$tmp = $AF; 
+# 			$AF = $tmp;
+#   	}
 
 	### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
 	if( looks_like_number($AF) ) {
@@ -534,36 +536,36 @@ if ( $reference eq "1Gp1" ) {
 				$AlleleA = $vareach[3];
 				$AlleleB = $vareach[4];
 	}
-	
-	## adjust Minor and Major when ALT is the minor allele
-	if( looks_like_number($AF) ) {
-		if ( $AF < 0.50 ){
-			$Minor = $vareach[4]; # ALT allele is the minor allele
-			$Major = $vareach[3];
-		} elsif ( $AF > 0.50 ) {
-			$Minor = $vareach[3]; # REF allele is the minor allele
-			$Major = $vareach[4]; #
-			} else {
-				$Minor = $vareach[3]; # REF allele is the minor allele
-				$Major = $vareach[4]; #
-		}
-	} else { 
-		$Minor = $vareach[3]; # REF allele is the minor allele
-		$Major = $vareach[4]; #
-	}
-		
-	## get minor allele frequencies based on AF
-	if ( looks_like_number($AF) ) {
-		if ( $AF < 0.50 ){
-			$MAF = $AF;
-		} else {
-			$MAF = 1-$AF;
-		} 
-	} else { 
-		$tmp = $AF; 
-		$AF = $tmp;
-		$MAF = $tmp;
-	}
+# 	
+# 	### adjust Minor and Major when ALT is the minor allele
+# 	if( looks_like_number($AF) ) {
+# 		if ( $AF < 0.50 ){
+# 			$Minor = $vareach[4]; # ALT allele is the minor allele
+# 			$Major = $vareach[3];
+# 		} elsif ( $AF > 0.50 ) {
+# 			$Minor = $vareach[3]; # REF allele is the minor allele
+# 			$Major = $vareach[4]; #
+# 			} else {
+# 				$Minor = $vareach[3]; # REF allele is the minor allele
+# 				$Major = $vareach[4]; #
+# 		}
+# 	} else { 
+# 		$Minor = $vareach[3]; # REF allele is the minor allele
+# 		$Major = $vareach[4]; #
+# 	}
+# 		
+# 	## get minor allele frequencies based on AF
+# 	if ( looks_like_number($AF) ) {
+# 		if ( $AF < 0.50 ){
+# 			$MAF = $AF;
+# 		} else {
+# 			$MAF = 1-$AF;
+# 		} 
+# 	} else { 
+# 		$tmp = $AF; 
+# 		$AF = $tmp;
+# 		$MAF = $tmp;
+# 	}
 			
 	### SPECIFIC TO FILE #3
 	### get alleles
@@ -588,12 +590,12 @@ if ( $reference eq "1Gp1" ) {
 	}
 	
 	### get variant type
-	if ( $INFO =~ m/VT\=(SNP.*?)/ ){
-		$variantclass = "SNP";
-	} elsif ( $INFO =~ m/VT\=(INDEL.*?)/ ){
+	if ( length($REF) > 1 ){
+		$variantclass = "INDEL";
+	} elsif ( length($ALT) > 1 ){
 		$variantclass = "INDEL";
 		} else {
-			$variantclass = "NA";
+			$variantclass = "SNP";
 	}
 	
 	print OUT_INFO "$vid\t$vid1\t$vid2\t$vid3\n";

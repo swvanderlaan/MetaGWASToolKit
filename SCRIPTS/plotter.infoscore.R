@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Imputation Quality Score Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.4.2
-    * Last edit: 2017-04-24
+    * Version: v1.4.3
+    * Last edit: 2018-03-01
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  INFO-plotter for GWAS (meta-analysis) results. Can produce output 

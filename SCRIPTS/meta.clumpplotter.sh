@@ -86,8 +86,8 @@ script_arguments_error_reference() {
 }
 
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echo "                                             META-CLUMPER"
-echo "                              CLUMPING OF META-ANALYSIS OF GWAS RESULTS"
+echo "                                           META-CLUMP PLOTTER"
+echo "                               PLOTTING OF CLUMPED META-ANALYSIS RESULTS"
 echo ""
 echo " Version    : v1.1.0"
 echo ""
@@ -96,7 +96,7 @@ echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
 echo " Testers    : - Jessica van Setten"
 echo ""
-echo " Description: Clumping of a meta-analysis of genome-wide association studies results."
+echo " Description: Plotting clumped meta-analysis of genome-wide association studies results."
 echo ""
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
@@ -111,11 +111,20 @@ else
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Processing arguments..."
 	source "$1" # Depends on arg1.
+
+	### SETTING DIRECTORIES (from configuration file).
+	# Loading the configuration file (please refer to the MetaGWASToolKit-Manual for specifications of this file). 
+	source "$1" # Depends on arg1.
 	
-	### Directories & Software
-	RESOURCES=${METAGWASTOOLKITDIR}/RESOURCES # depends on contents of arg1
+	CONFIGURATIONFILE="$1" # Depends on arg1 -- but also on where it resides!!!
+	SOFTWARE=${SOFTWARE} # from configuration file
+	
+	# Where MetaGWASToolKit resides
+	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
+	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
+	RESOURCES=${METAGWASTOOLKIT}/RESOURCES
+
 	PLINK=${PLINK} # depends on contents of arg1
-	LOCUSZOOM=${LOCUSZOOM} # depends on contents of arg1
 	METARESULTDIR="$2" # depends on arg2
 	REFERENCE=${REFERENCE} # depends on contents of arg1
 	POPULATION=${POPULATION} # depends on contents of arg1
@@ -129,8 +138,8 @@ else
 	CLUMP_FIELD=${CLUMP_FIELD} 
 	CLUMP_SNP_FIELD=${CLUMP_SNP_FIELD} 
 	LDMAP=${LDMAP}
-	LOCUSZOOM_SETTINGS=${LOCUSZOOM_SETTINGS
-		
+	LOCUSZOOM_SETTINGS=${LOCUSZOOM_SETTINGS}
+	
 	### Determine which reference and thereby input data to use, arg1 [1kGp3v5GoNL5/1kGp1v3/GoNL4] 
 		if [[ ${REFERENCE} = "HM2" ]]; then
 			REFERENCE_HM2=${RESOURCES}/HAPMAP 
@@ -163,71 +172,82 @@ else
 	echo "The KB range used for clumping..........................................: ${CLUMP_KB}"
 	echo "Indicate the name of the clumping field to use (default: p-value, P)....: ${CLUMP_FIELD}"
 	echo "Indicate the name of column with the variantID..........................: ${CLUMP_SNP_FIELD}"
+	echo "LD-mapping information..................................................: [ ${LDMAP} ]"
+	echo "Settings of LocusZoom plotting..........................................: [ ${LOCUSZOOM_SETTINGS} ]"
+	echo "Range to plot around index-variant(s)...................................: [ ${LZRANGE} ]"
 	echo ""
 	
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Preparing clumping of genome-wide analysis results using the P-values."
+	echo "Plotting clumped hits - note: will not plot if there are no clumped hits..."
 
-	### HEADER summary file
-	### VARIANTID CHR POS MINOR MAJOR MAF CODEDALLELE OTHERALLELE CAF N_EFF Z_SQRTN P_SQRTN BETA_FIXED SE_FIXED Z_FIXED P_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED BETA_GC SE_GC Z_GC P_GC BETA_RANDOM SE_RANDOM Z_RANDOM P_RANDOM BETA_LOWER_RANDOM BETA_UPPER_RANDOM COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED DIRECTIONS GENES_250KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT
-	### 1		  2   3   4     5     6   7           8           9   10    11      12      13         14       15      16      17               18               19      20    21   22   23          24        25       26       27                28                29         30 31           32        33          34         35          36           37                     38                  39               40 
+	echo "* creating LocusZoom input-file..."
+	echo "MarkerName P-value" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+	zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,P_FIXED | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
 	
-	# what is the basename of the file?
-	#meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz
-	RESULTS=${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz
-	FILENAME=$(basename ${RESULTS} .txt.gz)
-	echo "The basename is: [ ${FILENAME} ]."
-	echo ""
-	echo "Clumping..."
-	if [[ ${REFERENCE} = "HM2" ]]; then
-		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
-	elif [[ ${REFERENCE} = "1Gp1" ]]; then
-		echo "The reference is ${REFERENCE}."
-		### REFERENCE_1kGp1v3 # 1000Gp1v3.20101123.EUR
-		ls -lh ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR*
-		${PLINK} --bfile ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CODEDALLELE,OTHERALLELE,CAF,MAF,N_EFF,BETA_FIXED,SE_FIXED,Z_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,GENES_250KB,VARIANT_FUNCTION,CAVEAT 
-	elif [[ ${REFERENCE} = "1Gp3" ]]; then
-		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
-	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-		echo "The reference is ${REFERENCE}."
-		ls -lh ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR*
-		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
-		${PLINK} --bfile ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CODEDALLELE,OTHERALLELE,CAF,MAF,N_EFF,BETA_FIXED,SE_FIXED,Z_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,GENES_250KB,VARIANT_FUNCTION,CAVEAT 
-	elif [[ ${REFERENCE} = "GoNL4" ]]; then
-		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
-	elif [[ ${REFERENCE} = "GoNL5" ]]; then
-		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
-	else
-		### If arguments are not met than the 
-		echo "Oh, computer says no! Number of arguments found "$#"."
-		script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
-		echo ""
-		script_copyright_message
-	fi
+	# ### DEBUG
+	# echo "head"
+	# cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom | head
+	# echo ""
+	# echo "count of variants:"
+	# cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom | wc -l
+	# ### DEBUG
+	
+	echo "* setting indexed variants..."
+	INDEXVARIANTS="${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.indexvariants.txt"
+	
+	# ### DEBUG
+	# ls -lh "${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.indexvariants.txt"
+	# cat "${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.indexvariants.txt"
+	# ### DEBUG
+
+	echo "* starting plotting -- if there are indexed variants..."
+	if [[ -s ${INDEXVARIANTS} ]] ; then
+		echo "There are indexed variants after clumping in [ "$(basename ${INDEXVARIANTS})" ]."
+		VARIANTLIST="${INDEXVARIANTS}" 
+		while read VARIANTS; do 
+			for VARIANT in ${VARIANTS}; do
+				echo "* ${VARIANT}"
+			done
+		done < ${VARIANTLIST}
 		
-	echo "Done clumping the results for [ ${FILENAME} ]..."
-	echo ""
+		### Determine the range
+		LZRANGE=${LZRANGE}
+		echo ""
+		N_VARIANTS=$(cat ${VARIANTLIST} | wc -l)
+		echo "Number of variants to plot...: ${N_VARIANTS} variants"
+		echo "Investigating range..........: ${LZRANGE}kb around each of these variants."
+		
+		echo ""
+		echo "* Creating output directory for regional association plots..."
+		if [ ! -d ${METARESULTDIR}/locuszoom ]; then
+	  		echo " - making subdirectory ..."
+	  		mkdir -v ${METARESULTDIR}/locuszoom
+		else
+			echo " - subdirectory already there ..."
+		fi
+		
+		### Set the rawdata for the cohort
+		VARIANTOUTPUTDIR=${METARESULTDIR}/locuszoom
+
+		echo ""
+		while IFS='' read -r VARIANTS || [[ -n "$VARIANTS" ]]; do
+					
+			LINE=${VARIANTS}
+			VARIANT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "Starting plotting ${VARIANT} ± ${LZRANGE}kb..."
+			
+			echo "* Actual plotting of ${VARIANT}..."
+			cd ${VARIANTOUTPUTDIR}
+			${LOCUSZOOM} --metal ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom --markercol MarkerName --delim space --refsnp ${VARIANT} --flank ${LZRANGE}kb ${LDMAP} theme=publication title="${VARIANT} for project: ${PROJECTNAME}" --prefix=${PROJECTNAME}.${REFERENCE}.${POPULATION}.${VARIANT} ${LOCUSZOOM_SETTINGS}
+			
+		done < ${VARIANTLIST}
+		
+	else
+		echo "There are no clumped variants. We will not produce regional associations plots."
+	fi
 	
-	echo "After clumping, pull out the index variants..."
-	grep "INDEX" ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped.clumped | awk ' { print $2 } ' > ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt
-	echo "Number of index variants..." 
-	cat ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt | wc -l
-	
-	echo ""
-	echo "Copying to a working file..."
-	cp -v ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.indexvariants.txt ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo
-	echo ""
-	
-	echo "Counting the total of number of index variants to look at:"
-	cat ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo | wc -l
-	echo "Sorting the total number of unique index variants"
-	cat ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo | sort -u > ${METARESULTDIR}/${FILENAME}.clumped_hits.txt
-	rm -v ${METARESULTDIR}/${FILENAME}.clumped_hits.txt.foo
-	echo ""
-	
-	echo "Making a list of TOP-variants based on p <= ${CLUMP_P1}."
-	zcat ${METARESULTDIR}/${FILENAME}.txt.gz | awk '$1=="VARIANTID" || $16 <= '${CLUMP_P1}'' > ${METARESULTDIR}/${FILENAME}.TOP_based_on_p${CLUMP_P1}.txt
-	echo ""
+	echo "* removing LocusZoom input-file..."
+	rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
 	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi

@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Parser -- MetaGWASToolKit
     \n
-    * Version: v1.2.4
-    * Last edit: 2017-11-09
+    * Version: v1.2.6
+    * Last edit: 2018-03-05
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -274,7 +274,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   
   ### Selecting the columns we want
   cat("\n* Selecting required columns, and creating them if not present...")
-  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", 
+  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", "^snpid$",
                              "^chr$", "^chrom$", "^chromosome$", 
                              "^position$", "^bp$", "^pos$",
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", 
@@ -292,8 +292,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                              "^imputed$", 
                              "^info$")
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
+  # print(head(GWASDATA_RAW))
+
   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
-  
+
+  # print(head(GWASDATA_RAWSELECTION))
+
   ### Change column names case to all 'lower cases'
   names(GWASDATA_RAWSELECTION) <- tolower(names(GWASDATA_RAWSELECTION))
   
@@ -402,10 +406,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^marker$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snp$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^rsid$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snpid$"), everything())
   
   ### Rename columns -- removing leading 'zeros'
   cat("\n* Removing leading 'zeros' from chromosome number...")
   GWASDATA_RAWSELECTION$CHR <- gsub("(?<![0-9])0+", "", GWASDATA_RAWSELECTION$CHR, perl = TRUE)
+  
+  # print(head(GWASDATA_RAWSELECTION))
   
   cat("\n* Changing 23 to X, 24 to Y, 25 to XY, and 26 to MT...")
   ### Renaming chromosomes
@@ -426,6 +433,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   # ### set 'chromosome' column to integer
   # GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, BP = as.integer(BP)) # convert to numeric
+  
+  # print(head(GWASDATA_RAWSELECTION))
   
   ### Calculating general statistics if not available
   cat("\n* Calculating 'allele frequencies'...")
@@ -501,7 +510,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Calculate MAC
   cat("\n* Calculating 'minor allele count' (MAC)...")
   GWASDATA_RAWSELECTION$MAC <- (GWASDATA_RAWSELECTION$MAF*GWASDATA_RAWSELECTION$N*2)
-  
+
+  # print(head(GWASDATA_RAWSELECTION))
+
   cat("\n* Creating the final parsed dataset.")
   
   cat("\n- making empty dataframe...")
@@ -531,7 +542,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   colnames(GWASDATA_PARSED) <- col.Names
   
   cat("\n- adding data to dataframe...")
-  cat("\n  > adding the new markers; these will have the form [ chr<#>:<#>:MinorAllele_MajorAllele] ...")
+  cat("\n  > adding the new markers; these will have the form [ chr<#>:<#>:MinorAllele_MajorAllele] ...\n")
   GWASDATA_PARSED$Marker <- as.character(paste("chr",GWASDATA_RAWSELECTION$CHR,":",
                                                GWASDATA_RAWSELECTION$BP,":",
                                                GWASDATA_RAWSELECTION$MinorAllele,"_",
@@ -540,6 +551,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   
   cat("\n  > adding the original markers...")
   GWASDATA_PARSED$MarkerOriginal <- GWASDATA_RAWSELECTION$MarkerOriginal
+  
+  # print(head(GWASDATA_RAWSELECTION))
+  # print(head(GWASDATA_PARSED))
   
   cat("\n  > changing NA to '0' for Chr...")
   GWASDATA_PARSED$CHR <- GWASDATA_RAWSELECTION$CHR
