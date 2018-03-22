@@ -2,13 +2,11 @@
 #
 ##########################################################################################
 #
-# Version				: v1.1
+# Version				: v1.2
 #
-# Last update			: 2017-04-24
+# Last update			: 2018-03-22
 # Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com.
 # Originally written by	: Paul I.W. de Bakker | UMC Utrecht, p.i.w.debakker-2@umcutrecht.nl.
-#
-# Website				: http://www.atheroexpress.nl/software
 #
 # Given a space/tab delimited file as input, this script will collect the columns as 
 # indicated by the comma-separated list after the '--col'-flag, and return these.
