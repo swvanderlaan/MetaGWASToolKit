@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Manhattan Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.6
-    * Last edit: 2018-03-01
+    * Version: v1.1.7
+    * Last edit: 2018-03-29
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -29,7 +29,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------
 ### CLEAR THE BOARD
-rm(list=ls())
+rm(list = ls())
 
 cat("\n* Loading function to install packages...\n\n")
 ### Prerequisite: 'optparse'-library
@@ -44,7 +44,7 @@ cat("\n* Loading function to install packages...\n\n")
 ### FUNCTION TO INSTALL PACKAGES
 install.packages.auto <- function(x) { 
   x <- as.character(substitute(x)) 
-  if(isTRUE(x %in% .packages(all.available = TRUE))) { 
+  if (isTRUE(x %in% .packages(all.available = TRUE))) { 
     eval(parse(text = sprintf("require(\"%s\")", x)))
   } else { 
     # Update installed packages - this may mean a full upgrade of R, which in turn
@@ -52,7 +52,7 @@ install.packages.auto <- function(x) {
     #update.packages(ask = FALSE) 
     eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
   }
-  if(isTRUE(x %in% .packages(all.available = TRUE))) { 
+  if (isTRUE(x %in% .packages(all.available = TRUE))) { 
     eval(parse(text = sprintf("require(\"%s\")", x)))
   } else {
     source("http://bioconductor.org/biocLite.R")
@@ -75,7 +75,7 @@ install.packages.auto("data.table")
 cat("\nDone! Required packages installed and loaded.\n\n")
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
+uithof_color = c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
                "#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D",
@@ -84,47 +84,47 @@ uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
 #--------------------------------------------------------------------------
 ### OPTION LISTING
 option_list = list(
-     make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
-                 help="Path to the project directory."),
-     make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-                 help="Path to the results directory, relative to the project directory."),
-     make_option(c("-c", "--colorstyle"), action="store", default=NA, type='character',
-                 help="The color style of the Manhattan plot: 
+     make_option(c("-p", "--projectdir"), action = "store", default = NA, type = 'character',
+                 help = "Path to the project directory."),
+     make_option(c("-r", "--resultfile"), action = "store", default = NA, type = 'character',
+                 help = "Path to the results directory, relative to the project directory."),
+     make_option(c("-c", "--colorstyle"), action = "store", default = NA, type = 'character',
+                 help = "The color style of the Manhattan plot: 
                  \n- FULL:      multicolor panel, no highlighting
                  \n- TWOCOLOR:  twocolor (#2F8BC9 [skyblue], #E55738 [salmon]), with highlighting in (#DB003F)
                  \n- QC:        twocolor (#2F8BC9 [skyblue], #E55738 [salmon]), with highlighting in (#DB003F), 
                  \n              but p-values truncated at -log10(p-value)=2, for quick inspection/QC-purposes."),
-     make_option(c("-f", "--imageformat"), action="store", default=NA, type='character',
-                 help="The image format (PDF (width=10, height=5), PNG/TIFF/EPS (width=1280, height=720)."),
-     make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',
-                 help="Path to the output directory."),
-     make_option(c("-t", "--titleplot"), action="store", default="Manhattan-plot", type='character',
-                 help="The title of the plot? [default %default]"),
-     make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
-                 help="Should the program print extra stuff out? [default %default]"),
-     make_option(c("-q", "--quiet"), action="store_false", dest="verbose",
-                 help="Make the program not be verbose.")
+     make_option(c("-f", "--imageformat"), action = "store", default = NA, type =  'character',
+                 help = "The image format (PDF (width=10, height=5), PNG/TIFF/EPS (width=1280, height=720)."),
+     make_option(c("-o", "--outputdir"), action = "store", default =  NA, type = 'character',
+                 help = "Path to the output directory."),
+     make_option(c("-t", "--titleplot"), action = "store", default = "Manhattan-plot", type = 'character',
+                 help = "The title of the plot? [default %default]"),
+     make_option(c("-v", "--verbose"), action = "store_true", default = TRUE,
+                 help = "Should the program print extra stuff out? [default %default]"),
+     make_option(c("-q", "--quiet"), action = "store_false", dest = "verbose",
+                 help = "Make the program not be verbose.")
      # make_option(c("-c", "--cvar"), action="store", default="this is c",
      #             help="a variable named c, with a default [default %default]")  
 )
-opt = parse_args(OptionParser(option_list=option_list))
+opt = parse_args(OptionParser(option_list = option_list))
 
 #--------------------------------------------------------------------------
-# 
-# ### FOR LOCAL DEBUGGING
-# ### MacBook Pro
-# #MACDIR="/Users/swvanderlaan"
-# ### Mac Pro
+
+### FOR LOCAL DEBUGGING
+### MacBook Pro
+MACDIR = "/Users/swvanderlaan"
+### Mac Pro
 # MACDIR="/Volumes/MyBookStudioII/Backup"
-# 
-# opt$projectdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/")
-# opt$outputdir=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/")
-# opt$colorstyle="FULL"
-# opt$imageformat="PNG"
-# #opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt")
-# opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.QC.MANHATTAN.txt")
-# ### FOR LOCAL DEBUGGING
-# 
+
+opt$projectdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
+opt$outputdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
+opt$colorstyle = "FULL"
+opt$imageformat = "PNG"
+#opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt")
+opt$resultfile = paste0(MACDIR, "/iCloud/Downloads/Heleen/HTN_mht.txt")
+### FOR LOCAL DEBUGGING
+
 #--------------------------------------------------------------------------
 
 if (opt$verbose) {
@@ -154,14 +154,14 @@ cat("Wow. We are finally starting \"Mahattan Plotter\". ")
 #--------------------------------------------------------------------------
 ### START OF THE PROGRAM
 # main point of program is here, do this whether or not "verbose" is set
-if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$colorstyle) & !is.na(opt$imageformat)) {
+if (!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$colorstyle) & !is.na(opt$imageformat)) {
      study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
      filename <- basename(opt$resultfile)
-     cat(paste("We are going to \nmake P-Z-plot of your (meta-)GWAS results. \nData are taken from.........: '",filename,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
+     cat(paste("We are going to a make Manhattan-plot of your (meta-)GWAS results. \nData are taken from.........: '",filename,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep = ''))
 
      #--------------------------------------------------------------------------
      ### GENERAL SETUP
-     Today=format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
+     Today = format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
      cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
      #Time=format(as.POSIXlt(Sys.time()), "%H:%M:%S")
      
@@ -181,16 +181,16 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      close(data_connection)
     
      ### Loading the data
-     if(filetype == "gzfile"){
+     if (filetype == "gzfile") {
      cat("\n* The file appears to be gzipped, now loading...\n")
        rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
-     } else if(filetype != "gzfile") {
+     } else if (filetype != "gzfile") {
      cat("\n* The file appears not to be gzipped, now loading...\n")
        rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
      } else {
-     cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
-   of the data. Double back, please.\n\n", 
-            file=stderr()) # print error messages to stder
+     cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
+of the data. Double back, please.\n\n", 
+            file = stderr()) # print error messages to stder
      }
      cat("\n* Removing NA's...")
      data <- na.omit(rawdata)
@@ -232,13 +232,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      } else {
      cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
      You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"), 
-           file=stderr()) # print error messages to stder
+           file = stderr()) # print error messages to stder
      }
      
      cat("...and make a list of colors.")
-     uithof_color_full=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B","#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9","#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1","#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D","#595A5C","#A2A3A4")
-     uithof_color_two=c("#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738")
-     uithof_color_qc=c("#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4")
+     uithof_color_full = c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B","#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9","#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1","#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D","#595A5C","#A2A3A4")
+     uithof_color_two = c("#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738")
+     uithof_color_qc = c("#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4")
      
      cat("\n\nSetting X- and Y-axes and counting chromosomes.")
      maxY <- round(max(-log10(data$V3)))
@@ -251,7 +251,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      
      # Take into account unique chrs
      uniq_chr = unique(data$V1)
-     cat(paste0("\n...chromosome [ ", uniq_chr," ]..."))
+     cat(paste0("\n- chromosome [ ", uniq_chr," ]..."))
      
      cat("\n\nDetermining the positions and p-values per chromosomes, and finally 'maxX'.
 Assigning positions and p-values for...\n")
@@ -259,12 +259,12 @@ Assigning positions and p-values for...\n")
      # and will plot accordingly. This includes the maximum number of chromosomes.
      maxX = 0 # setting maxX at 'zero'
      #changed to uniq_chr loop
-     for (i in 1:length(uniq_chr)){
-          cat(paste0("...chromosome [ ",i," ]...\n"))
+     for (i in 1:length(uniq_chr)) {
+          cat(paste0("- chromosome [ ",i," ]...\n"))
           # getting a list of positions per chromosome
-          assign((paste("pos_", i, sep= "")), (subset(p$V2, p$V1 == uniq_chr[i])))
+          assign((paste("pos_", i, sep = "")), (subset(p$V2, p$V1 == uniq_chr[i])))
           # getting a list of p-values per chromosome
-          assign((paste("p_", i, sep= "")), (subset(p$V3, p$V1 == uniq_chr[i])))  
+          assign((paste("p_", i, sep = "")), (subset(p$V3, p$V1 == uniq_chr[i])))  
           # calculating the maxX based on the input-data
           maxX = maxX + max(subset(p$V2, p$V1 == uniq_chr[i]))  
      }
