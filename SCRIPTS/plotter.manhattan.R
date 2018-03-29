@@ -110,21 +110,21 @@ option_list = list(
 opt = parse_args(OptionParser(option_list = option_list))
 
 #--------------------------------------------------------------------------
-
-### FOR LOCAL DEBUGGING
-### MacBook Pro
-MACDIR = "/Users/swvanderlaan"
-### Mac Pro
-# MACDIR="/Volumes/MyBookStudioII/Backup"
-
-opt$projectdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
-opt$outputdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
-opt$colorstyle = "FULL"
-opt$imageformat = "PNG"
-#opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt")
-opt$resultfile = paste0(MACDIR, "/iCloud/Downloads/Heleen/HTN_mht.txt")
-### FOR LOCAL DEBUGGING
-
+# 
+# ### FOR LOCAL DEBUGGING
+# ### MacBook Pro
+# MACDIR = "/Users/swvanderlaan"
+# ### Mac Pro
+# # MACDIR="/Volumes/MyBookStudioII/Backup"
+# 
+# opt$projectdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
+# opt$outputdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
+# opt$colorstyle = "FULL"
+# opt$imageformat = "PNG"
+# #opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt")
+# opt$resultfile = paste0(MACDIR, "/iCloud/Downloads/Heleen/HTN_mht.txt")
+# ### FOR LOCAL DEBUGGING
+# 
 #--------------------------------------------------------------------------
 
 if (opt$verbose) {
@@ -226,7 +226,7 @@ of the data. Double back, please.\n\n",
      } else if (opt$colorstyle == "FULL" || opt$colorstyle == "TWOCOLOR") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
           data <- data[which(data$V3 <= 1), ]
-          sig <- data[which(data$V3 <= 0.99), ]
+          sig <- data[which(data$V3 <= 1), ]
           nonsig <- data[which(data$V3 >= 0.05), ]
           p <- sig
      } else {
@@ -251,16 +251,16 @@ of the data. Double back, please.\n\n",
      
      # Take into account unique chrs
      uniq_chr = unique(data$V1)
-     cat(paste0("\n- chromosome [ ", uniq_chr," ]..."))
+     cat(paste0("\n- chromosome [ ", uniq_chr," ]"))
      
      cat("\n\nDetermining the positions and p-values per chromosomes, and finally 'maxX'.
-Assigning positions and p-values for...\n")
+Assigning positions and p-values for:\n")
      # We have determined the number of chromosomes (1-22 plus optionally x, y, etc.),
      # and will plot accordingly. This includes the maximum number of chromosomes.
      maxX = 0 # setting maxX at 'zero'
      #changed to uniq_chr loop
      for (i in 1:length(uniq_chr)) {
-          cat(paste0("- chromosome [ ",i," ]...\n"))
+          cat(paste0("- chromosome [ ",i," ]\n"))
           # getting a list of positions per chromosome
           assign((paste("pos_", i, sep = "")), (subset(p$V2, p$V1 == uniq_chr[i])))
           # getting a list of p-values per chromosome
@@ -275,53 +275,53 @@ Assigning positions and p-values for...\n")
      # respectively, has to be made.
      
      # 22 chromosomes
-     if(nchr==22) {
-       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22)
-          list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22)
+     if (nchr == 22) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes."))
+          list_pos = list(pos_1 = pos_1, pos_2 = pos_2, pos_3 = pos_3, pos_4 = pos_4, pos_5 = pos_5, pos_6 = pos_6, pos_7 = pos_7, pos_8 = pos_8, pos_9 = pos_9, pos_10 = pos_10, pos_11 = pos_11, pos_12 = pos_12, pos_13 = pos_13, pos_14 = pos_14, pos_15 = pos_15, pos_16 = pos_16, pos_17 = pos_17, pos_18 = pos_18, pos_19 = pos_19, pos_20 = pos_20, pos_21 = pos_21, pos_22 = pos_22)
+          list_p = list(p_1 = p_1, p_2 = p_2, p_3 = p_3, p_4 = p_4, p_5 = p_5, p_6 = p_6, p_7 = p_7, p_8 = p_8, p_9 = p_9, p_10 = p_10, p_11 = p_11, p_12 = p_12, p_13 = p_13, p_14 = p_14, p_15 = p_15, p_16 = p_16, p_17 = p_17, p_18 = p_18, p_19 = p_19, p_20 = p_20, p_21 = p_21, p_22 = p_22)
      # 23 chromosomes (X)
-     } else if(nchr==23) {
-       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23)
-          list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23)
+     } else if (nchr == 23) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes."))
+          list_pos = list(pos_1 = pos_1, pos_2 = pos_2, pos_3 = pos_3, pos_4 = pos_4, pos_5 = pos_5, pos_6 = pos_6, pos_7 = pos_7, pos_8 = pos_8, pos_9 = pos_9, pos_10 = pos_10, pos_11 = pos_11, pos_12 = pos_12, pos_13 = pos_13, pos_14 = pos_14, pos_15 = pos_15, pos_16 = pos_16, pos_17 = pos_17, pos_18 = pos_18, pos_19 = pos_19, pos_20 = pos_20, pos_21 = pos_21, pos_22 = pos_22, pos_23 = pos_23)
+          list_p = list(p_1 = p_1, p_2 = p_2, p_3 = p_3, p_4 = p_4, p_5 = p_5, p_6 = p_6, p_7 = p_7, p_8 = p_8, p_9 = p_9, p_10 = p_10, p_11 = p_11, p_12 = p_12, p_13 = p_13, p_14 = p_14, p_15 = p_15, p_16 = p_16, p_17 = p_17, p_18 = p_18, p_19 = p_19, p_20 = p_20, p_21 = p_21, p_22 = p_22, p_23 = p_23)
      # 24 chromosomes (X/Y)
-     } else if(nchr==24) {
-       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24)
-          list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23,p_24=p_24)
+     } else if (nchr == 24) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes."))
+          list_pos = list(pos_1 = pos_1, pos_2 = pos_2, pos_3 = pos_3, pos_4 = pos_4, pos_5 = pos_5, pos_6 = pos_6, pos_7 = pos_7, pos_8 = pos_8, pos_9 = pos_9, pos_10 = pos_10, pos_11 = pos_11, pos_12 = pos_12, pos_13 = pos_13, pos_14 = pos_14, pos_15 = pos_15, pos_16 = pos_16, pos_17 = pos_17, pos_18 = pos_18, pos_19 = pos_19, pos_20 = pos_20, pos_21 = pos_21, pos_22 = pos_22, pos_23 = pos_23, pos_24 = pos_24)
+          list_p = list(p_1 = p_1, p_2 = p_2, p_3 = p_3, p_4 = p_4, p_5 = p_5, p_6 = p_6, p_7 = p_7, p_8 = p_8, p_9 = p_9, p_10 = p_10, p_11 = p_11, p_12 = p_12, p_13 = p_13, p_14 = p_14, p_15 = p_15, p_16 = p_16, p_17 = p_17, p_18 = p_18, p_19 = p_19, p_20 = p_20, p_21 = p_21, p_22 = p_22, p_23 = p_23, p_24 = p_24)
      #25 chromosomes (X/Y/XY)
-     } else if(nchr==25) {
-       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24,pos_25=pos_25)
-          list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23,p_24=p_24,p_25=p_25)
+     } else if (nchr == 25) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes."))
+          list_pos = list(pos_1 = pos_1, pos_2 = pos_2, pos_3 = pos_3, pos_4 = pos_4, pos_5 = pos_5, pos_6 = pos_6, pos_7 = pos_7, pos_8 = pos_8, pos_9 = pos_9, pos_10 = pos_10, pos_11 = pos_11, pos_12 = pos_12, pos_13 = pos_13, pos_14 = pos_14, pos_15 = pos_15, pos_16 = pos_16, pos_17 = pos_17, pos_18 = pos_18, pos_19 = pos_19, pos_20 = pos_20, pos_21 = pos_21, pos_22 = pos_22, pos_23 = pos_23, pos_24 = pos_24, pos_25 = pos_25)
+          list_p = list(p_1 = p_1, p_2 = p_2, p_3 = p_3, p_4 = p_4, p_5 = p_5, p_6 = p_6, p_7 = p_7, p_8 = p_8, p_9 = p_9, p_10 = p_10, p_11 = p_11, p_12 = p_12, p_13 = p_13, p_14 = p_14, p_15 = p_15, p_16 = p_16, p_17 = p_17, p_18 = p_18, p_19 = p_19, p_20 = p_20, p_21 = p_21, p_22 = p_22, p_23 = p_23, p_24 = p_24, p_25 = p_25)
      # 26 chromosomes (X/Y/XY/MT)
-     } else if(nchr==26) {
-       cat(paste0("\n* There are [ ",nchr," ] chromosomes..."))
-          list_pos=list(pos_1=pos_1,pos_2=pos_2,pos_3=pos_3,pos_4=pos_4,pos_5=pos_5,pos_6=pos_6,pos_7=pos_7,pos_8=pos_8,pos_9=pos_9,pos_10=pos_10,pos_11=pos_11,pos_12=pos_12,pos_13=pos_13,pos_14=pos_14,pos_15=pos_15,pos_16=pos_16,pos_17=pos_17,pos_18=pos_18,pos_19=pos_19,pos_20=pos_20,pos_21=pos_21,pos_22=pos_22,pos_23=pos_23,pos_24=pos_24,pos_25=pos_25,pos_26=pos_26)
-          list_p=list(p_1=p_1,p_2=p_2,p_3=p_3,p_4=p_4,p_5=p_5,p_6=p_6,p_7=p_7,p_8=p_8,p_9=p_9,p_10=p_10,p_11=p_11,p_12=p_12,p_13=p_13,p_14=p_14,p_15=p_15,p_16=p_16,p_17=p_17,p_18=p_18,p_19=p_19,p_20=p_20,p_21=p_21,p_22=p_22,p_23=p_23,p_24=p_24,p_25=p_25,p_26=p_26)
+     } else if (nchr == 26) {
+       cat(paste0("\n* There are [ ",nchr," ] chromosomes."))
+          list_pos = list(pos_1 = pos_1, pos_2 = pos_2, pos_3 = pos_3, pos_4 = pos_4, pos_5 = pos_5, pos_6 = pos_6, pos_7 = pos_7, pos_8 = pos_8, pos_9 = pos_9, pos_10 = pos_10, pos_11 = pos_11, pos_12 = pos_12, pos_13 = pos_13, pos_14 = pos_14, pos_15 = pos_15, pos_16 = pos_16, pos_17 = pos_17, pos_18 = pos_18, pos_19 = pos_19, pos_20 = pos_20, pos_21 = pos_21, pos_22 = pos_22, pos_23 = pos_23, pos_24 = pos_24, pos_25 = pos_25, pos_26 = pos_26)
+          list_p = list(p_1 = p_1, p_2 = p_2, p_3 = p_3, p_4 = p_4, p_5 = p_5, p_6 = p_6, p_7 = p_7, p_8 = p_8, p_9 = p_9, p_10 = p_10, p_11 = p_11, p_12 = p_12, p_13 = p_13, p_14 = p_14, p_15 = p_15, p_16 = p_16, p_17 = p_17, p_18 = p_18, p_19 = p_19, p_20 = p_20, p_21 = p_21, p_22 = p_22, p_23 = p_23, p_24 = p_24, p_25 = p_25, p_26 = p_26)
      } else {
        cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the number 
    of chromosomes in the data. Double back, please.\n\n", 
-           file=stderr()) # print error messages to stder
+           file = stderr()) # print error messages to stder
      }
 
      ### PLOT MANHATTAN ###
      cat("\n\nDetermining what type of image should be produced and plotting axes.")
      if (opt$imageformat == "PNG")
           if (opt$colorstyle == "FULL") {
-          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width = 1280, height = 720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width = 1280, height = 720)
           	} else {
-          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width=1280, height=720)
+          	png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width = 1280, height = 720)
      		}
      if (opt$imageformat == "TIFF")
           if (opt$colorstyle == "FULL") {
-          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width = 1280, height = 720)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width = 1280, height = 720)
           	} else {
-          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width=1280, height=720)
+          	tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width = 1280, height = 720)
      		}
 
      if (opt$imageformat == "EPS")
@@ -337,30 +337,29 @@ Assigning positions and p-values for...\n")
      		}
      if (opt$imageformat == "PDF")
           if (opt$colorstyle == "FULL") {
-          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width = 10, height = 5)
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width = 10, height = 5)
           	} else {
-          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width=10, height=5)
+          	pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width = 10, height = 5)
      		}
      
      ### START PLOTTING ###
-     
      cat("\n\nSet up the plot.")
-     cat("\n* plotting chromosome 1...")
+     cat("\n- plotting chromosome 1.")
      if (opt$colorstyle == "FULL") {
           plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#FBB820", 
-               xlim = c(0, maxX), ylim = c(0, (maxY+2)), 
+               xlim = c(0, maxX), ylim = c(0, (maxY + 2)), 
                xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), 
                xaxs = "i", yaxs = "i", las = 1, bty = "l", main = paste0("",opt$titleplot,""), axes = FALSE)
      } else if (opt$colorstyle == "TWOCOLOR") {
           plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", 
-               xlim = c(0, maxX), ylim = c(0, (maxY+2)), 
+               xlim = c(0, maxX), ylim = c(0, (maxY + 2)), 
                xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), 
                xaxs = "i", yaxs = "i", las = 1, bty = "l", main = paste0("",opt$titleplot,""), axes = FALSE)
      } else {
           plot(pos_1, -log10(p_1), pch = 20, cex = 1.0, col = "#2F8BC9", 
-               xlim = c(0, maxX), ylim = c(0, (maxY+2)), 
+               xlim = c(0, maxX), ylim = c(0, (maxY + 2)), 
                xlab = "Chromosome", ylab = expression(Observed~~-log[10](italic(p)-value)), 
                xaxs = "i", yaxs = "i", las = 1, bty = "l", main = paste0("",opt$titleplot,""), axes = FALSE)
      }
@@ -368,83 +367,83 @@ Assigning positions and p-values for...\n")
      ### Add in results per chromosome, with offset to the right starting after chromosome 1
      # Plot the actual points	
      offset <- 0
-     for (i in 2:length(uniq_chr)){
-     cat(paste0("\n* plotting chromosome [ ",i," ]; "))
-          x=ifelse(i==1,0,1) #?i is never 1
-          offset <- offset + max(list_pos[[i-x]])
-          cat(paste0("the offset is [ ",offset," ]..."))
+     for (i in 2:length(uniq_chr)) {
+     cat(paste0("\n- plotting chromosome [ ",i," ]; "))
+          x = ifelse(i == 1,0,1) #?i is never 1
+          offset <- offset + max(list_pos[[i - x]])
+          cat(paste0("the offset is [ ",offset," ]."))
           if (opt$colorstyle == "FULL") {
-               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), 
-                      pch=20, cex=1.0, col=uithof_color_full[i])
+               points((subset(p$V2, p$V1 == uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1 == uniq_chr[i])), 
+                      pch = 20, cex = 1.0, col = uithof_color_full[i])
           } else if (opt$colorstyle == "TWOCOLOR") {
-               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), 
-                      pch=20, cex=1.0, col=uithof_color_two[i])
+               points((subset(p$V2, p$V1 == uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1 == uniq_chr[i])), 
+                      pch = 20, cex = 1.0, col = uithof_color_two[i])
           } else if (opt$colorstyle == "QC") {
-               points((subset(p$V2, p$V1==uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1==uniq_chr[i])), pch=20, cex=1.0, col=uithof_color_qc[i])
+               points((subset(p$V2, p$V1 == uniq_chr[i])) + offset,-log10(subset(p$V3, p$V1 == uniq_chr[i])), pch = 20, cex = 1.0, col = uithof_color_qc[i])
           } else {
             cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
 You set it to [ ",opt$colorstyle," ]. Double back, please.\n\n"), 
-                file=stderr()) # print error messages to stder
+                file = stderr()) # print error messages to stder
           }
      }
      
      cat("\n* creating the labels and ticks...")
      ###Setting the scene for the chromosome labels and ticks
-     xtix <- rep(0,nchr+1)
+     xtix <- rep(0,nchr + 1)
      xCHR <- c()
-     sz <- seq(1, 0.9, length.out=nchr)
+     sz <- seq(1, 0.9, length.out = nchr)
      offset <- 0
-     cat("\n* plotting labels and ticks...")
+     cat("\n* plotting labels and ticks for:")
      #Plot chromosome labels and ticks
-     for (i in 1:length(uniq_chr)){  
-          chr=uniq_chr[i]
-          cat(paste0("\n...for chromosome [ ",i," ]..."))
+     for (i in 1:length(uniq_chr)) {  
+          chr = uniq_chr[i]
+          cat(paste0("\n- chromosome [ ",i," ]."))
           
           # plotting the first label
-          x=ifelse(i==1,0,1)
-          max_pos_chr=max(subset(p$V2, p$V1==chr));
-          xtix[i] <- max_pos_chr + xtix[i-x];
+          x = ifelse(i == 1,0,1)
+          max_pos_chr = max(subset(p$V2, p$V1 == chr));
+          xtix[i] <- max_pos_chr + xtix[i - x];
           
           # putting the labels in the middle
-          xCHR[i] <- (max_pos_chr + min(subset(p$V2, p$V1==chr)))/2 + offset;
+          xCHR[i] <- (max_pos_chr + min(subset(p$V2, p$V1 == chr)))/2 + offset;
           
           # drawing the labels
           if (i == 23) {
-            axis(1, at=xCHR[i], labels="X", cex.axis=sz[i], tick=FALSE);
+            axis(1, at = xCHR[i], labels = "X", cex.axis = sz[i], tick = FALSE);
           } else if (i == 24) {
-            axis(1, at=xCHR[i], labels="Y", cex.axis=sz[i], tick=FALSE);
+            axis(1, at = xCHR[i], labels = "Y", cex.axis = sz[i], tick = FALSE);
           } else if (i == 25) {
-            axis(1, at=xCHR[i], labels="XY", cex.axis=sz[i], tick=FALSE);
+            axis(1, at = xCHR[i], labels = "XY", cex.axis = sz[i], tick = FALSE);
           } else if (i == 26) {
-            axis(1, at=xCHR[i], labels="MT", cex.axis=sz[i], tick=FALSE);
+            axis(1, at = xCHR[i], labels = "MT", cex.axis = sz[i], tick = FALSE);
           } else
-            axis(1, at=xCHR[i], labels=c(uniq_chr[i]), cex.axis=sz[i], tick=FALSE);
+            axis(1, at = xCHR[i], labels = c(uniq_chr[i]), cex.axis = sz[i], tick = FALSE);
           offset <- offset + max(list_pos[[i]])
      }
      
      cat("\n* plotting the X-axis...")
      #Plot the X-axis
-     if(nchr==22) {
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","",""))
-     } else if(nchr==23) {
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","",""))
-     } else if(nchr==24) {
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","",""))
-     } else if(nchr==25) {
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","",""))
-     } else if(nchr==26) {
-          axis(1, at=xtix, labels=c("","","","","","","","","","","","","","","","","","","","","","","","","","",""))
+     if (nchr == 22) {
+          axis(1, at = xtix, labels = c("","","","","","","","","","","","","","","","","","","","","","",""))
+     } else if (nchr == 23) {
+          axis(1, at = xtix, labels = c("","","","","","","","","","","","","","","","","","","","","","","",""))
+     } else if (nchr == 24) {
+          axis(1, at = xtix, labels = c("","","","","","","","","","","","","","","","","","","","","","","","",""))
+     } else if (nchr == 25) {
+          axis(1, at = xtix, labels = c("","","","","","","","","","","","","","","","","","","","","","","","","",""))
+     } else if (nchr == 26) {
+          axis(1, at = xtix, labels = c("","","","","","","","","","","","","","","","","","","","","","","","","","",""))
      } else {
          cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the number of
 chromosomes, so we can't plot the labels. Double back, please.\n\n"), 
-             file=stderr()) # print error messages to stder
+             file = stderr()) # print error messages to stder
        }
      cat("\n* plotting the Y-axis...")
-     axis(2, ylim=c(0, (maxY+2)))
+     axis(2, ylim = c(0, (maxY + 2)))
      #axis(2) # this should work as well
      
      cat("\n* plotting the genome-wide significance threshold.\n")
-     lines(c(0, maxX), c(-log10(5e-08), -log10(5e-08)), lty="dotted", col="#595A5C")
+     lines(c(0, maxX), c(-log10(5e-08), -log10(5e-08)), lty = "dotted", col = "#595A5C")
      
      dev.off()
      
@@ -457,7 +456,7 @@ chromosomes, so we can't plot the labels. Double back, please.\n\n"),
          - --c/colorstyle  : the color style to be used (FULL, TWOCOLOR or QC)\n
          - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n
          - --t/title       : the title on the plot (optional)\n\n", 
-         file=stderr()) # print error messages to stderr
+         file = stderr()) # print error messages to stderr
 }
 
 #--------------------------------------------------------------------------
