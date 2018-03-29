@@ -88,9 +88,9 @@ script_copyright_message() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                      MetaGWASToolKit: Resource Creator"
 echobold ""
-echobold "* Version:      v1.1.0"
+echobold "* Version:      v1.1.1"
 echobold ""
-echobold "* Last update:  2017-09-29"
+echobold "* Last update:  2018-03-22"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Testers:      Jessica van Setten."
 echobold "* Description:  Downloads, parses and creates the necessary resources for MetaGWASToolKit."
@@ -260,46 +260,53 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
 # 		qsub -S /bin/bash -N VCF1Gp3GONL5plusdbSNP.chr${CHR} -hold_jid VCFparser1Gp3GONL5.chr${CHR} -o ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
 # 	done
-	echo ""	
-	echo "All done submitting jobs for downloading and parsing 1000G references! 🖖"
+	echo ""
+	echobold "#########################################################################################################"
+	echobold "### DOWNLOADING GENCODE and refseq gene lists"
+	echobold "#########################################################################################################"
+	echobold "#"
+	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'GENCODE and refseq gene lists'. "
 	
-# 	echo ""
-# 	echobold "#########################################################################################################"
-# 	echobold "### DOWNLOADING GENCODE and refseq gene lists"
-# 	echobold "#########################################################################################################"
-# 	echobold "#"
-# 	echo ""
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 	echo "Downloading and parsing 'GENCODE and refseq gene lists'. "
-# 	
-# 	echo "* downloading [ GENCODE ] ... "
-# 	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/wgEncodeGencodeBasicV19.txt.gz -O ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
-# 	### HEAD
-# 	### 585	ENST00000456328.2	chr1	+	11868	14409	11868	11868	3	11868,12612,13220,	12227,12721,14409,	0	DDX11L1	none	none	-1,-1,-1,
-# 	### 585	ENST00000607096.1	chr1	+	30365	30503	30365	30365	1	30365,	30503,	0	MIR1302-11	none	none	-1,
-# 	### 585	ENST00000417324.1	chr1	-	34553	36081	34553	34553	3	34553,35276,35720,	35174,35481,36081,	0	FAM138A	none	none	-1,-1,-1,
-# 	### 585	ENST00000335137.3	chr1	+	69090	70008	69090	70008	1	69090,	70008,	0	OR4F5	cmpl	cmpl	0,
-# 	
-# 	echo "* parsing [ GENCODE ] ... "
-# 	zcat ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13, $2, $4}' | awk -F" " '{gsub(/chr/, "", $1)}1' | tail -n +2 > ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
-# 	gzip -fv ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
-# 	rm -fv ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
-# 	
-# 	echo "* downloading [ refseq ] ... "
-# 	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
-# 	### HEAD
-# 	### 585	NR_046018	chr1	+	11873	14409	14409	14409	3	11873,12612,13220,	12227,12721,14409,	0	DDX11L1	unk	unk	-1,-1,-1,
-# 	### 585	NR_024540	chr1	-	14361	29370	29370	29370	11	14361,14969,15795,16606,16857,17232,17605,17914,18267,24737,29320,	14829,15038,15947,16765,17055,17368,17742,18061,18366,24891,29370,	0	WASH7P	unk	unk	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
-# 
-# 	echo "* parsing [ refseq ] ... "
-# 	zcat ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13, $2, $4 }' | awk -F" " '{gsub(/chr/, "", $1)}1' > ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
-# 	gzip -fv ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
-# 	rm -fv ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
-# 	echo ""	
-# 	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 
+	echo "* downloading [ GENCODE ] ... "
+	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/wgEncodeGencodeBasicV19.txt.gz -O ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
+	### HEAD
+	### 585	ENST00000456328.2	chr1	+	11868	14409	11868	11868	3	11868,12612,13220,	12227,12721,14409,	0	DDX11L1	none	none	-1,-1,-1,
+	### 585	ENST00000607096.1	chr1	+	30365	30503	30365	30365	1	30365,	30503,	0	MIR1302-11	none	none	-1,
+	### 585	ENST00000417324.1	chr1	-	34553	36081	34553	34553	3	34553,35276,35720,	35174,35481,36081,	0	FAM138A	none	none	-1,-1,-1,
+	### 585	ENST00000335137.3	chr1	+	69090	70008	69090	70008	1	69090,	70008,	0	OR4F5	cmpl	cmpl	0,
+	
+	echo "* parsing [ GENCODE ] ... "
+	zcat ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13 }' | awk -F" " '{gsub(/chr/, "", $1)}1' | awk -F" " '{gsub(/X/, "23", $1)}1' | awk -F" " '{gsub(/Y/, "24", $1)}1' | awk -F" " '{gsub(/M/, "26", $1)}1' > ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
+	mv -v ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt foo
+	touch ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt
+	for CHR in $(seq 1 24); do
+		cat foo | awk ' $1 == '$CHR' ' >> ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt
+	done
+	
+	rm -fv ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz foo
+	
+	echo "* downloading [ refseq ] ... "
+	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
+	### HEAD
+	### 585	NR_046018	chr1	+	11873	14409	14409	14409	3	11873,12612,13220,	12227,12721,14409,	0	DDX11L1	unk	unk	-1,-1,-1,
+	### 585	NR_024540	chr1	-	14361	29370	29370	29370	11	14361,14969,15795,16606,16857,17232,17605,17914,18267,24737,29320,	14829,15038,15947,16765,17055,17368,17742,18061,18366,24891,29370,	0	WASH7P	unk	unk	-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,
+
+	echo "* parsing [ refseq ] ... "
+	zcat ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13 }' | awk -F" " '{gsub(/chr/, "", $1)}1' | awk -F" " '{gsub(/X/, "23", $1)}1' | awk -F" " '{gsub(/Y/, "24", $1)}1' > ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
+	mv -v ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt foo
+	touch ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
+	for CHR in $(seq 1 24); do
+		cat foo | awk ' $1 == '$CHR' ' >> ${RESOURCES}/refseq_GRCh37_hg19_Feb2009.txt
+	done
+	
+	rm -fv ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz foo 
+
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+ 
 # 	echo ""
 # 	echobold "#########################################################################################################"
 # 	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
