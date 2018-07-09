@@ -88,9 +88,9 @@ script_copyright_message() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                      MetaGWASToolKit: Resource Creator"
 echobold ""
-echobold "* Version:      v1.1.1"
+echobold "* Version:      v1.1.2"
 echobold ""
-echobold "* Last update:  2018-03-22"
+echobold "* Last update:  2018-07-09"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Testers:      Jessica van Setten."
 echobold "* Description:  Downloads, parses and creates the necessary resources for MetaGWASToolKit."
@@ -127,49 +127,49 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	POPULATION="EUR"
 	POPULATION1Gp3="EUR"
 	POPULATION1Gp3GONL5="PAN"
-# 	
-# 	echobold "#########################################################################################################"
-# 	echobold "### DOWNLOADING dbSNP GRCh37 v147 hg19 Feb2009"
-# 	echobold "#########################################################################################################"
-# 	echobold "#"
-# 	echo ""
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 	echo "Downloading and parsing 'dbSNP GRCh37 v147 hg19 Feb2009'. "
-# 	echo ""
-# 	echo "* downloading [ dbSNP ] ..."
-# 	wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
-# 	### HEAD
-# 	### zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
-# 	### 585	chr1	10019	10020	rs775809821	0	+	A	A	-/A	genomic	deletion	unknown	0	0	near-gene-5	exact	1		1	SSMP,	0
-# 	### 585	chr1	10055	10055	rs768019142	0	+	-	-	-/A	genomic	insertion	unknown	0	0	near-gene-5	between	1		1	SSMP,	0
-# 	### 585	chr1	10107	10108	rs62651026	0	+	C	C	C/T	genomic	single	unknown	0	0	near-gene-5	exact	1		1	BCMHGSC_JDW,	0
-# 	
-# 	echo "* parsing [ dbSNP ] ..."
-# 	echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
-# 	zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
-# 	cat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt
-# 	
-# 	echo "gzip -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
-# 	echo "rm -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
-# 	echo "gzip -vf ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
-# 	qsub -S /bin/bash -N dbSNPparser -o ${RESOURCES}/resource.dbSNP.parser.log -e ${RESOURCES}/resource.dbSNP.parser.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.parser.sh
-# 
-# 	echo ""	
-# 	echo "All done submitting jobs for downloading and parsing dbSNP reference! 🖖"
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 
-# 	echo ""
-# 	echobold "#########################################################################################################"
-# 	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING HapMap 2 reference b36 hg18"
-# 	echobold "#########################################################################################################"
-# 	echobold "#"
-# 	echo ""
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 	echo "Downloading and parsing 'HapMap 2 b36 hg18'. "
-# 
-# 	echo ""	
-# 	echo "All done submitting jobs for downloading and parsing HapMap 2 reference! 🖖"
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	
+	echobold "#########################################################################################################"
+	echobold "### DOWNLOADING dbSNP GRCh37 v147 hg19 Feb2009"
+	echobold "#########################################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'dbSNP GRCh37 v147 hg19 Feb2009'. "
+	echo ""
+	echo "* downloading [ dbSNP ] ..."
+	wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
+	### HEAD
+	### zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
+	### 585	chr1	10019	10020	rs775809821	0	+	A	A	-/A	genomic	deletion	unknown	0	0	near-gene-5	exact	1		1	SSMP,	0
+	### 585	chr1	10055	10055	rs768019142	0	+	-	-	-/A	genomic	insertion	unknown	0	0	near-gene-5	between	1		1	SSMP,	0
+	### 585	chr1	10107	10108	rs62651026	0	+	C	C	C/T	genomic	single	unknown	0	0	near-gene-5	exact	1		1	BCMHGSC_JDW,	0
+	
+	echo "* parsing [ dbSNP ] ..."
+	echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
+	zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
+	cat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt
+	
+	echo "gzip -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "rm -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "gzip -vf ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	qsub -S /bin/bash -N dbSNPparser -o ${RESOURCES}/resource.dbSNP.parser.log -e ${RESOURCES}/resource.dbSNP.parser.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.parser.sh
+
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing dbSNP reference! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+	echo ""
+	echobold "#########################################################################################################"
+	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING HapMap 2 reference b36 hg18"
+	echobold "#########################################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'HapMap 2 b36 hg18'. "
+
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing HapMap 2 reference! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 	echo ""
 	echobold "#########################################################################################################"
@@ -180,49 +180,49 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Downloading and parsing '1000G phase 1 and phase 3'. "
 
-# 	echo "* downloading [ 1000G phase 1 ] ..."
-# 	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/integrated_call_sets/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " > ${RESOURCES}/resource.1kG1.downloader.sh
-# 	qsub -S /bin/bash -N ThousandGp1downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
-# 	echo "* downloading [ 1000G phase 3 ] ..."
-# 	echo "wget ftp://ftp.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " > ${RESOURCES}/resource.1kG3.downloader.sh
-# 	qsub -S /bin/bash -N ThousandGp3downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG3.downloader.log -e ${RESOURCES}/resource.1kG3.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG3.downloader.sh
-# 	
-# 	echo "* parsing 1000G phase 1."
-# 	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop ${POPULATION} --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# 	echo "rm -fv ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# 	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
-# 	
-# 	echo "* parsing 1000G phase 3."
-# 	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp3 --pop ${POPULATION1Gp3} --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo ""
+	echo "* downloading [ 1000G phase 1 ] ..."
+	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/integrated_call_sets/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " > ${RESOURCES}/resource.1kG1.downloader.sh
+	qsub -S /bin/bash -N ThousandGp1downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
+	echo "* downloading [ 1000G phase 3 ] ..."
+	echo "wget ftp://ftp.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " > ${RESOURCES}/resource.1kG3.downloader.sh
+	qsub -S /bin/bash -N ThousandGp3downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG3.downloader.log -e ${RESOURCES}/resource.1kG3.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG3.downloader.sh
+	
+	echo "* parsing 1000G phase 1."
+	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop ${POPULATION} --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	echo "rm -fv ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
+	
+	echo "* parsing 1000G phase 3."
+	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp3 --pop ${POPULATION1Gp3} --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo ""
 		
-# 	echo "* updating 1000G phase 1."
-# 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
-# 	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	echo "* updating 1000G phase 1."
+	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 
-# 	echo "* updating 1000G phase 3."
-# 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-# 	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	echo "* updating 1000G phase 3."
+	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 
 	
 	echo "* parsing 1000G phase 3 + GoNL5."
 	echo "  - generating the necessary per-variant descriptive statistics."
 
-# 	for CHR in $(seq 1 22); do
-# 		echo "* Processing chromosome [ ${CHR} ]."
-# 		echo "${QCTOOL} -g ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.vcf.gz -snp-stats ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.stats " > ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
-# 		qsub -S /bin/bash -N VCFSTATS1Gp3GONL5 -hold_jid ThousandGp3GONL5downloader -o ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
-# 	done
+	for CHR in $(seq 1 22); do
+		echo "* Processing chromosome [ ${CHR} ]."
+		echo "${QCTOOL} -g ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.vcf.gz -snp-stats ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.stats " > ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
+		qsub -S /bin/bash -N VCFSTATS1Gp3GONL5 -hold_jid ThousandGp3GONL5downloader -o ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
+	done
 		
 	### EXAMPLE HEAD OF STATS files
 	### SNPID	RSID	chromosome	position	A_allele	B_allele	minor_allele	major_allele	AA	AB	BB	AA_calls	AB_calls	BB_calls	MAF	HWE	missing	missing_calls	information
@@ -244,22 +244,22 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	done
 	gzip -v ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto.txt	
 
-# 	echo "  - parsing the new reference dataset."
-# 		echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto.txt.gz --ref 1Gp3GONL5 --pop ${POPULATION1Gp3GONL5} --out ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto " > ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
-# 		qsub -S /bin/bash -N VCFparser1Gp3GONL5 -hold_jid STATS21Gp3GONL5 -o ${RESOURCES}/resource.VCFparser.1Gp3GONL5.log -e ${RESOURCES}/resource.VCFparser.1Gp3GONL5.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
-# 		echo ""
+	echo "  - parsing the new reference dataset."
+		echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto.txt.gz --ref 1Gp3GONL5 --pop ${POPULATION1Gp3GONL5} --out ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.auto " > ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5.stats.auto.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+		qsub -S /bin/bash -N VCFparser1Gp3GONL5 -hold_jid STATS21Gp3GONL5 -o ${RESOURCES}/resource.VCFparser.1Gp3GONL5.log -e ${RESOURCES}/resource.VCFparser.1Gp3GONL5.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1Gp3GONL5.sh
+		echo ""
 
 
-# 	echo "* updating 1000G phase 3 + GoNL5."
-# 	for CHR in $(seq 1 22); do
-# 		echo "* Processing chromosome [ ${chr} ]."
-# 		echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
-# 		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
-# 		qsub -S /bin/bash -N VCF1Gp3GONL5plusdbSNP.chr${CHR} -hold_jid VCFparser1Gp3GONL5.chr${CHR} -o ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
-# 	done
+	echo "* updating 1000G phase 3 + GoNL5."
+	for CHR in $(seq 1 22); do
+		echo "* Processing chromosome [ ${chr} ]."
+		echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
+		echo "gzip -fv ${RESOURCES}/1000Gp3v5_GoNL5_chr${CHR}.${POPULATION1Gp3GONL5}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
+		qsub -S /bin/bash -N VCF1Gp3GONL5plusdbSNP.chr${CHR} -hold_jid VCFparser1Gp3GONL5.chr${CHR} -o ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1Gp3GONL5.chr${CHR}.sh
+	done
 	echo ""
 	echobold "#########################################################################################################"
 	echobold "### DOWNLOADING GENCODE and refseq gene lists"
@@ -307,39 +307,39 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
  
-# 	echo ""
-# 	echobold "#########################################################################################################"
-# 	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
-# 	echobold "#########################################################################################################"
-# 	echobold "#"
-# 	echo ""
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 	echo "Downloading and parsing 'Recombination Maps'. "
-# 	http://www.shapeit.fr/files/genetic_map_b37.tar.gz
-# 	http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
-# 	wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
-# 	tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
-# 	mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
-# 	echo ""	
-# 	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 
-# 	echo ""
-# 	echobold "#########################################################################################################"
-# 	echobold "### DOWNLOADING LD-Hub reference variants"
-# 	echobold "#########################################################################################################"
-# 	echobold "#"
-# 	echo ""
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-# 	echo "Downloading and parsing 'LD-Score reference variant list'. "
-# 	wget http://ldsc.broadinstitute.org/static/media/w_hm3.noMHC.snplist.zip -O ${RESOURCES}/w_hm3.noMHC.snplist.zip
-# 	echo "snpid A1 A2" > ${RESOURCES}/w_hm3.noMHC.snplist.txt
-# 	unzip -p ${RESOURCES}/w_hm3.noMHC.snplist.zip | tail -n +2 >> ${RESOURCES}/w_hm3.noMHC.snplist.txt
-# 	gzip -fv ${RESOURCES}/w_hm3.noMHC.snplist.txt
-# 	rm -v ${RESOURCES}/w_hm3.noMHC.snplist.zip
-# 	echo ""	
-# 	echo "All done submitting jobs for downloading and parsing LD-Score reference variant list! 🖖"
-# 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo ""
+	echobold "#########################################################################################################"
+	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
+	echobold "#########################################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'Recombination Maps'. "
+	http://www.shapeit.fr/files/genetic_map_b37.tar.gz
+	http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
+	wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
+	tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
+	mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+	echo ""
+	echobold "#########################################################################################################"
+	echobold "### DOWNLOADING LD-Hub reference variants"
+	echobold "#########################################################################################################"
+	echobold "#"
+	echo ""
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	echo "Downloading and parsing 'LD-Score reference variant list'. "
+	wget http://ldsc.broadinstitute.org/static/media/w_hm3.noMHC.snplist.zip -O ${RESOURCES}/w_hm3.noMHC.snplist.zip
+	echo "snpid A1 A2" > ${RESOURCES}/w_hm3.noMHC.snplist.txt
+	unzip -p ${RESOURCES}/w_hm3.noMHC.snplist.zip | tail -n +2 >> ${RESOURCES}/w_hm3.noMHC.snplist.txt
+	gzip -fv ${RESOURCES}/w_hm3.noMHC.snplist.txt
+	rm -v ${RESOURCES}/w_hm3.noMHC.snplist.zip
+	echo ""	
+	echo "All done submitting jobs for downloading and parsing LD-Score reference variant list! 🖖"
+	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 script_copyright_message
 
