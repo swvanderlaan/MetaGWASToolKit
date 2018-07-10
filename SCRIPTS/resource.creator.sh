@@ -127,6 +127,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	POPULATION="EUR"
 	POPULATION1Gp3="EUR"
 	POPULATION1Gp3GONL5="PAN"
+	DBSNPVERSION="150"
 	
 	echobold "#########################################################################################################"
 	echobold "### DOWNLOADING dbSNP GRCh37 v147 hg19 Feb2009"
@@ -137,21 +138,21 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "Downloading and parsing 'dbSNP GRCh37 v147 hg19 Feb2009'. "
 	echo ""
 	echo "* downloading [ dbSNP ] ..."
-	wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp147.txt.gz -O ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
+	wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp${DBSNPVERSION}.txt.gz -O ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz
 	### HEAD
-	### zcat dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
+	### zcat dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
 	### 585	chr1	10019	10020	rs775809821	0	+	A	A	-/A	genomic	deletion	unknown	0	0	near-gene-5	exact	1		1	SSMP,	0
 	### 585	chr1	10055	10055	rs768019142	0	+	-	-	-/A	genomic	insertion	unknown	0	0	near-gene-5	between	1		1	SSMP,	0
 	### 585	chr1	10107	10108	rs62651026	0	+	C	C	C/T	genomic	single	unknown	0	0	near-gene-5	exact	1		1	BCMHGSC_JDW,	0
 	
 	echo "* parsing [ dbSNP ] ..."
-	echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
-	zcat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt
-	cat ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt
+	echo "Chr ChrStart ChrEnd VariantID Strand Alleles VariantClass VariantFunction" > ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.txt
+	zcat ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz | awk '{ print $2, $3, $4, $5, $7, $10, $12, $16 }' >> ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.txt
+	cat ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.txt | awk '{ print $4, $8 }' > ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.attrib.txt
 	
-	echo "gzip -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
-	echo "rm -fv ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
-	echo "gzip -vf ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "gzip -fv ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.txt " > ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "rm -fv ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz " >> ${RESOURCES}/resource.dbSNP.parser.sh
+	echo "gzip -vf ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.attrib.txt " >> ${RESOURCES}/resource.dbSNP.parser.sh
 	qsub -S /bin/bash -N dbSNPparser -o ${RESOURCES}/resource.dbSNP.parser.log -e ${RESOURCES}/resource.dbSNP.parser.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.dbSNP.parser.sh
 
 	echo ""	
