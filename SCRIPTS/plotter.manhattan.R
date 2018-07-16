@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Manhattan Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.7
-    * Last edit: 2018-03-29
+    * Version: v1.1.8
+    * Last edit: 2018-07-16
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -326,13 +326,13 @@ Assigning positions and p-values for:\n")
 
      if (opt$imageformat == "EPS")
      	  if (opt$colorstyle == "FULL") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".eps"),
+          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".ps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else if (opt$colorstyle == "TWOCOLOR") {
-          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".eps"),
+          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".ps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
           	} else {
-          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".eps"),
+          	postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".ps"),
           	           horizontal = FALSE, onefile = FALSE, paper = "special")
      		}
      if (opt$imageformat == "PDF")

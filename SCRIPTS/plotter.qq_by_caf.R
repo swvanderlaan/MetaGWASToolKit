@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ by CAF Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.6
-    * Last edit: 2018-03-01
+    * Version: v1.1.7
+    * Last edit: 2018-07-16
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
@@ -256,7 +256,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           tiff(paste0(opt$outputdir,"/",study,".tiff"), width = 800, height = 800)
      
      if (opt$imageformat == "EPS") 
-          postscript(file = paste0(opt$outputdir,"/",study,".eps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+          postscript(file = paste0(opt$outputdir,"/",study,".ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
      
      if (opt$imageformat == "PDF") 
           pdf(paste0(opt$outputdir,"/",study,".pdf"), width = 10, height = 10)
