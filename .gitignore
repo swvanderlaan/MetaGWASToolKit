@@ -60,3 +60,5 @@ RESOURCES/history.txt
 .DS_Store
 *.gz
 *.stats
+RESOURCES/.DS_Store
+.DS_Store
