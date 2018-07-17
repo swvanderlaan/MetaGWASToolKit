@@ -54,3 +54,7 @@ RESOURCES/.DS_Store
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.EUR.FUNC.txt
 RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
 RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.allVariants.txt.gz
+RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.attrib.txt
+RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.txt
+RESOURCES/history.txt
+.DS_Store
