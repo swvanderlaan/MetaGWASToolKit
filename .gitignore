@@ -58,3 +58,5 @@ RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.attrib.txt
 RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.txt
 RESOURCES/history.txt
 .DS_Store
+*.gz
+*.stats
