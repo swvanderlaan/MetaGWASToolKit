@@ -1,17 +1,4 @@
 #!/usr/bin/perl
-####################################################################################################
-#
-# Author: Paul de Bakker, pdebakker@rics.bwh.harvard.edu
-#         Division of Genetics, Brigham and Women's Hospital
-#         Program in Medical and Population Genetics, Broad Institute of MIT and Harvard
-#        
-# Last update: 22 March 2009
-#
-#
-####################################################################################################
-#
-# Required input:
-#
 #
 ####################################################################################################
 # 
@@ -20,7 +7,10 @@
 # Description: 	this script parses a PLINK v1.05+ or PLINK v1.9 generated 'clumped'-file
 #               and extracts the relevant data for a given variant.
 #
-# Written by:	Paul I.W. de Bakker; Utrecht, the Netherlands.
+# Written by:	Paul I.W. de Bakker; Utrecht, the Netherlands. 
+#               Division of Genetics, Brigham and Women's Hospital, 
+#               Program in Medical and Population Genetics, Broad Institute of MIT and Harvard, 
+#               Boston (MA), United States of America.
 # Edited by:    Sander W. van der Laan; Utrecht, the Netherlands, s.w.vanderlaan@gmail.com.
 # Version:		1.2.0
 # Update date: 	2018-08-04
@@ -59,7 +49,7 @@ relevant data for a given variant.\n";
 print "";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print "The MIT License (MIT)\n";
-print "Copyright (c) 2009-2017 Paul I.W. de Bakker & Sander W. van der Laan\n";
+print "Copyright (c) 2009-2018 Paul I.W. de Bakker & Sander W. van der Laan\n";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 exit();
 }
