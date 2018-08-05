@@ -119,7 +119,7 @@ cat("Starting \"P-values Corrector\".")
 ### START OF THE PROGRAM
 ### main point of program is here, do this whether or not "verbose" is set
 if(!is.na(opt$inputfile) & !is.na(opt$outputfile)) {
-  cat(paste("\n\nWe are going to apply genomic control on a given list of p-values (from a meta-analysis of GWAS.
+  cat(paste("\n\nWe are going to calculate p-values on a given list of z-scores (from a meta-analysis of GWAS).
             \nCorrecting p-values of these results...........: '",basename(opt$inputfile),"'
             Corrected results will be saved here.............: '", opt$outputfile, "'.\n",sep=''))
   
@@ -132,32 +132,31 @@ if(!is.na(opt$inputfile) & !is.na(opt$outputfile)) {
   data = fread(opt$inputfile, header = TRUE, dec = ".", blank.lines.skip = TRUE)
   
   cat("* Performing some calculations...\n")
-  cat("  - p-value for 'P_SQRTN'\n")
-  P1 <- pnorm(-(abs(data$P_SQRTN))) * 2;
-  cat("  - p-value for 'P_FIXED'\n")
+  cat("  - p-value for 'Z_SQRTN'\n")
+  P1 <- pnorm(-(abs(data$Z_SQRTN))) * 2;
+  cat("  - p-value for 'Z_FIXED'\n")
   P2 <- pnorm(-(abs(data$P_FIXED))) * 2;
-  cat("  - p-value for 'P_RANDOM'\n")
-  P3 <- pnorm(-(abs(data$P_RANDOM))) * 2;
+  cat("  - p-value for 'Z_RANDOM'\n")
+  P3 <- pnorm(-(abs(data$Z_RANDOM))) * 2;
   cat("  - making updated dataset for export\n")
   data.updated <- data.frame(data[,1], P1, P2, P3)
 
-  cat("\nAll done correcting p-values in the dataset.")
+  cat("\nAll done calculating p-values in the dataset.")
   ### SAVE NEW DATA ###
-  cat("\n\nSaving corrected data...\n")
+  cat("\n\nSaving data...\n")
   write.table(data.updated, 
               file = opt$outputfile, 
               quote = FALSE , row.names = FALSE, col.names = TRUE, 
               sep = "\t", na = "NA", dec = ".")
   
   ### CLOSING MESSAGE
-  cat(paste("\nAll done correcting p-values in [",file_path_sans_ext(basename(opt$inputfile), compression = TRUE),"].\n"))
+  cat(paste("\nAll done calculating p-values in [",file_path_sans_ext(basename(opt$inputfile), compression = TRUE),"].\n"))
   cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
   
 } else {
   cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n*** ERROR *** You didn't specify all variables:\n
       - --i/inputfile    : Path to the input file.
-      - --l/lambda       : Lambda-value to correct the data by.
       - --o/outputfile   : Path to the output file.",
       file=stderr()) # print error messages to stderr
 }
