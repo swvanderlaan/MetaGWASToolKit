@@ -62,3 +62,12 @@ RESOURCES/history.txt
 *.stats
 RESOURCES/.DS_Store
 .DS_Store
+RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.txt
+RESOURCES/resource.VCFparser.1kGp3.errors
+RESOURCES/resource.VCFparser.1kGp3.log
+RESOURCES/resource.VCFparser.1kGp3.sh
+RESOURCES/resource.VCFplusdbSNP.1kGp3.errors
+RESOURCES/resource.VCFplusdbSNP.1kGp3.sh
+RESOURCES/resource.VCFplusdbSNP.1kGp3.log
+resource.creator.errors
+resource.creator.log
