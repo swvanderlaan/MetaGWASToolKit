@@ -1,17 +1,4 @@
 #!/usr/bin/perl
-####################################################################################################
-#
-# Author: Paul de Bakker, pdebakker@rics.bwh.harvard.edu
-#         Division of Genetics, Brigham and Women's Hospital
-#         Program in Medical and Population Genetics, Broad Institute of MIT and Harvard
-#        
-# Last update: 22 March 2009
-#
-#
-####################################################################################################
-#
-# Required input:
-#
 #
 ####################################################################################################
 # 
@@ -20,10 +7,13 @@
 # Description: 	this script parses a PLINK v1.05+ or PLINK v1.9 generated 'clumped'-file
 #               and extracts the relevant data for a given variant.
 #
-# Written by:	Paul I.W. de Bakker; Utrecht, the Netherlands.
+# Written by:	Paul I.W. de Bakker; Utrecht, the Netherlands. 
+#               Division of Genetics, Brigham and Women's Hospital, 
+#               Program in Medical and Population Genetics, Broad Institute of MIT and Harvard, 
+#               Boston (MA), United States of America.
 # Edited by:    Sander W. van der Laan; Utrecht, the Netherlands, s.w.vanderlaan@gmail.com.
-# Version:		1.1.0
-# Update date: 	2017-06-02
+# Version:		1.2.0
+# Update date: 	2018-08-04
 #
 # Usage:		parseClumps.pl --file [clumped-file] --variant [variant-to-clump]
 
@@ -59,7 +49,7 @@ relevant data for a given variant.\n";
 print "";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print "The MIT License (MIT)\n";
-print "Copyright (c) 2009-2017 Paul I.W. de Bakker & Sander W. van der Laan\n";
+print "Copyright (c) 2009-2018 Paul I.W. de Bakker & Sander W. van der Laan\n";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 exit();
 }
@@ -94,8 +84,8 @@ my $toggle = 0;
 #               rs12234970       -138    0.369    AA/CC    1      0.00408 A, C, 0.229, 0.19, 7134.7, -0.0439, 0.0153, -2.8722, -0.074, -0.014, FABP5, ENST00000297258.6, +, PAG1,RP11-1149M10.2,RP11-363E6.4,RP11-363E6.3,FABP5,RP11-157I4.4,PMP2,FABP9,FABP4,RP11-257P3.3,FABP12, unknown, NA
 
 # Column #
-#	   0         1  2    5       6           7 			 8   9   10    11         12       13      14               15               16           17                     18                  19          20               21
-print "VARIANTID KB RSQR P_FIXED CODEDALLELE OTHERALLELE CAF MAF N_EFF BETA_FIXED SE_FIXED Z_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND GENES_250KB VARIANT_FUNCTION CAVEAT\n"; 
+#	   0         1  2    5       6     7 	 8   9   		 10    		 11  12    13      	  14       15               16               17      18         19 20           21		  22		  23		 24			 25			  26					 27					 28				  29
+print "VARIANTID KB RSQR P_FIXED MINOR MAJOR MAF CODEDALLELE OTHERALLELE CAF N_EFF BETA_FIXED SE_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED Z_FIXED COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED DIRECTIONS GENES_250KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT\n"; 
 
 open (CLUMP, $clumpFile) or die " *** ERROR *** Cannot open open [ $clumpFile ]!\n";
 while(my $c = <CLUMP>){
@@ -107,7 +97,7 @@ while(my $c = <CLUMP>){
   if ( $fields[0] eq "(INDEX)" && $index eq $fields[1] ) { 
     shift @fields;
 #    print join " ", @fields;   
-    print "$fields[0] $fields[1] $fields[2] $fields[5] $fields[6] $fields[7] $fields[8] $fields[9] $fields[10] $fields[11] $fields[12] $fields[13] $fields[14] $fields[15] $fields[16] $fields[17] $fields[18] $fields[19] $fields[20] $fields[21]\n";
+    print "$fields[0] $fields[1] $fields[2] $fields[5] $fields[6] $fields[7] $fields[8] $fields[9] $fields[10] $fields[11] $fields[12] $fields[13] $fields[14] $fields[15] $fields[16] $fields[17] $fields[18] $fields[19] $fields[20] $fields[21] $fields[22] $fields[23] $fields[24] $fields[25] $fields[26] $fields[27] $fields[28] $fields[29]\n";
     $toggle = 1; 
     my $void = <CLUMP>; 
     next;
@@ -115,7 +105,7 @@ while(my $c = <CLUMP>){
 
   if ( $toggle == 1 ) { 
     if ( $#fields > 2 ) { 
-      print "$fields[0] $fields[1] $fields[2] $fields[5] $fields[6] $fields[7] $fields[8] $fields[9] $fields[10] $fields[11] $fields[12] $fields[13] $fields[14] $fields[15] $fields[16] $fields[17] $fields[18] $fields[19] $fields[20] $fields[21]\n";
+      print "$fields[0] $fields[1] $fields[2] $fields[5] $fields[6] $fields[7] $fields[8] $fields[9] $fields[10] $fields[11] $fields[12] $fields[13] $fields[14] $fields[15] $fields[16] $fields[17] $fields[18] $fields[19] $fields[20] $fields[21] $fields[22] $fields[23] $fields[24] $fields[25] $fields[26] $fields[27] $fields[28] $fields[29]\n";
     } else { $toggle = 0; }
   } 
 }
@@ -129,7 +119,7 @@ print STDERR "\n";
 print STDERR "\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2009-2017 Paul I.W. de Bakker & Sander W. van der Laan                   +\n";
+print STDERR "+ Copyright (c) 2009-2018 Paul I.W. de Bakker & Sander W. van der Laan                   +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
 print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";
