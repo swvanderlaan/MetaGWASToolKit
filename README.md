@@ -5,7 +5,8 @@ MetaGWASToolKit
 
 ** Preliminary release v1.0 **
 
-**NOTE: For a meta-analysis using 1000G phase 1 everything should work. We are updating some items, so please check back. For a list of items we are working on check the bottom of this readme.**
+**NOTE #1: Currently, meta-analyses using 1000G phase 1 are supported. Upon request I will update to 1000G phase 3, and so on. **
+**NOTE #2: I am updating some items in the coming few weeks, so please check back. For a list of items I am working on check the "Issues".**
 
 ### Introduction
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Can be used in conjunction with [**GWASToolKit**](https://github.com/swvanderlaan/GWASToolKit).
@@ -17,63 +18,6 @@ All scripts are annotated for debugging purposes - and future reference. The onl
 - `metagwastoolkit.list` which contains a list of all the GWAS datasets.
 
 Scripts will work within the context of a certain Linux environment (in this case a CentOS7 system on a SUN Grid Engine background). In addition to testing **MetaGWASToolKit** on CentOS7, we have tested it on OS X Sierra (version 10.11.[x]) too. 
-
-
---------------
-
-### Installing the scripts locally
-
-You can use the scripts locally to run analyses on a Unix-based system, like Mac OS X (Sierra+). We need to make an appropriate directory to download 'gits' to, and install this 'git'.
-
-#### Step 1: Make a directory, and go there.
-
-```
-mkdir -p ~/git/ && cd ~/git
-```
-
-#### Step 2: Clone this git, unless it already exists.
-
-```
-if [ -d ~/git/MetaGWASToolKit/.git ]; then \
-		cd ~/git/MetaGWASToolKit && git pull; \
-	else \
-		cd ~/git/ && git clone https://github.com/swvanderlaan/MetaGWASToolKit.git; \
-	fi
-```
-
-#### Step 3: Check for dependencies of Python, Perl and R, and install them if necessary.
-[text and codes forthcoming]
-
-
-#### Step 4: Create necessary databases. These include:
-You will have to download and create some data needed for **MetaGWASToolKit** to function. The `resource.creator.sh` script will automagically create the necessary files. For some of these files, it is necessary to supply the proper reference data in VCF-format (version 4.1+). The files created by `resource.creator.sh` include:
-- DBSNPFILE    -- a dbSNP file containing information per variant based on dbSNP b147.
-- REFFREQFILE  -- a file containing reference frequencies per variant for the chosen reference and population.
-- VINFOFILE    -- a file needed to harmonize all the cohorts in terms of variant ID, contains various *variantID* versions (rs[XXXX], chr[X]:bp[XXX]:A1_A2, *etc.*). The resulting file is used by `gwas2ref.harmonizer.py` later on during harmonization.
-- GENESFILE    -- a file containing chromosomal basepair positions per gene, default is `Gencode`.
-- REFERENCEVCF -- needed for downstream analyses, such as clumping of genome-wide significant hits, etc. 
-
-To download and install please run the following code, this should submit various jobs to create the necessary databases.
-
-```
-cd ~/git/MetaGWASToolKit && bash resource.creator.sh
-```
-
-##### Available references
-There are a couple of reference available per standard, these are:
-- **HapMap 2 [`HM2`], version 2, release 22, b36.**        -- HM2 contains about 2.54 million variants, but does *not* include variants on the X-chromosome. Obviously few, if any, meta-analyses of GWAS will be based on that reference, but it's good to keep. View it as a 'legacy' feature. [NOT AVAILABLE YET] :large_blue_diamond:
-- **1000G phase 1, version 3 [`1Gp1`], b37.**              -- 1Gp1 contains about 38 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes.
-- **1000G phase 3, version 5 [`1Gp3`], b37.**              -- 1Gp3 contains about 88 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes. [NOT AVAILABLE YET] :large_orange_diamond:
-- **Genome of the Netherlands, version 4 [`GoNL4`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
-- **Genome of the Netherlands, version 5 [`GoNL5`], b37.** -- GoNL4 contains about xx million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_blue_diamond:
-- **Combination of 1Gp3 and GoNL5 [`1Gp3GONL5`], b37.**    -- This contains about 100 million variants, including INDELs, and variation on the X, XY, and Y-chromosomes; some of which are unique for the Netherlands or are not present in dbSNP (yet).  [NOT AVAILABLE YET] :large_orange_diamond:
-
-#### Step 5: Installation of necessary software
-**MetaGWASToolKit** requires you to install several software packages. 
-- *PLINK2* for LD-calculations; reference: https://www.cog-genomics.org/plink2. 
-- *LocusZoom v1.3* for automatic regional association plotting; reference: http://genome.sph.umich.edu/wiki/LocusZoom_Standalone. 
-- *VEGAS2*; for gene-based association analysis; reference: https://vegas2.qimrberghofer.edu.au. 
-- *MAGMA* for gene-based association analysis, and gene-set enrichment analyses; reference: https://ctg.cncr.nl/software/magma. 
 
 
 --------------
