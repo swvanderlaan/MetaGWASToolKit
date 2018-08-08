@@ -8,7 +8,7 @@ MetaGWASToolKit (v1.0 "Utrecht")
 **NOTE #2: I am updating some items in the coming few weeks, so please check back. For a list of items I am working on check the "Issues".**
 
 ### Introduction
-A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Check out the [wiki for more details](MetaGWASToolkit/wiki). 
+A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Check out the [wiki for more details](https://github.com/swvanderlaan/MetaGWASToolKit/wiki). 
 
 
 --------------
