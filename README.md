@@ -13,5 +13,5 @@ A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Check o
 --------------
 
 #### The MIT License (MIT)
-##### [Copyright (c) 2015-2018 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com](copyright.md).
+[Copyright (c)](copyright.md) 2015-2018 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com.
 
