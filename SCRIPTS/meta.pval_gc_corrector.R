@@ -10,11 +10,12 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Genomic Control of P-values -- MetaGWASToolKit
     \n
     * Version: v1.0.3
-    * Last edit: 2018-08-05
+    * Last edit: 2018-08-06
     * Created by: Sara L. Pulit; Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
-    * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS and applies genomic
-    control. The lambda-value is calculated based on the given effect size and standard errors.
+    * Description: This script computes p-values for given effect sizes and standard errors from a meta-analysis 
+    of GWAS and applies genomic control. The lambda-value is calculated based on the given effect size and standard 
+    errors.
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
@@ -110,8 +111,6 @@ if (opt$verbose) {
   cat("* Checking the settings as given through the flags.")
   cat("\n - The input file.........................: ")
   cat(opt$inputfile)
-#  cat("\n - The correction factor, 'lambda'........: ")
-#  cat(opt$lambda)
   cat("\n - The output file........................: ")
   cat(opt$outputfile)
   cat("\n\n")
@@ -122,7 +121,8 @@ cat("Starting \"Genomic Control of P-values\".")
 ### START OF THE PROGRAM
 ### main point of program is here, do this whether or not "verbose" is set
 if(!is.na(opt$inputfile) & !is.na(opt$outputfile)) {
-  cat(paste("\n\nWe are going to apply genomic control on a given list of p-values (from a meta-analysis of GWAS).
+  cat(paste("\n\nWe are going to apply genomic control on a given list of effect sizes and 
+            \nstandard errors (from a meta-analysis of GWAS).
             \nCorrecting p-values of these results...........: '",basename(opt$inputfile),"'
             Corrected results will be saved here.............: '", opt$outputfile, "'.\n",sep=''))
   
@@ -138,7 +138,7 @@ cat("* Calculating lambda (based on given effect size and standard error).\n")
 Z_forlamba <- data$BETA_FIXED / data$SE_FIXED
 lambdavalue = round(median(Z_forlamba^2)/qchisq(0.5, df = 1),3)
 
-cat("* Performing some calculations...\n")
+cat("* Performing some calculations while correcting for lambda = []", lambdavalue ,"]...\n")
 cat("  - effect size (beta)\n")
 BETA_GC <- data$BETA_FIXED
 cat("  - standard error\n")
@@ -152,16 +152,16 @@ data.updated <- data.frame(data$VARIANTID, BETA_GC, SE_GC, Z_GC, P_GC)
 
 names(data.updated)[names(data.updated) == 'data.VARIANTID'] <- 'VARIANTID'
 
-cat("\nAll done creating the final parsed dataset.")
+cat("\nAll done applying genomic control to the data.")
 ### SAVE NEW DATA ###
-cat("\n\nSaving parsed data...\n")
+cat("\n\nSaving data...\n")
 write.table(data.updated, 
             file = opt$outputfile, 
             quote = FALSE , row.names = FALSE, col.names = TRUE, 
             sep = "\t", na = "NA", dec = ".")
 
 ### CLOSING MESSAGE
-cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$inputfile), compression = TRUE),"].\n"))
+cat(paste("\nAll done applying genomic control to [",file_path_sans_ext(basename(opt$inputfile), compression = TRUE),"].\n"))
 cat(paste("\nToday's date is: ", Today, ".\n", sep = ''))
 
 } else {

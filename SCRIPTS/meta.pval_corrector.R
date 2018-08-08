@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-values Corrector -- MetaGWASToolKit
     \n
-    * Version: v1.0.3
-    * Last edit: 2018-03-08
+    * Version: v1.0.4
+    * Last edit: 2018-08-07
     * Created by: Sara L. Pulit; Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS. 
@@ -133,13 +133,13 @@ if(!is.na(opt$inputfile) & !is.na(opt$outputfile)) {
   
   cat("* Performing some calculations...\n")
   cat("  - p-value for 'Z_SQRTN'\n")
-  P1 <- pnorm(-(abs(data$Z_SQRTN))) * 2;
+  P1sqrtn <- pnorm(-(abs(data$Z_SQRTN))) * 2;
   cat("  - p-value for 'Z_FIXED'\n")
-  P2 <- pnorm(-(abs(data$P_FIXED))) * 2;
+  P2fixed <- pnorm(-(abs(data$Z_FIXED))) * 2;
   cat("  - p-value for 'Z_RANDOM'\n")
-  P3 <- pnorm(-(abs(data$Z_RANDOM))) * 2;
+  P3random <- pnorm(-(abs(data$Z_RANDOM))) * 2;
   cat("  - making updated dataset for export\n")
-  data.updated <- data.frame(data[,1], P1, P2, P3)
+  data.updated <- data.frame(data[,1], P1sqrtn, P2fixed, P3random)
 
   cat("\nAll done calculating p-values in the dataset.")
   ### SAVE NEW DATA ###

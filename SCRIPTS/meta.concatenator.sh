@@ -70,9 +70,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                     META-CONCATENATOR OF META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.1.0"
+echobold "* Version:      v1.1.1"
 echobold ""
-echobold "* Last update:  2018-03-09"
+echobold "* Last update:  2018-08-07"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Description:  Checks errors- and log-files for consistency, prior to concatenating all chunks with "
 echobold "                meta-analyzed results into one file and gzips it."
@@ -129,7 +129,7 @@ else
 	METASUCCESSPATTERN="This meta-analysis of GWAS was successfully finished"
 	
 	PCORRERRORPATTERN="File is empty"
-	PCORRSUCCESSPATTERN="All done correcting p-values in the dataset."
+	PCORRSUCCESSPATTERN="All done calculating p-values in the dataset."
 	
 	while IFS='' read -r VARIANTFILE || [[ -n "$VARIANTFILE" ]]; do  
 	
