@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     GWAS Parser -- MetaGWASToolKit
     \n
-    * Version: v1.2.6
-    * Last edit: 2018-03-05
+    * Version: v1.2.7
+    * Last edit: 2018-08-09
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
@@ -91,17 +91,18 @@ opt = parse_args(OptionParser(option_list=option_list))
 
 # ### FOR LOCAL DEBUGGING
 # ### MacBook Pro
-# #MACDIR="/Users/swvanderlaan/PLINK/analyses"
+##MACDIR="/Users/swvanderlaan/PLINK/analyses"
 # ### Mac Pro
 # MACDIR="/Volumes/EliteProQx2Media/PLINK/analyses"
 # 
 # opt$projectdir=paste0(MACDIR, "/meta_gwasfabp4")
 # ### original
 # #opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/AEGS.WHOLE.FABP4.20150125.txt.gz")
-# opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/EPICNL.WHOLE.FABP4.20160629.txt.gz")
+# #opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/EPICNL.WHOLE.FABP4.20160629.txt.gz")
+# opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/SORBS.WHOLE.FABP4.20141117.edit.txt.gz")
 # #opt$datagwas=paste0(MACDIR, "/meta_gwasfabp4/DATA_UPLOAD_FREEZE/1000G/CHS.FABP4.20140827.txt.gz")
 # 
-# opt$outputdir="METAFABP4_1000G/RAW"
+# opt$outputdir="test_environment"
 # 
 # ### FOR LOCAL DEBUGGING
 
@@ -293,6 +294,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                              "^info$")
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
   # print(head(GWASDATA_RAW))
+  # str(GWASDATA_RAW)
 
   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
 
