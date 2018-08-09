@@ -82,9 +82,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                                       --- CLUMPING RESULTS ---"
 echobold ""
-echobold "* Version:      v1.7.0"
+echobold "* Version:      v1.7.1"
 echobold ""
-echobold "* Last update:  2018-03-09"
+echobold "* Last update:  2018-08-09"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -151,47 +151,6 @@ else
 	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
 	REFERENCE=${REFERENCE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	
-	# Data preparation settings for parallelization
-	CHUNKSIZE=${CHUNKSIZE}
-	# Cleaning settings
-	MAF=${MAF} # from configuration file
-	MAC=${MAC} # from configuration file
-	HWE=${HWE} # from configuration file
-	INFO=${INFO} # from configuration file
-	BETA=${BETA} # from configuration file
-	SE=${SE} # from configuration file
-	
-	# Plotting settings
-	RANDOMSAMPLE=${RANDOMSAMPLE}
-	
-	# Settings for QSUB-system
-	# - run times
-	QRUNTIME=${QRUNTIME} # from configuration file
-	QRUNTIMEPARSER=${QRUNTIMEPARSER} # from configuration file
-	QRUNTIMEHARMONIZE=${QRUNTIMEHARMONIZE} # from configuration file
-	QRUNTIMEWRAPPER=${QRUNTIMEWRAPPER} # from configuration file
-	QRUNTIMECLEANER=${QRUNTIMECLEANER} # from configuration file
-	QRUNTIMEPLOTTER=${QRUNTIMEPLOTTER} # from configuration file
-	QRUNTIMEMETAPREP=${QRUNTIMEMETAPREP} # from configuration file
-	QRUNTIMEANALYZER=${QRUNTIMEANALYZER} # from configuration file
-	
-	# - run memory
-	QMEM=${QMEM} # from configuration file
-	QMEMPARSER=${QMEMPARSER} # from configuration file
-	QMEMHARMONIZE=${QMEMHARMONIZE} # from configuration file
-	QMEMWRAPPER=${QMEMWRAPPER} # from configuration file
-	QMEMCLEANER=${QMEMCLEANER} # from configuration file
-	QMEMPLOTTER=${QMEMPLOTTER} # from configuration file
-	QMEMMETAPREP=${QMEMMETAPREP} # from configuration file
-	QMEMANALYZER=${QMEMANALYZER} # from configuration file
-	
-	#- mailing
-	QMAIL=${QMAIL} # from configuration file
-	QMAILOPTIONS=${QMAILOPTIONS} # from configuration file
-	
-	### SETTING THE AVAILABLE REFERENCES -- could also go to the source file
-	VINFOFILE=${VINFOFILE} # from configuration file
 	
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
@@ -290,8 +249,7 @@ else
 	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerror ""
 	  	echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
-	  	echoerror "You have the following options as reference for the quality control"
-	  	echoerror "and meta-analysis:"
+	  	echoerror "You have the following options as reference for the clumping:"
 	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
 	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
 	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."

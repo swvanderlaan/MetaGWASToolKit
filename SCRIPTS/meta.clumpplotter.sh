@@ -26,7 +26,9 @@ function echoerror {
 function echosucces { 
     echo -e "${YELLOW}${1}${NONE}"
 }
-
+function importantnote { 
+    echo -e "${CYAN}${1}${NONE}"
+}
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -89,9 +91,9 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo "                                           META-CLUMP PLOTTER"
 echo "                               PLOTTING OF CLUMPED META-ANALYSIS RESULTS"
 echo ""
-echo " Version    : v1.1.0"
+echo " Version    : v1.1.1"
 echo ""
-echo " Last update: 2018-03-09"
+echo " Last update: 2018-08-09"
 echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
 echo " Testers    : - Jessica van Setten"
@@ -129,16 +131,6 @@ else
 	REFERENCE=${REFERENCE} # depends on contents of arg1
 	POPULATION=${POPULATION} # depends on contents of arg1
 	PROJECTNAME=${PROJECTNAME} # depends on contents of arg1
-	
-	### Clump settings
-	CLUMP_P1=${CLUMP_P1} 
-	CLUMP_P2=${CLUMP_P2} 
-	CLUMP_R2=${CLUMP_R2} 
-	CLUMP_KB=${CLUMP_KB} 
-	CLUMP_FIELD=${CLUMP_FIELD} 
-	CLUMP_SNP_FIELD=${CLUMP_SNP_FIELD} 
-	LDMAP=${LDMAP}
-	LOCUSZOOM_SETTINGS=${LOCUSZOOM_SETTINGS}
 	
 	### Determine which reference and thereby input data to use, arg1 [1kGp3v5GoNL5/1kGp1v3/GoNL4] 
 		if [[ ${REFERENCE} = "HM2" ]]; then
@@ -243,7 +235,8 @@ else
 		done < ${VARIANTLIST}
 		
 	else
-		echo "There are no clumped variants. We will not produce regional associations plots."
+		echo ""
+		importantnote "There are no clumped variants. We will not produce regional associations plots."
 	fi
 	
 	echo "* removing LocusZoom input-file..."

@@ -82,9 +82,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                            --- PERFORM AND PREPARE DOWNSTREAM ANALYSES ---"
 echobold ""
-echobold "* Version:      v1.7.0"
+echobold "* Version:      v1.7.1"
 echobold ""
-echobold "* Last update:  2018-03-09"
+echobold "* Last update:  2018-08-09"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -151,47 +151,6 @@ else
 	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
 	REFERENCE=${REFERENCE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	
-	# Data preparation settings for parallelization
-	CHUNKSIZE=${CHUNKSIZE}
-	# Cleaning settings
-	MAF=${MAF} # from configuration file
-	MAC=${MAC} # from configuration file
-	HWE=${HWE} # from configuration file
-	INFO=${INFO} # from configuration file
-	BETA=${BETA} # from configuration file
-	SE=${SE} # from configuration file
-	
-	# Plotting settings
-	RANDOMSAMPLE=${RANDOMSAMPLE}
-	
-	# Settings for QSUB-system
-	# - run times
-	QRUNTIME=${QRUNTIME} # from configuration file
-	QRUNTIMEPARSER=${QRUNTIMEPARSER} # from configuration file
-	QRUNTIMEHARMONIZE=${QRUNTIMEHARMONIZE} # from configuration file
-	QRUNTIMEWRAPPER=${QRUNTIMEWRAPPER} # from configuration file
-	QRUNTIMECLEANER=${QRUNTIMECLEANER} # from configuration file
-	QRUNTIMEPLOTTER=${QRUNTIMEPLOTTER} # from configuration file
-	QRUNTIMEMETAPREP=${QRUNTIMEMETAPREP} # from configuration file
-	QRUNTIMEANALYZER=${QRUNTIMEANALYZER} # from configuration file
-	
-	# - run memory
-	QMEM=${QMEM} # from configuration file
-	QMEMPARSER=${QMEMPARSER} # from configuration file
-	QMEMHARMONIZE=${QMEMHARMONIZE} # from configuration file
-	QMEMWRAPPER=${QMEMWRAPPER} # from configuration file
-	QMEMCLEANER=${QMEMCLEANER} # from configuration file
-	QMEMPLOTTER=${QMEMPLOTTER} # from configuration file
-	QMEMMETAPREP=${QMEMMETAPREP} # from configuration file
-	QMEMANALYZER=${QMEMANALYZER} # from configuration file
-	
-	#- mailing
-	QMAIL=${QMAIL} # from configuration file
-	QMAILOPTIONS=${QMAILOPTIONS} # from configuration file
-	
-	### SETTING THE AVAILABLE REFERENCES -- could also go to the source file
-	VINFOFILE=${VINFOFILE} # from configuration file
 	
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
@@ -307,52 +266,43 @@ else
 		exit 1
 	fi
 	
-#	echobold "#========================================================================================================"
-#	echobold "#== FOREST PLOTTER OF META-ANALYSIS RESULTS -- NOT IMPLEMENTED YET"
-#	echobold "#========================================================================================================"
-#	echobold "#"
-#	echonooption "CREATE"
-#	echonooption "Perform R-based meta-analysis to plot; likely the results will slightly differ because of Perl <> R"
-#	echonooption "Plan:"
-#	echonooption "- Extract top hits from clumper"
-#	echonooption "- Extract these variants from each input cohort-meta-file ([cohort].reorder.cdat.gz)"
-#	echonooption "- Make file out of this (beta, se, p, n, name, variantid, hwe, info)"
-#	echonooption "- Input for meta-analysis R script"
-#	echonooption "- R: meta-analysis"
-#	echonooption "- R: forest plot"
-#	echonooption "- R: include heterogeneity"
-#
-#	echobold "#========================================================================================================"
-#	echobold "#== ANNOTATING META-ANALYSIS RESULTS "
-#	echobold "#========================================================================================================"
-#	echobold "#"
-#	echo "Many online tools are available, for your convenience, we will create input files for a/several popular one(s)."
-#	echo ""
-#	echo "* Creating input file for FUMAGWAS -- http://fuma.ctglab.nl/snp2gene"
-#	### We will collect the following information for the summarized data.
-#	### Column name -- FUMA column name
-#	### VARIANTID 		-- SNP | snpid | markername | rsID: rsID
-#	### CHR 			-- CHR | chromosome | chrom: chromosome
-#	### POS 			-- BP | pos | position: genomic position (hg19)
-#	### CODEDALLELE 	-- A1 | alt | effect_allele | allele1 | alleleB: affected allele
-#	### OTHERALLELE 	-- A2 | ref | non_effect_allele | allele2 | alleleA: another allele
-#	### P_FIXED 		-- P | pvalue | p-value | p_value | frequentist_add_pvalue | pval: P-value (Mandatory)
-#	### BETA_FIXED 		-- Beta | be: Beta
-#	### SE_FIXED 		-- SE: Standard error
-#	### N_EFF 			-- N: sample size
-#	echo "echo \"SNP CHR BP A1 A2 P Beta SE N\" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-#	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,P_FIXED,BETA_FIXED,SE_FIXED,N_EFF | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-#	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-#	qsub -S /bin/bash -N Annot.FUMA -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-#
-#	### THINK ABOUT THIS ### 
-#	### Should I annotate everything? Or just the clumps? Latter seems logical.
-#	echo ""
-#	echo "* Creating input file for ANNOVAR -- http://annovar.openbioinformatics.org/en/latest/"
-#	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
-#	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
-#	qsub -S /bin/bash -N Annot.LocusTrack -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
-#	### THINK ABOUT THIS ###
+	echobold "#========================================================================================================"
+	echobold "#== FOREST PLOTTER OF META-ANALYSIS RESULTS -- NOT IMPLEMENTED YET"
+	echobold "#========================================================================================================"
+	echobold "#"
+	echonooption "CREATE"
+	echonooption "Perform R-based meta-analysis to plot; likely the results will slightly differ because of Perl <> R"
+	echonooption "Plan:"
+	echonooption "- Extract top hits from clumper"
+	echonooption "- Extract these variants from each input cohort-meta-file ([cohort].reorder.cdat.gz)"
+	echonooption "- Make file out of this (beta, se, p, n, name, variantid, hwe, info)"
+	echonooption "- Input for meta-analysis R script"
+	echonooption "- R: meta-analysis"
+	echonooption "- R: forest plot"
+	echonooption "- R: include heterogeneity"
+
+	echobold "#========================================================================================================"
+	echobold "#== ANNOTATING META-ANALYSIS RESULTS "
+	echobold "#========================================================================================================"
+	echobold "#"
+	echo "Many online tools are available, for your convenience, we will create input files for a/several popular one(s)."
+	echo ""
+	echo "* Creating input file for FUMAGWAS -- http://fuma.ctglab.nl/snp2gene"
+	### We will collect the following information for the summarized data.
+	### Column name -- FUMA column name
+	### VARIANTID 		-- SNP | snpid | markername | rsID: rsID
+	### CHR 			-- CHR | chromosome | chrom: chromosome
+	### POS 			-- BP | pos | position: genomic position (hg19)
+	### CODEDALLELE 	-- A1 | alt | effect_allele | allele1 | alleleB: affected allele
+	### OTHERALLELE 	-- A2 | ref | non_effect_allele | allele2 | alleleA: another allele
+	### P_FIXED 		-- P | pvalue | p-value | p_value | frequentist_add_pvalue | pval: P-value (Mandatory)
+	### BETA_FIXED 		-- Beta | be: Beta
+	### SE_FIXED 		-- SE: Standard error
+	### N_EFF 			-- N: sample size
+	echo "echo \"SNP CHR BP A1 A2 P Beta SE N\" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,P_FIXED,BETA_FIXED,SE_FIXED,N_EFF | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+	qsub -S /bin/bash -N Annot.FUMA -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
 
 	echobold "#========================================================================================================"
 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2"
@@ -411,48 +361,61 @@ else
  	echo "${MAGMA} --gene-results ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated.genes.raw --set-annot ${MAGMAGENESETS} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.gsea " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh
  	qsub -S /bin/bash -N MAGMA.GSEA.${PROJECTNAME} -hold_jid MAGMA.ANNOTATION.${PROJECTNAME} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh
  
-#	echobold "#========================================================================================================"
-#	echobold "#== LD SCORE REGRESSION -- currently only the *input* files for LD-Hub are created --"
-#	echobold "#========================================================================================================"
-#	echobold "#"
-#	echo "We will make use of LD-Hub (http://ldsc.broadinstitute.org) to calculate genetic correlation with other traits."
-#	echo ""
-#	echo "Generating LD-Hub input file."
-#	mkdir -v ${METARESULTDIR}/ldscore
-#	LDSCOREDIR=${METARESULTDIR}/ldscore
-#	echo "echo \"snpid A1 A2 Zscore N P-value\" > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-#	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CODEDALLELE,OTHERALLELE,Z_FIXED,N_EFF,P_FIXED | tail -n +2 >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-#	echo "${SCRIPTS}/mergeTables.pl --file1 ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp --file2 ${RESOURCES}/w_hm3.noMHC.snplist.txt.gz --index snpid --format GZIP2 | awk '{ print \$1, \$4, \$5, \$6, \$7, \$8 }' > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-#	### LD-Hub expects a ZIPPED file!!!
-#	echo "cd ${LDSCOREDIR}" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-#	echo "zip -v meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt.zip meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-# 	echo "rm -v ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-#	qsub -S /bin/bash -N LDSCORE.${PROJECTNAME} -hold_jid METASUM -o ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.log -e ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.errors -l h_vmem=${QMEMLDSCORE} -l h_rt=${QRUNTIMELDSCORE} -wd ${LDSCOREDIR} ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-#
-#	echobold "#========================================================================================================"
-#	echobold "#== MR BASE -- currently only the *input* files for MR-Base are created --"
-#	echobold "#========================================================================================================"
-#	echobold "#"
-#	### add in p-value selection in configuration
-#	### add in units of exposure
-#	echo "We will make use of MR-Base (http://www.mrbase.org/) to infer causality to other traits."
-#	echo ""
-#	echo "Generating MR-Base input file, based on p-value <= ${MRBASEPVAL}."
-#	mkdir -v ${METARESULTDIR}/mrbase
-#	MRBASEDIR=${METARESULTDIR}/mrbase
-#	echo "echo \"SNP beta se pval effect_allele other_allele eaf samplesize Phenotype\" > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
-#	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,BETA_FIXED,SE_FIXED,P_FIXED,CODEDALLELE,OTHERALLELE,CAF,N_EFF > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
-#	echo "cat ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp | tail -n +2 | awk '\$4 <= ${MRBASEPVAL}' | awk '{ print \$0, \"${PROJECTNAME}\" }' >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
-#	echo "rm -v ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
-# 	qsub -S /bin/bash -N MRBASE.${PROJECTNAME} -hold_jid METASUM -o ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.log -e ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.errors -l h_vmem=${QMEMMRBASE} -l h_rt=${QRUNTIMEMRBASE} -wd ${MRBASEDIR} ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
-#
-#	echobold "#========================================================================================================"
-#	echobold "#== DEPICT -- needs implementation --"
-#	echobold "#========================================================================================================"
-#	echobold "#"
-#	echonooption "- download DEPICT"
-#	echonooption "- do clumping for additional DEPICT analysis; their advise is p<5e-5."
-#	echonooption "- add in DEPICT options in configuration file"
+	echobold "#========================================================================================================"
+	echobold "#== LD SCORE REGRESSION -- the *input* files for LD-Hub are created --"
+	echobold "#========================================================================================================"
+	echobold "#"
+	echo "We will make use of LD-Hub (http://ldsc.broadinstitute.org) to calculate genetic correlation with other traits."
+	echo ""
+	echo "Generating LD-Hub input file."
+	mkdir -v ${METARESULTDIR}/ldscore
+	LDSCOREDIR=${METARESULTDIR}/ldscore
+	echo "echo \"snpid A1 A2 Zscore N P-value\" > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CODEDALLELE,OTHERALLELE,Z_FIXED,N_EFF,P_FIXED | tail -n +2 >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	echo "${SCRIPTS}/mergeTables.pl --file1 ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp --file2 ${RESOURCES}/w_hm3.noMHC.snplist.txt.gz --index snpid --format GZIP2 | awk '{ print \$1, \$4, \$5, \$6, \$7, \$8 }' > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	### LD-Hub expects a ZIPPED file!!!
+	echo "cd ${LDSCOREDIR}" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	echo "zip -v meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt.zip meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+ 	echo "rm -v ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	qsub -S /bin/bash -N LDSCORE.${PROJECTNAME} -hold_jid METASUM -o ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.log -e ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.errors -l h_vmem=${QMEMLDSCORE} -l h_rt=${QRUNTIMELDSCORE} -wd ${LDSCOREDIR} ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+
+	echobold "#========================================================================================================"
+	echobold "#== MR BASE -- the *input* files for MR-Base are created --"
+	echobold "#========================================================================================================"
+	echobold "#"
+	echo "We will make use of MR-Base (http://www.mrbase.org/) to infer causality to other traits."
+	echo ""
+	echo "Generating MR-Base input file, based on p-value <= ${MRBASEPVAL}."
+	mkdir -v ${METARESULTDIR}/mrbase
+	MRBASEDIR=${METARESULTDIR}/mrbase
+	echo "echo \"SNP beta se pval effect_allele other_allele eaf samplesize Phenotype\" > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,BETA_FIXED,SE_FIXED,P_FIXED,CODEDALLELE,OTHERALLELE,CAF,N_EFF > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	echo "cat ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp | tail -n +2 | awk '\$4 <= ${MRBASEPVAL}' | awk '{ print \$0, \"${PROJECTNAME}\" }' >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	echo "rm -v ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+ 	qsub -S /bin/bash -N MRBASE.${PROJECTNAME} -hold_jid METASUM -o ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.log -e ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.errors -l h_vmem=${QMEMMRBASE} -l h_rt=${QRUNTIMEMRBASE} -wd ${MRBASEDIR} ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+
+	echobold "#========================================================================================================"
+	echobold "#== DEPICT -- needs implementation --"
+	echobold "#========================================================================================================"
+	echobold "#"
+	echonooption "- download DEPICT"
+	echonooption "- do clumping for additional DEPICT analysis; their advise is p<5e-5."
+	echonooption "- add in DEPICT options in configuration file"
+	
+	echobold "#========================================================================================================"
+	echobold "#== LOCUSTRACK -- the *input* files for LocusTrack are created --"
+	echobold "#========================================================================================================"
+	echobold "#"
+	echo "LocusTrack is a web-based application that creates visual representations of regional GWAS results and "
+	echo "integrates user-specified annotation tracks, along with other features such as linkage disequilibrium (LD) "
+	echo "and genes within the region of interest. LocusTrack can also create Manhattan- and QQ-plots, as well as "
+	echo "MIAMI-plots for comparison of two GWAS results."
+	echo ""
+	echo "We will create input files for LocusTrack -- https://gump.qimr.edu.au/general/gabrieC/LocusTrack/index.html."
+	echo ""
+	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
+	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
+	qsub -S /bin/bash -N Annot.LocusTrack -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
 
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 
