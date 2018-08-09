@@ -39,7 +39,7 @@ ${SCRIPTS}/metagwastoolkit.prepmeta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJ
 
 echo ""
 echo "THIRD step: meta-analysis."
-${SCRIPTS}/metagwastoolkit.meta.sh $(pwd)/metagwastoolkit.conf $(pwd)/metagwastoolkit.files.list
+${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
 echo ""
 echo "FOURTH step: result clumping."
