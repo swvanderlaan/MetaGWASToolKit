@@ -1,0 +1,1 @@
+/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS/gwas.variantcollector.sh /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/metagwastoolkit.conf /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/META

@@ -1,6 +1,3 @@
-AEGS_m2	AEGS.WHOLE.FABP4adjBMI.20150125.txt.gz	VariantID_alt1
-CHS_m2	CHS.FABP4adjBMI.20140827.txt.gz	VariantID_alt3
-EGCUT_m2	EGCUT.AUTOSOMES.FABP4adjBMI.20180117.edit.txt.gz	VariantID_alt1
-EPICNL_m2	EPICNL.WHOLE.FABP4adjBMI.20170515.txt.gz	VariantID_alt1
-FHS_m2	FHS.WHOLE.FABP4adjBMI.20150220.edit.txt.gz	VariantID_alt1
-SORBS_m2	SORBS.WHOLE.FABP4adjBMI.20141117.edit.txt.gz	VariantID_alt2
+COHORT1	COHORT1.rawdata.txt.gz	VariantID_alt1
+COHORT2	COHORT2.rawdata.txt.gz	VariantID_alt1
+COHORT3	COHORT3.rawdata.txt.gz	VariantID_alt1

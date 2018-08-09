@@ -1,0 +1,1 @@
+Rscript /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS/gwas.parser.R -p /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE -d /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT1/COHORT1.rawdata.aad -o SOMEGWAS/MODEL1/RAW/COHORT1 

@@ -1,0 +1,2 @@
+module load python
+/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS/gwas2ref.harmonizer.py -g /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT2/COHORT2.rawdata.aac.pdat -r /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.EUR.INFO.txt.gz -i VariantID_alt1 -o /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT2/COHORT2.rawdata.aac.ref.pdat
