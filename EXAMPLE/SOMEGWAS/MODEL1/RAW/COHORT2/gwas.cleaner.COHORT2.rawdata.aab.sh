@@ -1,1 +1,0 @@
-/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS/gwas.cleaner.R -d /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT2/COHORT2.rawdata.aab.ref.pdat -f COHORT2.rawdata.aab -o /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT2 -e 10 -s 10 -m 0.005 -c 30 -i 0.3 -w 1E-3
