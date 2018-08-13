@@ -23,7 +23,7 @@
 METAGWASTOOLKIT="/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit"
 RESOURCES="${METAGWASTOOLKIT}/RESOURCES"
 SCRIPTS="${METAGWASTOOLKIT}/SCRIPTS"
-PROJECTDIR="${METAGWASTOOLKIT}"
+PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -33,22 +33,22 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ###       the plots produced to decided whether cohorts should be carried forward to meta-analysis
 ###       or whether quality control settings should be edited.
 ###
-
-echo ""
-echo "FIRST step: prepare GWAS."
-${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
-
-echo ""
-echo "SECOND step: prepare meta-analysis."
-${SCRIPTS}/metagwastoolkit.prepmeta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+# 
+# echo ""
+# echo "FIRST step: prepare GWAS."
+# ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+# 
+# echo ""
+# echo "SECOND step: prepare meta-analysis."
+# ${SCRIPTS}/metagwastoolkit.prepmeta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
 ###       three steps can be uncommented and executed.
 ###
-# 
-# echo ""
-# echo "THIRD step: meta-analysis."
-# ${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+
+echo ""
+echo "THIRD step: meta-analysis."
+${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 # 
 # echo ""
 # echo "FOURTH step: result clumping."
