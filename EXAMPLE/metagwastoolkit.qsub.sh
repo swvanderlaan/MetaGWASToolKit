@@ -45,10 +45,10 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
 ###       three steps can be uncommented and executed.
 ###
-
-echo ""
-echo "THIRD step: meta-analysis."
-${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+# 
+# echo ""
+# echo "THIRD step: meta-analysis."
+# ${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 # 
 # echo ""
 # echo "FOURTH step: result clumping."
