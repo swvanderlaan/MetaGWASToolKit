@@ -1,6 +1,6 @@
 MetaGWASToolKit
 ============
-#### _v1.0 "Utrecht"_
+##### _v1.0 "Utrecht"_
 [![DOI](https://zenodo.org/badge/75635714.svg)](https://zenodo.org/badge/latestdoi/75635714)
 
 **NOTE #1:** Currently, meta-analyses using 1000G phase 1 are supported. Upon request I will update to 1000G phase 3, and so on.
