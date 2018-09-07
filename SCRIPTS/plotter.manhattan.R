@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Manhattan Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.8
-    * Last edit: 2018-07-16
+    * Version: v1.1.9
+    * Last edit: 2018-09-09
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -117,12 +117,12 @@ opt = parse_args(OptionParser(option_list = option_list))
 # ### Mac Pro
 # # MACDIR="/Volumes/MyBookStudioII/Backup"
 # 
-# opt$projectdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
-# opt$outputdir = paste0(MACDIR, "/iCloud/Downloads/Heleen")
-# opt$colorstyle = "FULL"
+# opt$projectdir = paste0(MACDIR, "/PLINK/analyses/ukbb/rdw")
+# opt$outputdir = paste0(MACDIR, "/PLINK/analyses/ukbb/rdw")
+# opt$colorstyle = "QC"
 # opt$imageformat = "PNG"
-# #opt$resultfile=paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/METAFABP4_1000G/RAW/AEGS_m1/AEGS_m1.RAW.MANHATTAN.txt")
-# opt$resultfile = paste0(MACDIR, "/iCloud/Downloads/Heleen/HTN_mht.txt")
+# opt$resultfile = paste0(MACDIR, "/PLINK/analyses/ukbb/rdw/30070_irnt.gwas.imputed_v3.both_sexes.QC_MAF0_005_LC_F_info.Manhattan.txt")
+# #opt$resultfile = paste0(MACDIR, "/iCloud/Downloads/Heleen/HTN_mht.txt")
 # ### FOR LOCAL DEBUGGING
 # 
 #--------------------------------------------------------------------------
@@ -210,7 +210,13 @@ of the data. Double back, please.\n\n",
      data$V1 = as.integer(data$V1)
      data$V2 = as.integer(data$V2)
      data$V3 = as.numeric(data$V3)
-
+     data$V4 <- data$V3
+     
+     minP <- min(subset(data, V3 != 0, c(V3)))
+     data <- transform(data, V4 = ifelse(V4 == 0, minP, V4))
+     
+     cat(paste0("\n\nCorrected 'zero'-p-values; the smallest p-values is ", format(min(data$V4), digits = 3),"."))
+     
      cat("\n\nReordering data.")
      # V1 = chromosome
      # V2 = base pair position
@@ -219,15 +225,15 @@ of the data. Double back, please.\n\n",
      cat("\n\nLoad in a subset of the data based on the p-values.")
      if (opt$colorstyle == "QC") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
-          data <- data[which(data$V3 <= 0.50), ]
-          sig <- data[which(data$V3 <= 0.50), ]
-          nonsig <- data[which(data$V3 >= 0.05), ]
+          data <- data[which(data$V4 <= 0.50), ]
+          sig <- data[which(data$V4 <= 0.50), ]
+          nonsig <- data[which(data$V4 >= 0.05), ]
           p <- sig
      } else if (opt$colorstyle == "FULL" || opt$colorstyle == "TWOCOLOR") {
      cat(paste0("\n* color style is [ ",opt$colorstyle," ]..."))
-          data <- data[which(data$V3 <= 1), ]
-          sig <- data[which(data$V3 <= 1), ]
-          nonsig <- data[which(data$V3 >= 0.05), ]
+          data <- data[which(data$V4 <= 1), ]
+          sig <- data[which(data$V4 <= 1), ]
+          nonsig <- data[which(data$V4 >= 0.05), ]
           p <- sig
      } else {
      cat(paste0("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the color style. 
@@ -241,7 +247,8 @@ of the data. Double back, please.\n\n",
      uithof_color_qc = c("#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4")
      
      cat("\n\nSetting X- and Y-axes and counting chromosomes.")
-     maxY <- round(max(-log10(data$V3)))
+     
+     maxY <- round(max(-log10(data$V4)))
      cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
      # maxX is calculated a bit below, in uniq chr loop
      
@@ -264,7 +271,7 @@ Assigning positions and p-values for:\n")
           # getting a list of positions per chromosome
           assign((paste("pos_", i, sep = "")), (subset(p$V2, p$V1 == uniq_chr[i])))
           # getting a list of p-values per chromosome
-          assign((paste("p_", i, sep = "")), (subset(p$V3, p$V1 == uniq_chr[i])))  
+          assign((paste("p_", i, sep = "")), (subset(p$V4, p$V1 == uniq_chr[i])))  
           # calculating the maxX based on the input-data
           maxX = maxX + max(subset(p$V2, p$V1 == uniq_chr[i]))  
      }
