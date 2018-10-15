@@ -182,38 +182,38 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "Downloading and parsing '1000G phase 1 and phase 3'. "
 
 	echo "* downloading [ 1000G phase 1 ] ..."
-	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/integrated_call_sets/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " > ${RESOURCES}/resource.1kG1.downloader.sh
-	qsub -S /bin/bash -N ThousandGp1downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
+# 	echo "wget ftp://ftp.1000genomes.ebi.ac.uk/vol1/ftp/phase1/analysis_results/integrated_call_sets/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " > ${RESOURCES}/resource.1kG1.downloader.sh
+# 	qsub -S /bin/bash -N ThousandGp1downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG1.downloader.log -e ${RESOURCES}/resource.1kG1.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG1.downloader.sh
 # 	echo "* downloading [ 1000G phase 3 ] ..."
 # 	echo "wget ftp://ftp.ncbi.nih.gov/1000genomes/ftp/release/20130502/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz -O ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " > ${RESOURCES}/resource.1kG3.downloader.sh
 # 	qsub -S /bin/bash -N ThousandGp3downloader -hold_jid dbSNPparser -o ${RESOURCES}/resource.1kG3.downloader.log -e ${RESOURCES}/resource.1kG3.downloader.errors -l h_vmem=8G -l h_rt=00:45:00 -wd ${RESOURCES} ${RESOURCES}/resource.1kG3.downloader.sh
 	
-	echo "* parsing 1000G phase 1."
-	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop ${POPULATION} --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-	echo "rm -fv ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
-	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
+# 	echo "* parsing 1000G phase 1."
+# 	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz --ref 1Gp1 --pop ${POPULATION} --out ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp1.sh
+# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+# 	echo "rm -fv ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
+# 	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
 	
-# 	echo "* parsing 1000G phase 3."
-# 	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp3 --pop ${POPULATION1Gp3} --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "* parsing 1000G phase 3."
+	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp3 --pop ${POPULATION1Gp3} --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
 # 	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo ""
+	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	echo ""
 		
-	echo "* updating 1000G phase 1."
-	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
-	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+# 	echo "* updating 1000G phase 1."
+# 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+# 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
+# 	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 
-# 	echo "* updating 1000G phase 3."
-# 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-# 	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-# 	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	echo "* updating 1000G phase 3."
+	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 
 # 	echo "* parsing 1000G phase 3 + GoNL5."
 # 	echo "  - generating the necessary per-variant descriptive statistics."
@@ -223,19 +223,19 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 		echo "${QCTOOL} -g ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.vcf.gz -snp-stats ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr${CHR}.stats " > ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
 # 		qsub -S /bin/bash -N VCFSTATS1Gp3GONL5 -hold_jid ThousandGp3GONL5downloader -o ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.log -e ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.errors -l h_vmem=8G -l h_rt=01:00:00 -wd ${RESOURCES} ${RESOURCES}/1000Gp3v5_GoNL5/resource.VCFSTATS.1Gp3GONL5.chr${CHR}.sh
 # 	done
-		
-	### EXAMPLE HEAD OF STATS files
-	### SNPID	RSID	chromosome	position	A_allele	B_allele	minor_allele	major_allele	AA	AB	BB	AA_calls	AB_calls	BB_calls	MAF	HWE	missing	missing_calls	information
-	### 1:10177:A:AC	1:10177:A:AC	NA	10177	A	AC	AC	A	885	1725	393	885	1725	393	0.41808	22.523	0	0	1
-	### 1:10235:T:TA	1:10235:T:TA	NA	10235	T	TA	TA	T	2997	6	0	2997	6	0	0.000999	-0	0	0	1
-	### rs145072688:10352:T:TA	rs145072688:10352:T:TA	NA	10352	T	TA	TA	T	556	2278	169	556	2278	169	0.43556	209.87	0	0	1
-	### 1:10505:A:T	1:10505:A:T	NA	10505	A	T	T	A	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
-	### 1:10506:C:G	1:10506:C:G	NA	10506	C	G	G	C	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
-	### 1:10511:G:A	1:10511:G:A	NA	10511	G	A	A	G	3001	2	0	3001	2	0	0.000333	-0	0	0	1
-	### rs62636508	rs62636508	NA	10519	G	C	C	G	2976	27	0	2976	27	0	0.0044955	4.8216e-17	0	0	1
-	### chr1:10539	chr1:10539	NA	10539	C	A	A	C	2998	5	0	2998	5	0	0.0008325	-0	0	0	1
-	### 1:10542:C:T	1:10542:C:T	NA	10542	C	T	T	C	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
-
+# 		
+# 	###	EXAMPLE HEAD OF STATS files
+# 	###	SNPID	RSID	chromosome	position	A_allele	B_allele	minor_allele	major_allele	AA	AB	BB	AA_calls	AB_calls	BB_calls	MAF	HWE	missing	missing_calls	information
+# 	###	1:10177:A:AC	1:10177:A:AC	NA	10177	A	AC	AC	A	885	1725	393	885	1725	393	0.41808	22.523	0	0	1
+# 	###	1:10235:T:TA	1:10235:T:TA	NA	10235	T	TA	TA	T	2997	6	0	2997	6	0	0.000999	-0	0	0	1
+# 	###	rs145072688:10352:T:TA	rs145072688:10352:T:TA	NA	10352	T	TA	TA	T	556	2278	169	556	2278	169	0.43556	209.87	0	0	1
+# 	###	1:10505:A:T	1:10505:A:T	NA	10505	A	T	T	A	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
+# 	###	1:10506:C:G	1:10506:C:G	NA	10506	C	G	G	C	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
+# 	###	1:10511:G:A	1:10511:G:A	NA	10511	G	A	A	G	3001	2	0	3001	2	0	0.000333	-0	0	0	1
+# 	###	rs62636508	rs62636508	NA	10519	G	C	C	G	2976	27	0	2976	27	0	0.0044955	4.8216e-17	0	0	1
+# 	###	chr1:10539	chr1:10539	NA	10539	C	A	A	C	2998	5	0	2998	5	0	0.0008325	-0	0	0	1
+# 	###	1:10542:C:T	1:10542:C:T	NA	10542	C	T	T	C	3002	1	0	3002	1	0	0.0001665	-0	0	0	1
+# 
 # 	echo "  - concatenating per-variant descriptive statistics."
 # 	echo "#CHROM POS ID A_Allele B_Allele MinorAllele MajorAllele MAF" > ${RESOURCES}/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.txt
 # 	for CHR in $(seq 1 22); do
