@@ -26,7 +26,9 @@ function echoerror {
 function echosucces { 
     echo -e "${YELLOW}${1}${NONE}"
 }
-
+function importantnote { 
+    echo -e "${CYAN}${1}${NONE}"
+}
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -89,9 +91,9 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo "                                             META-CLUMPER"
 echo "                              CLUMPING OF META-ANALYSIS OF GWAS RESULTS"
 echo ""
-echo " Version    : v1.2.0"
+echo " Version    : v1.2.1"
 echo ""
-echo " Last update: 2018-08-04"
+echo " Last update: 2019-12-10"
 echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
 echo " Testers    : - Jessica van Setten"

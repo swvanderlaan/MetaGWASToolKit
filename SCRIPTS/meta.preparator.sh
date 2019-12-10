@@ -26,7 +26,9 @@ function echoerror {
 function echosucces { 
     echo -e "${YELLOW}${1}${NONE}"
 }
-
+function importantnote { 
+    echo -e "${CYAN}${1}${NONE}"
+}
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -72,9 +74,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                          META-PREPARATOR OF GWAS"
 echobold ""
-echobold "* Version:      v1.1.1"
+echobold "* Version:      v1.1.2"
 echobold ""
-echobold "* Last update:  2017-05-30"
+echobold "* Last update:  2019-12-10"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Description:  Collects all variants into one file."
 echobold ""

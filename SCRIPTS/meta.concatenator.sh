@@ -26,7 +26,9 @@ function echoerror {
 function echosucces { 
     echo -e "${YELLOW}${1}${NONE}"
 }
-
+function importantnote { 
+    echo -e "${CYAN}${1}${NONE}"
+}
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -70,9 +72,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                     META-CONCATENATOR OF META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.1.1"
+echobold "* Version:      v1.1.2"
 echobold ""
-echobold "* Last update:  2018-08-07"
+echobold "* Last update:  2019-12-10"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Description:  Checks errors- and log-files for consistency, prior to concatenating all chunks with "
 echobold "                meta-analyzed results into one file and gzips it."

@@ -71,9 +71,9 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          GWASWRAPPER: WRAPPER FOR PARSED, HARMONIZED CLEANED GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.1.0"
+echobold "* Version:      v1.1.1"
 echobold ""
-echobold "* Last update:  2018-03-08"
+echobold "* Last update:  2019-12-10"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Description:  Produce concatenated parsed, harmonized, and cleaned GWAS data."
 echobold ""
@@ -279,15 +279,15 @@ else
 	
 	echo ""
 	echo "Gzipping da [ ${COHORTNAME}.pdat ] shizzle..."
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.pdat
+	gzip -fv ${PROJECTDIR}/${COHORTNAME}.pdat
 
 	echo ""
 	echo "Gzipping da [ ${COHORTNAME}.rdat ] shizzle..."
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.rdat
+	gzip -fv ${PROJECTDIR}/${COHORTNAME}.rdat
 	
 	echo ""
 	echo "Gzipping da [ ${COHORTNAME}.cdat ] shizzle..."
-	gzip -v ${PROJECTDIR}/${COHORTNAME}.cdat
+	gzip -fv ${PROJECTDIR}/${COHORTNAME}.cdat
 
 	
 ### END of if-else statement for the number of command-line arguments passed ###
