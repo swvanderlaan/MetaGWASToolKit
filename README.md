@@ -6,10 +6,7 @@ MetaGWASToolKit
 A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies. Check out the [wiki for more details](https://github.com/swvanderlaan/MetaGWASToolKit/wiki). 
 
 
-<sup>**NOTE #1:** Currently, meta-analyses using 1000G phase 1 are supported. Upon request I will update to 1000G phase 3, and so on. In principle it is possible to make it work for legacy reference, _e.g._ HapMap2 - but again: upon request. </sup>
-
-<sup>**NOTE #2:** I am updating some items in the coming few weeks, so please check back. For a list of items I am working on check the "Issues".</sup>
-
+<sup>**NOTE:** Currently, meta-analyses using 1000G phase 1 are supported. Upon request I will update to 1000G phase 3, HRC r1.1, and so on. In principle it is possible to make it work for legacy reference too, _e.g._ HapMap2 - but again: upon request. </sup>
 
 --------------
 
