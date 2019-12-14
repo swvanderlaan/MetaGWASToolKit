@@ -327,7 +327,8 @@ of the data. Double back, please.\n\n",
 
   # Take into account unique chrs
   uniq_chr = unique(data$V1)
-  cat(paste0("\n- chromosome [ ", uniq_chr," ]"))
+  # Can be used for debugging
+  # cat(paste0("\n- chromosome [ ", uniq_chr," ]"))
   
   cat("\n\nDetermining the 'maxX'.\n")
   # We have determined the number of chromosomes (1-22 plus optionally x, y, etc.),
@@ -335,6 +336,7 @@ of the data. Double back, please.\n\n",
   maxX = 0 # setting maxX at 'zero'
   #changed to uniq_chr loop
   for (i in 1:length(uniq_chr)) {
+    # Can be used for debugging
     # cat(paste0("- chromosome [ ",i," ]\n"))
     # getting a list of positions per chromosome
     # assign((paste("pos_", i, sep = "")), (subset(data$V2, data$V1 == uniq_chr[i])))
