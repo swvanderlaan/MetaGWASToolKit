@@ -390,27 +390,27 @@ of the data. Double back, please.\n\n",
   cat("\n\nPlotting.")
   if (opt$colorstyle == "FULL") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 10), 
+                      ylim = c(0, 12), 
                       colorSet = uithof_color_full, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 10), 
+                      ylim = c(0, 12), 
                       colorSet = uithof_color_two, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_B") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 10), 
+                      ylim = c(0, 12), 
                       colorSet = uithof_color_two_blue, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_R") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 10), 
+                      ylim = c(0, 12), 
                       colorSet = uithof_color_two_red, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_G") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 10), 
+                      ylim = c(0, 12), 
                       colorSet = uithof_color_two_green, cex = 2)
   } else {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 10), 
+                      ylim = c(0, 12), 
                       colorSet = uithof_color_qc, cex = 2)
   }
   
