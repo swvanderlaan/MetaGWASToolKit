@@ -311,7 +311,7 @@ of the data. Double back, please.\n\n",
 
   cat("...and make a list of colors.")
   uithof_color_full = uithof_color
-  uithof_color_two = c("#2F8BC9","#1290D9")
+  uithof_color_two = c("#1290D9","#E35493")
   uithof_color_two_blue = c("#4C81BF", "#1290D9")
   uithof_color_two_red = c("#E55738", "#1290D9")
   uithof_color_two_green = c("#49A01D", "#1290D9")
