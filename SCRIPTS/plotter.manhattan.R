@@ -159,7 +159,7 @@ if (!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !i
   study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
   filename <- basename(opt$resultfile)
   cat(paste("We are going to a make Manhattan-plot of your (meta-)GWAS results. \nData are taken from.........: '",filename,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep = ''))
-  rm(data, rawdata, chr, cols, pos)
+
   #--------------------------------------------------------------------------
   ### GENERAL SETUP
   Today = format(as.Date(as.POSIXlt(Sys.time())), "%Y%m%d")
