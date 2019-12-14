@@ -281,6 +281,7 @@ of the data. Double back, please.\n\n",
   xspace = 100
   cat("\n- Setting up plot area.")
   #Plot expected p-value distribution line
+  par(mar=c(5,5,4,2)+0.1) # sets the bottom, left, top and right margins
   plot(c(0, maxY), c(0, maxY), col = "#E55738", lwd = 1, type = "l", 
        xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)), 
        las = 1, 
