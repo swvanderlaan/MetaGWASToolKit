@@ -91,7 +91,7 @@ option_list = list(
   make_option(c("-c", "--colorstyle"), action = "store", default = NA, type = 'character',
               help = "The color style of the Manhattan plot: 
                  \n- FULL:      multicolor panel, no highlighting
-                 \n- TWOCOLOR:  twocolor (#2F8BC9 [skyblue], #1290D9 [azurblue]), with highlighting in (#DB003F)
+                 \n- TWOCOLOR:  twocolor (#1290D9 [azurblue], #E35493 [lightpink]), with highlighting in (#DB003F)
                  \n- TWOCOLOR_B:  twocolor (#4C81BF [seablue], #1290D9 [azurblue]), with highlighting in (#DB003F)
                  \n- TWOCOLOR_R:  twocolor (#E55738 [salmon], #1290D9 [azurblue]), with highlighting in (#DB003F)
                  \n- TWOCOLOR_G:  twocolor (#49A01D [green], #1290D9 [azurblue]), with highlighting in (#DB003F)
