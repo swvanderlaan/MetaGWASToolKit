@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.2.6
-    * Last edit: 2018-07-16
+    * Version: v1.2.7
+    * Last edit: 2019-12-14
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  QQ-Plotter for GWAS (meta-analysis) results. Can produce 
@@ -197,7 +197,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
     # Plots all points with p < 1e-3 (0.001)
     cat("\nPlotting all points p < 1e-3 (0.001).")
     p_sig = subset(p,p<0.001)
-    points(lexp[1:length(p_sig)], lobs[1:length(p_sig)], pch=21, cex=0.4, col=color, bg=color)
+    points(lexp[1:length(p_sig)], lobs[1:length(p_sig)], pch = 21, cex = 2, col=color, bg=color)
     
     # Samples 2,500 points from p > 1e-3
     cat("\nSampling 2,500 points from p < 1e-3 (0.001).")
