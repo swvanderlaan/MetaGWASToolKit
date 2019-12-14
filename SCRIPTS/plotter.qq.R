@@ -201,15 +201,15 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
     
     # Samples 2,500 points from p > 1e-3
     cat("\nSampling 2,500 points from p < 1e-3 (0.001).")
-    n=2500
-    i<- c(length(p)- c(0,round(log(2:(n-1))/log(n)*length(p))),1)
+    n = 2500
+    i <- c(length(p)- c(0,round(log(2:(n-1))/log(n)*length(p))),1)
     lobs_bottom=subset(lobs[i],lobs[i] <= 3)
     lexp_bottom=lexp[i[1:length(lobs_bottom)]]
     
     print(length(lobs_bottom))
     print(length(lexp_bottom))
     
-    points(lexp_bottom, lobs_bottom, pch=21, cex=0.4, col=color, bg=color)
+    points(lexp_bottom, lobs_bottom, pch = 21, cex = 2, col = color, bg = color)
     
   }
   
@@ -283,7 +283,7 @@ of the data. Double back, please.\n\n",
   #Plot expected p-value distribution line
   plot(c(0, maxY), c(0, maxY), col = "#E55738", lwd = 1, type = "l", 
        xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)), 
-       las=1, 
+       las = 1, 
        xaxs = "i", yaxs = "i", bty = "l", 
        main = "QQ-plot")
   #axis(1,at=c(0,1,2,3,4,5,6,7,8,9,10,11,12),labels=c("0","1","2","3","4","5","6","7","8","9","10","11","12"))
@@ -292,7 +292,7 @@ of the data. Double back, please.\n\n",
   #--------------------------------------------------------------------------
   ### PLOTS DATA
   cat("\n- Plotting data.") 	
-  plotQQ(z,"black");
+  plotQQ(z, "black");
   
   #--------------------------------------------------------------------------
   ### PROVIDES LEGEND
