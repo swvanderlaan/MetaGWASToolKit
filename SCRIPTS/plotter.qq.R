@@ -197,7 +197,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
     # Plots all points with p < 1e-3 (0.001)
     cat("\nPlotting all points p < 1e-3 (0.001).")
     p_sig = subset(p,p<0.001)
-    points(lexp[1:length(p_sig)], lobs[1:length(p_sig)], pch = 21, cex = 2, col=color, bg=color)
+    points(lexp[1:length(p_sig)], lobs[1:length(p_sig)], pch = 21, cex = 1.75, col=color, bg=color)
     
     # Samples 2,500 points from p > 1e-3
     cat("\nSampling 2,500 points from p < 1e-3 (0.001).")
@@ -209,7 +209,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
     print(length(lobs_bottom))
     print(length(lexp_bottom))
     
-    points(lexp_bottom, lobs_bottom, pch = 21, cex = 2, col = color, bg = color)
+    points(lexp_bottom, lobs_bottom, pch = 21, cex = 1.75, col = color, bg = color)
     
   }
   
@@ -285,10 +285,9 @@ of the data. Double back, please.\n\n",
        xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)), 
        las = 1, 
        xaxs = "i", yaxs = "i", bty = "l", 
+       cex.axis = 2, cex.lab = 1.75, 
        main = "QQ-plot")
-  #axis(1,at=c(0,1,2,3,4,5,6,7,8,9,10,11,12),labels=c("0","1","2","3","4","5","6","7","8","9","10","11","12"))
-  #axis(2,at=c(0,1,2,3,4,5,6,7,8,9,10,11,12),labels=c("0","1","2","3","4","5","6","7","8","9","10","11","12"))
-  
+    
   #--------------------------------------------------------------------------
   ### PLOTS DATA
   cat("\n- Plotting data.") 	
@@ -297,9 +296,9 @@ of the data. Double back, please.\n\n",
   #--------------------------------------------------------------------------
   ### PROVIDES LEGEND
   cat("\n- Adding legend and closing image.")
-  legend(.5,maxY,legend = c("Expected","Observed","95% CI",lambda,paste(c(formatC(length(z), format="d", big.mark = ',')), "variants")), pch = c(23,23,23,32,32), cex = 0.8, pt.bg = c("#E55738","black", rgb(205,55,0,15,maxColorValue=256),"black","black"),bty = "n", title = "Legend", title.adj = 0)->leg
-  points(leg$text$x[4]-0.12,leg$text$y[4],pch=108,font=5)
-  points(leg$text$x[5]-0.12,leg$text$y[5],pch=35,font=1)
+  legend(.5, maxY, legend = c("Expected","Observed","95% CI",lambda,paste(c(formatC(length(z), format="d", big.mark = ',')), "variants")), pch = c(23,23,23,32,32), cex = 1.25, pt.bg = c("#E55738","black", rgb(205,55,0,15,maxColorValue=256),"black","black"),bty = "n", title = "Legend", title.adj = 0)->leg
+  points(leg$text$x[4]-0.12, leg$text$y[4], pch = 108, font = 5)
+  points(leg$text$x[5]-0.12, leg$text$y[5], pch = 35, font = 1)
   
   dev.off()
   
