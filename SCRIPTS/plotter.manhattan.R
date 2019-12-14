@@ -90,9 +90,12 @@ option_list = list(
               help = "Path to the results directory, relative to the project directory."),
   make_option(c("-c", "--colorstyle"), action = "store", default = NA, type = 'character',
               help = "The color style of the Manhattan plot: 
-                 \n- FULL:      multicolor panel, no highlighting
-                 \n- TWOCOLOR:  twocolor (#2F8BC9 [skyblue], #E55738 [salmon]), with highlighting in (#DB003F)
-                 \n- QC:        twocolor (#2F8BC9 [skyblue], #E55738 [salmon]), with highlighting in (#DB003F), 
+                 \n- FULL:      multicolor panel, no highlighting"
+                 \n- TWOCOLOR:  twocolor (#2F8BC9 [skyblue], #1290D9 [azurblue]), with highlighting in (#DB003F)
+                 \n- TWOCOLOR_B:  twocolor (#4C81BF [seablue], #1290D9 [azurblue]), with highlighting in (#DB003F)
+                 \n- TWOCOLOR_R:  twocolor (#E55738 [salmon], #1290D9 [azurblue]), with highlighting in (#DB003F)
+                 \n- TWOCOLOR_G:  twocolor (#49A01D [green], #1290D9 [azurblue]), with highlighting in (#DB003F)
+                 \n- QC:        twocolor (#595A5C [grey], #A2A3A4 [lightgrey]), with highlighting in (#DB003F), 
                  \n              but p-values truncated at -log10(p-value)=2, for quick inspection/QC-purposes."),
   make_option(c("-f", "--imageformat"), action = "store", default = NA, type =  'character',
               help = "The image format (PDF (width=10, height=5), PNG/TIFF/EPS (width=1280, height=720)."),
@@ -309,7 +312,10 @@ of the data. Double back, please.\n\n",
   cat("...and make a list of colors.")
   uithof_color_full = uithof_color
   uithof_color_two = c("#2F8BC9","#E55738")
-  uithof_color_qc = c("#2F8BC9","#A2A3A4")
+  uithof_color_two_blue = c("#4C81BF", "#1290D9")
+  uithof_color_two_red = c("#E55738", "#1290D9")
+  uithof_color_two_green = c("#49A01D", "#1290D9")
+  uithof_color_qc = c("#595A5C","#A2A3A4")
   
   cat("\n\nSetting X- and Y-axes and counting chromosomes.")
   maxY <- round(max(-log10(data$V4)))
@@ -323,18 +329,17 @@ of the data. Double back, please.\n\n",
   uniq_chr = unique(data$V1)
   cat(paste0("\n- chromosome [ ", uniq_chr," ]"))
   
-  cat("\n\nDetermining the positions and p-values per chromosomes, and finally 'maxX'.
-Assigning positions and p-values for:\n")
+  cat("\n\nDetermining the 'maxX'.\n")
   # We have determined the number of chromosomes (1-22 plus optionally x, y, etc.),
   # and will plot accordingly. This includes the maximum number of chromosomes.
   maxX = 0 # setting maxX at 'zero'
   #changed to uniq_chr loop
   for (i in 1:length(uniq_chr)) {
-    cat(paste0("- chromosome [ ",i," ]\n"))
+    # cat(paste0("- chromosome [ ",i," ]\n"))
     # getting a list of positions per chromosome
-    assign((paste("pos_", i, sep = "")), (subset(data$V2, data$V1 == uniq_chr[i])))
+    # assign((paste("pos_", i, sep = "")), (subset(data$V2, data$V1 == uniq_chr[i])))
     # getting a list of p-values per chromosome
-    assign((paste("p_", i, sep = "")), (subset(data$V4, data$V1 == uniq_chr[i])))  
+    # assign((paste("p_", i, sep = "")), (subset(data$V4, data$V1 == uniq_chr[i])))  
     # calculating the maxX based on the input-data
     maxX = maxX + max(subset(data$V2, data$V1 == uniq_chr[i]))  
   }
@@ -345,7 +350,7 @@ Assigning positions and p-values for:\n")
   if (opt$imageformat == "PNG")
     if (opt$colorstyle == "FULL") {
       png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width = 1280, height = 720)
-    } else if (opt$colorstyle == "TWOCOLOR") {
+    } else if (opt$colorstyle == "TWOCOLOR" | opt$colorstyle == "TWOCOLOR_B" | opt$colorstyle == "TWOCOLOR_R" | opt$colorstyle == "TWOCOLOR_G") {
       png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width = 1280, height = 720)
     } else {
       png(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".png"), width = 1280, height = 720)
@@ -353,7 +358,7 @@ Assigning positions and p-values for:\n")
   if (opt$imageformat == "TIFF")
     if (opt$colorstyle == "FULL") {
       tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width = 1280, height = 720)
-    } else if (opt$colorstyle == "TWOCOLOR") {
+    } else if (opt$colorstyle == "TWOCOLOR" | opt$colorstyle == "TWOCOLOR_B" | opt$colorstyle == "TWOCOLOR_R" | opt$colorstyle == "TWOCOLOR_G") {
       tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width = 1280, height = 720)
     } else {
       tiff(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".tiff"), width = 1280, height = 720)
@@ -363,7 +368,7 @@ Assigning positions and p-values for:\n")
     if (opt$colorstyle == "FULL") {
       postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".ps"),
                  horizontal = FALSE, onefile = FALSE, paper = "special")
-    } else if (opt$colorstyle == "TWOCOLOR") {
+    } else if (opt$colorstyle == "TWOCOLOR" | opt$colorstyle == "TWOCOLOR_B" | opt$colorstyle == "TWOCOLOR_R" | opt$colorstyle == "TWOCOLOR_G") {
       postscript(file = paste0(opt$outputdir,"/",study,".",opt$colorstyle,".ps"),
                  horizontal = FALSE, onefile = FALSE, paper = "special")
     } else {
@@ -373,7 +378,7 @@ Assigning positions and p-values for:\n")
   if (opt$imageformat == "PDF")
     if (opt$colorstyle == "FULL") {
       pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width = 10, height = 5)
-    } else if (opt$colorstyle == "TWOCOLOR") {
+    } else if (opt$colorstyle == "TWOCOLOR" | opt$colorstyle == "TWOCOLOR_B" | opt$colorstyle == "TWOCOLOR_R" | opt$colorstyle == "TWOCOLOR_G") {
       pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width = 10, height = 5)
     } else {
       pdf(paste0(opt$outputdir,"/",study,".",opt$colorstyle,".pdf"), width = 10, height = 5)
@@ -389,6 +394,18 @@ Assigning positions and p-values for:\n")
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
                       colorSet = uithof_color_two)
+  } else if (opt$colorstyle == "TWOCOLOR_B") {
+    FastManhattanPlot(man = data.prep, 
+                      ylim = c(0, 10), 
+                      colorSet = uithof_color_two_blue)
+  } else if (opt$colorstyle == "TWOCOLOR_R") {
+    FastManhattanPlot(man = data.prep, 
+                      ylim = c(0, 10), 
+                      colorSet = uithof_color_two_red)
+  } else if (opt$colorstyle == "TWOCOLOR_G") {
+    FastManhattanPlot(man = data.prep, 
+                      ylim = c(0, 10), 
+                      colorSet = uithof_color_two_green)
   } else {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
