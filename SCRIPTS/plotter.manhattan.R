@@ -237,7 +237,7 @@ if (!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !i
     if (is.null(yaxmax)) 
       yaxmax = floor(my)
     plot(x = NA, y = NA, xlim = c(0, tail(man$offsets, 1)), ylim = ylim, 
-         # main = paste0("",opt$titleplot,""),
+         main = paste0("",opt$titleplot,""),
          xaxs = "i", yaxs = "i", xlab = "chromosome", 
          ylab = bquote(-log[10]~"("~italic(p)~"-value)"), axes = FALSE)
     axis(side = 1, at = man$offsets, labels = rep("", length(man$offsets)), 
@@ -307,9 +307,9 @@ of the data. Double back, please.\n\n",
   data.prep <- PrepareManhattanPlot(data$V4, data$V1, data$V2)
 
   cat("...and make a list of colors.")
-  uithof_color_full = c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B","#CC0071","#A8448A","#9A3480","#8D5B9A","#705296","#686AA9","#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1","#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D","#595A5C","#A2A3A4")
-  uithof_color_two = c("#2F8BC9","#E55738")# ,"#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738","#2F8BC9","#E55738")
-  uithof_color_qc = c("#2F8BC9","#A2A3A4")# ,"#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4","#2F8BC9","#A2A3A4")
+  uithof_color_full = uithof_color
+  uithof_color_two = c("#2F8BC9","#E55738")
+  uithof_color_qc = c("#2F8BC9","#A2A3A4")
   
   cat("\n\nSetting X- and Y-axes and counting chromosomes.")
   maxY <- round(max(-log10(data$V4)))
@@ -382,13 +382,16 @@ Assigning positions and p-values for:\n")
   ### START PLOTTING ###
   cat("\n\nPlotting.")
   if (opt$colorstyle == "FULL") {
-    FastManhattanPlot(man = data.prep, ylim = c(0, 10), yaxmax = 10,
+    FastManhattanPlot(man = data.prep, 
+                      ylim = c(0, 10), 
                       colorSet = uithof_color_full)
   } else if (opt$colorstyle == "TWOCOLOR") {
-    FastManhattanPlot(man = data.prep, ylim = c(0, 10), yaxmax = 10,
+    FastManhattanPlot(man = data.prep, 
+                      ylim = c(0, 10), 
                       colorSet = uithof_color_two)
   } else {
-    FastManhattanPlot(man = data.prep, ylim = c(0, 10), yaxmax = 10,
+    FastManhattanPlot(man = data.prep, 
+                      ylim = c(0, 10), 
                       colorSet = uithof_color_qc)
   }
   
