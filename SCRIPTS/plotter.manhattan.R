@@ -389,27 +389,27 @@ of the data. Double back, please.\n\n",
   if (opt$colorstyle == "FULL") {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
-                      colorSet = uithof_color_full)
+                      colorSet = uithof_color_full, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR") {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
-                      colorSet = uithof_color_two)
+                      colorSet = uithof_color_two, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_B") {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
-                      colorSet = uithof_color_two_blue)
+                      colorSet = uithof_color_two_blue, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_R") {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
-                      colorSet = uithof_color_two_red)
+                      colorSet = uithof_color_two_red, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_G") {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
-                      colorSet = uithof_color_two_green)
+                      colorSet = uithof_color_two_green, cex = 2)
   } else {
     FastManhattanPlot(man = data.prep, 
                       ylim = c(0, 10), 
-                      colorSet = uithof_color_qc)
+                      colorSet = uithof_color_qc, cex = 2)
   }
   
   cat("\n* Adding the genome-wide significance threshold.\n")
