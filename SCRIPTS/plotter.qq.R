@@ -286,7 +286,7 @@ of the data. Double back, please.\n\n",
        xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)), 
        las = 1, 
        xaxs = "i", yaxs = "i", bty = "l", 
-       cex.axis = 2, cex.lab = 1.75, 
+       cex.axis = 2, cex.lab = 1.75, cex.main = 3, 
        main = "QQ-plot")
     
   #--------------------------------------------------------------------------
