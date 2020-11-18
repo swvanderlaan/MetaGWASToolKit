@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     P-values Corrector -- MetaGWASToolKit
     \n
-    * Version: v1.0.4
-    * Last edit: 2018-08-07
+    * Version: v1.0.5
+    * Last edit: 2020-11-18
     * Created by: Sara L. Pulit; Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: This script computes p-values for given z-scores from a meta-analysis of GWAS. 
@@ -43,17 +43,22 @@ install.packages.auto <- function(x) {
   } else { 
     # Update installed packages - this may mean a full upgrade of R, which in turn
     # may not be warrented. 
-    #update.packages(ask = FALSE) 
-    eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"http://cran-mirror.cs.uu.nl/\")", x)))
+    #update.install.packages.auto(ask = FALSE) 
+    eval(parse(text = sprintf("install.packages(\"%s\", dependencies = TRUE, repos = \"https://cloud.r-project.org/\")", x)))
   }
   if(isTRUE(x %in% .packages(all.available = TRUE))) { 
     eval(parse(text = sprintf("require(\"%s\")", x)))
   } else {
-    source("http://bioconductor.org/biocLite.R")
+    if (!requireNamespace("BiocManager"))
+      install.packages("BiocManager")
+    BiocManager::install() # this would entail updating installed packages, which in turned may not be warrented
+    
+    # Code for older versions of R (<3.5.0)
+    # source("http://bioconductor.org/biocLite.R")
     # Update installed packages - this may mean a full upgrade of R, which in turn
     # may not be warrented.
-    #biocLite(character(), ask = FALSE) 
-    eval(parse(text = sprintf("biocLite(\"%s\")", x)))
+    # biocLite(character(), ask = FALSE) 
+    eval(parse(text = sprintf("BiocManager::install(\"%s\")", x)))
     eval(parse(text = sprintf("require(\"%s\")", x)))
   }
 }
