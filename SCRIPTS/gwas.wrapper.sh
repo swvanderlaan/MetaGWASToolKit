@@ -243,12 +243,13 @@ else
 		if [[ ! -z $(grep "${CLEANEDPATTERN}" "${ERRORFILE}") ]]; then 
 			CLEANEDMESSAGE=$(echosucces "successfully cleaned")
 			CLEANEDMESSAGEREADME=$(echo "success")
+			prefix_cleaned='gwas.cleaner.'
 			echo "Cleaning report......................: ${CLEANEDMESSAGE}"
 			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.rdat ]..."
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${CLEANEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.cleaned.readme
 			cat ${PROJECTDIR}/${BASEPARSEDFILE}.cdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.cdat] ]..."
-			rm -v ${PROJECTDIR}/${BASECLEANEDFILE}.cdat
+			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.cdat
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.errors
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.log
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
@@ -266,8 +267,8 @@ else
 		fi
 
 		# Clean the log files
-		rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
-		rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
+		rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.errors
+		rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.log
 
 
 	done

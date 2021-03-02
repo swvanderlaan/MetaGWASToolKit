@@ -55,9 +55,9 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ###       or whether quality control settings should be edited.
 ###
 
-echo ""
-echo "FIRST step: prepare GWAS."
-${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+# echo ""
+# echo "FIRST step: prepare GWAS."
+# ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
 # echo ""
 # echo "SECOND step: prepare meta-analysis."
@@ -66,16 +66,18 @@ ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTD
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
 ###       three steps can be uncommented and executed.
 ###
-# 
+
 # echo ""
 # echo "THIRD step: meta-analysis."
 # ${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
-# 
+
 # echo ""
 # echo "FOURTH step: result clumping."
 # ${SCRIPTS}/metagwastoolkit.clump.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list 
-# 
+
 # echo ""
 # echo "FIFTH step: prepare and perform downstream analyses."
 # ${SCRIPTS}/metagwastoolkit.downstream.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
+# Clean the Dependancies files
+# TODO

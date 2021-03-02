@@ -274,6 +274,9 @@ else
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
 	echo ""
+
+	# Create a textfile which is used in dependancies later on
+	touch ${SUBPROJECTDIRNAME}/plotter_ids.txt
 	
 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 		LINE=${GWASCOHORT}
@@ -303,17 +306,14 @@ else
 
 		# Safely store the ID of the start job
 		INIT_ID=$SLURM_JOB_ID
-
-		# REWROTE the loop to utilize one sbatch command, rather than multiple smaller commands
-		# Con: you can't specify parameters like memory for each step
 		
 		# Create a textfile so you can use this as input in the arrrayjob
 		for SPLITFILE in ${RAWDATACOHORT}/${BASEFILE}.*; do
 			printf "${SPLITFILE}\n" >> ${RAWDATACOHORT}/splitfiles.txt
 		done 
 
-
-		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }')
+		# Call an array job for all the different splitfiles
+		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
 		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --array=0-${NFILES} --dependency=afterany:${INIT_ID} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.PHC.sh ${PROJECTDIR}/metagwastoolkit.conf)
 
@@ -326,11 +326,9 @@ else
 
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
-		printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
 
-		## Old qsub command (not supported): 
+		printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
 		## qsub -S /bin/bash -N gwas.wrapper.${BASEFILE} -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-		# Updated SLURM command to run the wrapper
 		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterany:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
 
 		echobold "#========================================================================================================"
@@ -347,11 +345,9 @@ else
 
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
- 		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-
-		## Old qsub command (not supported):  
+ 		
+		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
  		## qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-		# Updated SLURM command to run the plotter
 		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
 		
 		echobold "#========================================================================================================"
@@ -365,15 +361,15 @@ else
 		
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
- 		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-		
-		## Old qsub command (not supported): 
+ 		
+		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
  		## qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-		# Updated SLURM command to run the plotter (QC)
 		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
-
+				
+		# Echo the ids to a file, so it can be used as depenendancy down the road
+		echo "${PLOTTER_ID}" >> ${SUBPROJECTDIRNAME}/plotter_ids.txt
+		echo "${PLOTTER_ID_CLEAN}" >> ${SUBPROJECTDIRNAME}/plotter_ids.txt
 	done < ${GWASFILES}
-
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
