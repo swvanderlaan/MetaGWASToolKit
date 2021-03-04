@@ -275,9 +275,6 @@ else
 	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
 	echo ""
 
-	# Create a textfile which is used in dependancies later on
-	touch ${SUBPROJECTDIRNAME}/plotter_ids.txt
-	
 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
