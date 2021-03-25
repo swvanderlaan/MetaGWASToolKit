@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ by INFO-score Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.8
-    * Last edit: 2020-11-18
+    * Version: v1.2.0
+    * Last edit: 2021-03-25
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
@@ -208,7 +208,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      ### Loading the data
      if(filetype == "gzfile"){
      cat("\n* The file appears to be gzipped, now loading...\n")
-       rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+       # zcat should not be needed anymore - fread is able to read gz/zip-files.
+       # rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+       rawdata = fread(paste0(opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
      } else if(filetype != "gzfile") {
      cat("\n* The file appears not to be gzipped, now loading...\n")
        rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
@@ -231,6 +233,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
           z=qnorm(data$V1/2)
      
      maxY <- round(max(-log10(data$V1)))  	
+     maxYplot <- maxY + 3
+     cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
      
      ### Stratify by INFO-metric/imputation quality (r^2)
      impqc_lo1=subset(data, ( data$V2 >= 0.0 & data$V2 <= 0.20 ))
@@ -256,6 +260,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      lambdavalue = round(median(z^2)/qchisq(0.5, df = 1),3)
      cat(paste0("\n - lambda...............: ",round(lambdavalue, digits = 4)))
      
+     l1 = round(median(z_lo1^2)/qchisq(0.5,df=1),3)
+     l2 = round(median(z_lo2^2)/qchisq(0.5,df=1),3)
+     l3 = round(median(z_lo3^2)/qchisq(0.5,df=1),3)
+     l4 = round(median(z_lo4^2)/qchisq(0.5,df=1),3)
+     l5 = round(median(z_lo5^2)/qchisq(0.5,df=1),3)
+     l6 = round(median(z_lo6^2)/qchisq(0.5,df=1),3)
+     
      #--------------------------------------------------------------------------
      ### PLOTS AXES AND NULL DISTRIBUTION
      if (opt$imageformat == "PNG") 
@@ -272,9 +283,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      
      cat("\n\nSetting up plot area.")
      #Plot expected p-value distribution line		
-     plot(c(0, maxY), c(0, maxY), col = "#E55738", lwd = 1, type = "l",
+     plot(c(0, maxYplot), c(0, maxYplot), col = "#E55738", lwd = 1, type = "l",
           xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)),
-          xlim = c(0, maxY), ylim = c(0, maxY), las = 1,
+          xlim = c(0, maxYplot), ylim = c(0, maxYplot), las = 1,
           xaxs = "i", yaxs = "i", bty = "l",
           cex.axis = 2, cex.lab = 1.75, cex.main = 3,
           main = c(substitute(paste("QQ-plot stratified by imputation quality - ",lambda," = ", lam),list(lam = lambdavalue)),expression()))
@@ -300,13 +311,19 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      #--------------------------------------------------------------------------
      ### PROVIDES LEGEND
      cat("\n* Adding legend and closing image.")
-     legend(1.25, maxY, legend=c("Expected","Observed",
-                              paste("0.0 < INFO < 0.2 [",format(length(z_lo1),big.mark = ","),"]"),
-                              paste("0.2 < INFO < 0.4 [",format(length(z_lo2),big.mark = ","),"]"),
-                              paste("0.4 < INFO < 0.6 [",format(length(z_lo3),big.mark = ","),"]"),
-                              paste("0.6 < INFO < 0.8 [",format(length(z_lo4),big.mark = ","),"]"),
-                              paste("0.8 < INFO < 1.0 [",format(length(z_lo5),big.mark = ","),"]"),
-                              paste("1.0 > INFO [",format(length(z_lo6),big.mark = ","),"]")),
+     legend(1.25, maxYplot, legend=c("Expected","Observed",
+                              #paste("0.0 < INFO < 0.2 [",format(length(z_lo1),big.mark = ","),"]"),
+                              #paste("0.2 < INFO < 0.4 [",format(length(z_lo2),big.mark = ","),"]"),
+                              #paste("0.4 < INFO < 0.6 [",format(length(z_lo3),big.mark = ","),"]"),
+                              #paste("0.6 < INFO < 0.8 [",format(length(z_lo4),big.mark = ","),"]"),
+                              #paste("0.8 < INFO < 1.0 [",format(length(z_lo5),big.mark = ","),"]"),
+                              #paste("1.0 > INFO [",format(length(z_lo6),big.mark = ","),"]")),
+                              substitute(paste("0.0 < INFO < 0.2 [", lambda," = ", lam, "]"),list(lam = l1)),expression(),
+                              substitute(paste("0.2 < INFO < 0.4 [", lambda," = ", lam, "]"),list(lam = l2)),expression(),
+                              substitute(paste("0.4 < INFO < 0.6 [", lambda," = ", lam, "]"),list(lam = l3)),expression(),
+                              substitute(paste("0.6 < INFO < 0.8 [", lambda," = ", lam, "]"),list(lam = l4)),expression(),
+                              substitute(paste("0.8 < INFO < 1.0 [", lambda," = ", lam, "]"),list(lam = l5)),expression(),
+                              substitute(paste("1.0 > INFO [", lambda," = ", lam, "]"),list(lam = l6)),expression()),
             pch=c((vector("numeric",5)+1)*23), cex=c((vector("numeric",5)+0.8)), 
             pt.bg=c("#E55738","black","#595A5C","#1290D9","#DB003F", "#9FC228", "#E35493", "#FBB820"),
             bty="n",title="Legend",title.adj=0)
