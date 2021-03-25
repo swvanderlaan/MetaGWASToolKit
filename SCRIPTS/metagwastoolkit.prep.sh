@@ -304,16 +304,29 @@ else
 		# Safely store the ID of the start job
 		INIT_ID=$SLURM_JOB_ID
 		
-		# Create a textfile so you can use this as input in the arrrayjob
+		## Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
 		for SPLITFILE in ${RAWDATACOHORT}/${BASEFILE}.*; do
+			# Create a textfile so you can use this as input in the arrrayjob
 			printf "${SPLITFILE}\n" >> ${RAWDATACOHORT}/splitfiles.txt
+
+			### determine basename of the splitfile
+			BASESPLITFILE=$(basename ${SPLITFILE} .pdat)
+			echo ""
+			echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
+			echo ""
+			echo " - heading a temporary file." 
+			zcat ${ORIGINALS}/${FILE} | head -1 > ${RAWDATACOHORT}/tmp_file
+			echo " - adding the split data to the temporary file."
+			cat ${SPLITFILE} >> ${RAWDATACOHORT}/tmp_file
+			echo " - renaming the temporary file."
+			mv -fv ${RAWDATACOHORT}/tmp_file ${SPLITFILE}
 		done 
 
 		# Call an array job for all the different splitfiles
 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
-		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --array=0-${NFILES} --dependency=afterany:${INIT_ID} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.PHC.sh ${PROJECTDIR}/metagwastoolkit.conf)
-
+		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.PHC.sh ${PROJECTDIR}/metagwastoolkit.conf)
+		
 		echobold "#========================================================================================================"
 		echobold "#== WRAPPING THE REFORMATTED GWAS DATA: [ ${COHORT} ]"
 		echobold "#========================================================================================================"
@@ -323,6 +336,19 @@ else
 
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
+
+		# # Get all the CLEANER ID's to set dependancy, by looping over all lines in the file
+		# if [ -f ${SUBPROJECTDIRNAME}/cleaner_ids.txt ]; then
+		# 	CLEANER_IDS="" # Init a variable
+		# 	while read line; do    
+		# 		CLEANER_IDS="${CLEANER_IDS},${line}" # Add every ID with a comma
+		# 	done < ${RAWDATACOHORT}/cleaner_ids.txt
+		# 	CLEANER_IDS="${CLEANER_IDS:1}" # Remove the first character (',')
+		# 	CLEANER_IDS_D="--dependency=afterany:${CLEANER_IDS}" # Create a variable which can be used as dependancy
+		# else 
+		# 	echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
+		# 	CLEANER_IDS_D="" # Empty variable so there is no dependancy
+		# fi
 
 		printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
 		## qsub -S /bin/bash -N gwas.wrapper.${BASEFILE} -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
@@ -364,8 +390,8 @@ else
 		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
 				
 		# Echo the ids to a file, so it can be used as depenendancy down the road
-		echo "${PLOTTER_ID}" >> ${SUBPROJECTDIRNAME}/plotter_ids.txt
-		echo "${PLOTTER_ID_CLEAN}" >> ${SUBPROJECTDIRNAME}/plotter_ids.txt
+		echo "${PLOTTER_ID}" >>  ${SUBPROJECTDIRNAME}/plotter_ids.txt
+		echo "${PLOTTER_ID_CLEAN}" >>  ${SUBPROJECTDIRNAME}/plotter_ids.txt
 	done < ${GWASFILES}
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

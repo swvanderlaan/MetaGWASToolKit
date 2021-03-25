@@ -169,6 +169,9 @@ else
 		LINEINTEXTFILE=$((BASEPARSEDFILE_N+1))
 		SPLITFILE=$(sed -n "$LINEINTEXTFILE{p;q}" ${PROJECTDIR}/splitfiles.txt)
 		BASEPARSEDFILE=$(basename ${SPLITFILE})
+		clean_success=false
+		harm_success=false
+		parse_success=false
 
 		echo ""
 		echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
@@ -188,6 +191,7 @@ else
 			# rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
 			# rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
 # 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_PARSER.RData
+			parse_success=true
 		else
 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -220,6 +224,7 @@ else
 			# rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
 			# rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
 			# rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
+			harm_success=true
 		else
 			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -254,6 +259,7 @@ else
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.log
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
 # 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
+			clean_success=true
 		else
 			echoerrorflash "*** Error *** The pattern \"${CLEANEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -266,9 +272,16 @@ else
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${CLEANEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.cleaned.readme
 		fi
 
-		# Clean the log files
-		rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.errors
-		rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.log
+		if [ "$parse_success" = true ] ; then
+			if [ "$harm_success" = true ] ; then
+				if [ "$clean_success" = true ] ; then
+				# Clean the log files
+				rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.errors
+				rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.log
+				fi
+			fi
+		fi
+		
 
 
 	done

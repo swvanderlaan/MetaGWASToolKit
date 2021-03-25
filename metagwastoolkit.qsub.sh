@@ -18,8 +18,8 @@
 #################################################################################################
 ### NEW PARAMETERS SLURM
 #SBATCH --job-name=metagwastoolkit                                                                      # the name of the job
-#SBATCH -o /hpc/dhl_ec/mbaksi/Testfiles/metagwastoolkit.example.log 	                                # the log file of this job
-#SBATCH --error /hpc/dhl_ec/mbaksi/Testfiles/metagwastoolkit.example.errors                             # the error file of this job
+#SBATCH -o /hpc/dhl_ec/mbaksi/output/metagwastoolkit.log 	                                    # the log file of this job
+#SBATCH --error /hpc/dhl_ec/mbaksi/output/metagwastoolkit.errors                              # the error file of this job
 #SBATCH --time=03:00:00                                                                                 # the amount of time the job will take: -t [min] OR -t [days-hh:mm:ss]
 #SBATCH --mem=8G                                                                                        # the amount of memory you think the script will consume, found on: https://wiki.bioinformatics.umcutrecht.nl/bin/view/HPC/SlurmScheduler
 #SBATCH --gres=tmpspace:64G                                                                             # the amount of temporary diskspace per node
@@ -55,13 +55,13 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ###       or whether quality control settings should be edited.
 ###
 
-# echo ""
-# echo "FIRST step: prepare GWAS."
-# ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+echo ""
+echo "FIRST step: prepare GWAS."
+${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
-# echo ""
-# echo "SECOND step: prepare meta-analysis."
-# ${SCRIPTS}/metagwastoolkit.prepmeta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+echo ""
+echo "SECOND step: prepare meta-analysis."
+${SCRIPTS}/metagwastoolkit.prepmeta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
 ###       three steps can be uncommented and executed.
