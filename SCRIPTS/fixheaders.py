@@ -22,7 +22,6 @@ import datetime
 import os
 import sys
 
-import numpy as np
 import pandas as pd
 
 
@@ -233,7 +232,6 @@ def create_df(f, outdir):
     try:
         # Now process the files, Requires pandas version lower than 1.2!!
         for df in pd.read_csv(f, chunksize=chunksize, delimiter=delimeter):
-            print(df)
             if first_chunk:
                 # Change boolean
                 first_chunk = False
