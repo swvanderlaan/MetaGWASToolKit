@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.2.8
-    * Last edit: 2020-11-18
+    * Version: v1.3.0
+    * Last edit: 2021-03-25
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  QQ-Plotter for GWAS (meta-analysis) results. Can produce 
@@ -233,7 +233,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   ### Loading the data
   if(filetype == "gzfile"){
   cat("\n* The file appears to be gzipped, now loading...")
-    rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+    # zcat should not be needed anymore - fread is able to read gz/zip-files.
+    # rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+    rawdata = fread(paste0(opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
   } else if(filetype != "gzfile") {
   cat("\n* The file appears not to be gzipped, now loading...")
     rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
@@ -256,7 +258,9 @@ of the data. Double back, please.\n\n",
     z=qnorm(data$V1/2)
   
   maxY <- round(max(-log10(data$V1))+1)
-  
+  maxYplot <- maxY + 3
+  cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
+     
   #--------------------------------------------------------------------------
   ### CALCULATES LAMBDA AND # variants
   cat("\n\nCalculating lambda from data.\n")
@@ -287,7 +291,7 @@ of the data. Double back, please.\n\n",
   cat("\n- Setting up plot area.")
   #Plot expected p-value distribution line
   par(mar=c(5,5,4,2)+0.1) # sets the bottom, left, top and right margins
-  plot(c(0, maxY), c(0, maxY), col = "#E55738", lwd = 1, type = "l", 
+  plot(c(0, maxYplot), c(0, maxYplot), col = "#E55738", lwd = 1, type = "l", 
        xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)), 
        las = 1, 
        xaxs = "i", yaxs = "i", bty = "l", 
@@ -302,7 +306,7 @@ of the data. Double back, please.\n\n",
   #--------------------------------------------------------------------------
   ### PROVIDES LEGEND
   cat("\n- Adding legend and closing image.")
-  legend(.5, maxY, legend = c("Expected","Observed","95% CI",lambda,paste(c(formatC(length(z), format="d", big.mark = ',')), "variants")), pch = c(23,23,23,32,32), cex = 1.25, pt.bg = c("#E55738","black", rgb(205,55,0,15,maxColorValue=256),"black","black"),bty = "n", title = "Legend", title.adj = 0)->leg
+  legend(.5, maxYplot, legend = c("Expected","Observed","95% CI",lambda,paste(c(formatC(length(z), format="d", big.mark = ',')), "variants")), pch = c(23,23,23,32,32), cex = 1.25, pt.bg = c("#E55738","black", rgb(205,55,0,15,maxColorValue=256),"black","black"),bty = "n", title = "Legend", title.adj = 0)->leg
   points(leg$text$x[4]-0.12, leg$text$y[4], pch = 108, font = 5)
   points(leg$text$x[5]-0.12, leg$text$y[5], pch = 35, font = 1)
   

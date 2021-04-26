@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Manhattan Plotter -- MetaGWASToolKit
     \n
-    * Version: v1.2.1
-    * Last edit: 2020-11-18
+    * Version: v1.2.3
+    * Last edit: 2021-03-25
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -121,16 +121,16 @@ opt = parse_args(OptionParser(option_list = option_list))
 # 
 # ### FOR LOCAL DEBUGGING
 # ### MacBook Pro
-# MACDIR = "/Users/swvanderlaan"
+# MACDIR = "/Users/swvanderlaan/OneDrive - UMC Utrecht"
 # ### Mac Pro
 # # MACDIR="/Volumes/MyBookStudioII/Backup"
 # 
-# opt$projectdir = paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/ANALYSES2019/MANUSCRIPT")
-# opt$outputdir = paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/ANALYSES2019/MANUSCRIPT/PLOTS")
-# opt$colorstyle = "QC"
+# opt$projectdir = paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/ANALYSES2019/metagwas_fabp4/MANUSCRIPT")
+# opt$outputdir = paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/ANALYSES2019/metagwas_fabp4/MANUSCRIPT/PLOTS")
+# opt$colorstyle = "FULL"
 # opt$imageformat = "PNG"
-# opt$titleplot = "MODEL 3"
-# opt$resultfile = paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/ANALYSES2019/MANUSCRIPT/OUTPUT/meta.GWAS.FABP4.1Gp1.EUR.MODEL3.summary.QCed.mh.txt.gz")
+# opt$titleplot = "MODEL 1, QC results"
+# opt$resultfile = paste0(MACDIR, "/PLINK/analyses/meta_gwasfabp4/ANALYSES2019/metagwas_fabp4/MANUSCRIPT/OUTPUT/meta.GWAS.FABP4.1Gp1.EUR.MODEL1.summary.ELISAonly.QCed.MH.txt.gz")
 # #opt$resultfile = paste0(MACDIR, "/iCloud/Downloads/Heleen/HTN_mht.txt")
 # ### FOR LOCAL DEBUGGING
 # 
@@ -271,7 +271,9 @@ if (!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !i
   ### Loading the data
   if (filetype == "gzfile") {
     cat("\n* The file appears to be gzipped, now loading...\n")
-    rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+    # zcat should not be needed anymore - fread is able to read gz/zip-files.
+    # rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+    rawdata = fread(paste0(opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
   } else if (filetype != "gzfile") {
     cat("\n* The file appears not to be gzipped, now loading...\n")
     rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
@@ -324,6 +326,7 @@ of the data. Double back, please.\n\n",
   
   cat("\n\nSetting X- and Y-axes and counting chromosomes.")
   maxY <- round(max(-log10(data$V4)))
+  maxYplot <- maxY + 3
   cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
 
   # Let's count the number of chromosomes to plot
@@ -395,27 +398,27 @@ of the data. Double back, please.\n\n",
   cat("\n\nPlotting.")
   if (opt$colorstyle == "FULL") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 12), 
+                      ylim = c(0, maxYplot), 
                       colorSet = uithof_color_full, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 12), 
+                      ylim = c(0, maxYplot), 
                       colorSet = uithof_color_two, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_B") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 12), 
+                      ylim = c(0, maxYplot), 
                       colorSet = uithof_color_two_blue, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_R") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 12), 
+                      ylim = c(0, maxYplot), 
                       colorSet = uithof_color_two_red, cex = 2)
   } else if (opt$colorstyle == "TWOCOLOR_G") {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 12), 
+                      ylim = c(0, maxYplot), 
                       colorSet = uithof_color_two_green, cex = 2)
   } else {
     FastManhattanPlot(man = data.prep, 
-                      ylim = c(0, 12), 
+                      ylim = c(0, maxYplot), 
                       colorSet = uithof_color_qc, cex = 2)
   }
   
