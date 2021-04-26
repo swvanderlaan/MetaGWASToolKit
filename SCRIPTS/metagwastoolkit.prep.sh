@@ -390,8 +390,8 @@ else
 		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
 				
 		# Echo the ids to a file, so it can be used as depenendancy down the road
-		echo "${PLOTTER_ID}" >>  ${SUBPROJECTDIRNAME}/plotter_ids.txt
-		echo "${PLOTTER_ID_CLEAN}" >>  ${SUBPROJECTDIRNAME}/plotter_ids.txt
+		echo "${PLOTTER_ID}" >>  ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+		echo "${PLOTTER_ID_CLEAN}" >>  ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
 	done < ${GWASFILES}
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

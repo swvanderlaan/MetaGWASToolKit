@@ -290,11 +290,11 @@ else
 	PARAMSFILE="${PARAMSFILE}" 
 
 	# Get all the metaprep ID's to set dependancy, by looping over all lines in the file
-	if [ -f ${SUBPROJECTDIRNAME}/meta_prep_ids.txt ]; then
+	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt ]; then
 		META_PREP_IDS="" # Init a variable
 		while read line; do    
 			META_PREP_IDS="${META_PREP_IDS},${line}" # Add every ID with a comma
-		done < ${SUBPROJECTDIRNAME}/meta_prep_ids.txt
+		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
 		META_PREP_IDS="${META_PREP_IDS:1}" # Remove the first character (',')
 		META_PREP_IDS_D="--dependency=afterany:${META_PREP_IDS}" # Create a variable which can be used as dependancy
 	else 
@@ -477,7 +477,7 @@ else
    	META_SUM_ID=$(sbatch --parsable --job-name=METASUM --dependency=afterany:${META_GENOMIC_CONTROL_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh)
 
 	# Create a textfile to store ids, which can be used as dependancies later
-	echo "${META_SUM_ID}" >> ${SUBPROJECTDIRNAME}/meta_sum_ids.txt
+	echo "${META_SUM_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt
 	
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

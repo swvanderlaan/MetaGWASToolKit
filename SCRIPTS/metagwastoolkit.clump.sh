@@ -266,11 +266,11 @@ else
 	fi
 	
 	# Get all the METASUM ID's to set dependancy, by looping over all lines in the file
-	if [ -f ${SUBPROJECTDIRNAME}/meta_sum_ids.txt ]; then
+	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt ]; then
 		METASUM_IDS="" # Init a variable
 		while read line; do    
 			METASUM_IDS="${METASUM_IDS},${line}" # Add every ID with a comma
-		done < ${SUBPROJECTDIRNAME}/meta_sum_ids.txt
+		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt
 		METASUM_IDS="${METASUM_IDS:1}" # Remove the first character (',')
 		METASUM_IDS_D="--dependency=afterany:${METASUM_IDS}" # Create a variable which can be used as dependancy
 	else 

@@ -298,11 +298,11 @@ else
 	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}
 	
 	# Get all the plotter ID's to set dependancy, by looping over all lines in the file
-	if [ -f ${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
+	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
 		PLOTTER_IDS="" # Init a variable
 		while read line; do    
 			PLOTTER_IDS="${PLOTTER_IDS},${line}" # Add every ID with a comma
-		done < ${SUBPROJECTDIRNAME}/plotter_ids.txt
+		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
 		PLOTTER_IDS="${PLOTTER_IDS:1}" # Remove the first character (',')
 		PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependancy
 	else 
@@ -355,7 +355,7 @@ else
 		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh)
 
 		# Echo the ids to a file, so it can be used as depenendancy down the road
-		echo "${META_PREPARATOR_ID}" >> ${SUBPROJECTDIRNAME}/meta_prep_ids.txt
+		echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
 	done < ${GWASFILES}
 
 	### END of if-else statement for the number of command-line arguments passed ###
