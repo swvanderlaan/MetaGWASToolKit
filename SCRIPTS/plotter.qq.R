@@ -259,6 +259,7 @@ of the data. Double back, please.\n\n",
   
   maxY <- round(max(-log10(data$V1))+1)
   maxYplot <- maxY + 3
+  # maxYplot <- 9
   cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
      
   #--------------------------------------------------------------------------

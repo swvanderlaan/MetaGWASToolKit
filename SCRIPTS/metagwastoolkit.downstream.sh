@@ -320,33 +320,37 @@ else
 	ANNOT_FUMA_ID=$(sbatch --parsable --job-name=Annot.FUMA ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh)
 
 	echobold "#========================================================================================================"
-	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2"
+	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2: NOT EXECUTED: DEPRICATED"
 	echobold "#========================================================================================================"
 	echobold "#"
 	# REQUIRED: VEGAS/VEGAS2 settings.
 	# Note: we do `cd ${VEGASDIR}` because VEGAS is making temp-files in a special way, 
 	#       adding a date-based number in front of the input/output files.
-	echo "Creating VEGAS input files..." 
-	mkdir -v ${METARESULTDIR}/vegas
-	VEGASDIR=${METARESULTDIR}/vegas
-	chmod -Rv a+rwx ${VEGASDIR}
-	echo "...per chromosome."	
+	# echo "Creating VEGAS input files..." 
+	# mkdir -v ${METARESULTDIR}/vegas
+	# VEGASDIR=${METARESULTDIR}/vegas
+	# chmod -Rv a+rwx ${VEGASDIR}
+	# echo "...per chromosome."	
  	
 	# for CHR in $(seq 1 23); do
 	# 	if [[ $CHR -le 22 ]]; then 
 	# 		echo "Processing chromosome ${CHR}..."
-	# 		echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==${CHR} ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		printf "#!/bin/bash\n" > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==${CHR} ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 	# 		echo "cd ${VEGASDIR} " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 	#   		echo "$VEGAS2 -G -snpandp meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP}.chr${CHR} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	#   		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	#   		# qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		sbatch --job-name=VEGAS2.${PROJECTNAME}.chr${CHR} ${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors --time=${QRUNTIMEVEGAS} --mem=${QMEMVEGAS} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+
 		
 	# 	elif [[ $CHR -eq 23 ]]; then  
 	# 		echo "Processing chromosome X..."
-	# 		echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==\"X\" ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		printf "#!/bin/bash\n" > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==\"X\" ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 	#   		echo "cd ${VEGASDIR} " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 	#   		echo "$VEGAS2 -G -snpandp meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP}.chr${CHR} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	#   		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-		
+	#   		# qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		sbatch --job-name=VEGAS2.${PROJECTNAME}.chr${CHR} ${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors --time=${QRUNTIMEVEGAS} --mem=${QMEMVEGAS} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 	# 	else
 	# 		echo "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please."	
 	# 		exit 1
@@ -354,7 +358,7 @@ else
 	# done
 
 	# Call array job
-	VEGAS_ARRAY_cleaner_ID=$(sbatch --parsable --job-name=vegas_array --array=0-22 ${METASUM_IDS_D} --export=METARESULTDIR=${METARESULTDIR},PROJECTNAME=${PROJECTNAME},REFERENCE=${REFERENCE},POPULATION=${POPULATION},SCRIPTS=${SCRIPTS},VEGASDIR=${VEGASDIR},VEGAS2=${VEGAS2},VEGAS2POP=${VEGAS2POP},VEGAS2GENELIST=${VEGAS2GENELIST},VEGAS2UPPER=${VEGAS2UPPER},VEGAS2LOWER=${VEGAS2LOWER},QMAILOPTIONS=${QMAILOPTIONS},QMAIL=${QMAIL},QMEMVEGAS=${QMEMVEGAS},QRUNTIMEVEGAS=${QRUNTIMEVEGAS},METASUM_IDS_D=${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.%a.log --error ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.%a.errors ${SCRIPTS}/meta.vegas.sh)
+	# VEGAS_ARRAY_cleaner_ID=$(sbatch --parsable --job-name=vegas_array --array=0-22 ${METASUM_IDS_D} --export=METARESULTDIR=${METARESULTDIR},PROJECTNAME=${PROJECTNAME},REFERENCE=${REFERENCE},POPULATION=${POPULATION},SCRIPTS=${SCRIPTS},VEGASDIR=${VEGASDIR},VEGAS2=${VEGAS2},VEGAS2POP=${VEGAS2POP},VEGAS2GENELIST=${VEGAS2GENELIST},VEGAS2UPPER=${VEGAS2UPPER},VEGAS2LOWER=${VEGAS2LOWER},QMAILOPTIONS=${QMAILOPTIONS},QMAIL=${QMAIL},QMEMVEGAS=${QMEMVEGAS},QRUNTIMEVEGAS=${QRUNTIMEVEGAS},METASUM_IDS_D=${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.%a.log --error ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.%a.errors ${SCRIPTS}/meta.vegas.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING MAGMA"
