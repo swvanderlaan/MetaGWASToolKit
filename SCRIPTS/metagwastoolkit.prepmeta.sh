@@ -295,9 +295,25 @@ else
 	echo ""
 	echo "We will collect all unique variants across all GWAS cohorts."
 	### FOR DEBUGGING LOCALLY -- Mac OS X
-	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}	
-	echo "${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
-	qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
+	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}
+	
+	# Get all the plotter ID's to set dependancy, by looping over all lines in the file
+	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
+		PLOTTER_IDS="" # Init a variable
+		while read line; do    
+			PLOTTER_IDS="${PLOTTER_IDS},${line}" # Add every ID with a comma
+		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+		PLOTTER_IDS="${PLOTTER_IDS:1}" # Remove the first character (',')
+		PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependancy
+	else 
+		echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
+		PLOTTER_IDS_D="" # Empty variable so there is no dependancy
+	fi
+
+
+	printf "#!/bin/bash\n${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
+	## qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
+	VARIANT_COLLECTOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector ${PLOTTER_IDS_D} -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
@@ -333,9 +349,13 @@ else
 		echo "* Reordering [ ${COHORT} ]..."
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}
-		echo "${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
-		qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
 
+		printf "#!/bin/bash\n${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
+		## qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
+		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh)
+
+		# Echo the ids to a file, so it can be used as depenendancy down the road
+		echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
 	done < ${GWASFILES}
 
 	### END of if-else statement for the number of command-line arguments passed ###
