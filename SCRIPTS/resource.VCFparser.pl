@@ -613,7 +613,7 @@ if ( $reference eq "1Gp1" ) {
 	die " *** ERROR *** Parsing of 1000G phase 3 type references is not available yet. We need to
 think about how to handle multi-allelic variants. One option is to split the fields in to
 multiple rows, one for each variant. The variantID should as a consequence be chr<#>:<#>:MinorAllele_MajorAllele. 
-One option is to split on the , as examplified here: https://stackoverflow.com/questions/46656387/separate-2nd-column-of-comma-separated-list-to-new-rows-inherit-value-in-1st-co \n";
+One option is to split on the , as exemplified here: https://stackoverflow.com/questions/46656387/separate-2nd-column-of-comma-separated-list-to-new-rows-inherit-value-in-1st-co \n";
 	} elsif ( $reference eq "GoNL4" or $reference eq "GoNL5") {
 	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented yet.\n";
 		} else {
