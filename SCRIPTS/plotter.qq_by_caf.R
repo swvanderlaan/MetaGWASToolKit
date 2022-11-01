@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -307,10 +307,10 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
                               #paste("0.05 < CAF < 0.2 [",format(length(z_lo2), big.mark = ","),"]"),
                               #paste("0.01 < CAF < 0.05 [",format(length(z_lo3), big.mark = ","),"]"),
                               #paste("CAF < 0.01 [",format(length(z_lo4), big.mark = ","),"]")),
-                              substitute(paste("CAF > 0.20 [", lambda," = ", lam, "]"),list(lam = l2)),expression(),
-                              substitute(paste("0.05 < CAF < 0.20 [", lambda," = ", lam, "]"),list(lam = l3)),expression(),
-                              substitute(paste("0.01 CAF < 0.05 [", lambda," = ", lam, "]"),list(lam = l4)),expression(),
-                              substitute(paste("CAF < 0.01 [", lambda," = ", lam, "]"),list(lam = l1)),expression()),
+                              substitute(paste("CAF > 0.20 [", lambda," = ", lam, "]"),list(lam = l1)),expression(),
+                              substitute(paste("0.05 < CAF < 0.20 [", lambda," = ", lam, "]"),list(lam = l2)),expression(),
+                              substitute(paste("0.01 CAF < 0.05 [", lambda," = ", lam, "]"),list(lam = l3)),expression(),
+                              substitute(paste("CAF < 0.01 [", lambda," = ", lam, "]"),list(lam = l4)),expression()),
             pch=c((vector("numeric",5)+1)*23), cex=c((vector("numeric",5)+0.8)), 
             pt.bg=c("#E55738","black","#9FC228","#DB003F","#1290D9", "#595A5C"),
             bty="n", title="Legend", title.adj=0)

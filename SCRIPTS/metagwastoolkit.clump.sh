@@ -265,29 +265,48 @@ else
 		exit 1
 	fi
 	
+	# Get all the METASUM ID's to set dependancy, by looping over all lines in the file
+	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt ]; then
+		METASUM_IDS="" # Init a variable
+		while read line; do    
+			METASUM_IDS="${METASUM_IDS},${line}" # Add every ID with a comma
+		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt
+		METASUM_IDS="${METASUM_IDS:1}" # Remove the first character (',')
+		METASUM_IDS_D="--dependency=afterany:${METASUM_IDS}" # Create a variable which can be used as dependancy
+	else 
+		echo "Dependancy file does not exist, assuming the METASUM jobs finished."
+		METASUM_IDS_D="" # Empty variable so there is no dependancy
+	fi
+
 	echobold "#========================================================================================================"
 	echobold "#== CLUMPING OF META-ANALYSIS RESULTS -- BETA"
 	echobold "#========================================================================================================"
 	echobold "#"
 	echo "Clumping meta-analysis summary file..." 
-	echo "${SCRIPTS}/meta.clumper.sh ${CONFIGURATIONFILE} ${METARESULTDIR} " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
-	qsub -S /bin/bash -N METACLUMP -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
+
+	printf "#!/bin/bash\n${SCRIPTS}/meta.clumper.sh ${CONFIGURATIONFILE} ${METARESULTDIR} " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
+	## qsub -S /bin/bash -N METACLUMP -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
+	META_CLUMP_ID=$(sbatch --parsable --job-name=METACLUMP ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh)
 	
 	echobold "#========================================================================================================"
 	echobold "#== PARSING CLUMPED RESULTS -- BETA"
 	echobold "#========================================================================================================"
 	echobold "#"
 	echo "Clumping meta-analysis summary file..." 
-	echo "${SCRIPTS}/meta.clumpparser.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
-	qsub -S /bin/bash -N METAPARSER -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
+
+	printf "#!/bin/bash\n${SCRIPTS}/meta.clumpparser.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
+	## qsub -S /bin/bash -N METAPARSER -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
+	META_PARSER_ID=$(sbatch --parsable --job-name=METAPARSER --dependency=afterany:${META_CLUMP_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== REGIONAL ASSOCIATION PLOTTING OF CLUMPED RESULTS -- BETA"
 	echobold "#========================================================================================================"
 	echobold "#"
 	echo "Clumping meta-analysis summary file..." 
-	echo "${SCRIPTS}/meta.clumpplotter.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
-	qsub -S /bin/bash -N METAPLOTTER -hold_jid METAPARSER -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
+
+	printf "#!/bin/bash\n${SCRIPTS}/meta.clumpplotter.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
+	## qsub -S /bin/bash -N METAPLOTTER -hold_jid METAPARSER -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
+	META_PLOTTER_ID=$(sbatch --parsable --job-name=METAPLOTTER --dependency=afterany:${META_PARSER_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh)
 
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

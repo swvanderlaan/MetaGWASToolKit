@@ -299,44 +299,66 @@ else
 	### BETA_FIXED 		-- Beta | be: Beta
 	### SE_FIXED 		-- SE: Standard error
 	### N_EFF 			-- N: sample size
-	echo "echo \"SNP CHR BP A1 A2 P Beta SE N\" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+
+	# Get all the METASUM ID's to set dependancy, by looping over all lines in the file
+	if [ -f ${SUBPROJECTDIRNAME}/meta_sum_ids.txt ]; then
+		METASUM_IDS="" # Init a variable
+		while read line; do    
+			METASUM_IDS="${METASUM_IDS},${line}" # Add every ID with a comma
+		done < ${SUBPROJECTDIRNAME}/meta_sum_ids.txt
+		METASUM_IDS="${METASUM_IDS:1}" # Remove the first character (',')
+		METASUM_IDS_D="--dependency=afterany:${METASUM_IDS}" # Create a variable which can be used as dependancy
+	else 
+		echo "Dependancy file does not exist, assuming the METASUM jobs finished."
+		METASUM_IDS_D="" # Empty variable so there is no dependancy
+	fi
+
+	printf "#!/bin/bash\necho \"SNP CHR BP A1 A2 P Beta SE N\" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,P_FIXED,BETA_FIXED,SE_FIXED,N_EFF | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
 	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forFUMA.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
-	qsub -S /bin/bash -N Annot.FUMA -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+	## qsub -S /bin/bash -N Annot.FUMA -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh
+	ANNOT_FUMA_ID=$(sbatch --parsable --job-name=Annot.FUMA ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.FUMA.sh)
 
 	echobold "#========================================================================================================"
-	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2"
+	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING VEGAS2: NOT EXECUTED: DEPRICATED"
 	echobold "#========================================================================================================"
 	echobold "#"
 	# REQUIRED: VEGAS/VEGAS2 settings.
 	# Note: we do `cd ${VEGASDIR}` because VEGAS is making temp-files in a special way, 
 	#       adding a date-based number in front of the input/output files.
-	echo "Creating VEGAS input files..." 
-	mkdir -v ${METARESULTDIR}/vegas
-	VEGASDIR=${METARESULTDIR}/vegas
-	chmod -Rv a+rwx ${VEGASDIR}
-	echo "...per chromosome."	
- 	for CHR in $(seq 1 23); do
-		if [[ $CHR -le 22 ]]; then 
-			echo "Processing chromosome ${CHR}..."
-			echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==${CHR} ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-			echo "cd ${VEGASDIR} " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	  		echo "$VEGAS2 -G -snpandp meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP}.chr${CHR} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	  		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-		
-		elif [[ $CHR -eq 23 ]]; then  
-			echo "Processing chromosome X..."
-			echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==\"X\" ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	  		echo "cd ${VEGASDIR} " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	  		echo "$VEGAS2 -G -snpandp meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP}.chr${CHR} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-	  		qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
-		
-		else
-			echo "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please."	
-			exit 1
-		fi
+	# echo "Creating VEGAS input files..." 
+	# mkdir -v ${METARESULTDIR}/vegas
+	# VEGASDIR=${METARESULTDIR}/vegas
+	# chmod -Rv a+rwx ${VEGASDIR}
+	# echo "...per chromosome."	
+ 	
+	# for CHR in $(seq 1 23); do
+	# 	if [[ $CHR -le 22 ]]; then 
+	# 		echo "Processing chromosome ${CHR}..."
+	# 		printf "#!/bin/bash\n" > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==${CHR} ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		echo "cd ${VEGASDIR} " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	#   		echo "$VEGAS2 -G -snpandp meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP}.chr${CHR} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	#   		# qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		sbatch --job-name=VEGAS2.${PROJECTNAME}.chr${CHR} ${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors --time=${QRUNTIMEVEGAS} --mem=${QMEMVEGAS} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
 
-	done
+		
+	# 	elif [[ $CHR -eq 23 ]]; then  
+	# 		echo "Processing chromosome X..."
+	# 		printf "#!/bin/bash\n" > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,P_FIXED | awk ' \$2==\"X\" ' | awk '{ print \$1, \$3 }' | tail -n +2 > ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	#   		echo "cd ${VEGASDIR} " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	#   		echo "$VEGAS2 -G -snpandp meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.forVEGAS.txt -custom ${VEGAS2POP}.chr${CHR} -glist ${VEGAS2GENELIST} -upper ${VEGAS2UPPER} -lower ${VEGAS2LOWER} -chr ${CHR} -out meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.fromVEGAS " >> ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	#   		# qsub -S /bin/bash -N VEGAS2.${PROJECTNAME}.chr${CHR} -hold_jid METASUM -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors -l h_vmem=${QMEMVEGAS} -l h_rt=${QRUNTIMEVEGAS} -wd ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 		sbatch --job-name=VEGAS2.${PROJECTNAME}.chr${CHR} ${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.log -e ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.errors --time=${QRUNTIMEVEGAS} --mem=${QMEMVEGAS} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${VEGASDIR} ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.sh
+	# 	else
+	# 		echo "*** ERROR *** Something is rotten in the City of Gotham; most likely a typo. Double back, please."	
+	# 		exit 1
+	# 	fi
+	# done
+
+	# Call array job
+	# VEGAS_ARRAY_cleaner_ID=$(sbatch --parsable --job-name=vegas_array --array=0-22 ${METASUM_IDS_D} --export=METARESULTDIR=${METARESULTDIR},PROJECTNAME=${PROJECTNAME},REFERENCE=${REFERENCE},POPULATION=${POPULATION},SCRIPTS=${SCRIPTS},VEGASDIR=${VEGASDIR},VEGAS2=${VEGAS2},VEGAS2POP=${VEGAS2POP},VEGAS2GENELIST=${VEGAS2GENELIST},VEGAS2UPPER=${VEGAS2UPPER},VEGAS2LOWER=${VEGAS2LOWER},QMAILOPTIONS=${QMAILOPTIONS},QMAIL=${QMAIL},QMEMVEGAS=${QMEMVEGAS},QRUNTIMEVEGAS=${QRUNTIMEVEGAS},METASUM_IDS_D=${METASUM_IDS_D} -o ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.%a.log --error ${VEGASDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.chr${CHR}.runVEGAS.%a.errors ${SCRIPTS}/meta.vegas.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== GENE-BASED ANALYSIS OF META-ANALYSIS RESULTS USING MAGMA"
@@ -350,17 +372,20 @@ else
 	MAGMARESULTDIR=${METARESULTDIR}/magma
 	chmod -Rv a+rwx ${MAGMARESULTDIR}
 	echo " - whole-genome..."
- 	echo "echo \"SNP CHR BP P NOBS\" > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+ 	printf "#!/bin/bash\necho \"SNP CHR BP P NOBS\" > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt \n" > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
  	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED,N_EFF | tail -n +2 | awk '{ print \$1, \$2, \$3, \$4, int(\$5) }' >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
 	echo "${MAGMA} --annotate --snp-loc ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt --gene-loc ${MAGMAGENES} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
-	qsub -S /bin/bash -N MAGMA.ANALYSIS.${PROJECTNAME} -hold_jid METASUM -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+	## qsub -S /bin/bash -N MAGMA.ANALYSIS.${PROJECTNAME} -hold_jid METASUM -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
+	MAGMA_ANALYSIS_ID=$(sbatch --parsable --job-name=MAGMA.ANALYSIS.${PROJECTNAME} ${METASUM_IDS_D} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log --error ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors --time=${QRUNTIMEMAGMA} --mem=${QMEMMAGMA} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh)
 
-	echo "${MAGMA} --bfile ${MAGMAPOP} synonyms=${MAGMADBSNP} synonym-dup=drop-dup --pval ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt ncol=NOBS --gene-annot ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated.genes.annot --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh
- 	qsub -S /bin/bash -N MAGMA.ANNOTATION.${PROJECTNAME} -hold_jid MAGMA.ANALYSIS.${PROJECTNAME} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh
+	printf "#!/bin/bash\n${MAGMA} --bfile ${MAGMAPOP} synonyms=${MAGMADBSNP} synonym-dup=drop-dup --pval ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt ncol=NOBS --gene-annot ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated.genes.annot --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh
+ 	## qsub -S /bin/bash -N MAGMA.ANNOTATION.${PROJECTNAME} -hold_jid MAGMA.ANALYSIS.${PROJECTNAME} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh
+	MAGMA_ANNOTATION_ID=$(sbatch --parsable --job-name=MAGMA.ANNOTATION.${PROJECTNAME} --dependency=afterany:${MAGMA_ANALYSIS_ID} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.log --error ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.errors --time=${QRUNTIMEMAGMA} --mem=${QMEMMAGMA} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh)
 
- 	echo "${MAGMA} --gene-results ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated.genes.raw --set-annot ${MAGMAGENESETS} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.gsea " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh
- 	qsub -S /bin/bash -N MAGMA.GSEA.${PROJECTNAME} -hold_jid MAGMA.ANNOTATION.${PROJECTNAME} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh
- 
+ 	printf "#!/bin/bash\n${MAGMA} --gene-results ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated.genes.raw --set-annot ${MAGMAGENESETS} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.gsea " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh
+ 	## qsub -S /bin/bash -N MAGMA.GSEA.${PROJECTNAME} -hold_jid MAGMA.ANNOTATION.${PROJECTNAME} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh
+ 	MAGMA_GSEA_ID=$(sbatch --parsable --job-name=MAGMA.GSEA.${PROJECTNAME} --dependency=afterany:${MAGMA_ANNOTATION_ID} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.log --error ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.errors --time=${QRUNTIMEMAGMA} --mem=${QMEMMAGMA} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.gseaMAGMA.sh)
+
 	echobold "#========================================================================================================"
 	echobold "#== LD SCORE REGRESSION -- the *input* files for LD-Hub are created --"
 	echobold "#========================================================================================================"
@@ -370,14 +395,15 @@ else
 	echo "Generating LD-Hub input file."
 	mkdir -v ${METARESULTDIR}/ldscore
 	LDSCOREDIR=${METARESULTDIR}/ldscore
-	echo "echo \"snpid A1 A2 Zscore N P-value\" > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	printf "#!/bin/bash\necho \"snpid A1 A2 Zscore N P-value\" > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp \n" > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CODEDALLELE,OTHERALLELE,Z_FIXED,N_EFF,P_FIXED | tail -n +2 >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
 	echo "${SCRIPTS}/mergeTables.pl --file1 ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp --file2 ${RESOURCES}/w_hm3.noMHC.snplist.txt.gz --index snpid --format GZIP2 | awk '{ print \$1, \$4, \$5, \$6, \$7, \$8 }' > ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt " >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
 	### LD-Hub expects a ZIPPED file!!!
 	echo "cd ${LDSCOREDIR}" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
 	echo "zip -v meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt.zip meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.txt" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
  	echo "rm -v ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.temp" >> ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
-	qsub -S /bin/bash -N LDSCORE.${PROJECTNAME} -hold_jid METASUM -o ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.log -e ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.errors -l h_vmem=${QMEMLDSCORE} -l h_rt=${QRUNTIMELDSCORE} -wd ${LDSCOREDIR} ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	## qsub -S /bin/bash -N LDSCORE.${PROJECTNAME} -hold_jid METASUM -o ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.log -e ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.errors -l h_vmem=${QMEMLDSCORE} -l h_rt=${QRUNTIMELDSCORE} -wd ${LDSCOREDIR} ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh
+	LDSCORE_ID=$(sbatch --parsable --job-name=LDSCORE.${PROJECTNAME} ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.errors --time=${QRUNTIMELDSCORE} --mem=${QMEMLDSCORE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${LDSCOREDIR} ${LDSCOREDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLDscore.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== MR BASE -- the *input* files for MR-Base are created --"
@@ -388,11 +414,12 @@ else
 	echo "Generating MR-Base input file, based on p-value <= ${MRBASEPVAL}."
 	mkdir -v ${METARESULTDIR}/mrbase
 	MRBASEDIR=${METARESULTDIR}/mrbase
-	echo "echo \"SNP beta se pval effect_allele other_allele eaf samplesize Phenotype\" > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	printf "#!/bin/bash\necho \"SNP beta se pval effect_allele other_allele eaf samplesize Phenotype\" > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt \n" > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,BETA_FIXED,SE_FIXED,P_FIXED,CODEDALLELE,OTHERALLELE,CAF,N_EFF > ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
 	echo "cat ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp | tail -n +2 | awk '\$4 <= ${MRBASEPVAL}' | awk '{ print \$0, \"${PROJECTNAME}\" }' >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.txt " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
 	echo "rm -v ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.temp " >> ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
- 	qsub -S /bin/bash -N MRBASE.${PROJECTNAME} -hold_jid METASUM -o ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.log -e ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.errors -l h_vmem=${QMEMMRBASE} -l h_rt=${QRUNTIMEMRBASE} -wd ${MRBASEDIR} ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+ 	## qsub -S /bin/bash -N MRBASE.${PROJECTNAME} -hold_jid METASUM -o ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.log -e ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.errors -l h_vmem=${QMEMMRBASE} -l h_rt=${QRUNTIMEMRBASE} -wd ${MRBASEDIR} ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh
+	MRBASE_ID=$(sbatch --parsable --job-name=MRBASE.${PROJECTNAME} ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBASE.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBASE.errors --time=${QRUNTIMELDSCORE} --mem=${QMEMLDSCORE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MRBASEDIR} ${MRBASEDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMRBase.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== DEPICT -- needs implementation --"
@@ -413,10 +440,10 @@ else
 	echo ""
 	echo "We will create input files for LocusTrack -- https://gump.qimr.edu.au/general/gabrieC/LocusTrack/index.html."
 	echo ""
-	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
+	printf "#!/bin/bash\nzcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
 	echo "gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forLocusTrack.txt " >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
-	qsub -S /bin/bash -N Annot.LocusTrack -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
-
+	## qsub -S /bin/bash -N Annot.LocusTrack -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors -l h_vmem=${QMEMANALYZER} -l h_rt=${QRUNTIMEANALYZER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh
+	LOCUSTRACK_ID=$(sbatch --parsable --job-name=Annot.LocusTrack ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.LocusTrack.sh)
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 
 

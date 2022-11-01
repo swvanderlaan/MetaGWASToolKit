@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -259,6 +259,7 @@ of the data. Double back, please.\n\n",
   
   maxY <- round(max(-log10(data$V1))+1)
   maxYplot <- maxY + 3
+  # maxYplot <- 9
   cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
      
   #--------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.4.0/bin/Rscript --vanilla
+#!/hpc/local/CentOS7/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
@@ -303,7 +303,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
 
   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
 
-  # print(head(GWASDATA_RAWSELECTION))
+  # print(names(GWASDATA_RAWSELECTION))
 
   ### Change column names case to all 'lower cases'
   names(GWASDATA_RAWSELECTION) <- tolower(names(GWASDATA_RAWSELECTION))
@@ -419,6 +419,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat("\n* Removing leading 'zeros' from chromosome number...")
   GWASDATA_RAWSELECTION$CHR <- gsub("(?<![0-9])0+", "", GWASDATA_RAWSELECTION$CHR, perl = TRUE)
   
+  print(names(GWASDATA_RAWSELECTION))
   # print(head(GWASDATA_RAWSELECTION))
   
   cat("\n* Changing 23 to X, 24 to Y, 25 to XY, and 26 to MT...")
@@ -438,6 +439,17 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                               GWASDATA_RAWSELECTION$CHR == "mt"] <- "MT"
   
   # print(tail(GWASDATA_RAWSELECTION))
+
+  # Manually calculate the N
+  print(colnames(GWASDATA_RAWSELECTION))
+  if(!("N" %in% colnames(GWASDATA_RAWSELECTION))) {
+    if("N_cases" %in% colnames(GWASDATA_RAWSELECTION)){
+      if("N_controls" %in% colnames(GWASDATA_RAWSELECTION)){
+        print("Manually calculated N from n cases and contorols!")
+        GWASDATA_RAWSELECTION$N <- (GWASDATA_RAWSELECTION$N_cases+GWASDATA_RAWSELECTION$N_controls)
+      }
+    }
+  }
   
   # ### set 'chromosome' column to integer
   # GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
@@ -515,6 +527,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
         cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. There's something wrong with the allele frequencies. Double back, please.", file=stderr()) # print error messages to stder
         
       } 
+  
+   print(head(GWASDATA_RAWSELECTION))
   
   ### Calculate MAC
   cat("\n* Calculating 'minor allele count' (MAC)...")
