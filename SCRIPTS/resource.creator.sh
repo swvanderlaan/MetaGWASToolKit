@@ -122,9 +122,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	### THIS SHOULD BE A COMMAND LINE OPTION -- via a configuration file, but some how this screws up 'awking'
 # 	### in the script below (lines 145, 232, 243)
 # 	### "1Gp1          PAN, EUR, AFR, AMR, ASN\n";
-# 	### "[1Gp3          PAN, EUR, AFR, AMR, EAS, SAS] - not available yet\n";
-# 	### "[GoNL4         NL] - not available yet\n";
-# 	### "[GoNL5         NL] - not available yet\n";
+# 	### "[1Gp3          PAN, EUR, AFR, AMR, EAS, SAS]\n";
+# 	### "[GoNL4         NL] - not available\n";
+# 	### "[GoNL5         NL] - not available\n";
 # 	### "[1Gp3GONL5     PAN]\n";
 
 	POPULATION="EUR"
@@ -200,24 +200,24 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # 	echo "rm -fv ${RESOURCES}/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp1.sh
 # 	qsub -S /bin/bash -N VCFparser1Gp1 -hold_jid ThousandGp1downloader -o ${RESOURCES}/resource.VCFparser.1kGp1.log -e ${RESOURCES}/resource.VCFparser.1kGp1.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp1.sh
 	
-	echo "* parsing 1000G phase 3."
-	echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp3 --pop ${POPULATION1Gp3} --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-# 	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
-	echo ""
+	# echo "* parsing 1000G phase 3."
+	# echo "perl ${SCRIPTS}/resource.VCFparser.pl --file ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz --ref 1Gp3 --pop ${POPULATION1Gp3} --out ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv " > ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.INFO.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FREQ.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+### 	echo "rm -fv ${RESOURCES}/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz " >> ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	# qsub -S /bin/bash -N VCFparser1Gp3 -hold_jid ThousandGp3downloader -o ${RESOURCES}/resource.VCFparser.1kGp3.log -e ${RESOURCES}/resource.VCFparser.1kGp3.errors -l h_vmem=16G -l h_rt=03:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFparser.1kGp3.sh
+	# echo ""
 		
 # 	echo "* updating 1000G phase 1."
 # 	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 # 	echo "gzip -fv ${RESOURCES}/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.${POPULATION}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 # 	qsub -S /bin/bash -N VCF1Gp1plusdbSNP -hold_jid VCFparser1Gp1 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp1.sh
 
-	echo "* updating 1000G phase 3."
-	echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-	echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
-	qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	# echo "* updating 1000G phase 3."
+	# echo "perl ${SCRIPTS}/mergeTables.pl --file1 ${RESOURCES}/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz --file2 ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt.gz --index VariantID --format GZIPB --replace > ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " > ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	# echo "gzip -fv ${RESOURCES}/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.${POPULATION1Gp3}.FUNC.txt " >> ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
+	# qsub -S /bin/bash -N VCF1Gp3plusdbSNP -hold_jid VCFparser1Gp3 -o ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.log -e ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.errors -l h_vmem=128G -l h_rt=04:00:00 -wd ${RESOURCES} ${RESOURCES}/resource.VCFplusdbSNP.1kGp3.sh
 
 # 	echo "* parsing 1000G phase 3 + GoNL5."
 # 	echo "  - generating the necessary per-variant descriptive statistics."
