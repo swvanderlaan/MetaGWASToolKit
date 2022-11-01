@@ -1,20 +1,23 @@
 #!/bin/bash
 #
-#$ -S /bin/bash 																	# the type of BASH you'd like to use
-#$ -N resource.creator  															# the name of this script
-# -hold_jid some_other_basic_bash_script  											# the current script (basic_bash_script) will hold until some_other_basic_bash_script has finished
-#$ -o /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/resource.creator.log  		# the log file of this job
-#$ -e /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/resource.creator.errors	# the error file of this job
-#$ -l h_rt=04:00:00  																# h_rt=[max time, e.g. 02:02:01] - this is the time you think the script will take
-#$ -l h_vmem=8G  																	#  h_vmem=[max. mem, e.g. 45G] - this is the amount of memory you think your script will use
-# -l tmpspace=64G  																	# this is the amount of temporary space you think your script will use
-#$ -M s.w.vanderlaan-2@umcutrecht.nl  												# you can send yourself emails when the job is done; "-M" and "-m" go hand in hand
-#$ -m beas  																		# you can choose: b=begin of job; e=end of job; a=abort of job; s=suspended job; n=no mail is send
-#$ -cwd  																			# set the job start to the current directory - so all the things in this script are relative to the current directory!!!
-#
-# You can use the variables above (indicated by "#$") to set some things for the submission system.
-# Another useful tip: you can set a job to run after another has finished. Name the job 
-# with "-N SOMENAME" and hold the other job with -hold_jid SOMENAME". 
+#################################################################################################
+### PARAMETERS SLURM
+#SBATCH --job-name=resource.creator                                  # the name of the job
+#SBATCH -o /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/resource.creator.log 	          # the log file of this job
+#SBATCH --error /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/resource.creator.errors    # the error file of this job
+#SBATCH --time=03:00:00                                             # the amount of time the job will take: -t [min] OR -t [days-hh:mm:ss]
+#SBATCH --mem=8G                                                    # the amount of memory you think the script will consume, found on: https://wiki.bioinformatics.umcutrecht.nl/bin/view/HPC/SlurmScheduler
+#SBATCH --gres=tmpspace:64G                                         # the amount of temporary diskspace per node
+#SBATCH --mail-user=s.w.vanderlaan-2@umcutrecht.nl                       # where should be mailed to?
+#SBATCH --mail-type=FAIL                                            # when do you want to receive a mail from your job?  Valid type values are NONE, BEGIN, END, FAIL, REQUEUE
+                                                                    # or ALL (equivalent to BEGIN, END, FAIL, INVALID_DEPEND, REQUEUE, and STAGE_OUT), 
+                                                                    # Multiple type values may be specified in a comma separated list. 
+####    Note:   You do not have to specify workdir: 
+####            'Current working directory is the calling process working directory unless the --chdir argument is passed, which will override the current working directory.'
+####            TODO: select the type of interpreter you'd like to use
+####            TODO: Find out whether this job should dependant on other scripts (##SBATCH --depend=[state:job_id])
+####
+#################################################################################################
 #
 # It is good practice to properly name and annotate your script for future reference for
 # yourself and others. Trust me, you'll forget why and how you made this!!!
@@ -88,17 +91,17 @@ script_copyright_message() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                                      MetaGWASToolKit: Resource Creator"
 echobold ""
-echobold "* Version:      v1.1.2"
+echobold "* Version:      v1.1.3"
 echobold ""
-echobold "* Last update:  2018-07-09"
+echobold "* Last update:  2022-11-01"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
-echobold "* Testers:      Jessica van Setten."
+echobold "* Testers:      Jessica van Setten; M.M.M. Baksi."
 echobold "* Description:  Downloads, parses and creates the necessary resources for MetaGWASToolKit."
 echobold ""
 echobold "* REQUIRED: "
 echobold "  - A high-performance computer cluster with a qsub system"
-echobold "  - R v3.2+, Python 2.7+, Perl."
-echobold "  - Required Python 2.7+ modules: [pandas], [scipy], [numpy]."
+echobold "  - R v3.2+, Python 3.7+, Perl."
+echobold "  - Required Python 3.7+ modules: [pandas], [scipy], [numpy]."
 echobold "  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long]."
 echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
 ### ADD-IN: function to check requirements...
@@ -127,7 +130,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	POPULATION="EUR"
 	POPULATION1Gp3="EUR"
 	POPULATION1Gp3GONL5="PAN"
-	DBSNPVERSION="150"
+	DBSNPVERSION="151"
 	
 	echobold "#########################################################################################################"
 	echobold "### DOWNLOADING dbSNP GRCh37 v147 hg19 Feb2009"
@@ -138,7 +141,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "Downloading and parsing 'dbSNP GRCh37 v147 hg19 Feb2009'. "
 	echo ""
 	echo "* downloading [ dbSNP ] ..."
-	wget http://hgdownload.cse.ucsc.edu/goldenPath/hg19/database/snp${DBSNPVERSION}.txt.gz -O ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz
+	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/snp${DBSNPVERSION}.txt.gz -O ${RESOURCES}/dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz
 	### HEAD
 	### zcat dbSNP${DBSNPVERSION}_GRCh37_hg19_Feb2009.allVariants.txt.gz | head
 	### 585	chr1	10019	10020	rs775809821	0	+	A	A	-/A	genomic	deletion	unknown	0	0	near-gene-5	exact	1		1	SSMP,	0
@@ -159,22 +162,23 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "All done submitting jobs for downloading and parsing dbSNP reference! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-	echo ""
-	echobold "#########################################################################################################"
-	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING HapMap 2 reference b36 hg18"
-	echobold "#########################################################################################################"
-	echobold "#"
-	echo ""
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Downloading and parsing 'HapMap 2 b36 hg18'. "
+	# Note: we exclude this option, as no-one is using this anymore
+	# echo ""
+	# echobold "#########################################################################################################"
+	# echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING HapMap 2 reference b36 hg18"
+	# echobold "#########################################################################################################"
+	# echobold "#"
+	# echo ""
+	# echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	# echo "Downloading and parsing 'HapMap 2 b36 hg18'. "
+	# 
+	# echo ""	
+	# echo "All done submitting jobs for downloading and parsing HapMap 2 reference! 🖖"
+	# echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-	echo ""	
-	echo "All done submitting jobs for downloading and parsing HapMap 2 reference! 🖖"
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-
 	echo ""
 	echobold "#########################################################################################################"
-	echobold "### DOWNLOADING 1000G phase 1 and phase 3 + GoNL5"
+	echobold "### DOWNLOADING 1000G phase 1, phase 3, and phase 3 + GoNL5"
 	echobold "#########################################################################################################"
 	echobold "#"
 	echo ""
@@ -270,7 +274,7 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "Downloading and parsing 'GENCODE and refseq gene lists'. "
 	
 	echo "* downloading [ GENCODE ] ... "
-	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/wgEncodeGencodeBasicV19.txt.gz -O ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
+	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/wgEncodeGencodeBasicV41lift37.txt.gz -O ${RESOURCES}/GENCODE_wgEncodeBasicV41_GRCh37_hg19_Feb2009.txt.gz
 	### HEAD
 	### 585	ENST00000456328.2	chr1	+	11868	14409	11868	11868	3	11868,12612,13220,	12227,12721,14409,	0	DDX11L1	none	none	-1,-1,-1,
 	### 585	ENST00000607096.1	chr1	+	30365	30503	30365	30365	1	30365,	30503,	0	MIR1302-11	none	none	-1,
@@ -278,14 +282,14 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	### 585	ENST00000335137.3	chr1	+	69090	70008	69090	70008	1	69090,	70008,	0	OR4F5	cmpl	cmpl	0,
 	
 	echo "* parsing [ GENCODE ] ... "
-	zcat ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13 }' | awk -F" " '{gsub(/chr/, "", $1)}1' | awk -F" " '{gsub(/X/, "23", $1)}1' | awk -F" " '{gsub(/Y/, "24", $1)}1' | awk -F" " '{gsub(/M/, "26", $1)}1' > ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt 
-	mv -v ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt foo
-	touch ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt
+	zcat ${RESOURCES}/GENCODE_wgEncodeBasicV41_GRCh37_hg19_Feb2009.txt.gz | awk '{ print $3, $5, $6, $13 }' | awk -F" " '{gsub(/chr/, "", $1)}1' | awk -F" " '{gsub(/X/, "23", $1)}1' | awk -F" " '{gsub(/Y/, "24", $1)}1' | awk -F" " '{gsub(/M/, "26", $1)}1' > ${RESOURCES}/gencode_v41_GRCh37_hg19_Feb2009.txt 
+	mv -v ${RESOURCES}/gencode_v41_GRCh37_hg19_Feb2009.txt foo
+	touch ${RESOURCES}/gencode_v41_GRCh37_hg19_Feb2009.txt
 	for CHR in $(seq 1 24); do
-		cat foo | awk ' $1 == '$CHR' ' >> ${RESOURCES}/gencode_v19_GRCh37_hg19_Feb2009.txt
+		cat foo | awk ' $1 == '$CHR' ' >> ${RESOURCES}/gencode_v41_GRCh37_hg19_Feb2009.txt
 	done
 	
-	rm -fv ${RESOURCES}/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz foo
+	rm -fv ${RESOURCES}/GENCODE_wgEncodeBasicV41_GRCh37_hg19_Feb2009.txt.gz foo
 	
 	echo "* downloading [ refseq ] ... "
 	wget http://hgdownload.soe.ucsc.edu/goldenPath/hg19/database/refGene.txt.gz -O ${RESOURCES}/refGene_GRCh37_hg19_Feb2009.txt.gz
@@ -307,39 +311,41 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 	echo "All done submitting jobs for downloading and parsing gene lists! 🖖"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
  
-	echo ""
-	echobold "#########################################################################################################"
-	echobold "### *** WARNING *** NOT IMPLEMENTED YET DOWNLOADING Recombination Maps for b36 and b37"
-	echobold "#########################################################################################################"
-	echobold "#"
-	echo ""
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Downloading and parsing 'Recombination Maps'. "
-	http://www.shapeit.fr/files/genetic_map_b37.tar.gz
-	http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
-	wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
-	tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
-	mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
-	echo ""	
-	echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  # NOTE: THE URLs ARE NOT 'LIVE' ANYMORE
+  # We retain here the recombination rates from HapMap2 and 1000G phase 1 era.
+	# echo ""
+	# echobold "#########################################################################################################"
+	# echobold "### DOWNLOADING Recombination Maps for b37"
+	# echobold "#########################################################################################################"
+	# echobold "#"
+	# echo ""
+	# echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	# echo "Downloading and parsing 'Recombination Maps'. "
+	# ### http://www.shapeit.fr/files/genetic_map_b37.tar.gz
+	# ### http://hapmap.ncbi.nlm.nih.gov/downloads/recombination/2008-03_rel22_B36/rates
+	# # wget http://www.shapeit.fr/files/genetic_map_b37.tar.gz -O ${RESOURCES}/genetic_map_b37.tar.gz
+	# # tar -zxvf ${RESOURCES}/genetic_map_b37.tar.gz
+	# # mv -v ${RESOURCES}/genetic_map_b37 ${RESOURCES}/RECOMB_RATES 
+	# echo ""	
+	# echo "All done submitting jobs for downloading and parsing Recombination Maps! 🖖"
+	# echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
-	echo ""
-	echobold "#########################################################################################################"
-	echobold "### DOWNLOADING LD-Hub reference variants"
-	echobold "#########################################################################################################"
-	echobold "#"
-	echo ""
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Downloading and parsing 'LD-Score reference variant list'. "
-	wget http://ldsc.broadinstitute.org/static/media/w_hm3.noMHC.snplist.zip -O ${RESOURCES}/w_hm3.noMHC.snplist.zip
-	echo "snpid A1 A2" > ${RESOURCES}/w_hm3.noMHC.snplist.txt
-	unzip -p ${RESOURCES}/w_hm3.noMHC.snplist.zip | tail -n +2 >> ${RESOURCES}/w_hm3.noMHC.snplist.txt
-	gzip -fv ${RESOURCES}/w_hm3.noMHC.snplist.txt
-	rm -v ${RESOURCES}/w_hm3.noMHC.snplist.zip
-	echo ""	
-	echo "All done submitting jobs for downloading and parsing LD-Score reference variant list! 🖖"
-	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+
+  echo ""
+  echobold "#########################################################################################################"
+  echobold "### DOWNLOADING LD-Hub reference variants"
+  echobold "#########################################################################################################"
+  echobold "#"
+  echo ""
+  echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  echo "Downloading and parsing 'LD-Score reference variant list'. "
+  wget https://data.broadinstitute.org/alkesgroup/LDSCORE/w_hm3.snplist.bz2 -O ${RESOURCES}/w_hm3.noMHC.snplist.zip
+  echo "snpid A1 A2" > ${RESOURCES}/w_hm3.noMHC.snplist.txt
+  bunzip2 w_hm3.snplist.bz2 | tail -n +2 >> ${RESOURCES}/w_hm3.noMHC.snplist.txt
+  gzip -fv ${RESOURCES}/w_hm3.noMHC.snplist.txt
+  echo ""
+  echo "All done submitting jobs for downloading and parsing LD-Score reference variant list! 🖖"
+  echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 
 script_copyright_message
 
