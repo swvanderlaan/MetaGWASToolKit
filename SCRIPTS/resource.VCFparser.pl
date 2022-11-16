@@ -974,15 +974,7 @@ foreach (split /,/, $ALT) {
 	
 	### Closing input file
 	close IN;
-} elsif ( $reference eq "1Gp3" and ( $population eq "PAN" or $population eq "EUR" or $population eq "AFR" or $population eq "AMR" or $population eq "EAS" or $population eq "SAS" ) ) {
-	die " *** ERROR *** Parsing of 1000G phase 3 type references is not available yet. We need to
-think about how to handle multi-allelic variants. One option is to split the fields in to
-multiple rows, one for each variant. The variantID should as a consequence be chr<#>:<#>:MinorAllele_MajorAllele.\n";
-	} elsif ( $reference eq "GoNL4" or $reference eq "GoNL5") {
-	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented yet.\n";
-		} else {
-		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
-		}
+	
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
 my $newtime = localtime; # scalar context
@@ -991,7 +983,7 @@ print STDERR "\n";
 print STDERR "\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2016-2017 Sander W. van der Laan & Vinicius Tragante dó Ó                +\n";
+print STDERR "+ Copyright (c) 2016-2022 Sander W. van der Laan & Vinicius Tragante dó Ó                +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
 print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";
