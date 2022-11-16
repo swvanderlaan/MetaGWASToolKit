@@ -1,1 +1,0 @@
-/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS/gwas.wrapper.sh /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT1 COHORT1 COHORT1.rawdata VariantID_alt1

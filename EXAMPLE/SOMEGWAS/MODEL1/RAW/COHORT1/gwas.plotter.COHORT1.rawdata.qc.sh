@@ -1,1 +1,0 @@
-/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/SCRIPTS/gwas.plotter.sh /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/metagwastoolkit.conf /hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit/EXAMPLE/SOMEGWAS/MODEL1/RAW/COHORT1 COHORT1 QC PNG 01:30:00 12G
