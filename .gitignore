@@ -157,3 +157,11 @@ resource.creator.log
 
 
 
+RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.no_multiallelic.vcf.gz
+RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5c.20130502.sites.no_multiallelic.vcf.gz
+RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5c.20130502.sites.vcf.gz
+RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr*
+RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr*
+RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5*
+EXAMPLE/SOMEGWAS_prepMETA/*
+EXAMPLE/SOMEGWAS*
