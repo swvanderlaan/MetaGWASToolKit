@@ -10,8 +10,8 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; Utrecht, the 
 #               Netherlands, s.w.vanderlaan@gmail.com.
-# Version:		1.5.0
-# Update date: 	2017-10-09
+# Version:		1.5.1
+# Update date: 	2022-11-01
 #
 # Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 
@@ -59,10 +59,10 @@ print "\n";
 print "Reference     Population\n";
 print "=========     ==========\n";
 print "1Gp1          PAN, EUR, AFR, AMR, ASN\n";
-print "[1Gp3          PAN, EUR, AFR, AMR, EAS, SAS] - not available yet\n";
-print "[GoNL4         NL] - not available yet\n";
-print "[GoNL5         NL] - not available yet\n";
-print "[1Gp3GONL5     PAN]\n";
+print "1Gp3          PAN, EUR, AFR, AMR, EAS, SAS\n";
+print "[GoNL4         NL] - not available\n";
+print "[GoNL5         NL] - not available\n";
+print "1Gp3GONL5     PAN\n";
 print "\n";
 print "The output files will contain the following:\n";
 print "* Alternate VariantIDs: [ output.basename.INFO.txt ]\n";
@@ -71,7 +71,7 @@ print "* Variant information for alligning and annotating: [ output.basename.FUN
 print "";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print "The MIT License (MIT)\n";
-print "Copyright (c) 2016-2017 Sander W. van der Laan & Vinicius Tragante dó Ó\n";
+print "Copyright (c) 2016-2022 Sander W. van der Laan & Vinicius Tragante dó Ó\n";
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 exit();
 }
@@ -442,8 +442,6 @@ foreach (split /,/, $ALT) {
 	### Closing input file
 	close IN;
 
-
-
 	
 ### 1000G phase 3, version 5 + GoNL5
 } elsif ( $reference eq "1Gp3GONL5" ) {
@@ -700,12 +698,14 @@ foreach (split /,/, $ALT) {
 	
 	### Closing input file
 	close IN;
+	
 } elsif ( $reference eq "1Gp3" and ( $population eq "PAN" or $population eq "EUR" or $population eq "AFR" or $population eq "AMR" or $population eq "EAS" or $population eq "SAS" ) ) {
 	die " *** ERROR *** Parsing of 1000G phase 3 type references is not available yet. We need to
 think about how to handle multi-allelic variants. One option is to split the fields in to
-multiple rows, one for each variant. The variantID should as a consequence be chr<#>:<#>:MinorAllele_MajorAllele.\n";
+multiple rows, one for each variant. The variantID should as a consequence be chr<#>:<#>:MinorAllele_MajorAllele. 
+One option is to split on the , as exemplified here: https://stackoverflow.com/questions/46656387/separate-2nd-column-of-comma-separated-list-to-new-rows-inherit-value-in-1st-co \n";
 	} elsif ( $reference eq "GoNL4" or $reference eq "GoNL5") {
-	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented yet.\n";
+	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented.\n";
 		} else {
 		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
 		}
@@ -717,7 +717,7 @@ print STDERR "\n";
 print STDERR "\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2016-2017 Sander W. van der Laan & Vinicius Tragante dó Ó                +\n";
+print STDERR "+ Copyright (c) 2016-2022 Sander W. van der Laan & Vinicius Tragante dó Ó                +\n";
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
 print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";

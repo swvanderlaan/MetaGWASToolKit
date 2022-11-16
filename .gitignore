@@ -1,68 +1,151 @@
-SCRIPTS/.Rhistory
-RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz
+# hidden files
+.*
+!.gitignore
+
+# History files
+.Rhistory
+.Rapp.history
+
+# Session Data files
+*.RData
+*.rds
+*.RDS
+*.dictionary.html
+
+# tag files
+tags
+
+# Example code in package build process
+*-Ex.R
+
+# Output files from R CMD build
+/*.tar.gz
+
+# Output files from R CMD check
+/*.Rcheck/
+
+# RStudio files
+.Rprofile
+.Rproj.user
+.Rproj.user/
+.Ruserdata
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3
+.httr-oauth
+
+# knitr and R markdown default cache directories
+*_cache/
+/cache/
+
+# Temporary files created by R markdown
+*.utf8.md
+*.knit.md
+
+# R Environment Variables
+.Renviron
+
+# System files
+*.DS_Store
+RESOURCES/.DS_Store
+
+# vim files
+*~
+
+# python
+venv/
+*.egg-info/*
+__pycache__
+
+# Results
+_archived
+*.zip
+*.sample
+
+# Temp files
+_gsdata_/
+~
+\~$*
+
+# Data
+*.sav
+*.sas7bdat
+*.log
+*.csv
+
+
+# PolarMorphism
+# PolarMorphism/eur_w_ld_chr*
+# PolarMorphism/proxySearch_CAC_CAD*
+
+
+# RESOURCES
+# 1000G phase 1
 RESOURCES/1000Gp1v3_EUR/
-RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz
-RESOURCES/1000Gp3v5_EUR/
-RESOURCES/HAPMAP/
-RESOURCES/dbSNP_146.b37.p13.chr_pos.txt.gz
-RESOURCES/dbsnp129_hg18.txt.gz
-RESOURCES/dbsnp129_hg18_excl_non_ref.attrib.gz
-RESOURCES/dbsnp129_hg18_excl_non_ref.txt.gz
-RESOURCES/dbsnp137_hg19.attrib.gz
-RESOURCES/dbsnp137_hg19.txt.gz
-
+RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt.gz
-
-RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt.gz
-
-RESOURCES/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
-
-RESOURCES/dbSNP147_b37_hg19.allVariants.txt.gz
-
-RESOURCES/ORIGINALS/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
-
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz
-
-RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.txt.gz
-
-RESOURCES/ORIGINALS/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
-
-RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz
-
-RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz
-
-RESOURCES/_ARCHIVED/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
-
-RESOURCES/_ARCHIVED/dbSNP147_b37_hg19.allVariants.txt.gz
-
-RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.EUR.FREQ.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.EUR.FUNC.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.EUR.INFO.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.PAN.FREQ.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.PAN.FUNC.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.PAN.INFO.txt.gz
+
 RESOURCES/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz
+
+# 1000G phase 3
+RESOURCES/1000Gp3v5_EUR/
+RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz
+RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt.gz
+RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz
+
 RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz
+
+# 1000G phase 3 plus GoNL5
+RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.txt
+
+# HAPMAP
+RESOURCES/HAPMAP/
+
+# dbSNP
+RESOURCES/dbsnp129_hg18.txt.gz
+RESOURCES/dbsnp129_hg18_excl_non_ref.attrib.gz
+RESOURCES/dbsnp129_hg18_excl_non_ref.txt.gz
+
+RESOURCES/dbsnp137_hg19.attrib.gz
+RESOURCES/dbsnp137_hg19.txt.gz
+
+RESOURCES/dbSNP_146.b37.p13.chr_pos.txt.gz
+
+RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
+RESOURCES/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
+RESOURCES/dbSNP147_b37_hg19.allVariants.txt.gz
+RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.txt.gz
+RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz
+
+RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.allVariants.txt.gz
+RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.txt.gz
+RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.attrib.txt.gz
+RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.attrib.txt
+
+
+# ORIGINALS & ARCHIVED
+RESOURCES/ORIGINALS/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
+RESOURCES/ORIGINALS/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
+RESOURCES/_ARCHIVED/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
+RESOURCES/_ARCHIVED/dbSNP147_b37_hg19.allVariants.txt.gz
+
+# GENE MAPS
+RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz
 RESOURCES/refseq_GRCh37_hg19_Feb2009.txt.gz
 RESOURCES/w_hm3.noMHC.snplist.txt.gz
-.DS_Store
-RESOURCES/.DS_Store
-.DS_Store
-RESOURCES/.DS_Store
-.DS_Store
-RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.EUR.FUNC.txt
-RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
-RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.allVariants.txt.gz
-RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.attrib.txt
-RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.txt
+
+# SOME HISTORY + LOGS
 RESOURCES/history.txt
-.DS_Store
-*.gz
-*.stats
-RESOURCES/.DS_Store
-.DS_Store
-RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.txt
 RESOURCES/resource.VCFparser.1kGp3.errors
 RESOURCES/resource.VCFparser.1kGp3.log
 RESOURCES/resource.VCFparser.1kGp3.sh
@@ -71,6 +154,13 @@ RESOURCES/resource.VCFplusdbSNP.1kGp3.sh
 RESOURCES/resource.VCFplusdbSNP.1kGp3.log
 resource.creator.errors
 resource.creator.log
-EXAMPLE/SOMEGWAS
-EXAMPLE/SOMEGWAS_prepMETA/
-.DS_Store
+
+
+
+
+
+
+
+
+
+
