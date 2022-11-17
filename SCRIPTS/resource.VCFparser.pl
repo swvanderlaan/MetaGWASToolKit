@@ -431,9 +431,9 @@ if ( $reference eq "1Gp1" ) {
 	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
 		$AF = $1;
-		foreach (split /,/, $AF) {
-		$AF=$_;
-		}
+# 		foreach (split /,/, $AF) {
+# 		$AF=$_;
+# 		}
   	} else {
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
   		$AF = "NA";
