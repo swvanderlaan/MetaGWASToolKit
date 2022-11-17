@@ -431,9 +431,6 @@ if ( $reference eq "1Gp1" ) {
 	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
 		$AF = $1;
-		foreach (split /,/, $AF) {
-		$AF=$_;
-		}
   	} else {
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
   		$AF = "NA";
@@ -460,12 +457,22 @@ if ( $reference eq "1Gp1" ) {
 # 					print " ***DEBUG*** Population: $population. So looking for AMR_AF in $INFO for $vareach[2]; should be: $1. \n";
 					$AF = $1;
   					}
-  					} elsif ( $population eq "ASN" ){
+#   					} elsif ( $population eq "ASN" ){
+# 						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+# # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
+# 						$AF = $1;
+#   						}
+  					} elsif ( $population eq "EAS" ){
 						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
 # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 						$AF = $1;
   						}
-  						} else {
+  						} elsif ( $population eq "SAS" ){
+						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+# 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
+						$AF = $1;
+  							}
+  							} else {
   	  						print STDERR " *** WARNING *** Could not find the population allele frequency for [ $vareach[2] ] and population [ $population ] where info: $INFO. Check your reference-file.\n"; 
   							$tmp = $AF; 
 							$AF = $tmp;
@@ -488,7 +495,7 @@ foreach (split /,/, $ALT) {
 		
 ### SPECIFIC TO FILE #1
 	### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-#foreach (split /,/, $ALT) {	
+	
  if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid1 = "chr$chr\:$bp\:$_\_$REF";
@@ -509,7 +516,6 @@ foreach (split /,/, $ALT) {
 	
 	
 	### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-#foreach (split /,/, $ALT) {
 	if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid2 = "chr$chr\:$bp\:$_\_$REF";
@@ -530,7 +536,6 @@ foreach (split /,/, $ALT) {
 	
 	
 	### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-#foreach (split /,/, $ALT) {
 	if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid3 = "chr$chr\:$bp\:$_\_$REF";
@@ -980,6 +985,12 @@ foreach (split /,/, $ALT) {
 	### Closing input file
 	close IN;
 	}
+	
+	elsif ( $reference eq "GoNL4" or $reference eq "GoNL5") {		
+ 	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented yet.\n";		
+ 		} else {		
+ 		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";		
+ 		}
 	
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
