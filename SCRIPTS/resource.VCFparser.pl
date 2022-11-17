@@ -431,6 +431,9 @@ if ( $reference eq "1Gp1" ) {
 	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
 		$AF = $1;
+		foreach (split /,/, $AF) {
+		$AF=$_;
+		}
   	} else {
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
   		$AF = "NA";
@@ -568,6 +571,7 @@ foreach (split /,/, $ALT) {
 	}
 	
 	## adjust Minor and Major when ALT is the minor allele
+	
 	if( looks_like_number($AF) ) {
 		if ( $AF < 0.50 ){
 			$Minor = $vareach[4]; # ALT allele is the minor allele
@@ -596,6 +600,7 @@ foreach (split /,/, $ALT) {
 		$AF = $tmp;
 		$MAF = $tmp;
 	}
+	
 	
 	# generate FREQ output file
     foreach (split /,/, $ALT) {
@@ -974,17 +979,8 @@ foreach (split /,/, $ALT) {
 	
 	### Closing input file
 	close IN;
+	}
 	
-} elsif ( $reference eq "1Gp3" and ( $population eq "PAN" or $population eq "EUR" or $population eq "AFR" or $population eq "AMR" or $population eq "EAS" or $population eq "SAS" ) ) {
-	die " *** ERROR *** Parsing of 1000G phase 3 type references is not available yet. We need to
-think about how to handle multi-allelic variants. One option is to split the fields in to
-multiple rows, one for each variant. The variantID should as a consequence be chr<#>:<#>:MinorAllele_MajorAllele. 
-One option is to split on the , as exemplified here: https://stackoverflow.com/questions/46656387/separate-2nd-column-of-comma-separated-list-to-new-rows-inherit-value-in-1st-co \n";
-	} elsif ( $reference eq "GoNL4" or $reference eq "GoNL5") {
-	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented.\n";
-		} else {
-		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";
-		}
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
 my $newtime = localtime; # scalar context
