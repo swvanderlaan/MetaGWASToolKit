@@ -431,6 +431,9 @@ if ( $reference eq "1Gp1" ) {
 	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
 		$AF = $1;
+		foreach (split /,/, $AF) {
+		$AF=$_;
+		}
   	} else {
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
   		$AF = "NA";
@@ -568,6 +571,7 @@ foreach (split /,/, $ALT) {
 	}
 	
 	## adjust Minor and Major when ALT is the minor allele
+	
 	if( looks_like_number($AF) ) {
 		if ( $AF < 0.50 ){
 			$Minor = $vareach[4]; # ALT allele is the minor allele
@@ -596,6 +600,7 @@ foreach (split /,/, $ALT) {
 		$AF = $tmp;
 		$MAF = $tmp;
 	}
+	
 	
 	# generate FREQ output file
     foreach (split /,/, $ALT) {
@@ -974,6 +979,7 @@ foreach (split /,/, $ALT) {
 	
 	### Closing input file
 	close IN;
+	}
 	
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
