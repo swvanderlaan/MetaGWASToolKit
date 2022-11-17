@@ -981,6 +981,12 @@ foreach (split /,/, $ALT) {
 	close IN;
 	}
 	
+	elsif ( $reference eq "GoNL4" or $reference eq "GoNL5") {		
+ 	die " *** ERROR *** Parsing of GoNL4/GoNL5 is not implemented yet.\n";		
+ 		} else {		
+ 		die " *** ERROR *** You must supply the proper reference and accompanying population. Please double back.\n";		
+ 		}
+	
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
 my $newtime = localtime; # scalar context
