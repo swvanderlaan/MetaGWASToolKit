@@ -457,12 +457,22 @@ if ( $reference eq "1Gp1" ) {
 # 					print " ***DEBUG*** Population: $population. So looking for AMR_AF in $INFO for $vareach[2]; should be: $1. \n";
 					$AF = $1;
   					}
-  					} elsif ( $population eq "ASN" ){
+#   					} elsif ( $population eq "ASN" ){
+# 						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+# # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
+# 						$AF = $1;
+#   						}
+  					} elsif ( $population eq "EAS" ){
 						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
 # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 						$AF = $1;
   						}
-  						} else {
+  						} elsif ( $population eq "SAS" ){
+						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+# 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
+						$AF = $1;
+  							}
+  							} else {
   	  						print STDERR " *** WARNING *** Could not find the population allele frequency for [ $vareach[2] ] and population [ $population ] where info: $INFO. Check your reference-file.\n"; 
   							$tmp = $AF; 
 							$AF = $tmp;
