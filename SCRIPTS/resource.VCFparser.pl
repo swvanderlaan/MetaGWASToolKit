@@ -431,9 +431,6 @@ if ( $reference eq "1Gp1" ) {
 	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
 		$AF = $1;
-# 		foreach (split /,/, $AF) {
-# 		$AF=$_;
-# 		}
   	} else {
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
   		$AF = "NA";
@@ -488,7 +485,7 @@ foreach (split /,/, $ALT) {
 		
 ### SPECIFIC TO FILE #1
 	### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
-#foreach (split /,/, $ALT) {	
+	
  if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid1 = "chr$chr\:$bp\:$_\_$REF";
@@ -509,7 +506,6 @@ foreach (split /,/, $ALT) {
 	
 	
 	### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-#foreach (split /,/, $ALT) {
 	if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid2 = "chr$chr\:$bp\:$_\_$REF";
@@ -530,7 +526,6 @@ foreach (split /,/, $ALT) {
 	
 	
 	### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-#foreach (split /,/, $ALT) {
 	if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid3 = "chr$chr\:$bp\:$_\_$REF";
