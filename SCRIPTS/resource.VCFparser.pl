@@ -377,6 +377,8 @@ if ( $reference eq "1Gp1" ) {
 	my $Major = ""; # major allele
 	my $INFO = ""; # needed to grep additional variant information
 	my $AF = ""; # ALT allele frequency!!!
+	my $AF1 = ""; # ALT allele frequency!!!
+	my $AF2 = ""; # ALT allele frequency!!!
 	my $MAF = ""; # minor allele frequency based on the population specific AF
 	my $ref_indel = "R";
 	
@@ -606,14 +608,74 @@ foreach (split /,/, $ALT) {
 		$MAF = $tmp;
 	}
 	
+my $split= (split /,/, $ALT);
+my $multisplit= (split /,/, $ALT); 
+my @afsplit= (split /,/, $AF);
+my $AF1 = $afsplit[0];
+my $AF2 = $afsplit[1];
+my $AF3 = $afsplit[2];
+my $AF4 = $afsplit[3];
+
+
 	
 	# generate FREQ output file
+	while ($split >= 1) {
+
     foreach (split /,/, $ALT) {
-     if ($ALT eq $Minor) {
-     $Minor = "$_";
-     } elsif ($ALT eq $Major) {
-     $Major = "$_";
+
+    if ($multisplit == 4){
+     	if ($split == 4) {
+     	$AF = $AF1;
+     	$MAF = $AF1;
+     	} elsif ($split == 3) {
+     	$AF = $AF2;
+     	$MAF = $AF2;
+     	} elsif ($split == 2) {
+     	$AF = $AF3;
+     	$MAF = $AF3;
+     	} else {
+     	$AF = $AF4;
+     	$MAF = $AF4;
+     	}
+     } 
+    	elsif ($multisplit == 3){
+     		if ($split == 3) {
+     		$AF = $AF1;
+     		$MAF = $AF1;
+     		} elsif ($split == 2) {
+     		$AF = $AF2;
+     		$MAF = $AF2;
+     		} else {
+     		$AF = $AF3;
+     		$MAF = $AF3;
+     		}
+     		 if ($ALT =~ $Minor) {
+     		$Minor = "$_";
+     			} elsif ($ALT =~ $Major) {
+    			 $Major = "$_";
+     		}
      }
+     		elsif ($multisplit == 2){
+     			if ($split == 2) {
+     			$AF = $AF1;
+     			$MAF = $AF1;
+     			} elsif ($split == 1) {
+     			$AF = $AF2;
+     			$MAF = $AF2;
+     			}
+     			    
+      		  if ($Minor =~ m/$_/) {
+  			   $Minor = "$_";
+  			   } else {
+  			   $Major = "$_";
+    			 }
+     }
+     if ($ALT !~ m/,/){
+		$AF = $AF1;
+		$MAF = $AF1;
+		}
+     $split -= 1;
+     
       if( looks_like_number($AF) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid1 = "chr$chr\:$bp\:$_\_$REF";
@@ -632,10 +694,11 @@ foreach (split /,/, $ALT) {
 		$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
 		}
    # $ALT = "$_";
+
     print OUT_FREQ "$vid1\t$chr\t$bp\t$REF\t$_\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$AF\t$MAF\n"; 
     }
-	
-	
+	}
+
 	
 			
 	### SPECIFIC TO FILE #3
