@@ -626,28 +626,61 @@ my $AF4 = $afsplit[3];
     if ($multisplit == 4){
      	if ($split == 4) {
      	$AF = $AF1;
-     	$MAF = $AF1;
+     		if ( $AF1 < 0.50 ){
+			$MAF = $AF1;
+			} else {
+			$MAF = 1-$AF1;
+			} 
      	} elsif ($split == 3) {
      	$AF = $AF2;
-     	$MAF = $AF2;
+     		if ( $AF2 < 0.50 ){
+			$MAF = $AF2;
+			} else {
+			$MAF = 1-$AF2;
+		} 
      	} elsif ($split == 2) {
      	$AF = $AF3;
-     	$MAF = $AF3;
+     		if ( $AF3 < 0.50 ){
+			$MAF = $AF3;
+			} else {
+			$MAF = 1-$AF3;
+			} 
      	} else {
      	$AF = $AF4;
-     	$MAF = $AF4;
-     	}
-     } 
-    	elsif ($multisplit == 3){
+     		if ( $AF4 < 0.50 ){
+			$MAF = $AF4;
+			} else {
+			$MAF = 1-$AF4;
+			} 
+     		}
+     	if ($ALT =~ $Minor) {
+     		$Minor = "$_";
+     	} elsif ($ALT =~ $Major) {
+    		$Major = "$_";
+     		}
+     		
+     } elsif ($multisplit == 3){
      		if ($split == 3) {
      		$AF = $AF1;
-     		$MAF = $AF1;
+     			if ( $AF1 < 0.50 ){
+				$MAF = $AF1;
+				} else {
+				$MAF = 1-$AF1;
+				} 
      		} elsif ($split == 2) {
      		$AF = $AF2;
-     		$MAF = $AF2;
+     			if ( $AF2 < 0.50 ){
+				$MAF = $AF2;
+				} else {
+				$MAF = 1-$AF2;
+				} 
      		} else {
      		$AF = $AF3;
-     		$MAF = $AF3;
+     			if ( $AF3 < 0.50 ){
+				$MAF = $AF3;
+				} else {
+				$MAF = 1-$AF3;
+			} 
      		}
      		 if ($ALT =~ $Minor) {
      		$Minor = "$_";
@@ -655,15 +688,23 @@ my $AF4 = $afsplit[3];
     			 $Major = "$_";
      		}
      }
+     
      		elsif ($multisplit == 2){
      			if ($split == 2) {
      			$AF = $AF1;
-     			$MAF = $AF1;
+     				if ( $AF1 < 0.50 ){
+					$MAF = $AF1;
+					} else {
+					$MAF = 1-$AF1;
+				} 
      			} elsif ($split == 1) {
      			$AF = $AF2;
-     			$MAF = $AF2;
-     			}
-     			    
+					if ( $AF2 < 0.50 ){
+					$MAF = $AF2;
+					} else {
+					$MAF = 1-$AF2;
+				}
+     			}    
       		  if ($Minor =~ m/$_/) {
   			   $Minor = "$_";
   			   } else {
@@ -672,8 +713,13 @@ my $AF4 = $afsplit[3];
      }
      if ($ALT !~ m/,/){
 		$AF = $AF1;
-		$MAF = $AF1;
+		if ( $AF1 < 0.50 ){
+			$MAF = $AF1;
+		} else {
+			$MAF = 1-$AF1;
+			} 
 		}
+		
      $split -= 1;
      
       if( looks_like_number($AF) ) {
