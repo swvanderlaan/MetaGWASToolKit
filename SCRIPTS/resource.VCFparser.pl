@@ -637,6 +637,11 @@ my $AF4 = $afsplit[3];
      	$AF = $AF4;
      	$MAF = $AF4;
      	}
+     	if ($ALT =~ $Minor) {
+     		$Minor = "$_";
+     			} elsif ($ALT =~ $Major) {
+    			 $Major = "$_";
+     		}
      } 
     	elsif ($multisplit == 3){
      		if ($split == 3) {
