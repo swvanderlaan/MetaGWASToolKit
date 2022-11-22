@@ -480,85 +480,147 @@ if ( $reference eq "1Gp1" ) {
 							$AF = $tmp;
   	}
 
+
+my $split_info= (split /,/, $ALT);
+my $multisplit= (split /,/, $ALT); 
+my @afsplit= (split /,/, $AF);
+my $AF1 = $afsplit[0];
+my $AF2 = $afsplit[1];
+my $AF3 = $afsplit[2];
+my $AF4 = $afsplit[3];
+my $AF_INFO = $AF;
+
 	### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-foreach (split /,/, $ALT) {	
-	if( looks_like_number($AF) ) {
-		if ( $vareach[2] =~ m/(\.)/ and $AF < 0.50 ){
-	  	$vid = "chr$chr\:$bp\:$_\_$REF";
-	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF > 0.50 ) {
-	  		$vid = "chr$chr\:$bp\:$REF\_$_";
+while ($split_info >= 1) {
+
+	foreach (split /,/, $ALT) {
+
+    if ($multisplit == 4){
+     	if ($split_info == 4) {
+     	$AF_INFO = $AF1;
+     	} elsif ($split_info == 3) {
+     	$AF_INFO = $AF2;
+     	} elsif ($split_info == 2) {
+     	$AF_INFO = $AF3;
+     	} else {
+     	$AF_INFO = $AF4;
+     		}
+     	if ($ALT =~ $Minor) {
+     		$Minor = "$_";
+     	} elsif ($ALT =~ $Major) {
+    		$Major = "$_";
+     		}
+     		
+     } elsif ($multisplit == 3){
+     		if ($split_info == 3) {
+     		$AF_INFO = $AF1;
+     		} elsif ($split_info == 2) {
+     		$AF_INFO = $AF2;
+     		} else {
+     		$AF_INFO = $AF3;
+     		}
+     		 if ($ALT =~ $Minor) {
+     		$Minor = "$_";
+     			} elsif ($ALT =~ $Major) {
+    			 $Major = "$_";
+     		}
+     }
+     
+     		elsif ($multisplit == 2){
+     			if ($split_info == 2) {
+     			$AF_INFO = $AF1;
+     			} elsif ($split_info == 1) {
+     			$AF_INFO = $AF2;
+     			}    
+      		  if ($Minor =~ m/$_/) {
+  			   $Minor = "$_";
+  			   } else {
+  			   $Major = "$_";
+    			 }
+     }
+     if ($ALT !~ m/,/){
+		$AF_INFO = $AF1;
+		}
+		
+     $split_info -= 1;
+     my $ALT_INFO = "$_";
+     
+	if( looks_like_number($AF_INFO) ) {
+		if ( $vareach[2] =~ m/(\.)/ and $AF_INFO < 0.50 ){
+	  	$vid = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF_INFO > 0.50 ) {
+	  		$vid = "chr$chr\:$bp\:$REF\_$ALT_INFO";
 	  		}	else {
 	  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
 	  				}
 	} else { 
 		$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
 		}
-#	}
 		
 ### SPECIFIC TO FILE #1
 	### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
 	
- if( looks_like_number($AF) ) {
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-	  	$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  	} elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
-	  			$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  			} elsif ( length($REF) > 1  and $AF > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
-	  				$vid1 = "chr$chr\:$bp\:$REF\_$_";
-	  				} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
-			  			$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  					} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
-	  						$vid1 = "chr$chr\:$bp\:$REF\_$_";
+ if( looks_like_number($AF_INFO) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF_INFO < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid1 = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+	  	} elsif ( length($REF) > 1 and $AF_INFO < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
+	  			$vid1 = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+	  			} elsif ( length($REF) > 1  and $AF_INFO > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
+	  				$vid1 = "chr$chr\:$bp\:$REF\_$ALT_INFO";
+	  				} elsif ( length($ALT) > 1 and $AF_INFO < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
+			  			$vid1 = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+	  					} elsif ( length($ALT) > 1 and $AF_INFO > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
+	  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT_INFO";
 	  						} else {
-	  							$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+	  							$vid1 = "chr$chr\:$bp\:$REF\_$ALT_INFO"; # meaning REF is a SNP, but is the minor allele!
 	  							}
 	} else {
-		$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+		$vid1 = "chr$chr\:$bp\:$REF\_$ALT_INFO"; # meaning REF is a SNP, but is the minor allele!
 		}
 	
 	
 	### adjust the key variantID type 3 -- # 'chr[X]:bp[XXXXX]:[I/D]_[D/I]'
-	if( looks_like_number($AF) ) {
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-	  	$vid2 = "chr$chr\:$bp\:$_\_$REF";
-	  } elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
+	if( looks_like_number($AF_INFO) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF_INFO < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid2 = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+	  } elsif ( length($REF) > 1 and $AF_INFO < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
 	  		$vid2 = "chr$chr\:$bp\:D\_I";
-	  		} elsif ( length($REF) > 1 and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
+	  		} elsif ( length($REF) > 1 and $AF_INFO > 0.50 ){ # meaning REF = I, but is the minor allele!
 	  			$vid2 = "chr$chr\:$bp\:I\_D";
-	  			} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
+	  			} elsif ( length($ALT) > 1 and $AF_INFO < 0.50 ){ # meaning ALT = I, but is the minor allele!
 		  			$vid2 = "chr$chr\:$bp\:I\_D";
-	  				} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
+	  				} elsif ( length($ALT) > 1 and $AF_INFO > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
 	  					$vid2 = "chr$chr\:$bp\:D\_I";
 	  					} else {
-	  						$vid2 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+	  						$vid2 = "chr$chr\:$bp\:$REF\_$ALT_INFO"; # meaning REF is a SNP, but is the minor allele!
 	  						}
 	} else {
-		$vid2 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+		$vid2 = "chr$chr\:$bp\:$REF\_$ALT_INFO"; # meaning REF is a SNP, but is the minor allele!
 		}
 	
 	
 	### adjust the key variantID type 4 -- # 'chr[X]:bp[XXXXX]:R_[D/I]'
-	if( looks_like_number($AF) ) {
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-	  	$vid3 = "chr$chr\:$bp\:$_\_$REF";
-	  } elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
+	if( looks_like_number($AF_INFO) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF_INFO < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid3 = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+	  } elsif ( length($REF) > 1 and $AF_INFO < 0.50 ){ # meaning REF = I, but is *NOT* the minor allele!
 	  		$vid3 = "chr$chr\:$bp\:D\_$ref_indel";
-	  		} elsif ( length($REF) > 1 and $AF > 0.50 ){ # meaning REF = I, but is the minor allele!
+	  		} elsif ( length($REF) > 1 and $AF_INFO > 0.50 ){ # meaning REF = I, but is the minor allele!
 	  			$vid3 = "chr$chr\:$bp\:$ref_indel\_D";
-	  			} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = I, but is the minor allele!
+	  			} elsif ( length($ALT) > 1 and $AF_INFO < 0.50 ){ # meaning ALT = I, but is the minor allele!
 		  			$vid3 = "chr$chr\:$bp\:I\_$ref_indel";
-	  				} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
+	  				} elsif ( length($ALT) > 1 and $AF_INFO > 0.50 ){ # meaning ALT = I, but is *NOT* the minor allele!
 	  					$vid3 = "chr$chr\:$bp\:$ref_indel\_I";
 	  					} else {
-	  						$vid3 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+	  						$vid3 = "chr$chr\:$bp\:$REF\_$ALT_INFO"; # meaning REF is a SNP, but is the minor allele!
 	  						}
 	} else {
-		$vid3 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+		$vid3 = "chr$chr\:$bp\:$REF\_$ALT_INFO"; # meaning REF is a SNP, but is the minor allele!
 		}
 	# generate INFO file	
 	print OUT_INFO "$vid1\t$vid\t$vid2\t$vid3\n";	
         }
-	
+	}
 	
 			
 	### SPECIFIC TO FILE #2
@@ -576,9 +638,9 @@ foreach (split /,/, $ALT) {
 				$AlleleA = $vareach[3];
 				$AlleleB = $vareach[4];
 	}
+
 	
-	## adjust Minor and Major when ALT is the minor allele
-	
+	### adjust Minor and Major when ALT is the minor allele
 	if( looks_like_number($AF) ) {
 		if ( $AF < 0.50 ){
 			$Minor = $vareach[4]; # ALT allele is the minor allele
@@ -606,47 +668,40 @@ foreach (split /,/, $ALT) {
 		$tmp = $AF; 
 		$AF = $tmp;
 		$MAF = $tmp;
-	}
-	
-my $split= (split /,/, $ALT);
-my $multisplit= (split /,/, $ALT); 
-my @afsplit= (split /,/, $AF);
-my $AF1 = $afsplit[0];
-my $AF2 = $afsplit[1];
-my $AF3 = $afsplit[2];
-my $AF4 = $afsplit[3];
+	}	
 
-
+my $split_freq = (split /,/, $ALT);
+my $AF_FREQ = $AF;
 	
 	# generate FREQ output file
-	while ($split >= 1) {
+	while ($split_freq >= 1) {
 
     foreach (split /,/, $ALT) {
 
     if ($multisplit == 4){
-     	if ($split == 4) {
-     	$AF = $AF1;
+     	if ($split_freq == 4) {
+     	$AF_FREQ = $AF1;
      		if ( $AF1 < 0.50 ){
 			$MAF = $AF1;
 			} else {
 			$MAF = 1-$AF1;
 			} 
-     	} elsif ($split == 3) {
-     	$AF = $AF2;
+     	} elsif ($split_freq == 3) {
+     	$AF_FREQ = $AF2;
      		if ( $AF2 < 0.50 ){
 			$MAF = $AF2;
 			} else {
 			$MAF = 1-$AF2;
 		} 
-     	} elsif ($split == 2) {
-     	$AF = $AF3;
+     	} elsif ($split_freq == 2) {
+     	$AF_FREQ = $AF3;
      		if ( $AF3 < 0.50 ){
 			$MAF = $AF3;
 			} else {
 			$MAF = 1-$AF3;
 			} 
      	} else {
-     	$AF = $AF4;
+     	$AF_FREQ = $AF4;
      		if ( $AF4 < 0.50 ){
 			$MAF = $AF4;
 			} else {
@@ -660,22 +715,22 @@ my $AF4 = $afsplit[3];
      		}
      		
      } elsif ($multisplit == 3){
-     		if ($split == 3) {
-     		$AF = $AF1;
+     		if ($split_freq == 3) {
+     		$AF_FREQ = $AF1;
      			if ( $AF1 < 0.50 ){
 				$MAF = $AF1;
 				} else {
 				$MAF = 1-$AF1;
 				} 
-     		} elsif ($split == 2) {
-     		$AF = $AF2;
+     		} elsif ($split_freq == 2) {
+     		$AF_FREQ = $AF2;
      			if ( $AF2 < 0.50 ){
 				$MAF = $AF2;
 				} else {
 				$MAF = 1-$AF2;
 				} 
      		} else {
-     		$AF = $AF3;
+     		$AF_FREQ = $AF3;
      			if ( $AF3 < 0.50 ){
 				$MAF = $AF3;
 				} else {
@@ -690,15 +745,15 @@ my $AF4 = $afsplit[3];
      }
      
      		elsif ($multisplit == 2){
-     			if ($split == 2) {
-     			$AF = $AF1;
+     			if ($split_freq == 2) {
+     			$AF_FREQ = $AF1;
      				if ( $AF1 < 0.50 ){
 					$MAF = $AF1;
 					} else {
 					$MAF = 1-$AF1;
 				} 
-     			} elsif ($split == 1) {
-     			$AF = $AF2;
+     			} elsif ($split_freq == 1) {
+     			$AF_FREQ = $AF2;
 					if ( $AF2 < 0.50 ){
 					$MAF = $AF2;
 					} else {
@@ -712,7 +767,7 @@ my $AF4 = $afsplit[3];
     			 }
      }
      if ($ALT !~ m/,/){
-		$AF = $AF1;
+		$AF_FREQ = $AF1;
 		if ( $AF1 < 0.50 ){
 			$MAF = $AF1;
 		} else {
@@ -720,28 +775,29 @@ my $AF4 = $afsplit[3];
 			} 
 		}
 		
-     $split -= 1;
+     $split_freq -= 1;
+     my $ALT_FREQ = "$_";     
+
      
-      if( looks_like_number($AF) ) {
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-	  	$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  	} elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
-	  			$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  			} elsif ( length($REF) > 1  and $AF > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
-	  				$vid1 = "chr$chr\:$bp\:$REF\_$_";
-	  				} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
-			  			$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  					} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
-	  						$vid1 = "chr$chr\:$bp\:$REF\_$_";
+      if( looks_like_number($AF_FREQ) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF_FREQ < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid1 = "chr$chr\:$bp\:$ALT_FREQ\_$REF";
+	  	} elsif ( length($REF) > 1 and $AF_FREQ < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
+	  			$vid1 = "chr$chr\:$bp\:$ALT_FREQ\_$REF";
+	  			} elsif ( length($REF) > 1  and $AF_FREQ > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
+	  				$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FREQ";
+	  				} elsif ( length($ALT) > 1 and $AF_FREQ < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
+			  			$vid1 = "chr$chr\:$bp\:$ALT_FREQ\_$REF";
+	  					} elsif ( length($ALT) > 1 and $AF_FREQ > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
+	  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FREQ";
 	  						} else {
-	  							$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+	  							$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FREQ"; # meaning REF is a SNP, but is the minor allele!
 	  							}
 	} else {
-		$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+		$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FREQ"; # meaning REF is a SNP, but is the minor allele!
 		}
-   # $ALT = "$_";
-
-    print OUT_FREQ "$vid1\t$chr\t$bp\t$REF\t$_\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$AF\t$MAF\n"; 
+   
+    print OUT_FREQ "$vid1\t$chr\t$bp\t$REF\t$ALT_FREQ\t$AlleleA\t$AlleleB\t$Minor\t$Major\t$AF_FREQ\t$MAF\n"; 
     }
 	}
 
@@ -802,31 +858,71 @@ my $AF4 = $afsplit[3];
 			$variantfunction = "unknown";
 	}
 	
+my $split_func = (split /,/, $ALT);
+my $AF_FUNC = $AF;	
+	
 # generate FUNC output file
+	while ($split_func >= 1) {
+
 	foreach (split /,/, $ALT) {
-	$alleles = $REF . "/" . $_ ; # REF allele/ALT alleles
-	 if( looks_like_number($AF) ) {
-	  if ( length($REF) == 1 and length($ALT) == 1 and $AF < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
-	  	$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  	} elsif ( length($REF) > 1 and $AF < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
-	  			$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  			} elsif ( length($REF) > 1  and $AF > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
-	  				$vid1 = "chr$chr\:$bp\:$REF\_$_";
-	  				} elsif ( length($ALT) > 1 and $AF < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
-			  			$vid1 = "chr$chr\:$bp\:$_\_$REF";
-	  					} elsif ( length($ALT) > 1 and $AF > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
-	  						$vid1 = "chr$chr\:$bp\:$REF\_$_";
+
+    if ($multisplit == 4){
+     	if ($split_func == 4) {
+     	$AF_FUNC = $AF1;
+     	} elsif ($split_func == 3) {
+     	$AF_FUNC = $AF2;
+     	} elsif ($split_func == 2) {
+     	$AF_FUNC = $AF3;
+     	} else {
+     	$AF_FUNC = $AF4;
+     		}
+     } elsif ($multisplit == 3){
+     		if ($split_func == 3) {
+     		$AF_FUNC = $AF1;
+     		} elsif ($split_func == 2) {
+     		$AF_FUNC = $AF2;
+     		} else {
+     		$AF_FUNC = $AF3;
+     		}
+     }
+     
+     		elsif ($multisplit == 2){
+     			if ($split_func == 2) {
+     			$AF_FUNC = $AF1;
+     			} elsif ($split_func == 1) {
+     			$AF_FUNC = $AF2;
+     			}    
+     }
+     if ($ALT !~ m/,/){
+		$AF_FUNC = $AF1;
+		}
+		
+     $split_func -= 1;
+     my $ALT_FUNC = "$_";
+     
+	$alleles = $REF . "/" . $ALT_FUNC ; # REF allele/ALT alleles
+	 if( looks_like_number($AF_FUNC) ) {
+	  if ( length($REF) == 1 and length($ALT) == 1 and $AF_FUNC < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
+	  	$vid1 = "chr$chr\:$bp\:$ALT_FUNC\_$REF";
+	  	} elsif ( length($REF) > 1 and $AF_FUNC < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
+	  			$vid1 = "chr$chr\:$bp\:$ALT_FUNC\_$REF";
+	  			} elsif ( length($REF) > 1  and $AF_FUNC > 0.50 ){ # meaning REF = INSERTION, but is the minor allele!
+	  				$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FUNC";
+	  				} elsif ( length($ALT) > 1 and $AF_FUNC < 0.50 ){ # meaning ALT = INSERTION, but is the minor allele!
+			  			$vid1 = "chr$chr\:$bp\:$ALT_FUNC\_$REF";
+	  					} elsif ( length($ALT) > 1 and $AF_FUNC > 0.50 ){ # meaning ALT = INSERTION, but is *NOT* the minor allele!
+	  						$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FUNC";
 	  						} else {
-	  							$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+	  							$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FUNC"; # meaning REF is a SNP, but is the minor allele!
 	  							}
 	} else {
-		$vid1 = "chr$chr\:$bp\:$REF\_$_"; # meaning REF is a SNP, but is the minor allele!
+		$vid1 = "chr$chr\:$bp\:$REF\_$ALT_FUNC"; # meaning REF is a SNP, but is the minor allele!
 		}
 	print OUT_FUNC "$chr\t$chrstart\t$chrend\t$vid1\t$strand\t$alleles\t$variantclass\t$variantfunction\n";
 	}
-		
-
+	}	
 	}
+	
 	### Closing output files
 	close OUT_INFO;
 	close OUT_FREQ;
