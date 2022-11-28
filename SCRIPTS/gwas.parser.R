@@ -278,35 +278,36 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
          file=stderr()) # print error messages to stder
   }
   
+  ### Change column names case to all 'lower cases'
+  names(GWASDATA_RAW) <- tolower(names(GWASDATA_RAW))
+  
   ### Selecting the columns we want
   cat("\n* Selecting required columns, and creating them if not present...")
-  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", "^snpid$",
-                             "^chr$", "^chrom$", "^chromosome$", 
-                             "^position$", "^bp$", "^pos$",
-                             "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", 
-                             "^effectallele$", "^minorallele$", "^riskallele$", "^codedallele$",
-                             "^other[_]allele$", "^major[_]allele$", "^non[_]effect[_]allele$", "^non[_]coded[_]allele$", 
-                             "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", 
-                             "^strand$", 
-                             "^beta$", "^effect[_]size$", "^effectsize$", 
-                             "^se.$", "^se$", 
-                             "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$",# p-value
-                             "^[remc]af$", # effect/minor allele frequency
-                             "^hwe.value$", "^hwe$", "^hwe.val$", 
-                             "^n$", "^samplesize$",
-                             "^n_case.$", "^n_control.$", "^n_cntrl.$",
-                             "^imputed$", 
-                             "^info$")
+
+  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", "^snpid$", "^id$", #variant ID
+                             "^chr$", "^chrom$", "^chromosome$", #chromosome
+                             "^position$", "^bp$", "^genpos$","^pos$", # Variant position on chromosomes
+                             "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", # Effect/Minor allele
+                             "^effectallele$", "^minorallele$", "^riskallele$", "^codedallele$", "^allele1$", # Effect/Minor allele
+                             "^other[_]allele$", "^major[_]allele$", "^non[_]effect[_]allele$", "^non[_]coded[_]allele$", # Other/Major allele
+                             "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", "^allele0$", # Other/Major allele
+                             "^strand$", # I don't know
+                             "^beta$", "^effect[_]size$", "^effectsize$", #BETA-estimates
+                             "^se.$", "^se$", # Standard error
+                             "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$", "^p_bolt_lmm_inf$", # p-value 
+                             "^[remc]af$", "^a1freq$", # effect/minor allele frequency
+                             "^hwe.value$", "^hwe$", "^hwe.val$", #Hardy-Weinberg Equilibrium
+                             "^n$", "^samplesize$", # Amount of samples analysed in GWAS
+                             "^n_case.$", "^n_control.$", "^n_cntrl.$", # Amount of samples analysed in GWAS in case-control set up
+                             "^imputed$", # Imputation quality
+                             "^info$") # Imputation quality
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
   # print(head(GWASDATA_RAW))
   # str(GWASDATA_RAW)
 
   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
-
+  
   # print(names(GWASDATA_RAWSELECTION))
-
-  ### Change column names case to all 'lower cases'
-  names(GWASDATA_RAWSELECTION) <- tolower(names(GWASDATA_RAWSELECTION))
   
   cat("\n* Renaming columns where necessary...")
   ### Rename columns
@@ -314,11 +315,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### - chromosome & bp columns will become "CHR" and "BP"
   ### - if MAF/minor/major available, thus effect size must be relative to minor, so:
   ###   - MAF = CAF = RAF = EAF -- will be coded as "MAF"
-  ###   - minor = coded = effect = risk -- will be coded as "MinorAllele"
-  ###   - major = noncoded = noneffect = nonrisk = other -- will be coded as "MajorAllele"
+  ###   - minor = coded = effect = risk = allele1 -- will be coded as "MinorAllele"
+  ###   - major = noncoded = noneffect = nonrisk = other = allele0 -- will be coded as "MajorAllele"
   ### - if MAF/[coded/effect/risk]/[noncoded/noneffect/nonrisk/other], thus the effect 
   ###   size must be relative to [coded/effect/risk], so:
-  ###   - MAF = CAF = RAF = EAF -- will be coded as "MAF"
+  ###   - MAF = CAF = RAF = EAF = A1FREQ -- will be coded as "MAF"
   ###   - coded = effect = risk -- will be coded as "[Coded/Effect/Risk]Allele"
   ###   - noncoded = noneffect = nonrisk = other -- will be coded as "OtherAllele"
   ###   Set these three accordingly, other wise set these to CAF/coded/other
@@ -351,6 +352,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p.val$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pvalue$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pval$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p_bolt_lmm_inf$"), everything())  
+  
   
   ### Rename columns -- standard error
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se.$"), everything())
@@ -366,6 +369,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^eaf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MAF = matches("^maf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CAF = matches("^caf$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^a1freq$"), everything())
   
   ### Rename columns -- non effect allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^non[_]effect[_]allele$"), everything())
@@ -379,6 +383,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^non[_]coded[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^noncodedallele$"), everything())
   
+  ### Rename columns -- other allele (allele0)
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^allele0$"), everything())
+  
   ### Rename columns -- major allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MajorAllele = matches("^major[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MajorAllele = matches("^majorallele$"), everything())
@@ -391,6 +398,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EffectAllele = matches("^effect[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EffectAllele = matches("^effectallele$"), everything())
   
+  ### Rename columns -- Effect allele (allele1)
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EffectAllele = matches("^allele1$"), everything())
+  
   ### Rename columns -- risk allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RiskAllele = matches("^risk[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RiskAllele = matches("^riskallele$"), everything())
@@ -399,10 +409,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MinorAllele = matches("^minor[_]allele$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MinorAllele = matches("^minorallele$"), everything())
   
+  
   ### Rename columns -- base pair position
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^position$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^bp$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^pos$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, BP = matches("^genpos$"), everything())
   
   ### Rename columns -- chromosome
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, CHR = matches("^chr$"), everything())
@@ -414,6 +426,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snp$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^rsid$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snpid$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^id$"), everything())
   
   ### Rename columns -- removing leading 'zeros'
   cat("\n* Removing leading 'zeros' from chromosome number...")
