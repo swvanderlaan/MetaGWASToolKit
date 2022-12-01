@@ -129,13 +129,13 @@ else
 		elif [[ ${REFERENCE} = "1Gp1" ]]; then
 			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
 		elif [[ ${REFERENCE} = "1Gp3" ]]; then
-			echo "Apologies: currently it is not possible to clump based on 1000G phase 3."
+			REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
 		elif [[ ${REFERENCE} = "GoNL5" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL5."
 		elif [[ ${REFERENCE} = "GoNL4" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL4"
 		elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs		
+			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_GoNL5 # 1000Gp3v5.20130502.EURs		
 		else
 		### If arguments are not met than the 
 			echo "Oh, computer says no! Number of arguments found "$#"."
@@ -179,12 +179,15 @@ else
 		### ls -lh ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR*
 		${PLINK} --bfile ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT 
 	elif [[ ${REFERENCE} = "1Gp3" ]]; then
-		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+		echo "The reference is ${REFERENCE}."
+		### REFERENCE_1kGp3v5 # 1000Gp3v5.20130502.EUR
+		### ls -lh ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR*
+		${PLINK} --bfile ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT
 	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
 		### ls -lh ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR*
-		${PLINK} --bfile ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT 
+		${PLINK} --bfile ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5_GoNL5 --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT 
 	elif [[ ${REFERENCE} = "GoNL4" ]]; then
 		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
 	elif [[ ${REFERENCE} = "GoNL5" ]]; then
