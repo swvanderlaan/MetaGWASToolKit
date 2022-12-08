@@ -373,7 +373,7 @@ else
 		### Call an array job for all the different splitfiles
 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
-		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=${QRUNTIMERUNNER} --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.PHC.sh ${PROJECTDIR}/metagwastoolkit.conf)
+		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=${QRUNTIMERUNNER} --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.HPC.sh ${PROJECTDIR}/metagwastoolkit.conf)
 		# wait
 		echobold "#========================================================================================================"
 		echobold "#== WRAPPING THE REFORMATTED GWAS DATA: [ ${COHORT} ]"
