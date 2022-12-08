@@ -102,7 +102,12 @@ RESOURCES/1000Gp3v5_EUR/*
 RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz
 RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt.gz
 RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz
-
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.EUR.FREQ.txt.gz
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.EUR.FUNC.txt.gz
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.EUR.INFO.txt.gz
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.PAN.FREQ.txt.gz
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.PAN.FUNC.txt.gz
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.PAN.INFO.txt.gz
 RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5*
 
 # 1000G phase 3 plus GoNL5
