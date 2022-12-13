@@ -10,6 +10,7 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; Utrecht, the 
 #               Netherlands, s.w.vanderlaan@gmail.com.
+# Edited by: 	Emma J.A. Smulders. 
 # Version:		1.5.1
 # Update date: 	2022-11-01
 #
@@ -79,6 +80,7 @@ exit();
 ### Add in a function to:
 ### - check the right combination of reference and population
 ### - write out the ref/pop dependent alleles and allele frequencies
+
 
 ### 1000G phase 1, version 3
 if ( $reference eq "1Gp1" ) {
@@ -354,7 +356,8 @@ if ( $reference eq "1Gp1" ) {
 	### Closing input file
 	close IN;
 
-## 1000G phase 3, version 5
+
+### 1000G phase 3, version 5
 } elsif ( $reference eq "1Gp3" ) {
 	#### SETTING OTHER VARIABLES -- see below for header of VCF-file
 	print STDERR "Setting variables...\n";
@@ -480,7 +483,6 @@ if ( $reference eq "1Gp1" ) {
 							$AF = $tmp;
   	}
 
-
 my $split_info= (split /,/, $ALT);
 my $multisplit= (split /,/, $ALT); 
 my @afsplit= (split /,/, $AF);
@@ -490,7 +492,7 @@ my $AF3 = $afsplit[2];
 my $AF4 = $afsplit[3];
 my $AF_INFO = $AF;
 
-	### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
+### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
 while ($split_info >= 1) {
 
 	foreach (split /,/, $ALT) {
@@ -622,7 +624,6 @@ while ($split_info >= 1) {
         }
 	}
 	
-			
 	### SPECIFIC TO FILE #2
 	### adjust alleleA and alleleB when variantID is an INDEL
 	if ( length($REF) == 1 and length($ALT) == 1 ){
@@ -638,7 +639,6 @@ while ($split_info >= 1) {
 				$AlleleA = $vareach[3];
 				$AlleleB = $vareach[4];
 	}
-
 	
 	### adjust Minor and Major when ALT is the minor allele
 	if( looks_like_number($AF) ) {
@@ -673,7 +673,7 @@ while ($split_info >= 1) {
 my $split_freq = (split /,/, $ALT);
 my $AF_FREQ = $AF;
 	
-	# generate FREQ output file
+	### generate FREQ output file
 	while ($split_freq >= 1) {
 
     foreach (split /,/, $ALT) {
@@ -778,8 +778,7 @@ my $AF_FREQ = $AF;
      $split_freq -= 1;
      my $ALT_FREQ = "$_";     
 
-     
-      if( looks_like_number($AF_FREQ) ) {
+	  if( looks_like_number($AF_FREQ) ) {
 	  if ( length($REF) == 1 and length($ALT) == 1 and $AF_FREQ < 0.50 ){ # meaning REF is a SNP, but is *NOT* the minor allele!
 	  	$vid1 = "chr$chr\:$bp\:$ALT_FREQ\_$REF";
 	  	} elsif ( length($REF) > 1 and $AF_FREQ < 0.50 ){ # meaning REF = INSERTION, but is *NOT* the minor allele!
@@ -801,12 +800,9 @@ my $AF_FREQ = $AF;
     }
 	}
 
-	
-			
 	### SPECIFIC TO FILE #3
 	### get alleles
  	$alleles = $REF . "/" . $ALT ; # REF allele/ALT alleles
- 	
 		
 	### get variant length
 	if (length($REF) == 1 and length($ALT) == 1){
@@ -837,7 +833,7 @@ my $AF_FREQ = $AF;
 			$variantclass = "NA";
 	}
 
-### add information on CNV/multi-allelic variants
+	### add information on CNV/multi-allelic variants
 	if ( $INFO =~ m/MULTI_ALLELIC/ ){
   		$variantfunction = "multi-allelic";
 	} elsif ( $INFO =~ m/CNV/ ){
@@ -861,7 +857,7 @@ my $AF_FREQ = $AF;
 my $split_func = (split /,/, $ALT);
 my $AF_FUNC = $AF;	
 	
-# generate FUNC output file
+	### generate FUNC output file
 	while ($split_func >= 1) {
 
 	foreach (split /,/, $ALT) {
@@ -932,8 +928,6 @@ my $AF_FUNC = $AF;
 	close IN;
 
 
-
-	
 ### 1000G phase 3, version 5 + GoNL5
 } elsif ( $reference eq "1Gp3GONL5" ) {
 	#### SETTING OTHER VARIABLES -- see below for header of VCF-file
@@ -1017,7 +1011,7 @@ my $AF_FUNC = $AF;
   		print STDERR " *** WARNING *** Could not find the allele frequency for [ $vareach[2] ]. Check your reference-file.\n"; 
   		$AF = 1-$MAF;
   	}
-# 		
+ 		
 # 	### get allele frequencies
 # 	if ( $population eq "PAN" ){
 # # 		print " ***DEBUG*** Population: $population. So looking for AF in $INFO for $vareach[2]; should be: $1. \n";
@@ -1116,7 +1110,7 @@ my $AF_FUNC = $AF;
 				$AlleleA = $vareach[3];
 				$AlleleB = $vareach[4];
 	}
-# 	
+ 	
 # 	### adjust Minor and Major when ALT is the minor allele
 # 	if( looks_like_number($AF) ) {
 # 		if ( $AF < 0.50 ){
@@ -1301,63 +1295,7 @@ print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ### ##contig=<ID=21,assembly=b37,length=48129895>
 ### ##contig=<ID=22,assembly=b37,length=51304566>
 ### ##contig=<ID=GL000191.1,assembly=b37,length=106433>
-### ##contig=<ID=GL000192.1,assembly=b37,length=547496>
-### ##contig=<ID=GL000193.1,assembly=b37,length=189789>
-### ##contig=<ID=GL000194.1,assembly=b37,length=191469>
-### ##contig=<ID=GL000195.1,assembly=b37,length=182896>
-### ##contig=<ID=GL000196.1,assembly=b37,length=38914>
-### ##contig=<ID=GL000197.1,assembly=b37,length=37175>
-### ##contig=<ID=GL000198.1,assembly=b37,length=90085>
-### ##contig=<ID=GL000199.1,assembly=b37,length=169874>
-### ##contig=<ID=GL000200.1,assembly=b37,length=187035>
-### ##contig=<ID=GL000201.1,assembly=b37,length=36148>
-### ##contig=<ID=GL000202.1,assembly=b37,length=40103>
-### ##contig=<ID=GL000203.1,assembly=b37,length=37498>
-### ##contig=<ID=GL000204.1,assembly=b37,length=81310>
-### ##contig=<ID=GL000205.1,assembly=b37,length=174588>
-### ##contig=<ID=GL000206.1,assembly=b37,length=41001>
-### ##contig=<ID=GL000207.1,assembly=b37,length=4262>
-### ##contig=<ID=GL000208.1,assembly=b37,length=92689>
-### ##contig=<ID=GL000209.1,assembly=b37,length=159169>
-### ##contig=<ID=GL000210.1,assembly=b37,length=27682>
-### ##contig=<ID=GL000211.1,assembly=b37,length=166566>
-### ##contig=<ID=GL000212.1,assembly=b37,length=186858>
-### ##contig=<ID=GL000213.1,assembly=b37,length=164239>
-### ##contig=<ID=GL000214.1,assembly=b37,length=137718>
-### ##contig=<ID=GL000215.1,assembly=b37,length=172545>
-### ##contig=<ID=GL000216.1,assembly=b37,length=172294>
-### ##contig=<ID=GL000217.1,assembly=b37,length=172149>
-### ##contig=<ID=GL000218.1,assembly=b37,length=161147>
-### ##contig=<ID=GL000219.1,assembly=b37,length=179198>
-### ##contig=<ID=GL000220.1,assembly=b37,length=161802>
-### ##contig=<ID=GL000221.1,assembly=b37,length=155397>
-### ##contig=<ID=GL000222.1,assembly=b37,length=186861>
-### ##contig=<ID=GL000223.1,assembly=b37,length=180455>
-### ##contig=<ID=GL000224.1,assembly=b37,length=179693>
-### ##contig=<ID=GL000225.1,assembly=b37,length=211173>
-### ##contig=<ID=GL000226.1,assembly=b37,length=15008>
-### ##contig=<ID=GL000227.1,assembly=b37,length=128374>
-### ##contig=<ID=GL000228.1,assembly=b37,length=129120>
-### ##contig=<ID=GL000229.1,assembly=b37,length=19913>
-### ##contig=<ID=GL000230.1,assembly=b37,length=43691>
-### ##contig=<ID=GL000231.1,assembly=b37,length=27386>
-### ##contig=<ID=GL000232.1,assembly=b37,length=40652>
-### ##contig=<ID=GL000233.1,assembly=b37,length=45941>
-### ##contig=<ID=GL000234.1,assembly=b37,length=40531>
-### ##contig=<ID=GL000235.1,assembly=b37,length=34474>
-### ##contig=<ID=GL000236.1,assembly=b37,length=41934>
-### ##contig=<ID=GL000237.1,assembly=b37,length=45867>
-### ##contig=<ID=GL000238.1,assembly=b37,length=39939>
-### ##contig=<ID=GL000239.1,assembly=b37,length=33824>
-### ##contig=<ID=GL000240.1,assembly=b37,length=41933>
-### ##contig=<ID=GL000241.1,assembly=b37,length=42152>
-### ##contig=<ID=GL000242.1,assembly=b37,length=43523>
-### ##contig=<ID=GL000243.1,assembly=b37,length=43341>
-### ##contig=<ID=GL000244.1,assembly=b37,length=39929>
-### ##contig=<ID=GL000245.1,assembly=b37,length=36651>
-### ##contig=<ID=GL000246.1,assembly=b37,length=38154>
-### ##contig=<ID=GL000247.1,assembly=b37,length=36422>
-### ##contig=<ID=GL000248.1,assembly=b37,length=39786>
+### <<< HERE ARE MANY GLs - REMOVED THESE FOR LEGIBILITY >>>
 ### ##contig=<ID=GL000249.1,assembly=b37,length=38502>
 ### ##contig=<ID=MT,assembly=b37,length=16569>
 ### ##contig=<ID=NC_007605,assembly=b37,length=171823>
@@ -1373,129 +1311,7 @@ print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ### ##ALT=<ID=INS:MT,Description="Nuclear Mitochondrial Insertion">
 ### ##ALT=<ID=INV,Description="Inversion">
 ### ##ALT=<ID=CN0,Description="Copy number allele: 0 copies">
-### ##ALT=<ID=CN1,Description="Copy number allele: 1 copy">
-### ##ALT=<ID=CN2,Description="Copy number allele: 2 copies">
-### ##ALT=<ID=CN3,Description="Copy number allele: 3 copies">
-### ##ALT=<ID=CN4,Description="Copy number allele: 4 copies">
-### ##ALT=<ID=CN5,Description="Copy number allele: 5 copies">
-### ##ALT=<ID=CN6,Description="Copy number allele: 6 copies">
-### ##ALT=<ID=CN7,Description="Copy number allele: 7 copies">
-### ##ALT=<ID=CN8,Description="Copy number allele: 8 copies">
-### ##ALT=<ID=CN9,Description="Copy number allele: 9 copies">
-### ##ALT=<ID=CN10,Description="Copy number allele: 10 copies">
-### ##ALT=<ID=CN11,Description="Copy number allele: 11 copies">
-### ##ALT=<ID=CN12,Description="Copy number allele: 12 copies">
-### ##ALT=<ID=CN13,Description="Copy number allele: 13 copies">
-### ##ALT=<ID=CN14,Description="Copy number allele: 14 copies">
-### ##ALT=<ID=CN15,Description="Copy number allele: 15 copies">
-### ##ALT=<ID=CN16,Description="Copy number allele: 16 copies">
-### ##ALT=<ID=CN17,Description="Copy number allele: 17 copies">
-### ##ALT=<ID=CN18,Description="Copy number allele: 18 copies">
-### ##ALT=<ID=CN19,Description="Copy number allele: 19 copies">
-### ##ALT=<ID=CN20,Description="Copy number allele: 20 copies">
-### ##ALT=<ID=CN21,Description="Copy number allele: 21 copies">
-### ##ALT=<ID=CN22,Description="Copy number allele: 22 copies">
-### ##ALT=<ID=CN23,Description="Copy number allele: 23 copies">
-### ##ALT=<ID=CN24,Description="Copy number allele: 24 copies">
-### ##ALT=<ID=CN25,Description="Copy number allele: 25 copies">
-### ##ALT=<ID=CN26,Description="Copy number allele: 26 copies">
-### ##ALT=<ID=CN27,Description="Copy number allele: 27 copies">
-### ##ALT=<ID=CN28,Description="Copy number allele: 28 copies">
-### ##ALT=<ID=CN29,Description="Copy number allele: 29 copies">
-### ##ALT=<ID=CN30,Description="Copy number allele: 30 copies">
-### ##ALT=<ID=CN31,Description="Copy number allele: 31 copies">
-### ##ALT=<ID=CN32,Description="Copy number allele: 32 copies">
-### ##ALT=<ID=CN33,Description="Copy number allele: 33 copies">
-### ##ALT=<ID=CN34,Description="Copy number allele: 34 copies">
-### ##ALT=<ID=CN35,Description="Copy number allele: 35 copies">
-### ##ALT=<ID=CN36,Description="Copy number allele: 36 copies">
-### ##ALT=<ID=CN37,Description="Copy number allele: 37 copies">
-### ##ALT=<ID=CN38,Description="Copy number allele: 38 copies">
-### ##ALT=<ID=CN39,Description="Copy number allele: 39 copies">
-### ##ALT=<ID=CN40,Description="Copy number allele: 40 copies">
-### ##ALT=<ID=CN41,Description="Copy number allele: 41 copies">
-### ##ALT=<ID=CN42,Description="Copy number allele: 42 copies">
-### ##ALT=<ID=CN43,Description="Copy number allele: 43 copies">
-### ##ALT=<ID=CN44,Description="Copy number allele: 44 copies">
-### ##ALT=<ID=CN45,Description="Copy number allele: 45 copies">
-### ##ALT=<ID=CN46,Description="Copy number allele: 46 copies">
-### ##ALT=<ID=CN47,Description="Copy number allele: 47 copies">
-### ##ALT=<ID=CN48,Description="Copy number allele: 48 copies">
-### ##ALT=<ID=CN49,Description="Copy number allele: 49 copies">
-### ##ALT=<ID=CN50,Description="Copy number allele: 50 copies">
-### ##ALT=<ID=CN51,Description="Copy number allele: 51 copies">
-### ##ALT=<ID=CN52,Description="Copy number allele: 52 copies">
-### ##ALT=<ID=CN53,Description="Copy number allele: 53 copies">
-### ##ALT=<ID=CN54,Description="Copy number allele: 54 copies">
-### ##ALT=<ID=CN55,Description="Copy number allele: 55 copies">
-### ##ALT=<ID=CN56,Description="Copy number allele: 56 copies">
-### ##ALT=<ID=CN57,Description="Copy number allele: 57 copies">
-### ##ALT=<ID=CN58,Description="Copy number allele: 58 copies">
-### ##ALT=<ID=CN59,Description="Copy number allele: 59 copies">
-### ##ALT=<ID=CN60,Description="Copy number allele: 60 copies">
-### ##ALT=<ID=CN61,Description="Copy number allele: 61 copies">
-### ##ALT=<ID=CN62,Description="Copy number allele: 62 copies">
-### ##ALT=<ID=CN63,Description="Copy number allele: 63 copies">
-### ##ALT=<ID=CN64,Description="Copy number allele: 64 copies">
-### ##ALT=<ID=CN65,Description="Copy number allele: 65 copies">
-### ##ALT=<ID=CN66,Description="Copy number allele: 66 copies">
-### ##ALT=<ID=CN67,Description="Copy number allele: 67 copies">
-### ##ALT=<ID=CN68,Description="Copy number allele: 68 copies">
-### ##ALT=<ID=CN69,Description="Copy number allele: 69 copies">
-### ##ALT=<ID=CN70,Description="Copy number allele: 70 copies">
-### ##ALT=<ID=CN71,Description="Copy number allele: 71 copies">
-### ##ALT=<ID=CN72,Description="Copy number allele: 72 copies">
-### ##ALT=<ID=CN73,Description="Copy number allele: 73 copies">
-### ##ALT=<ID=CN74,Description="Copy number allele: 74 copies">
-### ##ALT=<ID=CN75,Description="Copy number allele: 75 copies">
-### ##ALT=<ID=CN76,Description="Copy number allele: 76 copies">
-### ##ALT=<ID=CN77,Description="Copy number allele: 77 copies">
-### ##ALT=<ID=CN78,Description="Copy number allele: 78 copies">
-### ##ALT=<ID=CN79,Description="Copy number allele: 79 copies">
-### ##ALT=<ID=CN80,Description="Copy number allele: 80 copies">
-### ##ALT=<ID=CN81,Description="Copy number allele: 81 copies">
-### ##ALT=<ID=CN82,Description="Copy number allele: 82 copies">
-### ##ALT=<ID=CN83,Description="Copy number allele: 83 copies">
-### ##ALT=<ID=CN84,Description="Copy number allele: 84 copies">
-### ##ALT=<ID=CN85,Description="Copy number allele: 85 copies">
-### ##ALT=<ID=CN86,Description="Copy number allele: 86 copies">
-### ##ALT=<ID=CN87,Description="Copy number allele: 87 copies">
-### ##ALT=<ID=CN88,Description="Copy number allele: 88 copies">
-### ##ALT=<ID=CN89,Description="Copy number allele: 89 copies">
-### ##ALT=<ID=CN90,Description="Copy number allele: 90 copies">
-### ##ALT=<ID=CN91,Description="Copy number allele: 91 copies">
-### ##ALT=<ID=CN92,Description="Copy number allele: 92 copies">
-### ##ALT=<ID=CN93,Description="Copy number allele: 93 copies">
-### ##ALT=<ID=CN94,Description="Copy number allele: 94 copies">
-### ##ALT=<ID=CN95,Description="Copy number allele: 95 copies">
-### ##ALT=<ID=CN96,Description="Copy number allele: 96 copies">
-### ##ALT=<ID=CN97,Description="Copy number allele: 97 copies">
-### ##ALT=<ID=CN98,Description="Copy number allele: 98 copies">
-### ##ALT=<ID=CN99,Description="Copy number allele: 99 copies">
-### ##ALT=<ID=CN100,Description="Copy number allele: 100 copies">
-### ##ALT=<ID=CN101,Description="Copy number allele: 101 copies">
-### ##ALT=<ID=CN102,Description="Copy number allele: 102 copies">
-### ##ALT=<ID=CN103,Description="Copy number allele: 103 copies">
-### ##ALT=<ID=CN104,Description="Copy number allele: 104 copies">
-### ##ALT=<ID=CN105,Description="Copy number allele: 105 copies">
-### ##ALT=<ID=CN106,Description="Copy number allele: 106 copies">
-### ##ALT=<ID=CN107,Description="Copy number allele: 107 copies">
-### ##ALT=<ID=CN108,Description="Copy number allele: 108 copies">
-### ##ALT=<ID=CN109,Description="Copy number allele: 109 copies">
-### ##ALT=<ID=CN110,Description="Copy number allele: 110 copies">
-### ##ALT=<ID=CN111,Description="Copy number allele: 111 copies">
-### ##ALT=<ID=CN112,Description="Copy number allele: 112 copies">
-### ##ALT=<ID=CN113,Description="Copy number allele: 113 copies">
-### ##ALT=<ID=CN114,Description="Copy number allele: 114 copies">
-### ##ALT=<ID=CN115,Description="Copy number allele: 115 copies">
-### ##ALT=<ID=CN116,Description="Copy number allele: 116 copies">
-### ##ALT=<ID=CN117,Description="Copy number allele: 117 copies">
-### ##ALT=<ID=CN118,Description="Copy number allele: 118 copies">
-### ##ALT=<ID=CN119,Description="Copy number allele: 119 copies">
-### ##ALT=<ID=CN120,Description="Copy number allele: 120 copies">
-### ##ALT=<ID=CN121,Description="Copy number allele: 121 copies">
-### ##ALT=<ID=CN122,Description="Copy number allele: 122 copies">
-### ##ALT=<ID=CN123,Description="Copy number allele: 123 copies">
+### <<< HERE ARE MANY CNs - REMOVED THESE FOR LEGIBILITY >>>
 ### ##ALT=<ID=CN124,Description="Copy number allele: 124 copies">
 ### ##INFO=<ID=CIEND,Number=2,Type=Integer,Description="Confidence interval around END for imprecise variants">
 ### ##INFO=<ID=CIPOS,Number=2,Type=Integer,Description="Confidence interval around POS for imprecise variants">

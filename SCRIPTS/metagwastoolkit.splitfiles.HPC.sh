@@ -211,7 +211,7 @@ else
 	### SLURM version - ARRAY JOB
 	### Call the GWAS Harmonizer
 	module load python
-	${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
+	python ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
 	wait # Wait till the scripts are finished
 
 	echobold "#========================================================================================================"
