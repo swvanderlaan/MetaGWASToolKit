@@ -183,8 +183,9 @@ reordered_cols = list(result.columns.values); reordered_cols.remove("VariantID")
 reordered_cols = ["VariantID"] + reordered_cols
 ### fix for new pandas()
 ### https://stackoverflow.com/questions/59991397/attributeerror-dataframe-object-has-no-attribute-ix
+### .ix > .loc for character; .iloc for numeric
 ### result = result.ix[:,reordered_cols]
-result = result.iloc[:,reordered_cols]
+result = result.loc[:,reordered_cols]
 
 print("\t ..." + strftime("%a, %H:%M:%S") + " Storing results...")
 ### Save the results in TSV format (The output format can easily be changed through pandas (check the Docs)).
