@@ -2,26 +2,28 @@
 # coding=UTF-8
 
 # Alternative shebang for local Mac OS X: #!/usr/bin/python
-# Linux version for HPC: #!/hpc/local/CentOS7/common/lang/python/3.6.1/bin/python
+# Linux version for HPC
+# - Python 2:	#!/hpc/local/CentOS7/common/lang/python/2.7.10/bin/python
+# - Python 3:	#!/hpc/local/CentOS7/common/lang/python/3.6.1/bin/python
 
 ### ADD-IN:
 ### - dynamically determine the proper chr-bp based on the reference, like with the VariantID/Marker
 
-print ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-print ("                                          GWAS TO REFERENCE HARMONIZER ")
-print ("")
-print ("* Version          : v2.2.8")
-print ("")
-print ("* Last update      : 2022-12-13")
-print ("* Written by       : Tim Bezemer (bezemer.tim@gmail.com).")
-print ("* Suggested for by : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
-print ("")
-print ("* Description      : This script will set the VariantID of a GWAS dataset relative to a reference ")
-print ("                     (e.g. 1000G phase 1 or phase 3). In addition it will collect the allele frequencies of ")
-print ("                     the reference for downstream comparison.")
-print ("")
-print ("                     Note: this script requires Python 3.6.1+")
-print ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+print("                                          GWAS TO REFERENCE HARMONIZER ")
+print("")
+print("* Version          : v2.2.8")
+print("")
+print("* Last update      : 2022-12-13")
+print("* Written by       : Tim Bezemer (bezemer.tim@gmail.com).")
+print("* Suggested for by : Sander W. van der Laan | s.w.vanderlaan@gmail.com")
+print("")
+print("* Description      : This script will set the VariantID of a GWAS dataset relative to a reference ")
+print("                     (e.g. 1000G phase 1 or phase 3). In addition it will collect the allele frequencies of ")
+print("                     the reference for downstream comparison.")
+print("")
+print("                     Note: this script requires Python 3.6.1+.")
+print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
 
 ### ADD-IN: 
 ### - requirement check
@@ -53,25 +55,25 @@ s = 100000 if not args.subsample else args.subsample
 
 if not args.gwasdata or not args.reference or not args.output:
 
-    print ("Usage: " + argv[0] + " --help")
-    print ("Exiting...")
+    print("Usage: " + argv[0] + " --help")
+    print("Exiting...")
     exit()
 
-if not isfile(args.gwasdata): print ("No such file <\"" + args.gwasdata + "\">."); exit()
+if not isfile(args.gwasdata): print("No such file <\"" + args.gwasdata + "\">."); exit()
 
-if not isfile(args.reference): print ("No such file <\"" + args.reference + "\">."); exit()
+if not isfile(args.reference): print("No such file <\"" + args.reference + "\">."); exit()
 
 if not args.identifier:
 	### Draw a subsampling from the GWAS data:
 
-	print ("Parameter flag -i/--identifier not set: Determining best VariantID for match (iterative lookup on subsampling)")
-	print ("...using " + str(s) + " samples.")
+	print("Parameter flag -i/--identifier not set: Determining best VariantID for match (iterative lookup on subsampling)")
+	print("...using " + str(s) + " samples.")
 
-	print ("\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS subsampling: ") + args.gwasdata
+	print("\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS subsampling: " + args.gwasdata)
 
 	n = sum(1 for line in open(args.gwasdata)) - 1 ### number of records in file (excludes header)
 
-	skip = sorted(random.sample(xrange(1,n+1),n-s)) ### the 0-indexed header will not be included in the skip list
+	skip = sorted(random.sample(range(1,n+1),n-s)) ### the 0-indexed header will not be included in the skip list
 
 	GWAS_SAMPLE = pd.read_table(args.gwasdata, skiprows=skip, index_col=False,  sep='\t', na_values = ["NA", "NaN", "."])
 
@@ -79,7 +81,7 @@ if not args.identifier:
 
 	for variantid in alt_ids + ["VariantID"]:
 
-		print ("\t ..." + strftime("%a, %H:%M:%S") + " for ") + variantid
+		print("\t ..." + strftime("%a, %H:%M:%S") + " for " + variantid)
 
 		### We use the list(...) constructor here because else the object are passed by reference, and not by value.
 		test_alt_ids = list(alt_ids)
@@ -91,7 +93,7 @@ if not args.identifier:
 		### This speeds up loading and parsing, and conserves memory.
 		[test_load_columns.remove(alt_id) for alt_id in test_alt_ids if alt_id in test_load_columns]
 
-		print ("\t\t ... Loading reference for subsampling") 
+		print("\t\t ... Loading reference for subsampling") 
 		reference_header = pd.read_table(args.reference, index_col=False, sep='\t', nrows=0).columns.values
 		test_load_columns = list( set.intersection( set(reference_header), set(test_load_columns) ) ) 
 
@@ -99,38 +101,38 @@ if not args.identifier:
 
 		if variantid not in test_thousandGenomes.columns.values:
 
-			print ("\t\t ... Skipping, " + variantid + " not contained in reference file")
+			print("\t\t ... Skipping, " + variantid + " not contained in reference file")
 			continue
 
-		print ("\t\t ... Performing look-up")
+		print("\t\t ... Performing look-up")
 
-		print ("\t\t ... Performing Left Join 'Marker' -> '" + variantid + "'")
+		print("\t\t ... Performing Left Join 'Marker' -> '" + variantid + "'")
 
 		### Do the join on 'Marker' column in GWASDATA and reference_identifier.
 		test_result = pd.merge(left=GWAS_SAMPLE, right=test_thousandGenomes, how='left', left_on='Marker', right_on=variantid)
 
 		n_matches = sum( pd.notnull( test_result['VariantID'] ) )
 
-		print ("\t\t ... " + variantid + " yielded " + str(n_matches) + " matches.")
+		print("\t\t ... " + variantid + " yielded " + str(n_matches) + " matches.")
 
 		variantid_matches[variantid] = n_matches
 
 	GWAS_SAMPLE = None
 
-	reference_identifier = max(variantid_matches.iteritems(), key=operator.itemgetter(1))[0]
-	print ("Best VariantID = ") + reference_identifier
-	print ("")
+	reference_identifier = max(iter(variantid_matches.items()), key=operator.itemgetter(1))[0]
+	print("Best VariantID = " + reference_identifier)
+	print("")
 
 else:
 
 	reference_identifier = args.identifier
 
 
-print ("Matching 'Marker' from: ") + args.gwasdata
+print("Matching 'Marker' from: " + args.gwasdata)
 msg = "to '" + reference_identifier + "' from: " + args.reference
 
-print (msg)
-print ("".join(["-"] * len(msg)))
+print(msg)
+print("".join(["-"] * len(msg)))
 
 ### Remove the unused VariantID_alt* from the load_columns (the list of columns to load into memory).
 ### This speeds up loading and parsing, and conserves memory.
@@ -140,23 +142,23 @@ print ("".join(["-"] * len(msg)))
 reference_header = pd.read_table(args.reference, index_col=False, sep='\t', nrows=0).columns.values
 load_columns = list( set.intersection( set(reference_header), set(load_columns) ) ) 
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Loading reference: ") + args.reference 
+print("\t ..." + strftime("%a, %H:%M:%S") + " Loading reference: " + args.reference) 
 thousandGenomes = pd.read_table(args.reference, index_col=False, usecols=load_columns)
 
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS dataset: ") + args.gwasdata
+print("\t ..." + strftime("%a, %H:%M:%S") + " Loading GWAS dataset: " + args.gwasdata)
 GWASDATA = pd.read_table(args.gwasdata, index_col=False, sep='\t', na_values = ["NA", "NaN", "."])
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Performing Left Join 'Marker' -> '" + reference_identifier + "': ")
+print("\t ..." + strftime("%a, %H:%M:%S") + " Performing Left Join 'Marker' -> '" + reference_identifier + "': ")
 
 ### Do the join on 'Marker' column in GWASDATA and reference_identifier.
 result = pd.merge(left=GWASDATA, right=thousandGenomes, how='left', left_on='Marker', right_on=reference_identifier, sort=False)
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Dropping redundant column...")
+print("\t ..." + strftime("%a, %H:%M:%S") + " Dropping redundant column...")
 ### Drop the remaining reference_identifier column as well, since we don't need it anymore.
 if reference_identifier != "VariantID": result.drop(reference_identifier, axis=1, inplace=True)
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Create 'Reference' column (for easy reference)...")
+print("\t ..." + strftime("%a, %H:%M:%S") + " Create 'Reference' column (for easy reference)...")
 ### Create a column indicating whether the Marker was in the reference (if VariantID == NA/Null, it was not in the reference).
 result['Reference'] = pd.isnull(result['VariantID'] )
 
@@ -168,43 +170,45 @@ result['Reference'] = pd.isnull(result['VariantID'] )
 ###          False = yes = found in the reference
 result['Reference'] = result['Reference'].apply(lambda x: "no" if x == True else "yes") 
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Fill empty VariantID with Marker value...")
+print("\t ..." + strftime("%a, %H:%M:%S") + " Fill empty VariantID with Marker value...")
 
 result['VariantID'] = result.apply(lambda x: x['Marker'] if pd.isnull(x['VariantID']) else x['VariantID'], axis=1)
 
 ### Fill the missing values after merging.
 result.fillna('NA', inplace=True)
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Reordering columns to make 'VariantID' the first column...")
+print("\t ..." + strftime("%a, %H:%M:%S") + " Reordering columns to make 'VariantID' the first column...")
 ### Change order of columns to make VariantID the first one (this step may also decrease performance).
 reordered_cols = list(result.columns.values); reordered_cols.remove("VariantID")
 reordered_cols = ["VariantID"] + reordered_cols
 result = result.ix[:,reordered_cols]
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " Storing results...")
+print("\t ..." + strftime("%a, %H:%M:%S") + " Storing results...")
 ### Save the results in TSV format (The output format can easily be changed through pandas (check the Docs)).
 result.to_csv(args.output, sep='\t', index=False)
 
-print ("\t ..." + strftime("%a, %H:%M:%S") + " All done harmonizing. Let's have a beer, buddy!")
+print("\t ..." + strftime("%a, %H:%M:%S") + " All done harmonizing. Let's have a beer, buddy!")
 
-print ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
-print ("+ The MIT License (MIT)                                                                                      +")
-print ("+ Copyright (c) 2016-2017 Tim Bezemer, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands        +")
-print ("+                                                                                                            +")
-print ("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and          +")
-print ("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including  +")
-print ("+ without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell    +")
-print ("+ copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the   +")
-print ("+ following conditions:                                                                                      +")
-print ("+                                                                                                            +")
-print ("+ The above copyright notice and this permission notice shall be included in all copies or substantial       +")
-print ("+ portions of the Software.                                                                                  +")
-print ("+                                                                                                            +")
-print ("+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT    +")
-print ("+ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO  +")
-print ("+ EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER  +")
-print ("+ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    +")
-print ("+ THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                                                 +")
-print ("+                                                                                                            +")
-print ("+ Reference: http://opensource.org.                                                                          +")
-print ("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+print("+ The MIT License (MIT)                                                                                      +")
+print("+ Copyright (c) 2016-2022 Tim Bezemer, Sander W. van der Laan | UMC Utrecht, Utrecht, the Netherlands        +")
+print("+                                                                                                            +")
+print("+ Permission is hereby granted, free of charge, to any person obtaining a copy of this software and          +")
+print("+ associated documentation files (the \"Software\"), to deal in the Software without restriction, including  +")
+print("+ without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell    +")
+print("+ copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the   +")
+print("+ following conditions:                                                                                      +")
+print("+                                                                                                            +")
+print("+ The above copyright notice and this permission notice shall be included in all copies or substantial       +")
+print("+ portions of the Software.                                                                                  +")
+print("+                                                                                                            +")
+print("+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT    +")
+print("+ LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO  +")
+print("+ EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER  +")
+print("+ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    +")
+print("+ THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                                                 +")
+print("+                                                                                                            +")
+print("+ Reference: http://opensource.org.                                                                          +")
+print("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++")
+
+

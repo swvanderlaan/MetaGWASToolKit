@@ -88,8 +88,8 @@ echobold ""
 echobold "* Last update:  2022-12-13" # Needs change
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
-echobold "                Sander W. van der Laan | s.w.vanderlaan@gmail.com."
-echobold "* Testers:      Sander W. van der Laan; Emma J.A. Smulders; M. Baksi."
+echobold "                Moezammin Baksi"
+echobold "* Testers:      Sander W. van der Laan; Emma J.A. Smulders; Moezammin Baksi."
 echobold "* Description:  This script will use the splitted individual cohort-files and create array-jobs"
 echobold "                to perform a meta-analysis of genome-wide association studies. "
 echobold "                It will do the following:"
@@ -149,19 +149,22 @@ else
 	echobold "#== ADDING HEADERS"
 	echobold "#========================================================================================================"
 	echobold "#"
-	## Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
+	### Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
 	### determine basename of the splitfile
+	### SLURM version -- ARRAY JOB
 	BASESPLITFILE=$(basename ${SPLITFILE} .pdat)
-	echo ""
-	echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
-	echo ""
-	echo " - heading a temporary file." 
-	zcat ${ORIGINALS}/${FILE} | head -1 > ${RAWDATACOHORT}/tmp_file.${SLURM_ARRAY_TASK_ID}
-	echo " - adding the split data to the temporary file."
-	cat ${SPLITFILE} >> ${RAWDATACOHORT}/tmp_file.${SLURM_ARRAY_TASK_ID}
-	echo " - renaming the temporary file."
-	mv -fv ${RAWDATACOHORT}/tmp_file.${SLURM_ARRAY_TASK_ID} ${SPLITFILE}
 
+	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
+	### echo "* Prepping split chunk: [ ${BASESPLITFILE} ]..."
+	### echo ""
+	### echo " - heading a temporary file." 
+	### zcat ${ORIGINALS}/${FILE} | head -1 > ${RAWDATACOHORT}/tmp_file.${SLURM_ARRAY_TASK_ID}
+	### echo " - adding the split data to the temporary file."
+	### cat ${SPLITFILE} >> ${RAWDATACOHORT}/tmp_file.${SLURM_ARRAY_TASK_ID}
+	### echo " - renaming the temporary file."
+	### mv -fv ${RAWDATACOHORT}/tmp_file.${SLURM_ARRAY_TASK_ID} ${SPLITFILE}
+
+	echo ""
 	echobold "#========================================================================================================"
 	echobold "#== PARSING THE GWAS DATA"
 	echobold "#========================================================================================================"
@@ -176,15 +179,15 @@ else
 	### echo "Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} " > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
 	### qsub -S /bin/bash -N gwas.parser.${BASESPLITFILE} -hold_jid metagwastoolkit -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEPARSER} -l h_vmem=${QMEMPARSER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
 
-	### SLURM version
+	### SLURM version -- ARRAY JOB
 	### Call the parser script
-	### printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}" > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
-	### PARSER_ID=$(sbatch --parsable --job-name=gwas.parser.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors --time=${QRUNTIMEPARSER} --mem=${QMEMPARSER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh)
+	printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}" > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
+	PARSER_ID=$(sbatch --parsable --job-name=gwas.parser.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors --time=${QRUNTIMEPARSER} --mem=${QMEMPARSER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh)
 
-	### SLURM version - ARRAY JOB
+	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Parser
-	Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}
-	wait # Wait till the scripts are finished
+	### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}
+	### wait # Wait till the scripts are finished
 
 	echobold "#========================================================================================================"
 	echobold "#== HARMONIZING THE PARSED GWAS DATA"
@@ -202,17 +205,17 @@ else
 	### echo "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
 	### qsub -S /bin/bash -N gwas2ref.harmonizer.${BASESPLITFILE} -hold_jid gwas.parser.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
 
-	### SLURM version
+	### SLURM version -- ARRAY JOB
 	### Call the harmonizer
-	### printf "#!/bin/bash\nmodule load python\n" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-	### printf "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-	### HARMONIZER_ID=$(sbatch --parsable --job-name=gwas2ref.harmonizer.${BASESPLITFILE} --dependency=afterany:${PARSER_ID} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh)
+	printf "#!/bin/bash\nmodule load python\n" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
+	printf "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
+	HARMONIZER_ID=$(sbatch --parsable --job-name=gwas2ref.harmonizer.${BASESPLITFILE} --dependency=afterany:${PARSER_ID} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh)
 
-	### SLURM version - ARRAY JOB
+	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Harmonizer
-	module load python
-	python ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
-	wait # Wait till the scripts are finished
+	### module load python
+	### python ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
+	### wait # Wait till the scripts are finished
 
 	echobold "#========================================================================================================"
 	echobold "#== CLEANING UP THE REFORMATTED GWAS DATA"
@@ -234,16 +237,16 @@ else
 	## echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 	## qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 
-	### SLURM version
+	### SLURM version -- ARRAY JOB
 	### Call the cleaner
-	### printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-	### CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASEFILE} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
-	### echo "${CLEANER_ID}" >> ${RAWDATACOHORT}/cleaner_ids.txt
+	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASEFILE} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
+	echo "${CLEANER_ID}" >> ${RAWDATACOHORT}/cleaner_ids.txt
 
-	### SLURM version - ARRAY JOB
+	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Cleaner
-	Rscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
-	wait  # Wait till the scripts are finished
+	### Rscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
+	### wait  # Wait till the scripts are finished
 
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 

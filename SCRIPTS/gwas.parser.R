@@ -7,17 +7,17 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    GWAS Parser -- MetaGWASToolKit
-    \n
-    * Version: v1.2.9
-    * Last edit: 2022-12-13
-    * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
-    * Edits by: Emma J.A. Smulders
-    \n
-    * Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
-    The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
-    
-    ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
+GWAS Parser -- MetaGWASToolKit
+\n
+* Version: v1.2.9
+* Last edit: 2022-12-13
+* Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
+* Edits by: Emma J.A. Smulders
+\n
+* Description:  Results parsing of GWAS summary statistics files used for a downstream meta-analysis of GWAS. 
+The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 ### Usage: ./gwas.parser.R -p projectdir -d datagwas -o outputdir [OPTIONAL: -v verbose (DEFAULT) -q quiet]
 ###        ./gwas.parser.R --projectdir projectdir --datagwas datagwas --outputdir outputdir [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
@@ -431,7 +431,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   cat("\n* Removing leading 'zeros' from chromosome number...")
   GWASDATA_RAWSELECTION$CHR <- gsub("(?<![0-9])0+", "", GWASDATA_RAWSELECTION$CHR, perl = TRUE)
   
-  print(names(GWASDATA_RAWSELECTION))
+  # print(names(GWASDATA_RAWSELECTION))
   # print(head(GWASDATA_RAWSELECTION))
   
   cat("\n* Changing 23 to X, 24 to Y, 25 to XY, and 26 to MT...")
@@ -453,11 +453,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   # print(tail(GWASDATA_RAWSELECTION))
 
   # Manually calculate the N
-  print(colnames(GWASDATA_RAWSELECTION))
+  # print(colnames(GWASDATA_RAWSELECTION))
   if(!("N" %in% colnames(GWASDATA_RAWSELECTION))) {
     if("N_cases" %in% colnames(GWASDATA_RAWSELECTION)){
       if("N_controls" %in% colnames(GWASDATA_RAWSELECTION)){
-        print("Manually calculated N from n cases and contorols!")
+        print("Manually calculated N from n cases and controls!")
         GWASDATA_RAWSELECTION$N <- (GWASDATA_RAWSELECTION$N_cases+GWASDATA_RAWSELECTION$N_controls)
       }
     }
@@ -540,7 +540,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
         
       } 
   
-   print(head(GWASDATA_RAWSELECTION))
+  # print(head(GWASDATA_RAWSELECTION))
   
   ### Calculate MAC
   cat("\n* Calculating 'minor allele count' (MAC)...")
