@@ -360,7 +360,8 @@ else
 		echobold "#========================================================================================================"
 		echobold "#"
 		echo ""
-		echo "* Chopping up GWAS summary statistics into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
+		echo "* Chopping up GWAS summary statistics into chunks of ${CHUNKSIZE} variants."
+		echo "  This is done to enable parallelisation and gain speed/time in an array-job."
 		
 		### Split up the file in increments of 1000K -- note: the period at the end of '${BASEFILE}' is a separator character
 		zcat ${ORIGINALS}/${FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
