@@ -181,7 +181,10 @@ print("\t ..." + strftime("%a, %H:%M:%S") + " Reordering columns to make 'Varian
 ### Change order of columns to make VariantID the first one (this step may also decrease performance).
 reordered_cols = list(result.columns.values); reordered_cols.remove("VariantID")
 reordered_cols = ["VariantID"] + reordered_cols
-result = result.ix[:,reordered_cols]
+### fix for new pandas()
+### https://stackoverflow.com/questions/59991397/attributeerror-dataframe-object-has-no-attribute-ix
+### result = result.ix[:,reordered_cols]
+result = result.iloc[:,reordered_cols]
 
 print("\t ..." + strftime("%a, %H:%M:%S") + " Storing results...")
 ### Save the results in TSV format (The output format can easily be changed through pandas (check the Docs)).
