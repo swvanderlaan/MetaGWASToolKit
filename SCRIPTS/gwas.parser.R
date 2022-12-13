@@ -280,7 +280,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   }
 
   ### Change column names case to all 'lower cases'
-  names(GWASDATA_RAWSELECTION) <- tolower(names(GWASDATA_RAWSELECTION))
+  names(GWASDATA_RAW) <- tolower(names(GWASDATA_RAW))
   
   ### Selecting the columns we want
   cat("\n* Selecting required columns, and creating them if not present...")
