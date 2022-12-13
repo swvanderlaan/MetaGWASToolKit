@@ -392,97 +392,97 @@ else
 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
 		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=${QRUNTIMERUNNER} --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.HPC.sh ${CONFIGURATIONFILE})
-		wait
-# 		
-# 		echobold "#========================================================================================================"
-# 		echobold "#== WRAPPING THE REFORMATTED GWAS DATA: [ ${COHORT} ]"
-# 		echobold "#========================================================================================================"
-# 		echobold "#"
-# 		echo ""
-# 		echo "* Wrapping up parsed and harmonized data for cohort ${COHORT}..."
-# 
-# 		### FOR DEBUGGING LOCALLY -- Mac OS X
-# 		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
-# 
-# 		### Get all the CLEANER ID's to set dependancy, by looping over all lines in the file
-# 		if [ -f ${SUBPROJECTDIRNAME}/cleaner_ids.txt ]; then
-# 			CLEANER_IDS="" # Init a variable
-# 			while read line; do    
-# 				CLEANER_IDS="${CLEANER_IDS},${line}" # Add every ID with a comma
-# 			done < ${RAWDATACOHORT}/cleaner_ids.txt
-# 			CLEANER_IDS="${CLEANER_IDS:1}" # Remove the first character (',')
-# 			CLEANER_IDS_D="--dependency=afterany:${CLEANER_IDS}" # Create a variable which can be used as dependancy
-# 		else 
-# 			echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
-# 			CLEANER_IDS_D="" # Empty variable so there is no dependancy
-# 		fi
-# 
-# 		### FOR DEBUGGING 
-# 		### CLEANER_ID=$(head -1 ${RAWCOHORTDATA}/cleaner_ids.txt)
-# 		### echo "$CLEANER_ID"
-# 		### CLEANER_IDS=""
-# 		### echo ${RAWDATACOHORT}/cleaner_ids.txt >> "${CLEANER_IDS}" 
-# 		### read CLEANER_IDS < ${RAWDATACOHORT}/cleaner_ids.txt
-# 
-# 		### OLD QSUB version
-# 		### qsub -S /bin/bash -N gwas.wrapper.${BASEFILE} -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-# 
-# 		### SLURM version
-#  		### printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-# 		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-# 		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-# 		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterany:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
-# 
-# 		echobold "#========================================================================================================"
-# 		echobold "#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA: [ ${COHORT} ]"
-# 		echobold "#========================================================================================================"
-# 		echobold "#"
-# 
-# 		#### Add in functions based on Winkler et al. (frequency plot among others) for 
-# 		#### both types of data, i.e. raw and cleaned.
-# 		echo ""
-# 		echo "* Plotting harmonized data for cohort [ ${COHORT} ]..."
-# 		DATAFORMAT="RAW"
-# 		IMAGEFORMAT=${IMAGEFORMATQC}
-# 
-# 		### FOR DEBUGGING LOCALLY -- Mac OS X
-# 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
-#  		
-#  		### OLD QSUB version
-#  		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-# 
-# 		### SLURM version
-#  		### printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-# 		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-# 		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-# 		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
-# 		
-# 		echobold "#========================================================================================================"
-# 		echobold "#== PLOTTING THE CLEANED GWAS DATA: [ ${COHORT} ]"
-# 		echobold "#========================================================================================================"
-# 		echobold "#"
-# 		echo ""
-# 		echo "* Plotting the cleaned and harmonized data for cohort [ ${COHORT} ]..."
-# 		DATAFORMAT="QC"
-# 		IMAGEFORMAT=${IMAGEFORMATQC}
-# 		
-# 		### FOR DEBUGGING LOCALLY -- Mac OS X
-# 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
-#  		
-#  		### OLD QSUB version
-#  		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-# 
-# 		### SLURM version
-# 		### printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-# 		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-# 		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-# 		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
-# 				
-# 		### SLURM version
-# 		### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
-# 		###This can be used as depenendancy down the road.
-# 		echo "${PLOTTER_ID}" >>  ${SUBPROJECTDIR}/plotter_ids.txt
-# 		echo "${PLOTTER_ID_CLEAN}" >>  ${SUBPROJECTDIR}/plotter_ids.txt
+		# wait
+		
+		echobold "#========================================================================================================"
+		echobold "#== WRAPPING THE REFORMATTED GWAS DATA: [ ${COHORT} ]"
+		echobold "#========================================================================================================"
+		echobold "#"
+		echo ""
+		echo "* Wrapping up parsed and harmonized data for cohort ${COHORT}..."
+
+		### FOR DEBUGGING LOCALLY -- Mac OS X
+		### ${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}
+
+		### Get all the CLEANER ID's to set dependancy, by looping over all lines in the file
+		if [ -f ${SUBPROJECTDIRNAME}/cleaner_ids.txt ]; then
+			CLEANER_IDS="" # Init a variable
+			while read line; do    
+				CLEANER_IDS="${CLEANER_IDS},${line}" # Add every ID with a comma
+			done < ${RAWDATACOHORT}/cleaner_ids.txt
+			CLEANER_IDS="${CLEANER_IDS:1}" # Remove the first character (',')
+			CLEANER_IDS_D="--dependency=afterany:${CLEANER_IDS}" # Create a variable which can be used as dependancy
+		else 
+			echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
+			CLEANER_IDS_D="" # Empty variable so there is no dependancy
+		fi
+
+		### FOR DEBUGGING 
+		### CLEANER_ID=$(head -1 ${RAWCOHORTDATA}/cleaner_ids.txt)
+		### echo "$CLEANER_ID"
+		### CLEANER_IDS=""
+		### echo ${RAWDATACOHORT}/cleaner_ids.txt >> "${CLEANER_IDS}" 
+		### read CLEANER_IDS < ${RAWDATACOHORT}/cleaner_ids.txt
+
+		### OLD QSUB version
+		### qsub -S /bin/bash -N gwas.wrapper.${BASEFILE} -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+
+		### SLURM version
+ 		### printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterany:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
+
+		echobold "#========================================================================================================"
+		echobold "#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA: [ ${COHORT} ]"
+		echobold "#========================================================================================================"
+		echobold "#"
+
+		#### Add in functions based on Winkler et al. (frequency plot among others) for 
+		#### both types of data, i.e. raw and cleaned.
+		echo ""
+		echo "* Plotting harmonized data for cohort [ ${COHORT} ]..."
+		DATAFORMAT="RAW"
+		IMAGEFORMAT=${IMAGEFORMATQC}
+
+		### FOR DEBUGGING LOCALLY -- Mac OS X
+		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
+ 		
+ 		### OLD QSUB version
+ 		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+
+		### SLURM version
+ 		### printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
+		
+		echobold "#========================================================================================================"
+		echobold "#== PLOTTING THE CLEANED GWAS DATA: [ ${COHORT} ]"
+		echobold "#========================================================================================================"
+		echobold "#"
+		echo ""
+		echo "* Plotting the cleaned and harmonized data for cohort [ ${COHORT} ]..."
+		DATAFORMAT="QC"
+		IMAGEFORMAT=${IMAGEFORMATQC}
+		
+		### FOR DEBUGGING LOCALLY -- Mac OS X
+		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
+ 		
+ 		### OLD QSUB version
+ 		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+
+		### SLURM version
+		### printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
+				
+		### SLURM version
+		### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
+		###This can be used as depenendancy down the road.
+		echo "${PLOTTER_ID}" >>  ${SUBPROJECTDIR}/plotter_ids.txt
+		echo "${PLOTTER_ID_CLEAN}" >>  ${SUBPROJECTDIR}/plotter_ids.txt
 		
 	done < ${GWASFILES}
 
