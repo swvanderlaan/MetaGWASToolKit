@@ -148,7 +148,7 @@ else
 	PROJECTDIR=${PROJECTDIR} # from configuration file
 	SUBPROJECTDIRNAME=${SUBPROJECTDIRNAME} # from configuration file
 	OUTPUTDIRNAME=${OUTPUTDIRNAME} # from configuration file
-	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
+	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information; e.g. metagwastoolkit.files.list
 	REFERENCE=${REFERENCE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
 	
