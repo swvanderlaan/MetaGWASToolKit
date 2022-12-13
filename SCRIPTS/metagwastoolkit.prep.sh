@@ -82,15 +82,15 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                      --- REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL GWAS DATA ---"
 echobold ""
-echobold "* Version:      v1.6.2"
+echobold "* Version:      v1.6.3" # Needs change
 echobold ""
-echobold "* Last update:  2022-12-08" # Needs change
+echobold "* Last update:  2022-12-13" # Needs change
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
 echobold "                Jessica van Setten; "
 echobold "                Paul I.W. de Bakker."
-echobold "* Testers:      Jessica van Setten; Emma J.A. Smulders."
+echobold "* Testers:      Jessica van Setten; Emma J.A. Smulders; M. Baksi."
 echobold "* Description:  Perform a meta-analysis of genome-wide association studies. It will do the following:"
 echobold "                - Automatically parse the various cohort files."
 echobold "                - Harmonize GWAS datasets relative to a reference."
@@ -258,31 +258,31 @@ else
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
 
-	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+# 	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+# 	
+# 		echo ""
+# 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+# 	  	echo ""
+# 	  	echo "The scene is properly set, and directories are created! 🖖"
+# 	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+# 	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+# 	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+# 	  	echo "Reference used.................................: "${REFERENCE}
+# 	  	echo "Main directory.................................: "${PROJECTDIR}
+# 	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+# 	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+# 	  	echo "Original data directory........................: "${ORIGINALS}
+# 	  	echo "We are processing these cohort(s)..............:"
+# 		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+# 			LINE=${GWASCOHORT}
+# 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+# 			echo "     * ${COHORT}"
+# 		done < ${GWASFILES}
+# 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+# 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+# 	  	echo ""	
 	
-		echo ""
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	  	echo "The scene is properly set, and directories are created! 🖖"
-	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
-	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
-	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
-	  	echo "Reference used.................................: "${REFERENCE}
-	  	echo "Main directory.................................: "${PROJECTDIR}
-	  	echo "Main analysis output directory.................: "${METAOUTPUT}
-	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
-	  	echo "Original data directory........................: "${ORIGINALS}
-	  	echo "We are processing these cohort(s)..............:"
-		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			LINE=${GWASCOHORT}
-			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-			echo "     * ${COHORT}"
-		done < ${GWASFILES}
-	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""	
-	
-	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
+	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" || ${REFERENCE} = "1Gp3GONL5" ]]; then
 		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerrornooption ""
 	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
@@ -302,10 +302,10 @@ else
 	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
 	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
 	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
-	  	echonooption " - [1Gp3]         1000G (phase 3, release 5, 20130502 version, b37, hg19)."
+	  	echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
 	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
 	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
-	  	echonooption " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
+	  	echoerror " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
 	  	echonooption "(Opaque: not an option yet)"
 	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		### The wrong arguments are passed, so we'll exit the script now!
@@ -323,6 +323,22 @@ else
 	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
 	echo ""
 
+	### SLURM version
+	### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
+	###This can be used as depenendancy down the road.
+	
+	if [ ! -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
+		echo "Create file to save SLURM-IDs of plotter-step in..."
+		touch ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+		
+	else
+		echo "The file to save SLURM-IDs of plotter-step in already exists. Removing it to create a new one."
+		THISDATESTAMP=$(date +'+%Y%m%d_%H%M%S')
+		ls -lh ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+		mv -v ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.${THISDATESTAMP}.txt
+		touch ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+	fi
+		
 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
@@ -373,8 +389,9 @@ else
 		### Call an array job for all the different splitfiles
 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
-		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=${QRUNTIMERUNNER} --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.HPC.sh ${PROJECTDIR}/metagwastoolkit.conf)
-		# wait
+		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=${QRUNTIMERUNNER} --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.HPC.sh ${CONFIGURATIONFILE})
+		wait
+		
 		echobold "#========================================================================================================"
 		echobold "#== WRAPPING THE REFORMATTED GWAS DATA: [ ${COHORT} ]"
 		echobold "#========================================================================================================"
@@ -401,14 +418,17 @@ else
 		### FOR DEBUGGING 
 		### CLEANER_ID=$(head -1 ${RAWCOHORTDATA}/cleaner_ids.txt)
 		### echo "$CLEANER_ID"
-		
 		### CLEANER_IDS=""
 		### echo ${RAWDATACOHORT}/cleaner_ids.txt >> "${CLEANER_IDS}" 
-		
 		### read CLEANER_IDS < ${RAWDATACOHORT}/cleaner_ids.txt
 
-		printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		### OLD QSUB version
 		### qsub -S /bin/bash -N gwas.wrapper.${BASEFILE} -hold_jid gwas.cleaner.${BASEFILE} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log -e ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors -l h_rt=${QRUNTIMEWRAPPER} -l h_vmem=${QMEMWRAPPER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+
+		### SLURM version
+ 		### printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
+		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
 		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterany:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
 
 		echobold "#========================================================================================================"
@@ -426,8 +446,13 @@ else
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
  		
-		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+ 		### OLD QSUB version
  		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+
+		### SLURM version
+ 		### printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
 		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
 		
 		echobold "#========================================================================================================"
@@ -442,15 +467,24 @@ else
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
  		
-		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+ 		### OLD QSUB version
  		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+
+		### SLURM version
+		### printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
 		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
 				
-		### Echo the ids to a file, so it can be used as depenendancy down the road
+		### SLURM version
+		### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
+		###This can be used as depenendancy down the road.
 		echo "${PLOTTER_ID}" >>  ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
 		echo "${PLOTTER_ID_CLEAN}" >>  ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+		
 	done < ${GWASFILES}
-	### END of if-else statement for the number of command-line arguments passed ###
+
+### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
 script_copyright_message
