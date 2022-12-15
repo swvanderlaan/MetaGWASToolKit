@@ -165,7 +165,7 @@ else
 	for ERRORFILE in ${PROJECTDIR}/gwas.parser_harm_cleaner.*.log; do
 		BASENAMEERRORFILE=$(basename ${ERRORFILE})
 		BASEERRORFILE=$(basename ${ERRORFILE} .log)
-		prefix_array='gwas.parser_harm_cleaner.array.' # removing the 'gwas.parser.'-part from the ERRORFILE
+		prefix_array='gwas.parser_harm_cleaner.array.' # removing the 'gwas.parser_harm_cleaner.'-part from the ERRORFILE
 		BASEARRAYFILE_N=$(echo "${BASEERRORFILE}" | sed -e "s/^$prefix_array//")
 		
 		LINEINTEXTFILE=$((BASEARRAYFILE_N+1))
