@@ -83,9 +83,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "               --- ARRAY JOB TO REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL GWAS DATA ---"
 echobold ""
-echobold "* Version:      v1.0.0" # Needs change
+echobold "* Version:      v1.0.1" # Needs change
 echobold ""
-echobold "* Last update:  2022-12-13" # Needs change
+echobold "* Last update:  2022-12-15" # Needs change
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Moezammin Baksi"
@@ -242,13 +242,16 @@ else
 	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASEFILE} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
 	echo "${CLEANER_ID}" >> ${RAWDATACOHORT}/cleaner_ids.txt
-	wait # Wait till the scripts are finished
+	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 	
 	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Cleaner
 	### Rscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
 	### wait  # Wait till the scripts are finished
-
+	
+	echo ""
+	echo "All done for this array."
+	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
