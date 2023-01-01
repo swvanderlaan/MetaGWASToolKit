@@ -392,7 +392,6 @@ else
 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
 		splitfiles_parser_harm_cleaner_ID=$(sbatch --parsable --job-name=splitfiles_parser_harm_cleaner --dependency=afterany:${INIT_ID} --array=0-${NFILES} --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},VARIANTYPE=${VARIANTYPE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=${QRUNTIMERUNNER} --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.splitfiles.HPC.sh ${CONFIGURATIONFILE})
-		wait # Wait till the scripts are finished
 		
 		echobold "#========================================================================================================"
 		echobold "#== WRAPPING THE REFORMATTED GWAS DATA: [ ${COHORT} ]"
@@ -406,17 +405,17 @@ else
 
 		### Get all the CLEANER ID's to set dependancy, by looping over all lines in the file
 		### IS THIS NEEDED?
-		if [ -f ${SUBPROJECTDIRNAME}/cleaner_ids.txt ]; then
-			CLEANER_IDS="" # Init a variable
-			while read line; do    
-				CLEANER_IDS="${CLEANER_IDS},${line}" # Add every ID with a comma
-			done < ${RAWDATACOHORT}/cleaner_ids.txt
-			CLEANER_IDS="${CLEANER_IDS:1}" # Remove the first character (',')
-			CLEANER_IDS_D="--dependency=afterany:${CLEANER_IDS}" # Create a variable which can be used as dependancy
-		else 
-			echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
-			CLEANER_IDS_D="" # Empty variable so there is no dependancy
-		fi
+		### if [ -f ${SUBPROJECTDIRNAME}/cleaner_ids.txt ]; then
+		### 	CLEANER_IDS="" # Init a variable
+		### 	while read line; do    
+		### 		CLEANER_IDS="${CLEANER_IDS},${line}" # Add every ID with a comma
+		### 	done < ${RAWDATACOHORT}/cleaner_ids.txt
+		### 	CLEANER_IDS="${CLEANER_IDS:1}" # Remove the first character (',')
+		### 	CLEANER_IDS_D="--dependency=afterany:${CLEANER_IDS}" # Create a variable which can be used as dependancy
+		### else 
+		### 	echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
+		### 	CLEANER_IDS_D="" # Empty variable so there is no dependancy
+		### fi
 
 		### FOR DEBUGGING 
 		### CLEANER_ID=$(head -1 ${RAWCOHORTDATA}/cleaner_ids.txt)
@@ -430,10 +429,7 @@ else
 
 		### SLURM version
  		printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" > ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-# 		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-# 		echo "${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE} ${VARIANTYPE}" >> ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterok:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
-# 		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} ${CLEANER_IDS_D} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
+		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterany:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
 
 		echobold "#========================================================================================================"
 		echobold "#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA: [ ${COHORT} ]"
@@ -455,9 +451,7 @@ else
 
 		### SLURM version
  		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-# 		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-# 		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
-		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterok:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
+		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
 		
 		echobold "#========================================================================================================"
 		echobold "#== PLOTTING THE CLEANED GWAS DATA: [ ${COHORT} ]"
@@ -476,9 +470,7 @@ else
 
 		### SLURM version
 		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-# 		echo "#!/bin/bash" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-# 		echo "${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" >> ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
-		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterok:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
+		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
 				
 		### SLURM version
 		### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.

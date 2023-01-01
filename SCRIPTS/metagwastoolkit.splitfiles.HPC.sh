@@ -183,7 +183,8 @@ else
 	### Call the parser script
 	printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}" > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
 	PARSER_ID=$(sbatch --parsable --job-name=gwas.parser.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors --time=${QRUNTIMEPARSER} --mem=${QMEMPARSER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh)
-
+	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
+	
 	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Parser
 	### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}
@@ -210,7 +211,8 @@ else
 	printf "#!/bin/bash\nmodule load python/3.6.1\n" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
 	printf "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
 	HARMONIZER_ID=$(sbatch --parsable --job-name=gwas2ref.harmonizer.${BASESPLITFILE} --dependency=afterany:${PARSER_ID} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh)
-
+	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
+	
 	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Harmonizer
 	### module load python
@@ -240,8 +242,12 @@ else
 	### SLURM version -- ARRAY JOB
 	### Call the cleaner
 	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASEFILE} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
-	echo "${CLEANER_ID}" >> ${RAWDATACOHORT}/cleaner_ids.txt
+	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASEFILE} --wait --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
+	
+	echo ""
+	### IS THIS NEEDED?
+	### echo "Creating list of cleaner-jobIDs."
+	### echo "${CLEANER_ID}" >> ${RAWDATACOHORT}/cleaner_ids.txt
 	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 	
 	### SLURM version - FOR DEBUGGING LOCALLY -- Mac OS X
