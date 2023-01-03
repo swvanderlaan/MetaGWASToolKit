@@ -233,8 +233,56 @@ else
 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
 	
-	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" || ${REFERENCE} = "1Gp3" || ${REFERENCE} = "1Gp3GONL5" ]]; then
+	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
 		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerrornooption ""
 	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
@@ -286,7 +334,7 @@ else
 
 	printf "#!/bin/bash\n${SCRIPTS}/meta.clumper.sh ${CONFIGURATIONFILE} ${METARESULTDIR} " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
 	## qsub -S /bin/bash -N METACLUMP -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
-	META_CLUMP_ID=$(sbatch --parsable --job-name=METACLUMP ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh)
+	META_CLUMP_ID=$(sbatch --parsable --job-name=METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh)
 	
 	echobold "#========================================================================================================"
 	echobold "#== PARSING CLUMPED RESULTS -- BETA"

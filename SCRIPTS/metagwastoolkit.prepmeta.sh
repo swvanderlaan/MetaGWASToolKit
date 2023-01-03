@@ -233,8 +233,60 @@ else
 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
+	  
+
 	
-	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" || ${REFERENCE} = "1Gp3" || ${REFERENCE} = "1Gp3GONL5" ]]; then
+		elif [[ ${REFERENCE} = "1Gp3" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""	  
+	
+	
+		elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""	
+	  	  		
+	
+	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
 		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerrornooption ""
 	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
@@ -313,7 +365,7 @@ else
 
 	printf "#!/bin/bash\n${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
 	## qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
-	VARIANT_COLLECTOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector ${PLOTTER_IDS_D} -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
+	VARIANT_COLLECTOR_ID=$(sbatch --parsable --wait -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
@@ -356,6 +408,7 @@ else
 
 		# Echo the ids to a file, so it can be used as depenendancy down the road
 		echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
+		wait
 	done < ${GWASFILES}
 
 	### END of if-else statement for the number of command-line arguments passed ###

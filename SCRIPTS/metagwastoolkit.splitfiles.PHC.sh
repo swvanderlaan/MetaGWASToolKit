@@ -47,9 +47,8 @@ echo "* Parsing data for cohort ${COHORT} [ file: ${BASESPLITFILE} ]."
 # Call the parser script
 printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}" > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
 PARSER_ID=$(sbatch --parsable --job-name=gwas.parser.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors --time=${QRUNTIMEPARSER} --mem=${QMEMPARSER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh)
-
 # Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}
-# wait # Wait till the scripts are finished
+ wait # Wait till the scripts are finished
 
 echobold "#========================================================================================================"
 echobold "#== HARMONIZING THE PARSED GWAS DATA"
@@ -78,7 +77,7 @@ HARMONIZER_ID=$(sbatch --parsable --job-name=gwas2ref.harmonizer.${BASESPLITFILE
 # Call the harmonizer
 # module load python
 # ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
-# wait # Wait till the scripts are finished
+ wait # Wait till the scripts are finished
 
 echobold "#========================================================================================================"
 echobold "#== CLEANING UP THE REFORMATTED GWAS DATA"

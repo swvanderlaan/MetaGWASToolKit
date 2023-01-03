@@ -138,7 +138,7 @@ else
 		elif [[ ${REFERENCE} = "1Gp1" ]]; then
 			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
 		elif [[ ${REFERENCE} = "1Gp3" ]]; then
-			echo "Apologies: currently it is not possible to clump based on 1000G phase 3."
+			REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR
 		elif [[ ${REFERENCE} = "GoNL5" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL5."
 		elif [[ ${REFERENCE} = "GoNL4" ]]; then

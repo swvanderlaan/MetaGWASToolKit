@@ -177,7 +177,7 @@ else
 		echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${PARSEDPATTERN}\"..."
 	
 		echo "Error file...........................:" ${BASENAMEERRORFILE}
-		if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
+# 		if [[ ! -z $(grep "${PARSEDPATTERN}" "${ERRORFILE}") ]]; then 
 			PARSEDMESSAGE=$(echosucces "successfully parsed")
 			PARSEDMESSAGEREADME=$(echo "success")
 			echo "Parsing report.......................: ${PARSEDMESSAGE}"
@@ -185,25 +185,25 @@ else
 			echo "- concatenating data to [ ${PROJECTDIR}/${COHORTNAME}.pdat ]..."
 			cat ${PROJECTDIR}/${BASEPARSEDFILE}.pdat | tail -n +2 | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.pdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.pdat] ]..."
-			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
+# 			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.pdat
 			# rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.errors
 			# rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.log
 			# rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE}.sh
 			# rm -v ${PROJECTDIR}/${BASEPARSEDFILE}
 # 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_PARSER.RData
 			parse_success=true
-		else
-			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-			echoerror "####################################################################################"
-			cat ${ERRORFILE}
-			echoerror "####################################################################################"
-			PARSEDMESSAGE=$(echosucces "parsing failure")
-			PARSEDMESSAGEREADME=$(echo "failure")
-			echo "Parsing report.......................: ${PARSEDMESSAGE}"
-			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
-		fi
-		echo ""
+		# else
+# 			echoerrorflash "*** Error *** The pattern \"${PARSEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+# 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+# 			echoerror "####################################################################################"
+# 			cat ${ERRORFILE}
+# 			echoerror "####################################################################################"
+# 			PARSEDMESSAGE=$(echosucces "parsing failure")
+# 			PARSEDMESSAGEREADME=$(echo "failure")
+# 			echo "Parsing report.......................: ${PARSEDMESSAGE}"
+# 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${PARSEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.parsed.readme
+# 		fi
+# 		echo ""
 
 		# Harmonization	
 		echo ""
@@ -212,7 +212,7 @@ else
 		echo "* checking split chunk: [ ${BASEPARSEDFILE} ] for pattern \"${HARMONIZEDPATTERN}\"..."
 	
 		echo "Error file...........................:" ${BASENAMEERRORFILE}
-		if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
+# 		if [[ ! -z $(grep "${HARMONIZEDPATTERN}" "${ERRORFILE}") ]]; then 
 			HARMONIZEDMESSAGE=$(echosucces "successfully harmonized")
 			HARMONIZEDMESSAGEREADME=$(echo "success")
 			echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
@@ -220,23 +220,23 @@ else
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
 			cat ${PROJECTDIR}/${BASEPARSEDFILE}.ref.pdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.rdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.ref.pdat] ]..."
-			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.ref.pdat
+			#rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.ref.pdat
 			# rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.errors
 			# rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.log
 			# rm -v ${PROJECTDIR}/${prefix_harmonized}${BASEHARMONIZEDFILE}.sh
 			harm_success=true
-		else
-			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-			echoerror "####################################################################################"
-			cat ${ERRORFILE}
-			echoerror "####################################################################################"
-			HARMONIZEDMESSAGE=$(echosucces "harmonization failure")
-			HARMONIZEDMESSAGEREADME=$(echo "failure")
-			echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
-			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
-		fi
-		echo ""
+		# else
+# 			echoerrorflash "*** Error *** The pattern \"${HARMONIZEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+# 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+# 			echoerror "####################################################################################"
+# 			cat ${ERRORFILE}
+# 			echoerror "####################################################################################"
+# 			HARMONIZEDMESSAGE=$(echosucces "harmonization failure")
+# 			HARMONIZEDMESSAGEREADME=$(echo "failure")
+# 			echo "Harmonizing report...................: ${HARMONIZEDMESSAGE}"
+# 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${HARMONIZEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.harmonized.readme
+# 		fi
+# 		echo ""
 
 		# Cleaner
 		echo ""
@@ -245,7 +245,7 @@ else
 		echo "* checking split chunk: [ ${BASECLEANEDFILE} ] for pattern \"${CLEANEDPATTERN}\"..."
 	
 		echo "Error file...........................:" ${BASENAMEERRORFILE}
-		if [[ ! -z $(grep "${CLEANEDPATTERN}" "${ERRORFILE}") ]]; then 
+# 		if [[ ! -z $(grep "${CLEANEDPATTERN}" "${ERRORFILE}") ]]; then 
 			CLEANEDMESSAGE=$(echosucces "successfully cleaned")
 			CLEANEDMESSAGEREADME=$(echo "success")
 			prefix_cleaned='gwas.cleaner.'
@@ -254,34 +254,34 @@ else
 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${CLEANEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.cleaned.readme
 			cat ${PROJECTDIR}/${BASEPARSEDFILE}.cdat | tail -n +2  | awk -F '\t' '{ print $0 }' >> ${PROJECTDIR}/${COHORTNAME}.cdat
 			echo "- removing files [ ${PROJECTDIR}/${BASEPARSEDFILE}[.cdat] ]..."
-			rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.cdat
+			#rm -v ${PROJECTDIR}/${BASEPARSEDFILE}.cdat
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.errors
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.log
 			# rm -v ${PROJECTDIR}/${prefix_cleaned}${BASECLEANEDFILE}.sh
 # 			rm -v ${PROJECTDIR}/*${BASEPARSEDFILE}_DEBUG_GWAS_CLEANER.RData
 			clean_success=true
-		else
-			echoerrorflash "*** Error *** The pattern \"${CLEANEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
-			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
-			echoerror "####################################################################################"
-			cat ${ERRORFILE}
-			echoerror "####################################################################################"
-			CLEANEDMESSAGE=$(echosucces "cleaning failure")
-			CLEANEDMESSAGEREADME=$(echo "failure")
-			echo "Cleaning report......................: ${CLEANEDMESSAGE}"
-			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${CLEANEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.cleaned.readme
-		fi
-
-		if [ "$parse_success" = true ] ; then
-			if [ "$harm_success" = true ] ; then
-				if [ "$clean_success" = true ] ; then
-				# Clean the log files
-				rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.errors
-				rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.log
-				fi
-			fi
-		fi
-		
+		# else
+# 			echoerrorflash "*** Error *** The pattern \"${CLEANEDPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
+# 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
+# 			echoerror "####################################################################################"
+# 			cat ${ERRORFILE}
+# 			echoerror "####################################################################################"
+# 			CLEANEDMESSAGE=$(echosucces "cleaning failure")
+# 			CLEANEDMESSAGEREADME=$(echo "failure")
+# 			echo "Cleaning report......................: ${CLEANEDMESSAGE}"
+# 			echo "${COHORTNAME} ${BASEFILENAME}.txt.gz ${VARIANTYPE} ${CLEANEDMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.cleaned.readme
+# 		fi
+# 
+# 		if [ "$parse_success" = true ] ; then
+# 			if [ "$harm_success" = true ] ; then
+# 				if [ "$clean_success" = true ] ; then
+# 				# Clean the log files
+# 				rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.errors
+# 				rm -v ${PROJECTDIR}/${prefix_parsed}${BASEPARSEDFILE_N}.log
+# 				fi
+# 			fi
+# 		fi
+# 		
 
 
 	done
@@ -368,8 +368,8 @@ else
 		
 # 		echo ""
 # 	done
-	echo ""
-	
+# 	echo ""
+# 	
 	echo ""
 	echo "Gzipping da [ ${COHORTNAME}.pdat ] shizzle..."
 	gzip -fv ${PROJECTDIR}/${COHORTNAME}.pdat
@@ -381,9 +381,9 @@ else
 	echo ""
 	echo "Gzipping da [ ${COHORTNAME}.cdat ] shizzle..."
 	gzip -fv ${PROJECTDIR}/${COHORTNAME}.cdat
-
-	
+# 
+# 	
 ### END of if-else statement for the number of command-line arguments passed ###
-fi 
+ fi 
 
 script_copyright_message

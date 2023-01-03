@@ -105,6 +105,11 @@ while(<COHORT>){
 	   	}
 	
 	    close IN;
+	   
+	   #remove 0's - temp
+	    if ( @se == 0 ){
+	    @se == 0.000001
+	    }
 	
 	### Calculate median of SE, mean of N, and lambda 
 		print STDERR "Calculating median of SE, mean of N, and lambda...\n";

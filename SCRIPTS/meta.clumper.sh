@@ -129,13 +129,13 @@ else
 		elif [[ ${REFERENCE} = "1Gp1" ]]; then
 			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
 		elif [[ ${REFERENCE} = "1Gp3" ]]; then
-			echo "Apologies: currently it is not possible to clump based on 1000G phase 3."
+			REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
 		elif [[ ${REFERENCE} = "GoNL5" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL5."
 		elif [[ ${REFERENCE} = "GoNL4" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL4"
 		elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs		
+			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_GoNL5 # 1000Gp3v5.20130502.EURs		
 		else
 		### If arguments are not met than the 
 			echo "Oh, computer says no! Number of arguments found "$#"."
@@ -163,7 +163,7 @@ else
 	### HEADER summary file
 	### VARIANTID CHR POS MINOR MAJOR MAF CODEDALLELE OTHERALLELE CAF N_EFF Z_SQRTN P_SQRTN BETA_FIXED SE_FIXED Z_FIXED P_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED BETA_GC SE_GC Z_GC P_GC BETA_RANDOM SE_RANDOM Z_RANDOM P_RANDOM BETA_LOWER_RANDOM BETA_UPPER_RANDOM COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED DIRECTIONS GENES_250KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT
 	### 1		  2   3   4     5     6   7           8           9   10    11      12      13         14       15      16      17               18               19      20    21   22   23          24        25       26       27                28                29         30 31           32        33          34         35          36           37                     38                  39               40 
-	
+	# --exlude ${METARESULTDIR}/duplist.txt
 	# what is the basename of the file?
 	# meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz
 	RESULTS=${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz
@@ -179,12 +179,15 @@ else
 		### ls -lh ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR*
 		${PLINK} --bfile ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT 
 	elif [[ ${REFERENCE} = "1Gp3" ]]; then
-		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+		echo "The reference is ${REFERENCE}."
+		### REFERENCE_1kGp3v5 # 1000Gp3v5.20130502.EUR
+		### ls -lh ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR*
+		${PLINK} --bfile ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR.noDup.newIDs --memory 28000000  --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT
 	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
 		### ls -lh ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR*
-		${PLINK} --bfile ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT 
+		${PLINK} --bfile ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5_GoNL5 --memory 168960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT 
 	elif [[ ${REFERENCE} = "GoNL4" ]]; then
 		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
 	elif [[ ${REFERENCE} = "GoNL5" ]]; then
@@ -196,7 +199,7 @@ else
 		echo ""
 		script_copyright_message
 	fi
-		
+		#--exclude ${METARESULTDIR}/meta.dupvar
 	echo "Done clumping the results for [ ${FILENAME} ]..."
 	echo ""
 	

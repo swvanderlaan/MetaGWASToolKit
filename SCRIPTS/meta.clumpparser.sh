@@ -138,7 +138,7 @@ else
 		elif [[ ${REFERENCE} = "1Gp1" ]]; then
 			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
 		elif [[ ${REFERENCE} = "1Gp3" ]]; then
-			echo "Apologies: currently it is not possible to clump based on 1000G phase 3."
+			REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
 		elif [[ ${REFERENCE} = "GoNL5" ]]; then
 			echo "Apologies: currently it is not possible to clump based on GoNL5."
 		elif [[ ${REFERENCE} = "GoNL4" ]]; then
@@ -184,7 +184,7 @@ else
 			LINE=${VARIANTS}
 			VARIANT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "* Extracting clumped data for ${VARIANT}..."
-			${SCRIPTS}/parseClumps.pl --file ${METARESULTDIR}/meta.results.FABP4.1Gp1.EUR.summary.${CLUMP_R2}.clumped.clumped --variant ${VARIANT} > ${METARESULTDIR}/meta.results.FABP4.1Gp1.EUR.summary.${CLUMP_R2}.${VARIANT}.txt
+			${SCRIPTS}/parseClumps.pl --file ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped.clumped --variant ${VARIANT} > ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.${VARIANT}.txt
 			
 		done < ${VARIANTLIST}
 		

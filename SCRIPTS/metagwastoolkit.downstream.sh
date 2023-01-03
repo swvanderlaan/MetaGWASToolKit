@@ -233,6 +233,54 @@ else
 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
 	
 	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" || ${REFERENCE} = "1Gp3" || ${REFERENCE} = "1Gp3GONL5" ]]; then
 		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -376,8 +424,8 @@ else
  	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED,N_EFF | tail -n +2 | awk '{ print \$1, \$2, \$3, \$4, int(\$5) }' >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
 	echo "${MAGMA} --annotate --snp-loc ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt --gene-loc ${MAGMAGENES} --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated " >> ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
 	## qsub -S /bin/bash -N MAGMA.ANALYSIS.${PROJECTNAME} -hold_jid METASUM -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh
-	MAGMA_ANALYSIS_ID=$(sbatch --parsable --job-name=MAGMA.ANALYSIS.${PROJECTNAME} ${METASUM_IDS_D} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log --error ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors --time=${QRUNTIMEMAGMA} --mem=${QMEMMAGMA} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh)
-
+	MAGMA_ANALYSIS_ID=$(sbatch --parsable --job-name=MAGMA.ANALYSIS.${PROJECTNAME}  -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.log --error ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.errors --time=${QRUNTIMEMAGMA} --mem=${QMEMMAGMA} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.runMAGMA.sh)
+# ${METASUM_IDS_D}
 	printf "#!/bin/bash\n${MAGMA} --bfile ${MAGMAPOP} synonyms=${MAGMADBSNP} synonym-dup=drop-dup --pval ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.forMAGMA.txt ncol=NOBS --gene-annot ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.annotated.genes.annot --out ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.fromMAGMA.genesannotated " > ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh
  	## qsub -S /bin/bash -N MAGMA.ANNOTATION.${PROJECTNAME} -hold_jid MAGMA.ANALYSIS.${PROJECTNAME} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.log -e ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.errors -l h_vmem=${QMEMMAGMA} -l h_rt=${QRUNTIMEMAGMA} -wd ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh
 	MAGMA_ANNOTATION_ID=$(sbatch --parsable --job-name=MAGMA.ANNOTATION.${PROJECTNAME} --dependency=afterany:${MAGMA_ANALYSIS_ID} -o ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.log --error ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.errors --time=${QRUNTIMEMAGMA} --mem=${QMEMMAGMA} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${MAGMARESULTDIR} ${MAGMARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.annotMAGMA.sh)

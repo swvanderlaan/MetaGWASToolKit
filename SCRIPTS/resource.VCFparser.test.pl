@@ -491,71 +491,71 @@ my $AF4 = $afsplit[3];
 my $AF_INFO = $AF;
 
 	### adjust the key variantID type 1 -- # 'rs[xxxx]' or 'chr[X]:bp[XXXXX]:A1_A2'
-while ($split_info >= 1) {
-
-	foreach (split /,/, $ALT) {
-
-    if ($multisplit == 4){
-     	if ($split_info == 4) {
-     	$AF_INFO = $AF1;
-     	} elsif ($split_info == 3) {
-     	$AF_INFO = $AF2;
-     	} elsif ($split_info == 2) {
-     	$AF_INFO = $AF3;
-     	} else {
-     	$AF_INFO = $AF4;
-     		}
-     	if ($ALT =~ $Minor) {
-     		$Minor = "$_";
-     	} elsif ($ALT =~ $Major) {
-    		$Major = "$_";
-     		}
-     		
-     } elsif ($multisplit == 3){
-     		if ($split_info == 3) {
-     		$AF_INFO = $AF1;
-     		} elsif ($split_info == 2) {
-     		$AF_INFO = $AF2;
-     		} else {
-     		$AF_INFO = $AF3;
-     		}
-     		 if ($ALT =~ $Minor) {
-     		$Minor = "$_";
-     			} elsif ($ALT =~ $Major) {
-    			 $Major = "$_";
-     		}
-     }
-     
-     		elsif ($multisplit == 2){
-     			if ($split_info == 2) {
-     			$AF_INFO = $AF1;
-     			} elsif ($split_info == 1) {
-     			$AF_INFO = $AF2;
-     			}    
-      		  if ($Minor =~ m/$_/) {
-  			   $Minor = "$_";
-  			   } else {
-  			   $Major = "$_";
-    			 }
-     }
-     if ($ALT !~ m/,/){
-		$AF_INFO = $AF1;
-		}
-		
-     $split_info -= 1;
+# while ($split_info >= 1) {
+# 
+# 	foreach (split /,/, $ALT) {
+# 
+#     if ($multisplit == 4){
+#      	if ($split_info == 4) {
+#      	$AF_INFO = $AF1;
+#      	} elsif ($split_info == 3) {
+#      	$AF_INFO = $AF2;
+#      	} elsif ($split_info == 2) {
+#      	$AF_INFO = $AF3;
+#      	} else {
+#      	$AF_INFO = $AF4;
+#      		}
+#      	if ($ALT =~ $Minor) {
+#      		$Minor = "$_";
+#      	} elsif ($ALT =~ $Major) {
+#     		$Major = "$_";
+#      		}
+#      		
+#      } elsif ($multisplit == 3){
+#      		if ($split_info == 3) {
+#      		$AF_INFO = $AF1;
+#      		} elsif ($split_info == 2) {
+#      		$AF_INFO = $AF2;
+#      		} else {
+#      		$AF_INFO = $AF3;
+#      		}
+#      		 if ($ALT =~ $Minor) {
+#      		$Minor = "$_";
+#      			} elsif ($ALT =~ $Major) {
+#     			 $Major = "$_";
+#      		}
+#      }
+#      
+#      		elsif ($multisplit == 2){
+#      			if ($split_info == 2) {
+#      			$AF_INFO = $AF1;
+#      			} elsif ($split_info == 1) {
+#      			$AF_INFO = $AF2;
+#      			}    
+#       		  if ($Minor =~ m/$_/) {
+#   			   $Minor = "$_";
+#   			   } else {
+#   			   $Major = "$_";
+#     			 }
+#      }
+#      if ($ALT !~ m/,/){
+# 		$AF_INFO = $AF1;
+# 		}
+# 		
+#      $split_info -= 1;
      my $ALT_INFO = "$_";
-     
-	if( looks_like_number($AF_INFO) ) {
-		if ( $vareach[2] =~ m/(\.)/ and $AF_INFO < 0.50 ){
-	  	$vid = "chr$chr\:$bp\:$ALT_INFO\_$REF";
-	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF_INFO > 0.50 ) {
-	  		$vid = "chr$chr\:$bp\:$REF\_$ALT_INFO";
-	  		}	else {
-	  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
-	  				}
-	} else { 
-		$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
-		}
+#      
+# 	if( looks_like_number($AF_INFO) ) {
+# 		if ( $vareach[2] =~ m/(\.)/ and $AF_INFO < 0.50 ){
+# 	  	$vid = "chr$chr\:$bp\:$ALT_INFO\_$REF";
+# 	  } elsif ( $vareach[2] =~ m/(\.)/ and $AF_INFO > 0.50 ) {
+# 	  		$vid = "chr$chr\:$bp\:$REF\_$ALT_INFO";
+# 	  		}	else {
+# 	  				$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
+# 	  				}
+# 	} else { 
+# 		$vid = $vareach[2]; # the variant has a code either "rs", or "esv", or similar
+# 		}
 		
 ### SPECIFIC TO FILE #1
 	### adjust the key variantID type 2 -- # 'chr[X]:bp[XXXXX]:A1_A2'
@@ -619,8 +619,8 @@ while ($split_info >= 1) {
 		}
 	# generate INFO file	
 	print OUT_INFO "$vid1\t$vid\t$vid2\t$vid3\n";	
-        }
-	}
+#         }
+# 	}
 	
 			
 	### SPECIFIC TO FILE #2

@@ -233,8 +233,56 @@ else
 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""	  		  	
 	
-	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" || ${REFERENCE} = "1Gp3" || ${REFERENCE} = "1Gp3GONL5" ]]; then
+	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
 		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerrornooption ""
 	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
@@ -301,7 +349,7 @@ else
 		echo "Dependancy file does not exist, assuming the METAPREP jobs finished."
 		META_PREP_IDS_D="" # Empty variable so there is no dependancy
 	fi
-
+	wait
 	### List of all split and reordered unique variants in this
  	VARIANTSFILES=${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.list
 
@@ -322,8 +370,8 @@ else
 
  		printf "#!/bin/bash\n${SCRIPTS}/meta.analyzer.sh ${CONFIGURATIONFILE} ${PARAMSFILE} ${VARIANTFILEBASE} ${REFERENCE} ${METARESULTDIR} ${EXTENSION} \n" > ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
  		## qsub -S /bin/bash -N meta.analyzer -hold_jid meta.preparator -o ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log -e ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors -l h_rt=${QRUNTIMEANALYZER} -l h_vmem=${QMEMANALYZER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh
- 		META_ANALYZER_ID=$(sbatch --parsable --job-name=meta.analyzer ${META_PREP_IDS_D} -o ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log --error ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh)
-
+ 		META_ANALYZER_ID=$(sbatch --parsable --job-name=meta.analyzer -o ${METARESULTDIR}/meta.analyzer.${EXTENSION}.log --error ${METARESULTDIR}/meta.analyzer.${EXTENSION}.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/meta.analyzer.${EXTENSION}.sh)
+		wait
  		echo ""
  		echo "  - submit p-value correction job..."
  		### P-VALUE CORRECTION
@@ -428,8 +476,8 @@ else
 	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${PROJECTDIR}/metagwastoolkit.${SUBPROJECTDIRNAME}.studyfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1 \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/plotter.se_n_lambda.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	## qsub -S /bin/bash -N META.SE_N_LAMBDA.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
-	META_SE_N_LAMBDA_ID=$(sbatch --parsable --job-name=META.SE_N_LAMBDA.${PROJECTNAME} --dependency=afterany:${META_CONCATENATOR_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=NONE --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh)
-
+	META_SE_N_LAMBDA_ID=$(sbatch --parsable --job-name=META.SE_N_LAMBDA.${PROJECTNAME} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=NONE --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh)
+--dependency=afterany:${META_CONCATENATOR_ID}
 	echoerror "### THIS PART NEEDS FIXING ####"
 	echoerror ###############################
  
