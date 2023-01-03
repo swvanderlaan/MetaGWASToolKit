@@ -84,7 +84,7 @@ _gsdata_/
 
 # RESOURCES
 # 1000G phase 1
-RESOURCES/1000Gp1v3_EUR/
+RESOURCES/1000Gp1v3_EUR/*
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.INFO.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FREQ.txt.gz
 RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.FUNC.txt.gz
@@ -98,15 +98,15 @@ RESOURCES/1000Gp1v3_20101123_integrated_ALL_snv_indels_sv.PAN.INFO.txt.gz
 RESOURCES/ALL.wgs.integrated_phase1_v3.20101123.snps_indels_sv.sites.vcf.gz
 
 # 1000G phase 3
-RESOURCES/1000Gp3v5_EUR/
+RESOURCES/1000Gp3v5_EUR/*
 RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.INFO.txt.gz
 RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FREQ.txt.gz
 RESOURCES/1000Gp3v5_20130502_integrated_ALL_snv_indels_sv.FUNC.txt.gz
 
-RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5b.20130502.sites.vcf.gz
+RESOURCES/ALL.wgs.phase3_shapeit2_mvncall_integrated_v5*
 
 # 1000G phase 3 plus GoNL5
-RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5.stats.txt
+RESOURCES/1000Gp3v5_GoNL5/*
 
 # HAPMAP
 RESOURCES/HAPMAP/
@@ -155,5 +155,6 @@ RESOURCES/resource.VCFplusdbSNP.1kGp3.log
 resource.creator.errors
 resource.creator.log
 
-
+# EXAMPLE DATA
+EXAMPLE/*
 
