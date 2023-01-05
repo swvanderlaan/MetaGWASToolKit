@@ -9,8 +9,8 @@
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 GWAS Parser -- MetaGWASToolKit
 \n
-* Version: v1.2.9
-* Last edit: 2022-12-13
+* Version: v1.3.0
+* Last edit: 2023-01-05
 * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
 * Edits by: Emma J.A. Smulders
 \n
@@ -301,7 +301,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                              "^n$", "^samplesize$", # Number of samples analysed
                              "^n_case.$", "^n_control.$", "^n_cntrl.$", # Number of samples analysed in GWAS in case-control set up
                              "^imputed$", # Imputed or genotyped?
-                             "^info$") # Imputation quality
+                             "^info$", "^qual[_]score$") # Imputation quality
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
   # print(head(GWASDATA_RAW))
   # str(GWASDATA_RAW)
@@ -331,6 +331,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   
   ### Rename columns -- imputation
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^info$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Info = matches("^qual[_]score$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Imputed = matches("^imputed$"), everything())
   
   ### Rename columns -- n cases and controls
@@ -463,7 +464,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
     }
   }
   
-  # ### set 'chromosome' column to integer
+  ### set 'chromosome' and 'bp' column to integer
   # GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, CHR = as.integer(CHR)) # convert to numeric
   GWASDATA_RAWSELECTION <- mutate(GWASDATA_RAWSELECTION, BP = as.integer(BP)) # convert to numeric
   
