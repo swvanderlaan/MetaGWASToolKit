@@ -82,9 +82,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                                       --- CLUMPING RESULTS ---"
 echobold ""
-echobold "* Version:      v1.7.1"
+echobold "* Version:      v1.7.2"
 echobold ""
-echobold "* Last update:  2018-08-09"
+echobold "* Last update:  2023-01-07"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -253,10 +253,10 @@ else
 	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
 	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
 	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
-	  	echonooption " - [1Gp3]         1000G (phase 3, release 5, 20130502 version, b37, hg19)."
+	  	echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
 	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
 	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
-	  	echonooption " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
+	  	echoerror " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
 	  	echonooption "(Opaque: not an option yet)"
 	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		### The wrong arguments are passed, so we'll exit the script now!
@@ -285,7 +285,9 @@ else
 	echo "Clumping meta-analysis summary file..." 
 
 	printf "#!/bin/bash\n${SCRIPTS}/meta.clumper.sh ${CONFIGURATIONFILE} ${METARESULTDIR} " > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
-	## qsub -S /bin/bash -N METACLUMP -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
+	### OLD QSUB version
+	### qsub -S /bin/bash -N METACLUMP -hold_jid METASUM -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh
+	### SLURM version
 	META_CLUMP_ID=$(sbatch --parsable --job-name=METACLUMP ${METASUM_IDS_D} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumper.sh)
 	
 	echobold "#========================================================================================================"
@@ -295,7 +297,9 @@ else
 	echo "Clumping meta-analysis summary file..." 
 
 	printf "#!/bin/bash\n${SCRIPTS}/meta.clumpparser.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
-	## qsub -S /bin/bash -N METAPARSER -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
+	### OLD QSUB version
+	### qsub -S /bin/bash -N METAPARSER -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
+	### SLURM version
 	META_PARSER_ID=$(sbatch --parsable --job-name=METAPARSER --dependency=afterany:${META_CLUMP_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh)
 
 	echobold "#========================================================================================================"
@@ -305,7 +309,9 @@ else
 	echo "Clumping meta-analysis summary file..." 
 
 	printf "#!/bin/bash\n${SCRIPTS}/meta.clumpplotter.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
-	## qsub -S /bin/bash -N METAPLOTTER -hold_jid METAPARSER -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
+	### OLD QSUB version
+	### qsub -S /bin/bash -N METAPLOTTER -hold_jid METAPARSER -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
+	### SLURM version
 	META_PLOTTER_ID=$(sbatch --parsable --job-name=METAPLOTTER --dependency=afterany:${META_PARSER_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh)
 
 	### END of if-else statement for the number of command-line arguments passed ###

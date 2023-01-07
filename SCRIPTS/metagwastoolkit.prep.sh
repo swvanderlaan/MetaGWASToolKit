@@ -474,7 +474,7 @@ else
 				
 		### SLURM version
 		### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
-		### This can be used as depenendancy down the road.
+		### This can be used as depenendency down the road.
 		echo "${PLOTTER_ID}" >>  ${SUBPROJECTDIR}/plotter_ids.txt
 		echo "${PLOTTER_ID_CLEAN}" >>  ${SUBPROJECTDIR}/plotter_ids.txt
 		

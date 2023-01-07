@@ -82,9 +82,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                                   --- PREPARATION META-ANALYSIS ---"
 echobold ""
-echobold "* Version:      v1.6.1"
+echobold "* Version:      v1.6.2"
 echobold ""
-echobold "* Last update:  2018-08-06"
+echobold "* Last update:  2023-01-07"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -254,10 +254,10 @@ else
 	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
 	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
 	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
-	  	echonooption " - [1Gp3]         1000G (phase 3, release 5, 20130502 version, b37, hg19)."
+	  	echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
 	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
 	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
-	  	echonooption " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
+	  	echoerror " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
 	  	echonooption "(Opaque: not an option yet)"
 	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		### The wrong arguments are passed, so we'll exit the script now!
@@ -297,24 +297,24 @@ else
 	### FOR DEBUGGING LOCALLY -- Mac OS X
 	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}
 	
-	# Get all the plotter ID's to set dependancy, by looping over all lines in the file
+	# Get all the plotter ID's to set dependency, by looping over all lines in the file
 	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
 		PLOTTER_IDS="" # Init a variable
 		while read line; do    
 			PLOTTER_IDS="${PLOTTER_IDS},${line}" # Add every ID with a comma
 		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
 		PLOTTER_IDS="${PLOTTER_IDS:1}" # Remove the first character (',')
-		PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependancy
+		PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependency
 	else 
-		echo "Dependancy file does not exist, assuming the PLOTTER jobs finished."
-		PLOTTER_IDS_D="" # Empty variable so there is no dependancy
+		echo "Dependency file does not exist, assuming the PLOTTER jobs finished."
+		PLOTTER_IDS_D="" # Empty variable so there is no dependency
 	fi
-
 
 	printf "#!/bin/bash\n${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
 	## qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
 	VARIANT_COLLECTOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector ${PLOTTER_IDS_D} -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
-
+	wait
+	
 	echobold "#========================================================================================================"
 	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
 	echobold "#========================================================================================================"
@@ -352,7 +352,7 @@ else
 
 		printf "#!/bin/bash\n${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
 		## qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
-		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh)
+		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwas.preparator --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh)
 
 		# Echo the ids to a file, so it can be used as depenendancy down the road
 		echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
