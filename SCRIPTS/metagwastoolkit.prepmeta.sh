@@ -234,7 +234,56 @@ else
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
 	
-	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" || ${REFERENCE} = "1Gp3" || ${REFERENCE} = "1Gp3GONL5" ]]; then
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""	  
+	
+	
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	
+	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
 		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerrornooption ""
 	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
@@ -297,23 +346,32 @@ else
 	### FOR DEBUGGING LOCALLY -- Mac OS X
 	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}
 	
-	# Get all the plotter ID's to set dependency, by looping over all lines in the file
-	if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
-		PLOTTER_IDS="" # Init a variable
-		while read line; do    
-			PLOTTER_IDS="${PLOTTER_IDS},${line}" # Add every ID with a comma
-		done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
-		PLOTTER_IDS="${PLOTTER_IDS:1}" # Remove the first character (',')
-		PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependency
-	else 
-		echo "Dependency file does not exist, assuming the PLOTTER jobs finished."
-		PLOTTER_IDS_D="" # Empty variable so there is no dependency
-	fi
+	### DEPRECATED:
+	### It is unwise to use this as it creates a lot of dependencies. It is better to check
+	### each raw/qc image for each cohort, and manually perform this step, rather than letting
+	### it be dependent on the plotter-ids.
+	### Get all the plotter ID's to set dependency, by looping over all lines in the file
+	### if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
+	### 	PLOTTER_IDS="" # Init a variable
+	### 	while read line; do    
+	### 		PLOTTER_IDS="${PLOTTER_IDS},${line}" # Add every ID with a comma
+	### 	done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
+	### 	PLOTTER_IDS="${PLOTTER_IDS:1}" # Remove the first character (',')
+	### 	PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependency
+	### else 
+	### 	echo "Dependency file does not exist, assuming the PLOTTER jobs finished."
+	### 	PLOTTER_IDS_D="" # Empty variable so there is no dependency
+	### fi
 
+	### OLD QSUB version
+	### qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh	
+
+	### SLURM version
+	### The --wait flag will cause this array to wait until each script is finished before moving to the next step
 	printf "#!/bin/bash\n${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwas.variantcollector.sh
-	## qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh
-	VARIANT_COLLECTOR_ID=$(sbatch --parsable --job-name=gwas.variantcollector ${PLOTTER_IDS_D} -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
-	wait
+	### DEPRECATED: see remark above (line 300>)
+	### VARIANT_COLLECTOR_ID=$(sbatch --parsable --wait --job-name=gwas.variantcollector ${PLOTTER_IDS_D} -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
+	VARIANT_COLLECTOR_ID=$(sbatch --parsable --wait -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
 	
 	echobold "#========================================================================================================"
 	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
@@ -350,12 +408,17 @@ else
 		### FOR DEBUGGING LOCALLY -- Mac OS X
 		### ${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}
 
+		### OLD QSUB version
+		### qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
+		
+		### SLURM version
 		printf "#!/bin/bash\n${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
-		## qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
 		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwas.preparator --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh)
-
+		
 		# Echo the ids to a file, so it can be used as depenendancy down the road
 		echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
+		wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
+		
 	done < ${GWASFILES}
 
 	### END of if-else statement for the number of command-line arguments passed ###
