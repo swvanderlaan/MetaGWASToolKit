@@ -12,6 +12,8 @@ print STDOUT "\n";
 use strict;
 use FileHandle;
 
+### THIS IS A DRAFT - NOT WORKING YET ###
+
 ###############
 ###
 ### This script is designed to calculate the inverse median of all SE values, mean of sample size, and lambda
