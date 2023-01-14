@@ -30,6 +30,7 @@ METAGWASTOOLKIT="/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit"
 RESOURCES="${METAGWASTOOLKIT}/RESOURCES"
 SCRIPTS="${METAGWASTOOLKIT}/SCRIPTS"
 PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
+PYTHON3="/hpc/local/CentOS7/common/lang/python/3.6.1/bin/python3"
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -56,7 +57,21 @@ ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTD
 # echo ""
 # echo "THIRD step: meta-analysis."
 # ${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
- 
+
+# echo ""
+# echo "Converting raw meta-analysis summary results using [gwas2cojo]."
+# 
+# ${PYTHON3} /hpc/local/CentOS7/dhl_ec/software/gwas2cojo/gwas2cojo.py \
+# --gen:build hg19 \
+# --gen ${RESOURCES}/1000Gp3v5_EUR/1kGp3.ref.1maf.nonbia.sumstats.gz \
+# --gwas ${PROJECTDIR}/males/META/meta.results.EXAMPLE_MALES.1Gp3.EUR.summary.txt.gz \
+# --gen:ident ID --gen:chr CHROM --gen:bp POS --gen:other REF --gen:effect ALT --gen:eaf EUR_AF \
+# --gwas:chr CHR --gwas:bp POS --gwas:other OTHERALLELE --gwas:effect CODEDALLELE \
+# --gwas:beta BETA_FIXED --gwas:se SE_FIXED --gwas:p P_FIXED \
+# --gwas:freq CAF --gwas:n N_EFF --gwas:build hg19 \
+# --out ${PROJECTDIR}/males/META/meta.results.EXAMPLE_MALES.1Gp3.EUR.summary.gwas2cojo.txt \
+# --report ${PROJECTDIR}/males/META/meta.results.EXAMPLE_MALES.1Gp3.EUR.summary.gwas2cojo.report
+
 # echo ""
 # echo "FOURTH step: result clumping."
 # ${SCRIPTS}/metagwastoolkit.clump.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list 
