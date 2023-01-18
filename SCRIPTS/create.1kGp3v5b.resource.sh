@@ -13,7 +13,7 @@
 #
 
 echo "Creating initial file."
-echo "CHROM POS ID REF ALT CHROM:POS:REF:ALT AF EAS_AF AMR_AF AFR_AF EUR_AF SAS_AF" > 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.sumstats.txt
+echo "CHROM POS ID REF ALT CHROM:POS:REF:ALT AF EAS_AF AMR_AF AFR_AF EUR_AF SAS_AF" > 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noss_noesv.sumstats.txt
 
 echo ""
 echo "Extracting relevant data."
@@ -25,9 +25,12 @@ awk '{ print $1, $2, $3, $4, $5, $6, $8, $9, $10, $11, $12, $13 }' > 1000Gp3v5_E
 echo ""
 echo "Removing irrelevant information."
 cat 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.sumstats.foo | \
-awk '{sub(/.*=/,"",$7); sub(/.*=/,"",$8); sub(/.*=/,"",$9); sub(/.*=/,"",$10); sub(/.*=/,"",$11); sub(/.*=/,"",$12); print}' | tail -n +2 >> 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.sumstats.txt
+awk '{sub(/.*=/,"",$7); sub(/.*=/,"",$8); sub(/.*=/,"",$9); sub(/.*=/,"",$10); sub(/.*=/,"",$11); sub(/.*=/,"",$12); print}' | \
+grep -v "CN" | grep -v "INS" | grep -v "esv" | grep -v "ss" | \
+awk '{ if($3==".") { print $1, $2, $6, $4, $5, $6, $7, $8, $9, $10, $11, $12 } else { print $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12 } }' | \
+tail -n +2 >> 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noss_noesv.sumstats.txt
 
 echo ""
 echo "Wrapping up."
-gzip -v 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.sumstats.txt
+gzip -v 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noss_noesv.sumstats.txt
 
