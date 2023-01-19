@@ -38,6 +38,6 @@ tail -n +2 >> 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAl
 
 echo ""
 echo "Wrapping up."
-gzip -v 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt
+gzip -fv 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt
 rm -v 1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.foo
 
