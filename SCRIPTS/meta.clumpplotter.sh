@@ -17,18 +17,26 @@ WHITE='\033[01;37m'
 function echobold { #'echobold' is the function name
     echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
 }
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
 function echoerrorflash { 
     echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
 }
 function echoerror { 
     echo -e "${RED}${1}${NONE}"
 }
-function echosucces { 
+# errors no option
+function echoerrornooption { 
     echo -e "${YELLOW}${1}${NONE}"
 }
-function importantnote { 
-    echo -e "${CYAN}${1}${NONE}"
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
 }
+
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -74,26 +82,26 @@ script_arguments_error_reference() {
 	echo "$1" # ERROR MESSAGE
 	echo ""
 	echo " You must supply the correct argument:"
-	echo " * [HM2]          -- for use of HapMap 2 release 22, b36 as reference | LEGACY."
-	echo " * [1Gp1]         -- for use of 1000G (phase 1, version 3) as reference."
-	echo " * [1Gp3]         -- for use of 1000G (phase 3, version 5) as reference | CURRENTLY UNAVAILABLE"
-	echo " * [GoNL4]        -- for use of GoNL4 as reference | CURRENTLY UNAVAILABLE"
-	echo " * [GoNL5]        -- for use of GoNL5 as reference | CURRENTLY UNAVAILABLE"
+	echonooption " * [HM2]          -- for use of HapMap 2 release 22, b36 as reference | LEGACY."
+	echo " * [1Gp1]         -- for use of 1000G (phase 1, version 3, 20101123 version, updated on 20110521 and revised on Feb/Mar 2012, b37, hg19) as reference."
+	echo " * [1Gp3]         -- for use of 1000G (phase 3, release 5c, 20130502 version, b37, hg19) as reference."
+	echonooption " * [GoNL4]        -- for use of GoNL4 as reference | CURRENTLY UNAVAILABLE"
+	echonooption " * [GoNL5]        -- for use of GoNL5 as reference | CURRENTLY UNAVAILABLE"
 	echo " * [1Gp3GONL5] -- for use of 1000G (phase 3, version 5, \"Final release\") plus GoNL5 as reference."
-	echo ""
+	echonooption "(Opaque: not an option yet)"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
   	date
+  	script_copyright_message
   	exit 1
 }
-
 echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echo "                                           META-CLUMP PLOTTER"
 echo "                               PLOTTING OF CLUMPED META-ANALYSIS RESULTS"
 echo ""
-echo " Version    : v1.1.1"
+echo " Version    : v1.1.2"
 echo ""
-echo " Last update: 2018-08-09"
+echo " Last update: 2023-01-19"
 echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
 echo " Testers    : - Jessica van Setten"
@@ -133,25 +141,25 @@ else
 	PROJECTNAME=${PROJECTNAME} # depends on contents of arg1
 	
 	### Determine which reference and thereby input data to use, arg1 [1kGp3v5GoNL5/1kGp1v3/GoNL4] 
-		if [[ ${REFERENCE} = "HM2" ]]; then
-			REFERENCE_HM2=${RESOURCES}/HAPMAP 
-		elif [[ ${REFERENCE} = "1Gp1" ]]; then
-			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
-		elif [[ ${REFERENCE} = "1Gp3" ]]; then
-			echo "Apologies: currently it is not possible to clump based on 1000G phase 3."
-		elif [[ ${REFERENCE} = "GoNL5" ]]; then
-			echo "Apologies: currently it is not possible to clump based on GoNL5."
-		elif [[ ${REFERENCE} = "GoNL4" ]]; then
-			echo "Apologies: currently it is not possible to clump based on GoNL4"
-		elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs		
-		else
-		### If arguments are not met than the 
-			echo "Oh, computer says no! Number of arguments found "$#"."
-			script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
-			echo ""
-			script_copyright_message
-		fi
+	if [[ ${REFERENCE} = "HM2" ]]; then
+		REFERENCE_HM2=${RESOURCES}/HAPMAP 
+	elif [[ ${REFERENCE} = "1Gp1" ]]; then
+		REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+		REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
+	elif [[ ${REFERENCE} = "GoNL5" ]]; then
+		echo "Apologies: currently it is not possible to clump based on GoNL5."
+	elif [[ ${REFERENCE} = "GoNL4" ]]; then
+		echo "Apologies: currently it is not possible to clump based on GoNL4"
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+		REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs		
+	else
+	### If arguments are not met than the 
+		echo "Oh, computer says no! Number of arguments found "$#"."
+		script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
+		echo ""
+		script_copyright_message
+	fi
 		
 	echo ""
 	echo "The results & output directory is.......................................: ${METARESULTDIR}"
@@ -173,9 +181,35 @@ else
 	echo "Plotting clumped hits - note: will not plot if there are no clumped hits..."
 
 	echo "* creating LocusZoom input-file..."
+	### Note that LocusZoom can handle *only* rsIDs.
+
 	echo "MarkerName P-value" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
-	zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,P_FIXED | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
-	
+	if [[ ${REFERENCE} = "HM2" ]]; then
+		echo "Apologies: currently it is not possible to plot based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "1Gp1" || ${REFERENCE} = "1Gp3GONL5" ]]; then
+		echo "The reference is ${REFERENCE}."
+		### REFERENCE_1kGp1v3 # 1000Gp1v3.20101123.EUR
+		### ls -lh ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR*
+		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
+		### ls -lh ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR*
+		zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,P_FIXED | grep "rs" | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+		echo "The reference is ${REFERENCE}."
+		### REFERENCE_1kGp3v5 # 1000Gp3v5.20130502.EUR
+		### ls -lh ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR*
+		zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col RSID,P_FIXED | grep "rs" | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+	elif [[ ${REFERENCE} = "GoNL4" ]]; then
+		echo "Apologies: currently it is not possible to plot based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "GoNL5" ]]; then
+		echo "Apologies: currently it is not possible to plot based on ${REFERENCE}."
+	else
+		### If arguments are not met than the 
+		echo "Oh, computer says no! Number of arguments found "$#"."
+		script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
+		echo ""
+		script_copyright_message
+	fi
+
 	# ### DEBUG
 	# echo "head"
 	# cat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom | head
@@ -192,6 +226,9 @@ else
 	# cat "${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.indexvariants.txt"
 	# ### DEBUG
 
+	### Loading the CellProfiler-Anaconda3.8 environment; this is required for the python scripts in LocusZoom v1.4 to work
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+		
 	echo "* starting plotting -- if there are indexed variants..."
 	if [[ -s ${INDEXVARIANTS} ]] ; then
 		echo "There are indexed variants after clumping in [ "$(basename ${INDEXVARIANTS})" ]."
@@ -240,7 +277,7 @@ else
 	fi
 	
 	echo "* removing LocusZoom input-file..."
-	rm -v ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+	gzip -vf ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
 	
 ### END of if-else statement for the number of command-line arguments passed ###
 fi

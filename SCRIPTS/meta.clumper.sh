@@ -17,18 +17,26 @@ WHITE='\033[01;37m'
 function echobold { #'echobold' is the function name
     echo -e "${BOLD}${1}${NONE}" # this is whatever the function needs to execute, note ${1} is the text for echo
 }
+function echoitalic { 
+    echo -e "${ITALIC}${1}${NONE}" 
+}
+function echonooption { 
+    echo -e "${OPAQUE}${RED}${1}${NONE}"
+}
 function echoerrorflash { 
     echo -e "${RED}${BOLD}${FLASHING}${1}${NONE}" 
 }
 function echoerror { 
     echo -e "${RED}${1}${NONE}"
 }
-function echosucces { 
+# errors no option
+function echoerrornooption { 
     echo -e "${YELLOW}${1}${NONE}"
 }
-function importantnote { 
-    echo -e "${CYAN}${1}${NONE}"
+function echoerrorflashnooption { 
+    echo -e "${YELLOW}${BOLD}${FLASHING}${1}${NONE}"
 }
+
 script_copyright_message() {
 	echo ""
 	THISYEAR=$(date +'%Y')
@@ -74,16 +82,17 @@ script_arguments_error_reference() {
 	echo "$1" # ERROR MESSAGE
 	echo ""
 	echo " You must supply the correct argument:"
-	echo " * [HM2]          -- for use of HapMap 2 release 22, b36 as reference | LEGACY."
-	echo " * [1Gp1]         -- for use of 1000G (phase 1, version 3) as reference."
-	echo " * [1Gp3]         -- for use of 1000G (phase 3, version 5) as reference | CURRENTLY UNAVAILABLE"
-	echo " * [GoNL4]        -- for use of GoNL4 as reference | CURRENTLY UNAVAILABLE"
-	echo " * [GoNL5]        -- for use of GoNL5 as reference | CURRENTLY UNAVAILABLE"
+	echonooption " * [HM2]          -- for use of HapMap 2 release 22, b36 as reference | LEGACY."
+	echo " * [1Gp1]         -- for use of 1000G (phase 1, version 3, 20101123 version, updated on 20110521 and revised on Feb/Mar 2012, b37, hg19) as reference."
+	echo " * [1Gp3]         -- for use of 1000G (phase 3, release 5c, 20130502 version, b37, hg19) as reference."
+	echonooption " * [GoNL4]        -- for use of GoNL4 as reference | CURRENTLY UNAVAILABLE"
+	echonooption " * [GoNL5]        -- for use of GoNL5 as reference | CURRENTLY UNAVAILABLE"
 	echo " * [1Gp3GONL5] -- for use of 1000G (phase 3, version 5, \"Final release\") plus GoNL5 as reference."
-	echo ""
+	echonooption "(Opaque: not an option yet)"
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	# The wrong arguments are passed, so we'll exit the script now!
   	date
+  	script_copyright_message
   	exit 1
 }
 
@@ -91,9 +100,9 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echo "                                             META-CLUMPER"
 echo "                              CLUMPING OF META-ANALYSIS OF GWAS RESULTS"
 echo ""
-echo " Version    : v1.2.1"
+echo " Version    : v1.2.2"
 echo ""
-echo " Last update: 2019-12-10"
+echo " Last update: 2023-01-19"
 echo " Written by : Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echo ""
 echo " Testers    : - Jessica van Setten"
@@ -124,26 +133,26 @@ else
 	PROJECTNAME=${PROJECTNAME} # depends on contents of arg1
 		
 	### Determine which reference and thereby input data to use, arg1 [1kGp3v5GoNL5/1kGp1v3/GoNL4] 
-		if [[ ${REFERENCE} = "HM2" ]]; then
-			REFERENCE_HM2=${RESOURCES}/HAPMAP 
-		elif [[ ${REFERENCE} = "1Gp1" ]]; then
-			REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
-		elif [[ ${REFERENCE} = "1Gp3" ]]; then
-			REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
-		elif [[ ${REFERENCE} = "GoNL5" ]]; then
-			echo "Apologies: currently it is not possible to clump based on GoNL5."
-		elif [[ ${REFERENCE} = "GoNL4" ]]; then
-			echo "Apologies: currently it is not possible to clump based on GoNL4"
-		elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-			REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_GoNL5 # 1000Gp3v5.20130502.EURs		
-		else
-		### If arguments are not met than the 
-			echo "Oh, computer says no! Number of arguments found "$#"."
-			script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
-			echo ""
-			script_copyright_message
-		fi
-		
+	if [[ ${REFERENCE} = "HM2" ]]; then
+		REFERENCE_HM2=${RESOURCES}/HAPMAP 
+	elif [[ ${REFERENCE} = "1Gp1" ]]; then
+		REFERENCE_1kGp1v3=${RESOURCES}/1000Gp1v3_EUR # 1000Gp1v3.20101123.EUR
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+		REFERENCE_1kGp3v5=${RESOURCES}/1000Gp3v5_EUR # 1000Gp3v5.20130502.EURs
+	elif [[ ${REFERENCE} = "GoNL5" ]]; then
+		echo "Apologies: currently it is not possible to clump based on GoNL5."
+	elif [[ ${REFERENCE} = "GoNL4" ]]; then
+		echo "Apologies: currently it is not possible to clump based on GoNL4"
+	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
+		REFERENCE_1kGp3v5GoNL5=${RESOURCES}/1000Gp3v5_GoNL5 # 1000Gp3v5.20130502.EURs		
+	else
+	### If arguments are not met than the 
+		echo "Oh, computer says no! Number of arguments found "$#"."
+		script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
+		echo ""
+		script_copyright_message
+	fi
+
 	echo ""
 	echo "The results & output directory is.......................................: ${METARESULTDIR}"
 	echo "The project name is.....................................................: ${PROJECTNAME}"
@@ -182,7 +191,9 @@ else
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp3v5 # 1000Gp3v5.20130502.EUR
 		### ls -lh ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR*
-		${PLINK} --bfile ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR.noDup --memory 328960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT
+		${PLINK} --bfile ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR.noDup --memory 328960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DF,DIRECTIONS,GENES_250KB,NEAREST_GENE,VARIANT_FUNCTION,CAVEAT
+		### OLD OPTION - probably delete this
+		### ${PLINK} --bfile ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR.noDup --memory 328960 --clump ${METARESULTDIR}/${FILENAME}.txt.gz --clump-snp-field ${CLUMP_SNP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --clump-field ${CLUMP_FIELD} --out ${METARESULTDIR}/${FILENAME}.${CLUMP_R2}.clumped --clump-verbose --clump-annotate CHR,POS,MINOR,MAJOR,MAF,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,COCHRANS_Q,DF,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DIRECTIONS,GENES_250KB,NEAREST_GENE,NEAREST_GENE_ENSEMBLID,NEAREST_GENE_STRAND,VARIANT_FUNCTION,CAVEAT
 	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
@@ -221,7 +232,31 @@ else
 	echo ""
 	
 	echo "Making a list of TOP-variants based on p <= ${CLUMP_P1}."
-	zcat ${METARESULTDIR}/${FILENAME}.txt.gz | awk '$1=="VARIANTID" || $16 <= '${CLUMP_P1}'' > ${METARESULTDIR}/${FILENAME}.TOP_based_on_p${CLUMP_P1}.txt
+	if [[ ${REFERENCE} = "HM2" ]]; then
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "1Gp1" || ${REFERENCE} = "1Gp3GONL5" ]]; then
+		echo "The reference is ${REFERENCE}."
+		### REFERENCE_1kGp1v3 # 1000Gp1v3.20101123.EUR
+		### ls -lh ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR*
+		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
+		### ls -lh ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR*
+		zcat ${METARESULTDIR}/${FILENAME}.txt.gz | awk '$1=="VARIANTID" || $16 <= '${CLUMP_P1}'' > ${METARESULTDIR}/${FILENAME}.TOP_based_on_p${CLUMP_P1}.txt
+	elif [[ ${REFERENCE} = "1Gp3" ]]; then
+		echo "The reference is ${REFERENCE}."
+		### REFERENCE_1kGp3v5 # 1000Gp3v5.20130502.EUR
+		### ls -lh ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR*
+		zcat ${METARESULTDIR}/${FILENAME}.txt.gz | awk '$1=="RSID" || $14 <= '${CLUMP_P1}'' > ${METARESULTDIR}/${FILENAME}.TOP_based_on_p${CLUMP_P1}.txt
+	elif [[ ${REFERENCE} = "GoNL4" ]]; then
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+	elif [[ ${REFERENCE} = "GoNL5" ]]; then
+		echo "Apologies: currently it is not possible to clump based on ${REFERENCE}."
+	else
+		### If arguments are not met than the 
+		echo "Oh, computer says no! Number of arguments found "$#"."
+		script_arguments_error_reference echo "      *** ERROR *** ERROR --- $(basename "${0}") --- ERROR *** ERROR ***"
+		echo ""
+		script_copyright_message
+	fi
 	echo ""
 	
 ### END of if-else statement for the number of command-line arguments passed ###

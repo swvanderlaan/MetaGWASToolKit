@@ -349,10 +349,10 @@ else
 	printf "#!/bin/bash\n${SCRIPTS}/meta.clumpparser.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
 	
 	### OLD QSUB version
-	### qsub -S /bin/bash -N METAPARSER -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
+	### qsub -S /bin/bash -N METAPARSER -hold_jid METACLUMP -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors -l h_vmem=${QRUNTIME} -l h_rt=${QMEM} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh
 	
 	### SLURM version
-	META_PARSER_ID=$(sbatch --parsable --job-name=METAPARSER --dependency=afterany:${META_CLUMP_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh)
+	META_PARSER_ID=$(sbatch --parsable --job-name=METAPARSER --dependency=afterany:${META_CLUMP_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpparser.sh)
 
 	echobold "#========================================================================================================"
 	echobold "#== REGIONAL ASSOCIATION PLOTTING OF CLUMPED RESULTS -- BETA"
@@ -363,10 +363,10 @@ else
 	printf "#!/bin/bash\n${SCRIPTS}/meta.clumpplotter.sh ${CONFIGURATIONFILE} ${METARESULTDIR}" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
 	
 	### OLD QSUB version
-	### qsub -S /bin/bash -N METAPLOTTER -hold_jid METAPARSER -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors -l h_vmem=${QMEMCLUMPER} -l h_rt=${QRUNTIMECLUMPER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
+	### qsub -S /bin/bash -N METAPLOTTER -hold_jid METAPARSER -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh
 	
 	### SLURM version
-	META_PLOTTER_ID=$(sbatch --parsable --job-name=METAPLOTTER --dependency=afterany:${META_PARSER_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors --time=${QRUNTIMECLUMPER} --mem=${QMEMCLUMPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh)
+	META_PLOTTER_ID=$(sbatch --parsable --job-name=METAPLOTTER --dependency=afterany:${META_PARSER_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metaclumpplotter.sh)
 
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 
