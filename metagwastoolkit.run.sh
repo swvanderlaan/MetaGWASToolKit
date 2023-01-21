@@ -45,6 +45,8 @@ echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 echo ""
 echo "FIRST step: prepare GWAS."
+### DEBUGGING
+### ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list.test
 ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
@@ -61,71 +63,109 @@ echo "THIRD step: meta-analysis."
 # ${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
 echo ""
+echo "FOURTH step: some intermediate mapping and cleaning of results."
+
+echo ""
 echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dirty method, we accept a few mistakes in the matching."
 
 # echo ""
 # echo "> first, count number of variants in meta-analysis results"
-# zcat ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.txt.gz | wc -l
-
+# zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz | wc -l
+# 
 # echo ""
 # echo "> creating list of variants (only needs to be done once!)"
 # echo 'VARIANTID RSID' > ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
-# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.INFO.txt.gz | awk '{ print $1, $2 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
-# gzip -v ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
+# ### zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.INFO.txt.gz | awk '{ print $1, $2 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
+# zcat ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$5"_"$4, $3} else { print "chr"$1":"$2":"$4"_"$5, $3 } }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
+# gzip -fv ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
 # 
 # echo ""
 # echo "> counting list of variants"
 # zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt.gz | wc -l
-
+# 
 # echo ""
 # echo "> merging list of variants with summary statistics"
 # perl ${SCRIPTS}/mergeTables.pl \
-# --file1 ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.txt.gz \
+# --file1 ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz \
 # --file2 ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt.gz \
-# --index VARIANTID --format GZIPB > ${PROJECTDIR}/females/META/foo
+# --index VARIANTID --format GZIPB > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo
 # 
 # echo ""
 # echo "> filtering non-matched variants"
-# cat ${PROJECTDIR}/females/META/foo | awk ' $3 != "NA" ' > ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.rsids.txt
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo | awk ' $3 != "NA" ' > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt
 # 
 # echo ""
 # echo "> removing intermediate file, getting a head, counting results, and gzipping"
-# rm -v ${PROJECTDIR}/females/META/foo
+# rm -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo
 # 
 # echo ""
 # echo "> getting head of merged results"
-# head ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.rsids.txt
+# head ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt
 # 
 # echo ""
 # echo "> counting number of merge variants in results"
-# cat ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.rsids.txt | wc -l
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt | wc -l
 # 
 # echo ""
 # echo "> gzipping merged data"
-# gzip -vf ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.rsids.txt
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt
 # 
+echo ""
+echo "Filtering results to:"
+echo "> move original data to a new file, and rename the rsID-mapped results"
+echo "> include only relevant columns"
+echo "> include only variants with no caveats"
+
+### already done !
+### mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
+
+# zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt.gz | \
+# perl ${SCRIPTS}/parseTable.pl --col RSID,VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,P_FIXED,COCHRANS_Q,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DF,DIRECTIONS,GENES_250KB,NEAREST_GENE,VARIANT_FUNCTION,CAVEAT > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt
 # 
-# echo ""
-# echo "Converting raw meta-analysis summary results using [gwas2cojo]."
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt
 # 
+# zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt.gz | awk '$1=="RSID" || $24!="NA"' > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.badVariants.txt
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.badVariants.txt | wc -l
+# 
+# zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt.gz | awk '$1=="RSID" || $24=="NA"' > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt | wc -l 
+#
+# echo "Filtering on DF>0, meaning only 1 cohort was included in the meta-result; we require a minimum of 2."
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt | head -1 > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt | awk '$19 > 0' | grep "rs" > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt | wc -l
+# 
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.badVariants.txt
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
+# 
+echo ""
+echo "FIFTH step: result clumping."
+# ${SCRIPTS}/metagwastoolkit.clump.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list 
+
+echo ""
+echo "SIXTH step: prepare and perform downstream analyses."
+# Note that rsIDs are expected!
+# ${SCRIPTS}/metagwastoolkit.downstream.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+
+echo ""
+echo "Converting filtered meta-analysis summary results using [gwas2cojo]."
+
 # ${PYTHON3} /hpc/local/CentOS7/dhl_ec/software/gwas2cojo/gwas2cojo.py \
 # --gen:build hg19 \
-# --gen ${RESOURCES}/1000Gp3v5_EUR/1kGp3.ref.1maf.nonbia.sumstats.gz \
-# --gwas ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.rsids.txt.gz \
+# --gen ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz \
+# --gwas ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz \
 # --gen:ident ID --gen:chr CHROM --gen:bp POS --gen:other REF --gen:effect ALT --gen:eaf EUR_AF \
 # --gwas:chr CHR --gwas:bp POS --gwas:other OTHERALLELE --gwas:effect CODEDALLELE \
 # --gwas:beta BETA_FIXED --gwas:se SE_FIXED --gwas:p P_FIXED \
 # --gwas:freq CAF --gwas:n N_EFF --gwas:build hg19 \
-# --out ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.gwas2cojo.txt \
-# --report ${PROJECTDIR}/females/META/meta.results.CHARGE_cIMT_FEMALES.1Gp3.EUR.summary.gwas2cojo.report
-
-echo ""
-echo "FOURTH step: result clumping."
-# ${SCRIPTS}/metagwastoolkit.clump.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list 
-
-echo ""
-echo "FIFTH step: prepare and perform downstream analyses."
-# ${SCRIPTS}/metagwastoolkit.downstream.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
+# --fmid 0 --fclose 0 \
+# --out ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.txt \
+# --report ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.report
+# 
+# ${PYTHON3} /hpc/local/CentOS7/dhl_ec/software/gwas2cojo/gwas2cojo-verify.py ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.report
+# 
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.*
 
 # Clean the Dependencies files
 # TODO
