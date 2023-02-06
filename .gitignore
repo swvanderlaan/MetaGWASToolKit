@@ -130,7 +130,6 @@ RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
 RESOURCES/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
 RESOURCES/dbSNP147_b37_hg19.allVariants.txt.gz
 RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.txt.gz
-RESOURCES/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz
 
 RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.allVariants.txt.gz
 RESOURCES/dbSNP150_GRCh37_hg19_Feb2009.txt.gz
@@ -143,6 +142,7 @@ RESOURCES/ORIGINALS/GENCODE_wgEncodeBasicV19_GRCh37_hg19_Feb2009.txt.gz
 RESOURCES/ORIGINALS/dbSNP147_GRCh37_hg19_Feb2009.allVariants.txt.gz
 RESOURCES/_ARCHIVED/dbSNP147_b37_hg19.allVariants.attrib.txt.gz
 RESOURCES/_ARCHIVED/dbSNP147_b37_hg19.allVariants.txt.gz
+RESOURCES/_possible_archived/dbSNP147_GRCh37_hg19_Feb2009.attrib.txt.gz
 
 # GENE MAPS
 RESOURCES/gencode_v19_GRCh37_hg19_Feb2009.txt.gz
@@ -171,5 +171,9 @@ RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5_chr*
 RESOURCES/1000Gp3v5_GoNL5/1000Gp3v5_GoNL5*
 EXAMPLE/SOMEGWAS_prepMETA/*
 EXAMPLE/SOMEGWAS*
-RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.*
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.*
 RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5*.AFR*
+
+
+RESOURCES/1kGp3v5b.ref.1maf.nonbia.sumstats.gz
+RESOURCES/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz

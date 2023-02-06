@@ -415,8 +415,9 @@ else
 		printf "#!/bin/bash\n${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
 		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwas.preparator --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh)
 		
-		# Echo the ids to a file, so it can be used as depenendancy down the road
-		echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
+		### DEPRECATED: see above
+		### Echo the ids to a file, so it can be used as depenendancy down the road
+		### echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
 		wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 		
 	done < ${GWASFILES}
