@@ -2,10 +2,11 @@
 #
 ##########################################################################################
 #
-# Version               : 2.1.12"
+# Version               : 2.1.3"
 #
-# Last update			: 2017-06-06"
+# Last update			: 2023-04-26"
 # Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com;
+#						  Emma Smulders;
 #						  Jacco Schaap;
 #						  Jessica van Setten.
 # Originally written by	: Paul I.W. de Bakker; 
@@ -379,7 +380,7 @@ while(my $c = <PARAMS>){
   $c =~ s/^\s+//;
   my @fields = split /\s+/, $c;
 
-  if ( $#fields != 4 ) { die "*** ERROR *** Number of columns in the $paramsFile must be 4! Please double back.\n"; }
+  if ( $#fields != 5 ) { die "*** ERROR *** Number of columns in the $paramsFile must be 5! Please double back.\n"; }
 
   $study_name[$nstudies] = $fields[0];
   $lambda[$nstudies] = $fields[1];
