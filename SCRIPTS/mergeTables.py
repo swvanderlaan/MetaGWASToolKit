@@ -13,27 +13,28 @@
 #				bramiozo@gmail.com
 # Suggest by:	Sander W. van der Laan; Utrecht, the Netherlands; 
 #               s.w.vanderlaan@gmail.com.
-# Version:		2.0
-# Update date: 	2023-04-26
+# Version:		2.0 beta 1
+# Update date: 	2023-04-28
 #
-# Usage:		python mergeTables.py --file1 [INPUT_FILE_1] --file2 [INPUT_FILE_2] --out-file [OUTPUT_FILE] (optional: --help)
+# Usage:		python3 mergeTables.py --in_file1 /file1.txt.gz --in_file2 /file2.txt.gz --indexID VariantID --out_file /joined.txt.gz [optional: --replace: add option to replace column contents, default: none; --verbose: add option to print verbose output (T/F), default: F]
 
 # TO DO
-# --index [INDEX_STRING] add name of index column
-# --format [GZIP1/GZIP2/GZIPB/NORM] add format 
 # (optional: --replace) add option to replace column contents
-# Starting merging
-# %load_ext autoreload
-# %autoreload 2 
 
 # Import libraries
 import os
 import sys
+import subprocess
 import polars as pl
 import argparse
 import magic
 import gzip
 import time
+
+# Check for required libraries and install them if not present
+# https://stackoverflow.com/questions/12332975/installing-python-module-within-code
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
 
 from argparse import RawTextHelpFormatter
 
@@ -53,14 +54,18 @@ def detect_delimiter(file_path):
 # Parse arguments
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='''
-        + mergeTables 2.0 +
+        + mergeTables 2.0 beta 1+
 
-        This script joins file1 and file2 based on the VariantID column. The VariantID column must be
-        the first column in both files. The output file will be compressed with gzip.
+        This script joins `in_file1` and `in_file2` based on the `indexID` column. The index column must be
+        the first column in both files. The `out_file` file will be compressed with gzip and written 
+        in parquet-format when out_file ends with .parquet, otherwise a space-delimited .txt is written.
+        The `replace` option adds the option to replace column contents. The `verbose` option adds the
+        option to print verbose output (T/F), default: F.
+
 
         This is an example call:
 
-        python3 mergeTables.py --in_file1 /file1.txt.gz --in_file2 /file2.txt.gz --indexID VariantID --out_file /joined.txt.gz [optional: --replace: add option to replace column contents, default: none; --verbose: add option to print verbose output (T/F), default: F]
+        python3 mergeTables.py --in_file1 /file1.txt.gz --in_file2 /file2.txt.gz --indexID VariantID --out_file /joined.txt.gz [optional: --replace VariantID; --verbose: T/F]
         ''',
         epilog='''
         + Copyright 1979-2023. Bram van Es & Sander W. van der Laan | s.w.vanderlaan@gmail.com | https://vanderlaan.science +''', 
@@ -197,9 +202,14 @@ if verbose == "T":
 
 # Write output file
 print(f"\n   Writing output file...")
-new_df.write_csv(out_file, 
-                         has_header=True, separator=' ', null_value='NA',
-                         batch_size=1024)
+if out_file.endswith(".parquet"):
+    new_df.write_parquet(out_file, 
+                         compression='gzip',
+                         statistics=True)
+else:
+    new_df.write_csv(out_file, 
+                 has_header=True, separator=' ', null_value='NA',
+                 batch_size=1024)
 
 if verbose == "T":
     new_df_write_t = time.time()
