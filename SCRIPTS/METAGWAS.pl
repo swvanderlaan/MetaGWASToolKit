@@ -4,7 +4,7 @@
 #
 # Version               : 2.1.3"
 #
-# Last update			: 2023-04-26"
+# Last update			: 2023-05-03"
 # Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com;
 #						  Emma Smulders;
 #						  Jacco Schaap;
@@ -379,8 +379,14 @@ while(my $c = <PARAMS>){
   chomp $c;
   $c =~ s/^\s+//;
   my @fields = split /\s+/, $c;
-
-  if ( $#fields != 5 ) { die "*** ERROR *** Number of columns in the $paramsFile must be 5! Please double back.\n"; }
+  
+  ### print STDOUT "$fields[0]\n";
+  ### print STDOUT "$fields[1]\n";
+  ### print STDOUT "$fields[2]\n";
+  ### print STDOUT "$fields[3]\n";
+  ### print STDOUT "$fields[4]\n";
+  ### print STDOUT "$#fields\n";
+  if ( $#fields != 4 ) { die "*** ERROR *** Number of columns in the $paramsFile must be 5! Please double back.\n"; }
 
   $study_name[$nstudies] = $fields[0];
   $lambda[$nstudies] = $fields[1];
