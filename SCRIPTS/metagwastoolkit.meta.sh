@@ -82,9 +82,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                                       --- META-ANALYSIS ---"
 echobold ""
-echobold "* Version:      v1.8.1"
+echobold "* Version:      v1.8.2"
 echobold ""
-echobold "* Last update:  2023-01-07"
+echobold "* Last update:  2023-05-08"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -329,6 +329,7 @@ else
 	echobold "#"
 
 	### FUTURE VERSIONS WILL HAVE A SCRIPT TO AUTOMATICALLY MAKE THIS...
+	###
 	### * paramCreator.pl will get the necessary information directly from the data:
 	### - lambda
 	### - sample size
@@ -336,6 +337,14 @@ else
 	### - basename of the to-be-meta-analyzed files
 	### - beta-correction factor
 	PARAMSFILE="${PARAMSFILE}" 
+
+	### FUTURE VERSIONS WILL HAVE A SCRIPT TO AUTOMATICALLY MAKE THIS...
+	### 
+	### * se-n-lambda.pl will get the necessary information directly from the data
+	### - a studyfile with the location of the study data (/PROJECTDIR/PROJECTNAME/SUBPROJECTDIRNAME/META/COHORT1/COHORT1.reorder.cdat.gz	COHORT1)
+	### - the constant (*)HM2.1Gp1) 
+	### This script is designed to calculate the inverse median of all SE values, mean of sample size, and lambda
+	STUDYFILE="${STUDYFILE}" 
 
 	### DEPRECATED:
 	### It is unwise to use this as it creates a lot of dependencies. It is better to check
@@ -511,7 +520,7 @@ else
 	### Add in functions based on Winkler et al. (SE-Lambda-Plot, frequency plot among others)
 	echo "  - to make SE-N-lambda plot"
 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL';
-	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${PROJECTDIR}/metagwastoolkit.${SUBPROJECTDIRNAME}.studyfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1 \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
+	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${STUDYFILE} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1 \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/plotter.se_n_lambda.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	
 	### OLD QSUB version
