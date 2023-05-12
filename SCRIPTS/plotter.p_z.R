@@ -93,7 +93,11 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-              help="Path to the results directory, relative to the project directory."),
+              help="Path to the results directory, relative to the project directory. Three columns are expected:
+                  1) effect size (beta)
+                  2) standard error (se)
+                  3) test-statistic (P-value)
+              "),
   make_option(c("-s", "--randomsample"), action="store", default=NA, type='character',
               help="The size of the random sample of datapoints, i.e. variants, to be drawn, e.g. 1000000."),
   make_option(c("-f", "--imageformat"), action="store", default=NA, type='character',

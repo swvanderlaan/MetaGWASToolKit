@@ -89,7 +89,7 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-              help="Path to the results directory, relative to the project directory."),
+              help="Path to the results directory, relative to the project directory. One column is expected with the effect size (beta)."),
   make_option(c("-f", "--imageformat"), action="store", default=NA, type='character',
               help="The image format (PDF (width=10, height=10), PNG/TIFF/EPS (width=800, height=800)."),
   make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',

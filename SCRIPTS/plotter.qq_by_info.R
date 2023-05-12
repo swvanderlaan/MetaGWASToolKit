@@ -92,7 +92,9 @@ option_list = list(
      make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
                  help="Path to the project directory."),
      make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-                 help="Path to the results directory, relative to the project directory."),
+                 help="Path to the results directory, relative to the project directory. Two columns are expected:
+                  1) test-statistic (Z-score, Chi^2, or P-value)
+                  2) imputation quality score (INFO)"),
      make_option(c("-s", "--stattype"), action="store", default=NA, type='character',
                  help="The statistics type input for the QQ-plot: 
                  \n- Z:      Z-scores
@@ -252,6 +254,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      z_lo5=qnorm(impqc_lo5$V1/2)
      z_lo6=qnorm(impqc_lo6$V1/2)
      
+     n_snps1=formatC(length(z_lo1), format="d", big.mark=',')
+     n_snps2=formatC(length(z_lo2), format="d", big.mark=',')
+     n_snps3=formatC(length(z_lo3), format="d", big.mark=',')
+     n_snps4=formatC(length(z_lo4), format="d", big.mark=',')
+     n_snps5=formatC(length(z_lo5), format="d", big.mark=',')
+     n_snps6=formatC(length(z_lo6), format="d", big.mark=',')
+     
      #--------------------------------------------------------------------------
      ### CALCULATES LAMBDA AND # variants
      cat("\nCalculating lambda and number of variants from data.")
@@ -282,7 +291,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
        pdf(paste0(opt$outputdir,"/",study,".pdf"), width = 10, height = 10)
      
      cat("\n\nSetting up plot area.")
-     #Plot expected p-value distribution line		
+     #Plot expected p-value distribution line
+     par(mar=c(5,5,4,5)+0.1) # sets the bottom, left, top and right margins
      plot(c(0, maxYplot), c(0, maxYplot), col = "#E55738", lwd = 1, type = "l",
           xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)),
           xlim = c(0, maxYplot), ylim = c(0, maxYplot), las = 1,
@@ -311,20 +321,21 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      #--------------------------------------------------------------------------
      ### PROVIDES LEGEND
      cat("\n* Adding legend and closing image.")
-     legend(1.25, maxYplot, legend=c("Expected","Observed",
+     legend(0.2, maxYplot, legend=c("Expected",
+                              substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),
                               #paste("0.0 < INFO < 0.2 [",format(length(z_lo1),big.mark = ","),"]"),
                               #paste("0.2 < INFO < 0.4 [",format(length(z_lo2),big.mark = ","),"]"),
                               #paste("0.4 < INFO < 0.6 [",format(length(z_lo3),big.mark = ","),"]"),
                               #paste("0.6 < INFO < 0.8 [",format(length(z_lo4),big.mark = ","),"]"),
                               #paste("0.8 < INFO < 1.0 [",format(length(z_lo5),big.mark = ","),"]"),
                               #paste("1.0 > INFO [",format(length(z_lo6),big.mark = ","),"]")),
-                              substitute(paste("0.0 < INFO < 0.2 [", lambda," = ", lam, "]"),list(lam = l1)),expression(),
-                              substitute(paste("0.2 < INFO < 0.4 [", lambda," = ", lam, "]"),list(lam = l2)),expression(),
-                              substitute(paste("0.4 < INFO < 0.6 [", lambda," = ", lam, "]"),list(lam = l3)),expression(),
-                              substitute(paste("0.6 < INFO < 0.8 [", lambda," = ", lam, "]"),list(lam = l4)),expression(),
-                              substitute(paste("0.8 < INFO < 1.0 [", lambda," = ", lam, "]"),list(lam = l5)),expression(),
-                              substitute(paste("1.0 > INFO [", lambda," = ", lam, "]"),list(lam = l6)),expression()),
-            pch=c((vector("numeric",5)+1)*23), cex=c((vector("numeric",5)+0.8)), 
+                              substitute(paste("0.0 <= INFO <= 0.2 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l1, snps = n_snps1)),
+                              substitute(paste("0.2 < INFO <= 0.4 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l2, snps = n_snps2)),
+                              substitute(paste("0.4 < INFO <= 0.6 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l3, snps = n_snps3)),
+                              substitute(paste("0.6 < INFO <= 0.8 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l4, snps = n_snps4)),
+                              substitute(paste("0.8 < INFO <= 1.0 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l5, snps = n_snps5)),
+                              substitute(paste("1.0 > INFO [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l6, snps = n_snps6))),
+            pch=c((vector("numeric",5)+1)*23), cex=1.4, 
             pt.bg=c("#E55738","black","#595A5C","#1290D9","#DB003F", "#9FC228", "#E35493", "#FBB820"),
             bty="n",title="Legend",title.adj=0)
      
