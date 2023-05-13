@@ -90,7 +90,8 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-              help="Path to the results directory, relative to the project directory."),
+              help="Path to the results directory, relative to the project directory.
+                A single column is expected containing the test-statistic (Z-score, Chi^2, or P-value)."),
   make_option(c("-s", "--stattype"), action="store", default=NA, type='character',
               help="The statistics type input for the QQ-plot: 
               \n- Z:      Z-scores
@@ -307,7 +308,7 @@ of the data. Double back, please.\n\n",
   #--------------------------------------------------------------------------
   ### PROVIDES LEGEND
   cat("\n- Adding legend and closing image.")
-  legend(.5, maxYplot, legend = c("Expected","Observed","95% CI",lambda,paste(c(formatC(length(z), format="d", big.mark = ',')), "variants")), pch = c(23,23,23,32,32), cex = 1.25, pt.bg = c("#E55738","black", rgb(205,55,0,15,maxColorValue=256),"black","black"),bty = "n", title = "Legend", title.adj = 0)->leg
+  legend(.2, maxYplot, legend = c("Expected","Observed","95% CI",lambda,paste(c(formatC(length(z), format="d", big.mark = ',')), "variants")), pch = c(23,23,23,32,32), cex = 1.4, pt.bg = c("#E55738","black", rgb(205,55,0,15,maxColorValue=256),"black","black"),bty = "n", title = "Legend", title.adj = 0)->leg
   points(leg$text$x[4]-0.12, leg$text$y[4], pch = 108, font = 5)
   points(leg$text$x[5]-0.12, leg$text$y[5], pch = 35, font = 1)
   

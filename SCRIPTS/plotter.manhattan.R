@@ -92,7 +92,10 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action = "store", default = NA, type = 'character',
               help = "Path to the project directory."),
   make_option(c("-r", "--resultfile"), action = "store", default = NA, type = 'character',
-              help = "Path to the results directory, relative to the project directory."),
+              help = "Path to the results directory, relative to the project directory. Three columns are expected:
+                  1) chromosomes (1-22, X, Y, XY, MT)
+                  2) basepair position
+                  3) test-statistic (P-value)"),
   make_option(c("-c", "--colorstyle"), action = "store", default = NA, type = 'character',
               help = "The color style of the Manhattan plot: 
                  \n- FULL:      multicolor panel, no highlighting

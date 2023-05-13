@@ -89,7 +89,7 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-              help="Path to the results directory, relative to the project directory."),
+              help="Path to the results directory, relative to the project directory. One column is expected with the imputation quality score (INFO)."),
   make_option(c("-f", "--imageformat"), action="store", default=NA, type='character',
               help="The image format (PDF (width=10, height=5), PNG/TIFF/EPS (width=1280, height=720)."),
   make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',

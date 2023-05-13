@@ -92,7 +92,9 @@ option_list = list(
      make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
                  help="Path to the project directory."),
      make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-                 help="Path to the results directory, relative to the project directory."),
+                 help="Path to the results directory, relative to the project directory. Two columns are expected:
+                  1) test-statistic (Z-score, Chi^2, or P-value)
+                  2) coded/minor/effect/risk allele frequency (CAF)"),
      make_option(c("-s", "--stattype"), action="store", default=NA, type='character',
                  help="The statistics type input for the QQ-plot: 
                  \n- Z:      Z-scores
@@ -236,9 +238,9 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
 
      #--------------------------------------------------------------------------
      ### Stratify by MAF
-     pvals_lo1=subset(data, ( data$V2 > 0.20 & data$V2 < 0.80 ))
-     pvals_lo2=subset(data, ( data$V2 < 0.20 & data$V2 > 0.05 ) | ( data$V2 > 0.80 & data$V2 < 0.95 ))
-     pvals_lo3=subset(data, ( data$V2 < 0.05 & data$V2 > 0.01 ) | ( data$V2 > 0.95 & data$V2 < 0.99 ))
+     pvals_lo1=subset(data, ( data$V2 >= 0.20 & data$V2 <= 0.80 ))
+     pvals_lo2=subset(data, ( data$V2 < 0.20 & data$V2 >= 0.05 ) | ( data$V2 > 0.80 & data$V2 <= 0.95 ))
+     pvals_lo3=subset(data, ( data$V2 < 0.05 & data$V2 >= 0.01 ) | ( data$V2 > 0.95 & data$V2 <= 0.99 ))
      pvals_lo4=subset(data, data$V2 < 0.01 | data$V2 > 0.99)
      
      z=qnorm(data$V1/2)
@@ -247,11 +249,17 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      z_lo3=qnorm(pvals_lo3$V1/2)
      z_lo4=qnorm(pvals_lo4$V1/2)
      
+     n_snps1=formatC(length(z_lo1), format="d", big.mark=',')
+     n_snps2=formatC(length(z_lo2), format="d", big.mark=',')
+     n_snps3=formatC(length(z_lo3), format="d", big.mark=',')
+     n_snps4=formatC(length(z_lo4), format="d", big.mark=',')
+
      #--------------------------------------------------------------------------
      ### CALCULATES LAMBDA AND # variants
      cat("\nCalculating lambda and number of variants from data.")
      n_snps = formatC(length(z), format="d", big.mark=',')
      cat(paste0("\n - number of variants...: ",format(n_snps, big.mark = ",")))
+     
      lambdavalue = round(median(z^2)/qchisq(0.5, df = 1),3)
      cat(paste0("\n - lambda...............: ",round(lambdavalue, digits = 4)))
      
@@ -278,6 +286,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      
      cat("\n* Setting up plot area.")
      #Plot expected p-value distribution line
+     par(mar=c(5,5,4,3)+0.1) # sets the bottom, left, top and right margins
      plot(c(0, maxYplot), c(0, maxYplot), col = "#E55738", lwd = 1, type = "l",
           xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)),
           xlim = c(0, maxYplot), ylim = c(0, maxYplot), las = 1,
@@ -302,16 +311,17 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      #--------------------------------------------------------------------------
      ### PROVIDES LEGEND
      cat("\n* Adding legend and closing image.")
-     legend(1.25,maxYplot,legend=c("Expected","Observed",
+     legend(.2,maxYplot,legend=c("Expected",
+                              substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),
                               #paste("CAF > 0.20 [",format(length(z_lo1), big.mark = ","),"]"),
                               #paste("0.05 < CAF < 0.2 [",format(length(z_lo2), big.mark = ","),"]"),
                               #paste("0.01 < CAF < 0.05 [",format(length(z_lo3), big.mark = ","),"]"),
                               #paste("CAF < 0.01 [",format(length(z_lo4), big.mark = ","),"]")),
-                              substitute(paste("CAF > 0.20 [", lambda," = ", lam, "]"),list(lam = l1)),expression(),
-                              substitute(paste("0.05 < CAF < 0.20 [", lambda," = ", lam, "]"),list(lam = l2)),expression(),
-                              substitute(paste("0.01 CAF < 0.05 [", lambda," = ", lam, "]"),list(lam = l3)),expression(),
-                              substitute(paste("CAF < 0.01 [", lambda," = ", lam, "]"),list(lam = l4)),expression()),
-            pch=c((vector("numeric",5)+1)*23), cex=c((vector("numeric",5)+0.8)), 
+                              substitute(paste("CAF >= 0.20 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l1, snps = n_snps1)),
+                              substitute(paste("0.05 <= CAF < 0.20 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l2, snps = n_snps2)),
+                              substitute(paste("0.01 <= CAF < 0.05 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l3, snps = n_snps3)),
+                              substitute(paste("CAF < 0.01 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l4, snps = n_snps4))),
+            pch=c((vector("numeric",5)+1)*23), cex=1.4, 
             pt.bg=c("#E55738","black","#9FC228","#DB003F","#1290D9", "#595A5C"),
             bty="n", title="Legend", title.adj=0)
 

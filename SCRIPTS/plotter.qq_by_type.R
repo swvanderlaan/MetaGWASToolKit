@@ -92,7 +92,9 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-              help="Path to the results directory, relative to the project directory."),
+              help="Path to the results directory, relative to the project directory. Two columns are expected:
+                  1) test-statistic (Z-score, Chi^2, or P-value)
+                  2) variant type coding (either 'SNV' or 'INDEL')"),
   make_option(c("-s", "--stattype"), action="store", default=NA, type='character',
               help="The statistics type input for the QQ-plot: 
               \n- Z:      Z-scores
@@ -251,8 +253,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   lambdavalue = round(median(z^2)/qchisq(0.5, df = 1),3)
   cat(paste0("\n - lambda...............: ",round(lambdavalue, digits = 4)))
   
+  n_snvs = formatC(length(type_snv$V1), format="d", big.mark=',')
+  n_indels = formatC(length(type_indel$V1), format="d", big.mark=',')
+  
   l_snv = round(median(z_snv^2)/qchisq(0.5,df=1),3)
   l_indel = round(median(z_indel^2)/qchisq(0.5,df=1),3)
+  
      
   #--------------------------------------------------------------------------
   ### PLOTS AXES AND NULL DISTRIBUTION
@@ -271,6 +277,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
 
   cat("\n* Setting up plot area.")
   #Plot expected p-value distribution line
+  par(mar=c(5,5,4,2)+0.1) # sets the bottom, left, top and right margins
   plot(c(0, maxYplot), c(0, maxYplot), col = "#E55738", lwd = 1, type = "l",
        xlab = expression(Expected~~-log[10](italic(p)-value)), ylab = expression(Observed~~-log[10](italic(p)-value)),
        xlim = c(0, maxYplot), ylim = c(0, maxYplot), las = 1,
@@ -288,12 +295,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   #--------------------------------------------------------------------------
   ### PROVIDES LEGEND
   cat("\n* Adding legend and closing image.")
-  legend(0.5,maxYplot,legend=c("Expected","Observed",
-                           #paste("SNV [",format(length(z_snv), big.mark = ","),"]"),
-                           #paste("INDEL [",format(length(z_indel), big.mark = ","),"]")),
-                           substitute(paste("SNV [", lambda," = ", lam, "]"),list(lam = l_snv)),expression(),
-                           substitute(paste("INDEL[", lambda," = ", lam, "]"),list(lam = l_indel)),expression()),
-         pch = c((vector("numeric",5)+1)*23), cex = c((vector("numeric",5)+0.8)), 
+  legend(0.2,maxYplot,legend=c("Expected",
+                        substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),
+                        #paste("SNV [",format(length(z_snv), big.mark = ","),"]"),
+                        #paste("INDEL [",format(length(z_indel), big.mark = ","),"]")),
+                        substitute(paste("SNV [", lambda," = ", lam, ", n = ", snvs, "]"),list(lam = l_snv, snvs = n_snvs)),
+                        substitute(paste("INDEL[", lambda," = ", lam, ", n = ", indels, "]"),list(lam = l_indel, indels = n_indels))),
+         pch = c((vector("numeric",5)+1)*23), cex = 1.4, 
          pt.bg = c("#E55738","black","#9FC228","#DB003F"),
          bty = "n", title = "Legend", title.adj = 0)
   
