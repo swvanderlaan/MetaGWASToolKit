@@ -342,7 +342,7 @@ else
 	### - a studyfile with the location of the study data (/PROJECTDIR/PROJECTNAME/SUBPROJECTDIRNAME/META/COHORT1/COHORT1.reorder.cdat.gz	COHORT1)
 	### - the constant (*)HM2.1Gp1) 
 	### This script is designed to calculate the inverse median of all SE values, mean of sample size, and lambda
-	# STUDYFILE="${STUDYFILE}" 
+	rm -v "${METARESULTDIR}/meta.studyfile.txt"
 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
