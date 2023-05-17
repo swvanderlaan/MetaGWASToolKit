@@ -10,8 +10,9 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Effective sample size plotter -- MetaGWASToolKit
     \n
     * Version: v1.1.0
-    * Last edit: 2021-03-25
+    * Last edit: 2023-05-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
+    * Edited by: Mike Puijk | mikepuijk@hotmail.com
     \n
     * Description:  Creates a histogram of effective sample sizes, and a histogram
       with the number of contributing studies per variant for GWAS (meta-analysis) results. 
@@ -222,16 +223,16 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   ### PLOTS EFFECTIVE SAMPLE SIZE
   cat("\n\nDetermining what type of image should be produced and plotting effective sample size")
   if (opt$imageformat == "PNG") 
-    png(paste0(opt$outputdir,"/",study,".EffectiveN.png"), width = 800, height = 800)
+    png(paste0(opt$outputdir,"/",study,".n_eff.png"), width = 800, height = 800)
   
   if (opt$imageformat == "TIFF") 
-    tiff(paste0(opt$outputdir,"/",study,".EffectiveN.tiff"), width = 800, height = 800)
+    tiff(paste0(opt$outputdir,"/",study,".n_eff.tiff"), width = 800, height = 800)
   
   if (opt$imageformat == "EPS") 
-    postscript(file = paste0(opt$outputdir,"/",study,".EffectiveN.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript(file = paste0(opt$outputdir,"/",study,".n_eff.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
   
   if (opt$imageformat == "PDF") 
-    pdf(paste0(opt$outputdir,"/",study,".EffectiveN.pdf"), width = 10, height = 10)
+    pdf(paste0(opt$outputdir,"/",study,".n_eff.pdf"), width = 10, height = 10)
   
   
   cat("\n* Setting up plot area.")
@@ -243,16 +244,16 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   ### PLOTS NUMBER OF STUDIES PER VARIANT
   cat("\n\nDetermining what type of image should be produced and plotting number of studies per variant\n")
   if (opt$imageformat == "PNG") 
-    png(paste0(opt$outputdir,"/",study,".KStudies.png"), width = 800, height = 800)
+    png(paste0(opt$outputdir,"/",study,".k_studies.png"), width = 800, height = 800)
   
   if (opt$imageformat == "TIFF") 
-    tiff(paste0(opt$outputdir,"/",study,".KStudies.tiff"), width = 800, height = 800)
+    tiff(paste0(opt$outputdir,"/",study,".k_studies.tiff"), width = 800, height = 800)
   
   if (opt$imageformat == "EPS") 
-    postscript(file = paste0(opt$outputdir,"/",study,".KStudies.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript(file = paste0(opt$outputdir,"/",study,".k_studies.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
   
   if (opt$imageformat == "PDF") 
-    pdf(paste0(opt$outputdir,"/",study,".KStudies.pdf"), width = 10, height = 10)
+    pdf(paste0(opt$outputdir,"/",study,".k_studies.pdf"), width = 10, height = 10)
   
   
   cat("\n* Setting up plot area.")

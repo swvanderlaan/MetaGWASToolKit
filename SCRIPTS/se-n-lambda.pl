@@ -25,7 +25,7 @@ use FileHandle;
 ###			            on 1000G, ALL reference
 ###			Data from Table 3, Winkler TW ea, Nature Protocols, 2014.
 ###
-### Last update: 2017-05-30
+### Last update: 2023-05-16
 ### Written by: Jessica van Setten & Sander W. van der Laan (s.w.vanderlaan@gmail.com)
 ### 
 ### Usage:
@@ -86,21 +86,24 @@ while(<COHORT>){
 		
 			if ($_ =~ m/CHR/)  { 
 			$parameterFound = 1 ;
-			next 
+			next;
 			}
-			if ($parameterFound == 0) {
+			if ($parameterFound == 1) {
 				chomp;
 				my @fields = split;
-				my $n_line = $fields[19];
-				print STDERR "Sample size: $n_line\n";
-				my $se_line = $fields[17];
-				print STDERR "Standard error: $se_line\n";
-				my $z_line = abs($fields[16]/$fields[17]);
-				print STDERR "Z-score: $z_line\n";
+				if ($fields[17] ne "NA") {
+					my $n_line = $fields[19];
+					# print STDERR "Sample size: $n_line\n";
+					my $se_line = $fields[17];
+					# print STDERR "Standard error: $se_line\n";
+					my $z_line = abs($fields[16]/$fields[17]);
+					# print STDERR "Z-score: $z_line\n";
 			
-				push @n, $n_line;
-				push @se, $se_line;
-				push @z, $z_line;
+					push @n, $n_line;
+					push @se, $se_line;
+					push @z, $z_line;
+				}
+				
 			}
 	   	}
 	

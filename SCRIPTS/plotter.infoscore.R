@@ -10,7 +10,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Imputation Quality Score Plotter -- MetaGWASToolKit
     \n
     * Version: v1.4.4
-    * Last edit: 2020-11-18
+    * Last edit: 2023-05-11
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  INFO-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -20,8 +20,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
     ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./info_score_plotter.R -p projectdir -r resultfile -o outputdir -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./info_score_plotter.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.infoscore.R -p projectdir -r resultfile -o outputdir -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+#        ./plotter.infoscore.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------

@@ -7,28 +7,26 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    P-Z Plotter -- MetaGWASToolKit
+    Allele frequencies plotter -- MetaGWASToolKit
     \n
-    * Version: v1.1.6
-    * Last edit: 2023-05-11
+    * Version: v1.0.0
+    * Last edit: 2023-05-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
+    * Edited by: Mike Puijk | mikepuijk@hotmail.com
     \n
-    * Description:  P-Z-plotter for GWAS (meta-analysis) results. Will plot the
-    p-value based on the analysis and calculated from the Z-score. Can produce 
-    output in different colours and image-formats. Three columns are expected:
-    1) beta
-    2) se
-    3) p-value.
-    There should be NO HEADER!
+    * Description: Allele frequencies histogram plotter for GWAS (meta-analysis) results. 
+      Can produce output in different image-formats. Two columns are required:
+      - first with coded/minor/effect/risk allele frequency (CAF) in the meta-analysis
+      - second with coded/minor/effect/risk allele frequency (CAF) from the reference used
+      NO HEADER.
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./plotter.p_z.R -p projectdir -r resultfile -o outputdir -s random_sample -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./plotter.p_z.R --projectdir projectdir --resultfile resultfile --outputdir outputdir -randomsample random_sample--imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.caf_hist.R -p projectdir -r resultfile -o outputdir -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+#        ./qqplot_by_caf.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
-#--------------------------------------------------------------------------
 ### CLEAR THE BOARD
 rm(list=ls())
 
@@ -86,6 +84,7 @@ uithof_color=c("#FBB820","#F59D10","#E55738","#DB003F","#E35493","#D5267B",
                "#6173AD","#4C81BF","#2F8BC9","#1290D9","#1396D8","#15A6C1",
                "#5EB17F","#86B833","#C5D220","#9FC228","#78B113","#49A01D",
                "#595A5C","#A2A3A4", "#D7D8D7", "#ECECEC", "#FFFFFF", "#000000")
+#--------------------------------------------------------------------------
 
 #--------------------------------------------------------------------------
 ### OPTION LISTING
@@ -93,13 +92,9 @@ option_list = list(
   make_option(c("-p", "--projectdir"), action="store", default=NA, type='character',
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
-              help="Path to the results directory, relative to the project directory. Three columns are expected:
-                  1) effect size (beta)
-                  2) standard error (se)
-                  3) test-statistic (P-value)
-              "),
-  make_option(c("-s", "--randomsample"), action="store", default=NA, type='character',
-              help="The size of the random sample of datapoints, i.e. variants, to be drawn, e.g. 1000000."),
+              help="Path to the results directory, relative to the project directory. Two columns are expected:
+                  1) coded/minor/effect/risk allele frequency (CAF) in the meta-analysis
+                  2) coded/minor/effect/risk allele frequency (CAF) from the reference used"),
   make_option(c("-f", "--imageformat"), action="store", default=NA, type='character',
               help="The image format (PDF (width=10, height=10), PNG/TIFF/EPS (width=800, height=800)."),
   make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',
@@ -113,13 +108,11 @@ option_list = list(
 )
 opt = parse_args(OptionParser(option_list=option_list))
 
-#--------------------------------------------------------------------------
 ### FOR LOCAL DEBUGGING
 #opt$projectdir="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/"
 #opt$outputdir="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/" 
 #opt$imageformat="PNG"
-#opt$randomsample=1000000
-#opt$resultfile="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/cad.add.160614.website.p_z.txt.gz"
+#opt$resultfile="/Users/swvanderlaan/PLINK/_CARDIoGRAM/cardiogramplusc4d_1kg_cad_add/cad.add.160614.website.qqbycaf.txt.gz"
 
 
 if (opt$verbose) {
@@ -131,24 +124,24 @@ if (opt$verbose) {
   cat("Checking the settings.")
   cat("\nThe project directory....................: ")
   cat(opt$projectdir)
-  cat("\nThe results file.........................: ")
+  cat("\n\nThe results file.........................: ")
   cat(opt$resultfile)
-  cat("\nThe output directory.....................: ")
+  cat("\n\nThe output directory.....................: ")
   cat(opt$outputdir)
-  cat("\nThe color style..........................: ")
+  cat("\n\nThe image format.........................: ")
   cat(opt$imageformat)
   cat("\n\n")
   
 }
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-cat("Wow. We are finally starting \"P-Z Plotter\". ")
+cat("Wow. We are finally starting \"Allele frequencies plotter - Histogram of analysis and reference\". ")
 #--------------------------------------------------------------------------
 ### START OF THE PROGRAM
 # main point of program is here, do this whether or not "verbose" is set
-if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$randomsample) & !is.na(opt$imageformat)) {
+if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$imageformat)) {
   ### set studyname
   study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
-  cat(paste("We are going to \nmake P-Z-plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
+  cat(paste("We are going to \nmake the allele frequencies histogram of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\n\n")
   
   #--------------------------------------------------------------------------
@@ -162,59 +155,81 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   OUT_loc = opt$outputdir # argument 4
   
   #--------------------------------------------------------------------------
+  #### DEFINE THE PLOT FUNCTION
+  plotCAFHist <- function(caf){
+    barplot(caf, xlab="CAF", main="Coded Allele frequencies in the meta-analysis and reference",
+            breaks=c(0,0.2), col=c("#9A3480", "#86B833"), beside=TRUE)
+  }
+  
+  #--------------------------------------------------------------------------
   ### LOADING RESULTS FILE
   ### Location of is set by 'opt$resultfile' # argument 2
   cat("\n\nLoading results file and removing NA's...")
-
+  
   ### Checking file type -- is it gzipped or not?
   data_connection <- file(opt$resultfile)
   data_connection
   filetype <- summary(data_connection)$class
   filetype
   close(data_connection)
- 
+  
   ### Loading the data
   if(filetype == "gzfile"){
-  cat("\n* The file appears to be gzipped, now loading...")
-    rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+    cat("\n* The file appears to be gzipped, now loading...\n")
+    # zcat should not be needed anymore - fread is able to read gz/zip-files.
+    # rawdata = fread(paste0("zcat < ",opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
+    rawdata = fread(paste0(opt$resultfile), header = FALSE, blank.lines.skip = TRUE)
   } else if(filetype != "gzfile") {
-  cat("\n* The file appears not to be gzipped, now loading...")
+    cat("\n* The file appears not to be gzipped, now loading...\n")
     rawdata = fread(opt$resultfile, header = FALSE, blank.lines.skip = TRUE)
   } else {
-  cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
-of the data. Double back, please.\n\n", 
+    cat ("\n\n*** ERROR *** Something is rotten in the City of Gotham. We can't determine the file type 
+     of the data. Double back, please.\n\n", 
          file=stderr()) # print error messages to stder
   }
   cat("\n* Removing NA's...")
-  data_pz <- na.omit(rawdata)
-    
-  # calculating Z -- beta and SE are required!!!
-  data_pz$V4 <- 2*pnorm(-abs((data_pz$V1/data_pz$V2)))
+  data <- na.omit(rawdata)
   
-  # Function to get random sample from dataframe
-  randomSample = function(df,n) { 
-    return (df[sample(nrow(df), n),])
-  }
-
-  # Get random sample from data, default should be 500000 points. 
-  # This corresponds to ~5% of a cleaned GWAS dataset based on 1000G imputed data. For 
-  # ExomeChip or Metabochip data you'll probably need to set this number lower. 
-  # This number should be given as the option "random_sample".
-
-  size_data <- length(data_pz$V1)
-  
-  cat("\n\nDetermining size of the data and setting the random sample size...\n")
-  if (size_data-1 > opt$randomsample) {
-  cat(paste0("* Data size is larger [ ",size_data," ] than proposed random sampling size [ ", opt$randomsample, " ], taking random sample...\n"))
-	data_pz.random <- randomSample(data_pz, as.numeric(opt$randomsample))
-  } else {
-  cat(paste0("* Data size smaller [ ",size_data," ] than proposed random sampling size [ ", opt$randomsample, " ], setting random sample to size of data...\n"))
-  	data_pz.random <- randomSample(data_pz, size_data)
-  }
+  # maxY <- round(max(-log10(data$V1))) 	
+  # maxYplot <- maxY + 3
+  # cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
   
   #--------------------------------------------------------------------------
-  ### PLOT INFO-SCORE PLOT
-  cat("\n\nDetermining what type of image should be produced...")
+  ### Stratify by MAF
+  meta_caf_lo1=length(subset(data, ( data$V1 >= 0.20 & data$V1 <= 0.80 )))
+  meta_caf_lo2=length(subset(data, ( data$V1 < 0.20 & data$V1 >= 0.05 ) | ( data$V1 > 0.80 & data$V1 <= 0.95 )))
+  meta_caf_lo3=length(subset(data, ( data$V1 < 0.05 & data$V1 >= 0.01 ) | ( data$V1 > 0.95 & data$V1 <= 0.99 )))
+  meta_caf_lo4=length(subset(data, data$V1 < 0.01 | data$V1 > 0.99))
+  
+  ref_caf_lo1=length(subset(data, ( data$V2 >= 0.20 & data$V2 <= 0.80 )))
+  ref_caf_lo2=length(subset(data, ( data$V2 < 0.20 & data$V2 >= 0.05 ) | ( data$V2 > 0.80 & data$V2 <= 0.95 )))
+  ref_caf_lo3=length(subset(data, ( data$V2 < 0.05 & data$V2 >= 0.01 ) | ( data$V2 > 0.95 & data$V2 <= 0.99 )))
+  ref_caf_lo4=length(subset(data, data$V2 < 0.01 | data$V2 > 0.99))
+  
+  
+  
+  # n_snps1=formatC(length(meta_caf_lo1), format="d", big.mark=',')
+  # n_snps2=formatC(length(meta_caf_lo2), format="d", big.mark=',')
+  # n_snps3=formatC(length(meta_caf_lo3), format="d", big.mark=',')
+  # n_snps4=formatC(length(meta_caf_lo4), format="d", big.mark=',')
+  
+  #--------------------------------------------------------------------------
+  ### CALCULATES LAMBDA AND # variants
+  cat("\nCalculating number of variants from data.")
+  n_snps = formatC(length(data$V1), format="d", big.mark=',')
+  cat(paste0("\n - number of variants...: ",format(n_snps, big.mark = ",")))
+  
+  # lambdavalue = round(median(z^2)/qchisq(0.5, df = 1),3)
+  # cat(paste0("\n - lambda...............: ",round(lambdavalue, digits = 4)))
+  
+  # l1 = round(median(z_lo1^2)/qchisq(0.5,df=1),3)
+  # l2 = round(median(z_lo2^2)/qchisq(0.5,df=1),3)
+  # l3 = round(median(z_lo3^2)/qchisq(0.5,df=1),3)
+  # l4 = round(median(z_lo4^2)/qchisq(0.5,df=1),3)
+  
+  #--------------------------------------------------------------------------
+  ### PLOTS ALLELE FREQUENCIES
+  cat("\n\nDetermining what type of image should be produced and plotting axes with null distribution.")
   if (opt$imageformat == "PNG") 
     png(paste0(opt$outputdir,"/",study,".png"), width = 800, height = 800)
   
@@ -222,46 +237,71 @@ of the data. Double back, please.\n\n",
     tiff(paste0(opt$outputdir,"/",study,".tiff"), width = 800, height = 800)
   
   if (opt$imageformat == "EPS") 
-    postscript(file = paste0(opt$outputdir,"/",study,".eps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript(file = paste0(opt$outputdir,"/",study,".ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
   
   if (opt$imageformat == "PDF") 
     pdf(paste0(opt$outputdir,"/",study,".pdf"), width = 10, height = 10)
   
+  
+  cat("\n* Setting up plot area.")
+  #Plot expected p-value distribution line
+  par(mar=c(5,5,4,3)+0.1) # sets the bottom, left, top and right margins
+  plotCAFHist(data)
+  
   #--------------------------------------------------------------------------
-  ### START PLOTTING
-  cat("\n\nPlotting...")
-  #?plot
-  # plot (random sample of) data 
-  plot(data_pz.random$V3, data_pz.random$V4, 
-       xlab = "Observed p-value", ylab = "Z-score based p-value", 
-       main = "P-Z", col = "#1290D9", bty="n",
-       xaxs="i", yaxs="i")
-  # add in a straight line
-  abline(0, 1, col = "#DB003F", lty = 1, xpd = FALSE)
+  ### PLOTS DATA
+  cat("\n* Plotting data.\n")
+  cat("\n- sample of all data.\n")
+  plotQQ(z, "black", 1.25);
+  cat("\n- sample of data with CAF > 0.20.\n")
+  plotQQ(z_lo1, "#9FC228", 1.25);
+  cat("\n- sample of data with 0.05 < CAF < 0.20.\n")
+  plotQQ(z_lo2, "#DB003F", 1.25);
+  cat("\n- sample of data with 0.01 < CAF < 0.05.\n")
+  plotQQ(z_lo3, "#1290D9", 1.25);
+  cat("\n- sample of data with CAF < 0.01.\n")
+  plotQQ(z_lo4, "#595A5C", 1.25);
+  
+  #--------------------------------------------------------------------------
+  ### PROVIDES LEGEND
+  cat("\n* Adding legend and closing image.")
+  legend(.2,maxYplot,legend=c("Expected",
+                              substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),
+                              #paste("CAF > 0.20 [",format(length(z_lo1), big.mark = ","),"]"),
+                              #paste("0.05 < CAF < 0.2 [",format(length(z_lo2), big.mark = ","),"]"),
+                              #paste("0.01 < CAF < 0.05 [",format(length(z_lo3), big.mark = ","),"]"),
+                              #paste("CAF < 0.01 [",format(length(z_lo4), big.mark = ","),"]")),
+                              substitute(paste("CAF >= 0.20 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l1, snps = n_snps1)),
+                              substitute(paste("0.05 <= CAF < 0.20 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l2, snps = n_snps2)),
+                              substitute(paste("0.01 <= CAF < 0.05 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l3, snps = n_snps3)),
+                              substitute(paste("CAF < 0.01 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l4, snps = n_snps4))),
+         pch=c((vector("numeric",5)+1)*23), cex=1.4, 
+         pt.bg=c("#E55738","black","#9FC228","#DB003F","#1290D9", "#595A5C"),
+         bty="n", title="Legend", title.adj=0)
   
   dev.off()
   
 } else {
   cat("\n\n\n\n++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
   cat("\n*** ERROR *** You didn't specify all variables:\n
-      - --p/projectdir  : path to project directory\n
-      - --r/resultdir   : path to resultfile\n
-      - --o/outputdir   : path to output directory\n
-      - --s/randomsample: random sample [number] size, e.g. 1000000\n
-      - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n\n", 
+         - --p/projectdir  : path to project directory\n
+         - --r/resultfile  : path to resultfile\n
+         - --o/outputdir   : path to output directory\n
+         - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n\n", 
       file=stderr()) # print error messages to stderr
 }
 
 #--------------------------------------------------------------------------
 ### CLOSING MESSAGE
-cat(paste("\n\nAll done making the P-Z-plot of",study,".\n"))
+cat(paste("\n\nAll done plotting a QQ-plot stratified by coded allele frequency of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
 #--------------------------------------------------------------------------
 #
 # ### SAVE ENVIRONMENT | FOR DEBUGGING
-# save.image(paste0(opt$outputdir,"/",Today,"_",study,"_DEBUG_P_Z_PLOTTER.RData"))
+# save.image(paste0(opt$outputdir,"/",Today,"_",study,"_DEBUG_QQPLOT_BY_CAF.RData"))
+
 
 ###	UtrechtSciencePark Colours Scheme
 ###

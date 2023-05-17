@@ -10,7 +10,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Effect Size Plotter -- MetaGWASToolKit
     \n
     * Version: v1.3.6
-    * Last edit: 2020-11-18
+    * Last edit: 2023-05-11
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  EffectSize-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -20,8 +20,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./effectsize_plotter.R -p projectdir -r resultfile -o outputdir -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./effectsize_plotter.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.effectsize.R -p projectdir -r resultfile -o outputdir -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+#        ./plotter.effectsize.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------
