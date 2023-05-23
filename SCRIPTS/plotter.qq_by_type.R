@@ -10,8 +10,9 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ by TYPE Plotter -- MetaGWASToolKit
     \n
     * Version: v1.2.0
-    * Last edit: 2021-03-25
+    * Last edit: 2023-05-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
+    * Edited by: Mike Puijk | mikepuijk@hotmail.com
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
     by variant type (SNV or INDEL -- at the moment). Can produce output in different colours 
@@ -23,8 +24,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./qqplot_by_type.R -p projectdir -r resultfile -o outputdir -s stattype -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./qqplot_by_type.R --projectdir projectdir --resultsfile resultfile --outputdir outputdir --stattype stattype --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.qq_by_type.R -p projectdir -r resultfile -o outputdir -s stattype -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+#        ./plotter.qq_by_type.R --projectdir projectdir --resultsfile resultfile --outputdir outputdir --stattype stattype --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------
@@ -296,11 +297,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   ### PROVIDES LEGEND
   cat("\n* Adding legend and closing image.")
   legend(0.2,maxYplot,legend=c("Expected",
-                        substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),
+                        substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),expression(),
                         #paste("SNV [",format(length(z_snv), big.mark = ","),"]"),
                         #paste("INDEL [",format(length(z_indel), big.mark = ","),"]")),
-                        substitute(paste("SNV [", lambda," = ", lam, ", n = ", snvs, "]"),list(lam = l_snv, snvs = n_snvs)),
-                        substitute(paste("INDEL[", lambda," = ", lam, ", n = ", indels, "]"),list(lam = l_indel, indels = n_indels))),
+                        substitute(paste("SNV [", lambda," = ", lam, ", n = ", snvs, "]"),list(lam = l_snv, snvs = n_snvs)),expression(),
+                        substitute(paste("INDEL[", lambda," = ", lam, ", n = ", indels, "]"),list(lam = l_indel, indels = n_indels)),expression()),
          pch = c((vector("numeric",5)+1)*23), cex = 1.4, 
          pt.bg = c("#E55738","black","#9FC228","#DB003F"),
          bty = "n", title = "Legend", title.adj = 0)

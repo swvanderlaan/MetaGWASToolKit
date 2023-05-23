@@ -8,7 +8,7 @@
 #               beta estimates accross all SNPs against the square root of the sample
 #               size for the GWAS study.
 #               
-# Usage: 		R CMD BATCH --args -CL -input.txt -[PNG/PDF/TIFF] -output.[PNG/PDF/TIFF] se_n_lambda_plot.R
+# Usage: 		R CMD BATCH --args -CL -input.txt -[PNG/PDF/TIFF] -output.[PNG/PDF/TIFF] plotter.se_n_lambda.R
 # 
 # Input data: 	required: 
 #               ONLY the output of the se-n-lambda.pl script; this consists of

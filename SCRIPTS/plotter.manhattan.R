@@ -10,7 +10,7 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     Manhattan Plotter -- MetaGWASToolKit
     \n
     * Version: v1.2.3
-    * Last edit: 2021-03-25
+    * Last edit: 2023-05-11
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     \n
     * Description:  Manhattan-plotter for GWAS (meta-analysis) results. Can produce output 
@@ -23,8 +23,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./manhattan.R -p projectdir -r resultfile -o outputdir -c colorstyle -f imageformat [OPTIONAL: -t titleplot -v verbose (DEFAULT) -q quiet]
-#        ./manhattan.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --colorstyle colorstyle --imageformat imageformat [OPTIONAL: --titleplot titleplot --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.manhattan.R -p projectdir -r resultfile -o outputdir -c colorstyle -f imageformat [OPTIONAL: -t titleplot -v verbose (DEFAULT) -q quiet]
+#        ./plotter.manhattan.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --colorstyle colorstyle --imageformat imageformat [OPTIONAL: --titleplot titleplot --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------

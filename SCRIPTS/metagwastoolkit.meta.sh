@@ -338,13 +338,16 @@ else
 	### - beta-correction factor
 	PARAMSFILE="${PARAMSFILE}" 
 
-	### FUTURE VERSIONS WILL HAVE A SCRIPT TO AUTOMATICALLY MAKE THIS...
-	### 
 	### * se-n-lambda.pl will get the necessary information directly from the data
 	### - a studyfile with the location of the study data (/PROJECTDIR/PROJECTNAME/SUBPROJECTDIRNAME/META/COHORT1/COHORT1.reorder.cdat.gz	COHORT1)
 	### - the constant (*)HM2.1Gp1) 
 	### This script is designed to calculate the inverse median of all SE values, mean of sample size, and lambda
-	STUDYFILE="${STUDYFILE}" 
+	rm -v "${METARESULTDIR}/meta.studyfile.txt"
+	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+		LINE=${GWASCOHORT}
+		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+		echo "${METARESULTDIR}/${COHORT}/${COHORT}.reorder.cdat.gz ${COHORT}" >> ${METARESULTDIR}/meta.studyfile.txt
+	done < ${GWASFILES}
 
 	### DEPRECATED:
 	### It is unwise to use this as it creates a lot of dependencies. It is better to check
@@ -509,7 +512,7 @@ else
 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic determination of number of studies
 	printf "#!/bin/bash\nNSTUDIES=$(cat ${METARESULTDIR}/meta.cohorts.cleaned.txt | wc -l) \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col N_EFF,DF | tail -n +2 | grep -v NA > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
-	echo "R CMD BATCH -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt -\$NSTUDIES -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff ${SCRIPTS}/plotter.n_eff_k_studies.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
+	echo "${SCRIPTS}/plotter.n_eff_k_studies.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt --outputdir ${METARESULTDIR} --imageformat ${IMAGEFORMAT} --studycount \$NSTUDIES" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 	
 	### OLD QSUB version
 	### qsub -S /bin/bash -N META.N_EFF.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
@@ -520,7 +523,7 @@ else
 	### Add in functions based on Winkler et al. (SE-Lambda-Plot, frequency plot among others)
 	echo "  - to make SE-N-lambda plot"
 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL';
-	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${STUDYFILE} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1 \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
+	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${METARESULTDIR}/meta.studyfile.txt ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1 \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/plotter.se_n_lambda.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	
 	### OLD QSUB version
@@ -592,7 +595,7 @@ else
 	META_SUM_ID=$(sbatch --parsable --job-name=METASUM --dependency=afterany:${META_GENOMIC_CONTROL_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.errors --time=${QRUNTIMEANALYZER} --mem=${QMEMANALYZER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.metasum.sh)
 
 	# Create a textfile to store ids, which can be used as dependancies later
-	echo "${META_SUM_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt
+	echo "${META_SUM_ID}" >> ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_sum_ids.txt
 	
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

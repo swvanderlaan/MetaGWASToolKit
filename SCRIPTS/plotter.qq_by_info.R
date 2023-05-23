@@ -10,8 +10,9 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ by INFO-score Plotter -- MetaGWASToolKit
     \n
     * Version: v1.2.0
-    * Last edit: 2021-03-25
+    * Last edit: 2023-05-15
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
+    * Edited by: Mike Puijk | mikepuijk@hotmail.com
     \n
     * Description: QQ-Plotter for GWAS (meta-analysis) results stratified 
       by imputation quality (INFO-score). Can produce output in different colours 
@@ -23,8 +24,8 @@ cat("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./qqplot_by_info.R -p projectdir -r resultfile -o outputdir -s stattype -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./qqplot_by_info.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --stattype stattype --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.qq_by_info.R -p projectdir -r resultfile -o outputdir -s stattype -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+#        ./plotter.qq_by_info.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --stattype stattype --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 #--------------------------------------------------------------------------
@@ -322,19 +323,19 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
      ### PROVIDES LEGEND
      cat("\n* Adding legend and closing image.")
      legend(0.2, maxYplot, legend=c("Expected",
-                              substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),
+                              substitute(paste("Observed [n = ", snps, "]"),list(snps = n_snps)),expression(),
                               #paste("0.0 < INFO < 0.2 [",format(length(z_lo1),big.mark = ","),"]"),
                               #paste("0.2 < INFO < 0.4 [",format(length(z_lo2),big.mark = ","),"]"),
                               #paste("0.4 < INFO < 0.6 [",format(length(z_lo3),big.mark = ","),"]"),
                               #paste("0.6 < INFO < 0.8 [",format(length(z_lo4),big.mark = ","),"]"),
                               #paste("0.8 < INFO < 1.0 [",format(length(z_lo5),big.mark = ","),"]"),
                               #paste("1.0 > INFO [",format(length(z_lo6),big.mark = ","),"]")),
-                              substitute(paste("0.0 <= INFO <= 0.2 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l1, snps = n_snps1)),
-                              substitute(paste("0.2 < INFO <= 0.4 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l2, snps = n_snps2)),
-                              substitute(paste("0.4 < INFO <= 0.6 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l3, snps = n_snps3)),
-                              substitute(paste("0.6 < INFO <= 0.8 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l4, snps = n_snps4)),
-                              substitute(paste("0.8 < INFO <= 1.0 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l5, snps = n_snps5)),
-                              substitute(paste("1.0 > INFO [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l6, snps = n_snps6))),
+                              substitute(paste("0.0 <= INFO <= 0.2 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l1, snps = n_snps1)),expression(),
+                              substitute(paste("0.2 < INFO <= 0.4 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l2, snps = n_snps2)),expression(),
+                              substitute(paste("0.4 < INFO <= 0.6 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l3, snps = n_snps3)),expression(),
+                              substitute(paste("0.6 < INFO <= 0.8 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l4, snps = n_snps4)),expression(),
+                              substitute(paste("0.8 < INFO <= 1.0 [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l5, snps = n_snps5)),expression(),
+                              substitute(paste("1.0 > INFO [", lambda," = ", lam, ", n = ", snps, "]"),list(lam = l6, snps = n_snps6)),expression()),
             pch=c((vector("numeric",5)+1)*23), cex=1.4, 
             pt.bg=c("#E55738","black","#595A5C","#1290D9","#DB003F", "#9FC228", "#E35493", "#FBB820"),
             bty="n",title="Legend",title.adj=0)
