@@ -470,7 +470,7 @@ dev.off()
 
 #--------------------------------------------------------------------------
 ### CLOSING MESSAGE
-cat(paste("\nAll done plotting a MIAMI-plot of",study,".\n"))
+cat(paste("\nAll done plotting a MIAMI-plot of",study1,"and ", study2".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
