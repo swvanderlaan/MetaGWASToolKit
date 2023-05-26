@@ -7,24 +7,24 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    Allele frequencies plotter -- MetaGWASToolKit
+    Allele frequencies correlation plotter -- MetaGWASToolKit
     \n
     * Version: v1.0.0
-    * Last edit: 2023-05-23
+    * Last edit: 2023-05-25
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     * Edited by: Mike Puijk | mikepuijk@hotmail.com
     \n
-    * Description: Allele frequencies histogram plotter for GWAS (meta-analysis) results. 
+    * Description: Allele frequencies correlation plotter for GWAS (meta-analysis) results. 
       Can produce output in different image-formats. Two columns are expected:
-      - first with coded/minor/effect/risk allele frequency (CAF) in the study
-      - second with coded/minor/effect/risk allele frequency (MAF) from the reference used
+      - first with coded/minor/effect/risk allele frequency in the study
+      - second with coded/minor/effect/risk allele frequency from the reference used
       NO HEADER.
     The script should be usuable on both any Linux distribution with R 3+ installed, Mac OS X and Windows.
     
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
-# usage: ./plotter.caf_hist.R -p projectdir -r resultfile -o outputdir -f imageformat [OPTIONAL: -v verbose (DEFAULT) -q quiet]
-#        ./plotter.caf_hist.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
+# usage: ./plotter.caf_plot.R -p projectdir -r resultfile -o outputdir -f imageformat -s studyname [OPTIONAL: -v verbose (DEFAULT) -q quiet]
+#        ./plotter.caf_plot.R --projectdir projectdir --resultfile resultfile --outputdir outputdir --imageformat imageformat --studyname studyname [OPTIONAL: --verbose verbose (DEFAULT) -quiet quiet]
 
 cat("\n* Clearing the environment...\n\n")
 ### CLEAR THE BOARD
@@ -93,12 +93,14 @@ option_list = list(
               help="Path to the project directory."),
   make_option(c("-r", "--resultfile"), action="store", default=NA, type='character',
               help="Path to the results directory, relative to the project directory. Two columns are expected:
-                  1) coded/minor/effect/risk allele frequency (CAF) in the study
-                  2) coded/minor/effect/risk allele frequency (MAF) from the reference used"),
+                  1) coded/minor/effect/risk allele frequency in the study
+                  2) coded/minor/effect/risk allele frequency from the reference used"),
   make_option(c("-f", "--imageformat"), action="store", default=NA, type='character',
               help="The image format (PDF (width=10, height=10), PNG/TIFF/EPS (width=800, height=800)."),
   make_option(c("-o", "--outputdir"), action="store", default=NA, type='character',
               help="Path to the output directory."),
+  make_option(c("-s", "--studyname"), action="store", default=NA, type='character',
+              help="Study name."),
   make_option(c("-v", "--verbose"), action="store_true", default=TRUE,
               help="Should the program print extra stuff out? [default %default]"),
   make_option(c("-q", "--quiet"), action="store_false", dest="verbose",
@@ -134,14 +136,15 @@ if (opt$verbose) {
   
 }
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-cat("Wow. We are finally starting \"Allele frequencies plotter - Histogram of study and reference\". ")
+cat("Wow. We are finally starting \"Allele frequencies plotter - Correlation between study and reference\". ")
 #--------------------------------------------------------------------------
 ### START OF THE PROGRAM
 # main point of program is here, do this whether or not "verbose" is set
-if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$imageformat)) {
-  ### set studyname
+if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is.na(opt$imageformat) & !is.na(opt$studyname)) {
+  ### set studyfile and name
   study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
-  cat(paste("We are going to \nmake the allele frequencies histogram of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
+  studyname <- opt$studyname
+  cat(paste("We are going to \nmake the allele frequencies plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\n\n")
   
   #--------------------------------------------------------------------------
@@ -156,11 +159,10 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   
   #--------------------------------------------------------------------------
   #### DEFINE THE PLOT FUNCTION
-  plotCAFHist <- function(caf){
-    barplot(caf, names=c("CAF < 0.01", "0.01 <= CAF < 0.05", "0.05 <= CAF < 0.20", "CAF >= 0.20"),
-            xlab="Minor Allele Frequency", main="Minor Allele frequencies in the study and reference",
-            col=c("#9A3480", "#86B833"), beside=TRUE,
-            cex.axis=1.4, cex.lab=1.75, cex.main=2, cex.names=1.4)
+  plotCAF <- function(caf, color, cex){
+    
+    points(caf$V2, caf$V1, pch = 21, cex = cex, col = color, bg = color)
+    
   }
   
   #--------------------------------------------------------------------------
@@ -192,52 +194,40 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   cat("\n* Removing NA's...")
   data <- na.omit(rawdata)
   
-  # maxY <- round(max(-log10(data$V1))) 	
-  # maxYplot <- maxY + 3
-  # cat(paste0("\n* The maximum on the Y-axis: ", round(maxY, digits = 0),"."))
   
-  #--------------------------------------------------------------------------
-  ### Stratify by MAF
-  meta_caf_lo1=length(subset(data, data$V1 < 0.01 | data$V1 > 0.99)$V1)
-  meta_caf_lo2=length(subset(data, ( data$V1 < 0.05 & data$V1 >= 0.01 ) | ( data$V1 > 0.95 & data$V1 <= 0.99 ))$V1)
-  meta_caf_lo3=length(subset(data, ( data$V1 < 0.20 & data$V1 >= 0.05 ) | ( data$V1 > 0.80 & data$V1 <= 0.95 ))$V1)
-  meta_caf_lo4=length(subset(data, ( data$V1 >= 0.20 & data$V1 <= 0.80 ))$V1)
-  
-  ref_caf_lo1=length(subset(data, data$V2 < 0.01 | data$V2 > 0.99)$V2)
-  ref_caf_lo2=length(subset(data, ( data$V2 < 0.05 & data$V2 >= 0.01 ) | ( data$V2 > 0.95 & data$V2 <= 0.99 ))$V2)
-  ref_caf_lo3=length(subset(data, ( data$V2 < 0.20 & data$V2 >= 0.05 ) | ( data$V2 > 0.80 & data$V2 <= 0.95 ))$V2)
-  ref_caf_lo4=length(subset(data, ( data$V2 >= 0.20 & data$V2 <= 0.80 ))$V2)
-  
-  cafs=rbind(c(meta_caf_lo1, meta_caf_lo2, meta_caf_lo3, meta_caf_lo4), c(ref_caf_lo1, ref_caf_lo2, ref_caf_lo3, ref_caf_lo4))
-  
-  maxYplot <- max(cafs) 	
-
   #--------------------------------------------------------------------------
   ### PLOTS ALLELE FREQUENCIES
   cat("\n\nDetermining what type of image should be produced and plotting axes with null distribution.")
   if (opt$imageformat == "PNG") 
-    png(paste0(opt$outputdir,"/",study,".hist.png"), width = 800, height = 800)
+    png(paste0(opt$outputdir,"/",study,".plot.png"), width = 700, height = 700)
   
   if (opt$imageformat == "TIFF") 
-    tiff(paste0(opt$outputdir,"/",study,".hist.tiff"), width = 800, height = 800)
+    tiff(paste0(opt$outputdir,"/",study,".plot.tiff"), width = 700, height = 700)
   
   if (opt$imageformat == "EPS") 
-    postscript(file = paste0(opt$outputdir,"/",study,".hist.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript(file = paste0(opt$outputdir,"/",study,".plot.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
   
   if (opt$imageformat == "PDF") 
-    pdf(paste0(opt$outputdir,"/",study,".hist.pdf"), width = 10, height = 10)
+    pdf(paste0(opt$outputdir,"/",study,".plot.pdf"), width = 8, height = 8)
   
-  
+  yAxisLabel=paste(studyname, " AF")
   cat("\n* Setting up plot area.")
   par(mar=c(5,5,4,3)+0.1) # sets the bottom, left, top and right margins
-  plotCAFHist(cafs)
-
+  plot(c(-0.004, 1), c(-0.004, 1), col = "#E55738", lwd = 1, type = "l",
+       xlab = "Reference AF", ylab =  yAxisLabel,
+       xlim = c(-0.004, 1), ylim = c(-0.004, 1), las = 1,
+       xaxs = "i", yaxs = "i", bty = "l",
+       cex.axis = 1.6, cex.lab = 1.75)
+  
   
   #--------------------------------------------------------------------------
-  ### PROVIDES LEGEND
-  cat("\n* Adding legend and closing image.\n")
-  legend(1, maxYplot, legend=c("Study", "Reference"), cex=1.4, 
-         fill=c("#9A3480", "#86B833"))
+  ### PLOTS DATA
+  cat("\n* Plotting data.\n")
+  plotCAF(data, "#1290D9", 0.3)
+  
+  #--------------------------------------------------------------------------
+  ### CLOSES IMAGE
+  cat("\n* Closing image.\n")
   
   dev.off()
   
@@ -247,13 +237,14 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
          - --p/projectdir  : path to project directory\n
          - --r/resultfile  : path to resultfile\n
          - --o/outputdir   : path to output directory\n
-         - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n\n", 
+         - --f/imageformat : the image format (PDF, PNG, TIFF or PostScript)\n
+         - --s/studyname   : study name\n\n", 
       file=stderr()) # print error messages to stderr
 }
 
 #--------------------------------------------------------------------------
 ### CLOSING MESSAGE
-cat(paste("\n\nAll done plotting a histogram of allele frequencies of",study,".\n"))
+cat(paste("\n\nAll done plotting a correlation plot of allele frequencies of",study,".\n"))
 cat(paste("\nToday's: ",Today, "\n"))
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
 
