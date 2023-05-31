@@ -353,7 +353,7 @@ else
 
 	if [ ! -f ${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz ]; then
 		echo "Create file with reference allele frequencies for plotting purposes..."
-		zcat ${REFFREQFILE} | $SCRIPTS/parsetable.pl --col VariantID,AF > ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
+		zcat ${REFFREQFILE} | $SCRIPTS/parseTable.pl --col VariantID,AF > ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
 		gzip -fv ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
 	fi
 	REFAFFILE="${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz"
