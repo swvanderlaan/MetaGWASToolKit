@@ -182,8 +182,8 @@ else
 			echo "Array report.........................: ${ARRAYMESSAGE}"
 			echo "${COHORTNAME} ${BASESPLITFILE} ${VARIANTYPE} ${ARRAYMESSAGEREADME} ${BASENAMEERRORFILE}" >> ${PROJECTDIR}/${COHORTNAME}.wrap.array.readme
 			echo "- removing files [ ${PROJECTDIR}/${prefix_array}${BASEPARSEDFILE}[.errors/log] ]..."
-			rm -v ${PROJECTDIR}/${prefix_array}${BASEPARSEDFILE}.errors
-			rm -v ${PROJECTDIR}/${prefix_array}${BASEPARSEDFILE}.log
+			rm -v ${PROJECTDIR}/${prefix_array}${BASEARRAYFILE_N}.errors
+			rm -v ${PROJECTDIR}/${prefix_array}${BASEARRAYFILE_N}.log
 		else
 			echoerrorflash "*** Error *** The pattern \"${ARRAYPATTERN}\" was NOT found in [ ${BASENAMEERRORFILE} ]..."
 			echoerror "Reported in the [ ${BASENAMEERRORFILE} ]:      "
@@ -342,4 +342,3 @@ else
 fi 
 
 script_copyright_message
-

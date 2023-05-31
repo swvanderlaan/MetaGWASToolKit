@@ -82,15 +82,15 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                                       --- META-ANALYSIS ---"
 echobold ""
-echobold "* Version:      v1.8.2"
+echobold "* Version:      v1.8.3"
 echobold ""
-echobold "* Last update:  2023-05-08"
+echobold "* Last update:  2023-05-25"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
 echobold "                Jessica van Setten; "
 echobold "                Paul I.W. de Bakker."
-echobold "* Testers:      Jessica van Setten. Emma J. Smulders. Noeri Mohamed-Hoesein. "
+echobold "* Testers:      Jessica van Setten. Emma J. Smulders. Noeri Mohamed-Hoesein. Mike Puijk"
 echobold "* Description:  Perform a meta-analysis of genome-wide association studies. It will do the following:"
 echobold "                - Automatically parse the various cohort files."
 echobold "                - Harmonize GWAS datasets relative to a reference."
@@ -342,7 +342,7 @@ else
 	### - a studyfile with the location of the study data (/PROJECTDIR/PROJECTNAME/SUBPROJECTDIRNAME/META/COHORT1/COHORT1.reorder.cdat.gz	COHORT1)
 	### - the constant (*)HM2.1Gp1) 
 	### This script is designed to calculate the inverse median of all SE values, mean of sample size, and lambda
-	rm -v "${METARESULTDIR}/meta.studyfile.txt"
+	rm -vf "${METARESULTDIR}/meta.studyfile.txt"
 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
@@ -471,7 +471,7 @@ else
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_SQRTN,CAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn_by_CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
 	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
 	echo "${SCRIPTS}/plotter.qq_by_caf.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn_by_CAF.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
-	echo  "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn*.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn*.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
 	
 	### OLD QSUB version
 	### qsub -S /bin/bash -N META.QQ_SQRTN.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_sqrtn.sh
@@ -484,7 +484,7 @@ else
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_FIXED,CAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed_by_CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
 	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
 	echo "${SCRIPTS}/plotter.qq_by_caf.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed_by_CAF.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
-	echo  "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed*.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed*.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
 	
 	### OLD QSUB version
 	### qsub -S /bin/bash -N META.QQ_FIXED.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_fixed.sh
@@ -497,7 +497,7 @@ else
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col P_RANDOM,CAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random_by_CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
 	echo "${SCRIPTS}/plotter.qq.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
 	echo "${SCRIPTS}/plotter.qq_by_caf.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random_by_CAF.txt --outputdir ${METARESULTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
-	echo  "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random*.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random*.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
 	### OLD QSUB version
 	### qsub -S /bin/bash -N META.QQ_RANDOM.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.QQ_random.sh
 	
@@ -506,14 +506,14 @@ else
  
 	echoerror "###############################"
 	echoerror "### THIS PART NEEDS FIXING ####"
-	echo "  - to make histograms of N_EFF and DF+1"
-	### adjust number of bins in histogram with number of contributing studies 
-	### (i.e. -CL -inputfile -number.of.studies -output.file)
-	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL'; including automatic determination of number of studies
+	echo "* Producing histograms of N_EFF and DF+1..."
+	### FUTURE VERSION: updated script which includes automatic determination of number of studies
 	printf "#!/bin/bash\nNSTUDIES=$(cat ${METARESULTDIR}/meta.cohorts.cleaned.txt | wc -l) \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 	echo "zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col N_EFF,DF | tail -n +2 | grep -v NA > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 	echo "${SCRIPTS}/plotter.n_eff_k_studies.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt --outputdir ${METARESULTDIR} --imageformat ${IMAGEFORMAT} --studycount \$NSTUDIES" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
-	
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
+
+
 	### OLD QSUB version
 	### qsub -S /bin/bash -N META.N_EFF.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh
 	
@@ -521,9 +521,9 @@ else
 	META_N_EFF_ID=$(sbatch --parsable --job-name=META.N_EFF.${PROJECTNAME} --dependency=afterany:${META_CONCATENATOR_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=NONE --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.n_eff.sh)
 
 	### Add in functions based on Winkler et al. (SE-Lambda-Plot, frequency plot among others)
-	echo "  - to make SE-N-lambda plot"
+	echo "* Producing SE-N-lambda plot..."
 	### FUTURE VERSION: updated script which uses Rscript instead of 'R CMD BATCH -CL';
-	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${METARESULTDIR}/meta.studyfile.txt ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt 1Gp1 \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
+	printf "#!/bin/bash\nperl ${SCRIPTS}/se-n-lambda.pl ${METARESULTDIR}/meta.studyfile.txt ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt ${REFERENCE} \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	echo "R CMD BATCH --args -CL -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.txt -PNG -${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.PNG ${SCRIPTS}/plotter.se_n_lambda.R" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh
 	
 	### OLD QSUB version
@@ -531,6 +531,19 @@ else
 
 	### SLURM version
 	META_SE_N_LAMBDA_ID=$(sbatch --parsable --job-name=META.SE_N_LAMBDA.${PROJECTNAME} --dependency=afterany:${META_CONCATENATOR_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=NONE --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.se_n_lambda.sh)
+
+	echo "* Producing a correlation plot between study allele frequency and reference allele frequency..."
+	printf "#!/bin/bash\nzcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.txt.gz | ${SCRIPTS}/parseTable.pl --col CAF,MAF | tail -n +2 > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.txt \n" > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.sh
+	echo "${SCRIPTS}/plotter.caf_plot.R --projectdir ${METARESULTDIR} --resultfile ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.txt --outputdir ${METARESULTDIR} --imageformat ${IMAGEFORMAT} --studyname ${PROJECTNAME}" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.sh
+	echo "gzip -fv ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.txt" >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.sh
+
+
+	### OLD QSUB version
+	### qsub -S /bin/bash -N META.CAF.${PROJECTNAME} -hold_jid meta.concatenator -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.log -e ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.sh
+	
+	### SLURM version
+	META_CAF_ID=$(sbatch --parsable --job-name=META.CAF.${PROJECTNAME} --dependency=afterany:${META_CONCATENATOR_ID} -o ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.log --error ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=NONE --chdir ${METARESULTDIR} ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.CAF.sh)
+
 
 	echoerror "### THIS PART NEEDS FIXING ####"
 	echoerror ###############################

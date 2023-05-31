@@ -62,7 +62,7 @@ script_arguments_error() {
 	echoerror "- Argument #5 is 'imageformat' you require for the plots of the GWAS data."
 	echoerror "- Argument #6 is taken from the source-file and should be the qsub-runtime for plots."
 	echoerror "- Argument #7 is taken from the source-file and should be the qsub-memory for plots."
-	echoerror "- Argument #8 is 'random sample' taken from the GWAS data required for the P-Z plot."
+	echoerror "- Argument #8 is path_to/file to the reference allele frequencies file"
 	echoerror ""
 	echoerror "An example command would be: gwas.plotter.sh [arg1] [arg2] [arg3] [arg4] [arg5] [arg6] [arg7] [arg8]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -75,16 +75,16 @@ script_arguments_error() {
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "                     GWASPLOTTER: VISUALIZE GENOME-WIDE ASSOCIATION STUDIES"
 echobold ""
-echobold "* Version:      v1.0.6"
+echobold "* Version:      v1.0.7"
 echobold ""
-echobold "* Last update:  2017-05-30"
+echobold "* Last update:  2023-05-25"
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "* Description:  Produce plots (PDF and PNG) for quick inspection and publication."
 echobold ""
 echobold "* REQUIRED: "
 echobold "  - A high-performance computer cluster with a qsub system"
-echobold "  - R v3.2+, Python 2.7+, Perl."
-echobold "  - Required Python 2.7+ modules: {pandas}, {scipy}, {numpy}."
+echobold "  - R v3.2+, Python 3+, Perl."
+echobold "  - Required Python 3+ modules: {pandas}, {scipy}, {numpy}, {polars}, {magic}."
 echobold "  - Required Perl modules: {YAML}, {Statistics::Distributions}, {Getopt::Long}."
 echobold "  - Note: it will also work on a Mac OS X system with R and Python installed."
 ### ADD-IN: function to check requirements...
@@ -98,11 +98,11 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##########################################################################################
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 7 ]]; then 
+if [[ $# -lt 8 ]]; then 
 	echo ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
-	echoerror "You must supply [7] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
+	echoerror "You must supply [8] arguments when running *** GWASPLOTTER -- MetaGWASToolKit ***!"
 	script_arguments_error
 else
 	echo ""
@@ -120,6 +120,7 @@ else
 	IMAGEFORMAT=${5} # depends on arg5
 	QRUNTIMEPLOTTER=${6} # depends on arg6
 	QMEMPLOTTER=${7} # depends on arg7
+	REFAFFILE=${8} # depends on arg8
 	QRUNTIME=${QRUNTIME} # to remove the intermediate data
 	QMEM=${QMEM} # to remove the intermediate data
 	RANDOMSAMPLE=${RANDOMSAMPLE} # depends on arg1, setting in the source file
@@ -276,7 +277,20 @@ else
 
 		printf "#!/bin/bash\nrm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh		
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.INFO.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.INFO -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh
-		INFO_ID_remover=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.INFO.remover --dependency=afterany:${INFO_ID} -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh)
+
+		#------------------------------------#
+		echo "- producing a correlation plot of the observed effect allele frequency and the reference allele frequency ..." # VariantID, EAF
+		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col VariantID,EAF > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt
+		python3 $SCRIPTS/mergeTables.py --in_file1 ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt --in_file2 ${REFAFFILE} --indexID VariantID --out_file ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt
+		cat ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt | ${SCRIPTS}/parseTable.pl --col EAF,AF | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt
+
+		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.caf_plot.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT} --studyname ${COHORTNAME}_${DATAPLOTID}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.sh
+		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.EAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.sh
+		EAF_ID=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.EAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.sh)
+
+		printf "#!/bin/bash\nrm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.sh		
+		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.EAF.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.EAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.sh
+		EAF_ID_remover=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.EAF.remover --dependency=afterany:${EAF_ID} -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.remover.sh)
 
 	elif [[ ${DATAFORMAT} == "META" ]]; then # OPTION: META
 		echosucces "Plotting meta-analysis results."

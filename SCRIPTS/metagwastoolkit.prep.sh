@@ -82,15 +82,15 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                      --- REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL GWAS DATA ---"
 echobold ""
-echobold "* Version:      v1.6.3" # Needs change
+echobold "* Version:      v1.6.4"
 echobold ""
-echobold "* Last update:  2022-12-13" # Needs change
+echobold "* Last update:  2023-05-25"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
 echobold "                Jessica van Setten; "
 echobold "                Paul I.W. de Bakker."
-echobold "* Testers:      Jessica van Setten; Emma J.A. Smulders; M. Baksi."
+echobold "* Testers:      Jessica van Setten; Emma J.A. Smulders; M. Baksi; Mike Puijk."
 echobold "* Description:  Perform a meta-analysis of genome-wide association studies. It will do the following:"
 echobold "                - Automatically parse the various cohort files."
 echobold "                - Harmonize GWAS datasets relative to a reference."
@@ -130,6 +130,13 @@ else
 	echo "These are the "$#" arguments that passed:"
 	echo "The configuration file.................: "$(basename ${1}) # argument 1
 	echo "The list of GWAS files.................: "$(basename ${2}) # argument 2
+
+	### loading required modules
+	### Loading the GWAS-Anaconda3.8 environment
+	### You need to also have the conda init lines in your .bash_profile/.bashrc file
+	echo "..... > loading required anaconda environment containing the GWAS analyses data..."
+	eval "$(conda shell.bash hook)"
+	conda activate gwas
 	
 	### SETTING DIRECTORIES (from configuration file).
 	# Loading the configuration file (please refer to the MetaGWASToolKit-Manual for specifications of this file). 
@@ -150,6 +157,7 @@ else
 	OUTPUTDIRNAME=${OUTPUTDIRNAME} # from configuration file
 	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information; e.g. metagwastoolkit.files.list
 	REFERENCE=${REFERENCE} # from configuration file
+	REFFREQFILE=${REFFREQFILE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
 	
 	##########################################################################################
@@ -339,6 +347,16 @@ else
 		mv -v ${SUBPROJECTDIR}/plotter_ids.txt ${SUBPROJECTDIR}/plotter_ids.${THISDATESTAMP}.txt
 		touch ${SUBPROJECTDIR}/plotter_ids.txt
 	fi
+
+	### Create a file with reference allele frequencies which is neccesary for plotting later.
+	### Creates slight bottleneck, this step could be changed to an sbatch command, while making the gwas.plotter.sh steps dependant on this.
+
+	if [ ! -f ${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz ]; then
+		echo "Create file with reference allele frequencies for plotting purposes..."
+		zcat ${REFFREQFILE} | $SCRIPTS/parseTable.pl --col VariantID,AF > ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
+		gzip -fv ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
+	fi
+	REFAFFILE="${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz"
 		
 	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 		LINE=${GWASCOHORT}
@@ -444,13 +462,13 @@ else
 		IMAGEFORMAT=${IMAGEFORMATQC}
 
 		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}
+		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER} ${REFAFFILE}
  		
  		### OLD QSUB version
  		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
 
 		### SLURM version
- 		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
+ 		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER} ${REFAFFILE}" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh
 		PLOTTER_ID=$(sbatch --parsable --job-name=gwas.plotter --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.raw.sh)
 		
 		echobold "#========================================================================================================"
@@ -463,13 +481,13 @@ else
 		IMAGEFORMAT=${IMAGEFORMATQC}
 		
 		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}	
+		### ${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER} ${REFAFFILE}
  		
  		### OLD QSUB version
  		### qsub -S /bin/bash -N gwas.plotter -hold_jid gwas.wrapper.${BASEFILE} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log -e ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors -l h_rt=${QRUNTIMEPLOTTER} -l h_vmem=${QMEMPLOTTER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
 
 		### SLURM version
-		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER}" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
+		printf "#!/bin/bash\n${SCRIPTS}/gwas.plotter.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${COHORT} ${DATAFORMAT} ${IMAGEFORMAT} ${QRUNTIMEPLOTTER} ${QMEMPLOTTER} ${REFAFFILE}" > ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh
 		PLOTTER_ID_CLEAN=$(sbatch --parsable --job-name=gwas.plotter.qc --dependency=afterany:${WRAPPER_ID} -o ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.log --error ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.plotter.${BASEFILE}.qc.sh)
 				
 		### SLURM version

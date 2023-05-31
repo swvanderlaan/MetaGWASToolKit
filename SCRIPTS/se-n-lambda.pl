@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+                              MedianSE-Lambda-Mean_N CALCULATOR                         +\n";
-print STDOUT "+                                 version 2.1 | 30-05-2017                               +\n";
+print STDOUT "+                                 version 2.2 | 25-05-2023                               +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
@@ -25,7 +25,7 @@ use FileHandle;
 ###			            on 1000G, ALL reference
 ###			Data from Table 3, Winkler TW ea, Nature Protocols, 2014.
 ###
-### Last update: 2023-05-16
+### Last update: 2023-05-25
 ### Written by: Jessica van Setten & Sander W. van der Laan (s.w.vanderlaan@gmail.com)
 ### 
 ### Usage:
@@ -91,7 +91,7 @@ while(<COHORT>){
 			if ($parameterFound == 1) {
 				chomp;
 				my @fields = split;
-				if ($fields[17] ne "NA") {
+				if ($fields[17] ne "NA") { # Checks to see if the SE column is NA. Might need expansion.
 					my $n_line = $fields[19];
 					# print STDERR "Sample size: $n_line\n";
 					my $se_line = $fields[17];
