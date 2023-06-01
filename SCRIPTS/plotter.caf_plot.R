@@ -7,14 +7,15 @@
 ### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    Allele frequencies correlation plotter -- MetaGWASToolKit
+    Allele frequencies plotter -- MetaGWASToolKit
     \n
-    * Version: v1.0.0
-    * Last edit: 2023-05-25
+    * Version: v1.1.0
+    * Last edit: 2023-06-01
     * Created by: Sander W. van der Laan | s.w.vanderlaan@gmail.com
     * Edited by: Mike Puijk | mikepuijk@hotmail.com
     \n
-    * Description: Allele frequencies correlation plotter for GWAS (meta-analysis) results. 
+    * Description: Creates a histogram of allele frequencies, and a correlation plot comparing
+      the study allele frequencies to the reference allele frequencies for GWAS (meta-analysis) results.
       Can produce output in different image-formats. Two columns are expected:
       - first with coded/minor/effect/risk allele frequency in the study
       - second with coded/minor/effect/risk allele frequency from the reference used
@@ -136,7 +137,7 @@ if (opt$verbose) {
   
 }
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n")
-cat("Wow. We are finally starting \"Allele frequencies plotter - Correlation between study and reference\". ")
+cat("Wow. We are finally starting \"Allele frequencies plotter\". ")
 #--------------------------------------------------------------------------
 ### START OF THE PROGRAM
 # main point of program is here, do this whether or not "verbose" is set
@@ -144,7 +145,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   ### set studyfile and name
   study <- file_path_sans_ext(basename(opt$resultfile)) # argument 2
   studyname <- opt$studyname
-  cat(paste("We are going to \nmake the allele frequencies plot of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
+  cat(paste("We are going to \nmake the allele frequencies plots of your (meta-)GWAS results. \nData are taken from.....: '",study,"'\nand will be outputed in.....: '", opt$outputdir, "'.\n",sep=''))
   cat("\n\n")
   
   #--------------------------------------------------------------------------
@@ -158,11 +159,15 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   OUT_loc = opt$outputdir # argument 4
   
   #--------------------------------------------------------------------------
-  #### DEFINE THE PLOT FUNCTION
+  #### DEFINE THE PLOT FUNCTIONS
   plotCAF <- function(caf, color, cex){
-    
     points(caf$V2, caf$V1, pch = 21, cex = cex, col = color, bg = color)
-    
+  }
+  
+  plotCAFHist <- function(caf, color, hist_title){
+    hist(caf, xlab="Allele Frequency", main=hist_title, 
+         xlim=c(0,1), col=color,
+         cex.axis=1.4, cex.lab=1.75, cex.main=2, cex.names=1.4)
   }
   
   #--------------------------------------------------------------------------
@@ -196,36 +201,60 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   
   
   #--------------------------------------------------------------------------
-  ### PLOTS ALLELE FREQUENCIES
-  cat("\n\nDetermining what type of image should be produced and plotting axes with null distribution.")
+  ### PLOTS STUDY TO REFERENCE CORRELATION PLOT
+  cat("\n\nDetermining what type of image should be produced and plotting the correlation plot.")
   if (opt$imageformat == "PNG") 
-    png(paste0(opt$outputdir,"/",study,".plot.png"), width = 700, height = 700)
+    png(paste0(opt$outputdir,"/",study,".correlation.png"), width = 700, height = 700)
   
   if (opt$imageformat == "TIFF") 
-    tiff(paste0(opt$outputdir,"/",study,".plot.tiff"), width = 700, height = 700)
+    tiff(paste0(opt$outputdir,"/",study,".correlation.tiff"), width = 700, height = 700)
   
   if (opt$imageformat == "EPS") 
-    postscript(file = paste0(opt$outputdir,"/",study,".plot.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+    postscript(file = paste0(opt$outputdir,"/",study,".correlation.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
   
   if (opt$imageformat == "PDF") 
-    pdf(paste0(opt$outputdir,"/",study,".plot.pdf"), width = 8, height = 8)
+    pdf(paste0(opt$outputdir,"/",study,".correlation.pdf"), width = 8, height = 8)
   
-  yAxisLabel=paste(studyname, " AF")
   cat("\n* Setting up plot area.")
+  yAxisLabel=paste(studyname, "AF")
   par(mar=c(5,5,4,3)+0.1) # sets the bottom, left, top and right margins
   plot(c(-0.004, 1), c(-0.004, 1), col = "#E55738", lwd = 1, type = "l",
        xlab = "Reference AF", ylab =  yAxisLabel,
        xlim = c(-0.004, 1), ylim = c(-0.004, 1), las = 1,
        xaxs = "i", yaxs = "i", bty = "l",
        cex.axis = 1.6, cex.lab = 1.75)
-  
-  
-  #--------------------------------------------------------------------------
+
   ### PLOTS DATA
   cat("\n* Plotting data.\n")
   plotCAF(data, "#1290D9", 0.3)
+
+  ### CLOSES IMAGE
+  cat("\n* Closing image.\n")
+  
+  dev.off()
   
   #--------------------------------------------------------------------------
+  ### PLOTS ALLELE FREQUENCIES
+  cat("\n\nDetermining what type of image should be produced")
+  if (opt$imageformat == "PNG") 
+    png(paste0(opt$outputdir,"/",study,".hist.png"), width = 800, height = 800)
+  
+  if (opt$imageformat == "TIFF") 
+    tiff(paste0(opt$outputdir,"/",study,".hist.tiff"), width = 800, height = 800)
+  
+  if (opt$imageformat == "EPS") 
+    postscript(file = paste0(opt$outputdir,"/",study,".hist.ps"), horizontal = FALSE, onefile = FALSE, paper = "special")
+  
+  if (opt$imageformat == "PDF") 
+    pdf(paste0(opt$outputdir,"/",study,".hist.pdf"), width = 10, height = 10)
+  
+  
+  cat("\n* Setting up plot area.")
+  par(mar=c(5,5,4,3)+0.1) # sets the bottom, left, top and right margins
+  histTitle=paste("Allele Frequencies of", studyname)
+  plotCAFHist(data$V1, "#86B833", histTitle)
+  
+  
   ### CLOSES IMAGE
   cat("\n* Closing image.\n")
   
