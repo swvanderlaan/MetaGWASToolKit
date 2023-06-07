@@ -167,7 +167,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$resultfile) & !is.na(opt$outputdir) & !is
   plotCAFHist <- function(caf, color, hist_title){
     hist(caf, xlab="Allele Frequency", main=hist_title, 
          xlim=c(0,1), col=color,
-         cex.axis=1.4, cex.lab=1.75, cex.main=2, cex.names=1.4)
+         cex.axis=1.4, cex.lab=1.75, cex.main=2)
   }
   
   #--------------------------------------------------------------------------

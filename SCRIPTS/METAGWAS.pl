@@ -576,6 +576,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   if ( ! defined( $skip_list{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) && ! defined( $dbsnp_chr{$variant} ) ) {
     print STDERR "* $variant in [ $variantFile ] is not present in the Variant Annotation File  -- skipping it.\n";
     $skip_list{$variant} = 1;
+    $not_on_reference++;
   }
 }
 
