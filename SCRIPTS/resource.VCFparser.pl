@@ -10,9 +10,10 @@
 #
 # Written by:	Vinicius Tragante dó Ó & Sander W. van der Laan; Utrecht, the 
 #               Netherlands, s.w.vanderlaan@gmail.com.
-# Edited by: 	Emma J.A. Smulders. 
-# Version:		1.5.1
-# Update date: 	2022-11-01
+# Edited by: 	Emma J.A. Smulders;
+#				Mike Puijk.
+# Version:		1.5.2
+# Update date: 	2023-06-08
 #
 # Usage:		resource.VCFparser.pl --file [input.vcf.gz] --ref [reference] --pop [population] --out [output.basename]
 
@@ -176,17 +177,17 @@ if ( $reference eq "1Gp1" ) {
 			$AF = $1;
   			}
   			} elsif ( $population eq "AFR" ){
-				if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+				if ($INFO =~ m/(?:^|;)AFR_AF=([^;]*)/){
 # 				print " ***DEBUG*** Population: $population. So looking for AFR_AF in $INFO for $vareach[2]; should be: $1. \n";
 				$AF = $1;
   				}
   				} elsif ( $population eq "AMR" ){
-					if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+					if ($INFO =~ m/(?:^|;)AMR_AF=([^;]*)/){
 # 					print " ***DEBUG*** Population: $population. So looking for AMR_AF in $INFO for $vareach[2]; should be: $1. \n";
 					$AF = $1;
   					}
   					} elsif ( $population eq "ASN" ){
-						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+						if ($INFO =~ m/(?:^|;)ASN_AF=([^;]*)/){
 # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 						$AF = $1;
   						}
@@ -453,27 +454,27 @@ if ( $reference eq "1Gp1" ) {
 			$AF = $1;
   			}
   			} elsif ( $population eq "AFR" ){
-				if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+				if ($INFO =~ m/(?:^|;)AFR_AF=([^;]*)/){
 # 				print " ***DEBUG*** Population: $population. So looking for AFR_AF in $INFO for $vareach[2]; should be: $1. \n";
 				$AF = $1;
   				}
   				} elsif ( $population eq "AMR" ){
-					if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+					if ($INFO =~ m/(?:^|;)AMR_AF=([^;]*)/){
 # 					print " ***DEBUG*** Population: $population. So looking for AMR_AF in $INFO for $vareach[2]; should be: $1. \n";
 					$AF = $1;
   					}
 #   					} elsif ( $population eq "ASN" ){
-# 						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+# 						if ($INFO =~ m/(?:^|;)ASN_AF=([^;]*)/){
 # # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 # 						$AF = $1;
 #   						}
   					} elsif ( $population eq "EAS" ){
-						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+						if ($INFO =~ m/(?:^|;)EAS_AF=([^;]*)/){
 # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 						$AF = $1;
   						}
   						} elsif ( $population eq "SAS" ){
-						if ($INFO =~ m/(?:^|;)EUR_AF=([^;]*)/){
+						if ($INFO =~ m/(?:^|;)SAS_AF=([^;]*)/){
 # 						print " ***DEBUG*** Population: $population. So looking for ASN_AF in $INFO for $vareach[2]; should be: $1. \n";
 						$AF = $1;
   							}

@@ -188,7 +188,7 @@ else
 
 		#------------------------------------#
 		echo "- producing Manhattan-plots..." # CHR, BP, P-value
-		printf "#/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col CHR,BP,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col CHR,BP,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.sh
 		MANHATTAN_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.MANHATTAN_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.sh)
 
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT} --title ${COHORTNAME}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
@@ -210,7 +210,7 @@ else
 
 		#------------------------------------#
 		echo "- producing normal QQ-plots..." # P-value
-		printf "#/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt.sh
 		QQ_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.QQ_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt.sh)
 
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.qq.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ.sh
@@ -223,7 +223,7 @@ else
 
 		#------------------------------------#
 		echo "- producing QQ-plots stratified by imputation quality..." # P-value, INFO
-		printf "#/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,Info | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,Info | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt.sh
 		QQ_by_INFO_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt.sh)
 
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.qq_by_info.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_INFO.sh
@@ -236,7 +236,7 @@ else
 
 		#------------------------------------#
 		echo "- producing QQ-plots stratified by minor allele frequency..." # P-value, MAF
-		printf "#/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,MAF | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col P,MAF | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt.sh
 		QQ_by_CAF_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt.sh)
 		
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.qq_by_caf.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.txt --outputdir ${PROJECTDIR} --stattype ${STATTYPE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.QQ_by_CAF.sh
@@ -249,7 +249,7 @@ else
 
 		#------------------------------------#
 		echo "- producing histograms of the beta (effect size)..." # BETA
-		printf "#/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col BetaMinor | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col BetaMinor | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt.sh
 		HISTOGRAM_BETA_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt.sh)
 		
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.effectsize.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.HISTOGRAM_BETA.sh
@@ -262,7 +262,7 @@ else
 
 		#------------------------------------#
 		echo "- producing a correlation plot of the observed p-value and the p-value based on beta and standard error..." # BETA, SE, P-value
-		printf "#/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col BetaMinor,SE,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col BetaMinor,SE,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt.sh
 		P_Z_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.P_Z_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt.sh)
 		
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.p_z.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.txt --outputdir ${PROJECTDIR} --randomsample ${RANDOMSAMPLE} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.P_Z.sh
@@ -275,7 +275,7 @@ else
 
 		#------------------------------------#
 		echo "- producing histograms of the imputation quality..." # INFO
-		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col Info | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt" > {PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.sh
+		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col Info | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.sh
 		INFO_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.INFO_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.sh)
 		
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.infoscore.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.sh
@@ -284,7 +284,8 @@ else
 
 		printf "#!/bin/bash\nrm -v ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.sh ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.errors ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.txt.log ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.log" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh		
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.INFO.remover -hold_jid ${COHORTNAME}.${DATAPLOTID}.INFO -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.errors -l h_vmem=${QMEM} -l h_rt=${QRUNTIME} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh
-
+		INFO_ID_remover=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.INFO.remover --dependency=afterany:${INFO_ID} -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.INFO.remover.sh)
+		
 		#------------------------------------#
 		echo "- producing a correlation plot of the observed effect allele frequency and the reference allele frequency ..." # VariantID, EAF
 		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col VariantID,EAF > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt \n" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
