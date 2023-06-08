@@ -62,7 +62,8 @@ script_arguments_error() {
 	echoerror "- Argument #5 is 'imageformat' you require for the plots of the GWAS data."
 	echoerror "- Argument #6 is taken from the source-file and should be the qsub-runtime for plots."
 	echoerror "- Argument #7 is taken from the source-file and should be the qsub-memory for plots."
-	echoerror "- Argument #8 is path_to/file to the reference allele frequencies file"
+	echoerror "- Argument #8 is taken from the source-file and should be the name for plots."
+	echoerror "- Argument #9 is path_to/file to the reference allele frequencies file"
 	echoerror ""
 	echoerror "An example command would be: gwas.plotter.sh [arg1] [arg2] [arg3] [arg4] [arg5] [arg6] [arg7] [arg8]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -120,7 +121,8 @@ else
 	IMAGEFORMAT=${5} # depends on arg5
 	QRUNTIMEPLOTTER=${6} # depends on arg6
 	QMEMPLOTTER=${7} # depends on arg7
-	REFAFFILE=${8} # depends on arg8
+	TITLEPLOT=${8} # depends on arg8
+	REFAFFILE=${9} # depends on arg9
 	QRUNTIME=${QRUNTIME} # to remove the intermediate data
 	QMEM=${QMEM} # to remove the intermediate data
 	RANDOMSAMPLE=${RANDOMSAMPLE} # depends on arg1, setting in the source file
@@ -134,6 +136,7 @@ else
 	echo "Cohort name...................: "${COHORTNAME}
 	echo "Data style....................: "${DATAFORMAT}
 	echo "Plotting format...............: "${IMAGEFORMAT}
+	echo "Title of plots...............: "${TITLEPLOT}
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -191,15 +194,15 @@ else
 		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col CHR,BP,P | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.sh
 		MANHATTAN_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.MANHATTAN_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt.sh)
 
-		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT} --title ${COHORTNAME}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
+		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT} --title ${TITLEPLOT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
 		MANHATTAN_ID_FULL=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.MANHATTAN_FULL --dependency=afterany:${MANHATTAN_ID_TXT} -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh)
 
-		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle QC --imageformat ${IMAGEFORMAT} --title ${COHORTNAME}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
+		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle QC --imageformat ${IMAGEFORMAT} --title ${TITLEPLOT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh
 		MANHATTAN_ID_QC=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.MANHATTAN_QC --dependency=afterany:${MANHATTAN_ID_TXT} -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.QC.sh)
 
-		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle TWOCOLOR --imageformat ${IMAGEFORMAT} --title ${COHORTNAME}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
+		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle TWOCOLOR --imageformat ${IMAGEFORMAT} --title ${TITLEPLOT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh
 		MANHATTAN_ID_TWOCOLOR=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.MANHATTAN_TWOCOLOR --dependency=afterany:${MANHATTAN_ID_TXT} -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.TWOCOLOR.sh)
 
@@ -310,7 +313,7 @@ else
 		echo "- producing Manhattan-plots..." # CHR, BP, P-value (P_SQRTN P_FIXED P_RANDOM)
 		zcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col CHR,BP,P_FIXED | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt
 		
-		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT} --title ${COHORTNAME}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
+		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.manhattan.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.txt --outputdir ${PROJECTDIR} --colorstyle FULL --imageformat ${IMAGEFORMAT} --title ${TITLEPLOT}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh
 		MANHATTAN_ID_FULL=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.MANHATTAN -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.MANHATTAN.FULL.sh)
 
