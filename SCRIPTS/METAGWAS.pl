@@ -4,12 +4,12 @@
 #
 # Version               : 2.1.3"
 #
-# Last update			: 2023-06-09"
+# Last update			: 2023-06-08"
 # Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com;
-#							Mike Puijk;
 #						  Emma Smulders;
 #						  Jacco Schaap;
-#						  Jessica van Setten.
+#						  Jessica van Setten;
+#							Mike Puijk.
 # Originally written by	: Paul I.W. de Bakker; 
 #						  Sara L. Pulit;
 #						  Jessica van Setten.
@@ -170,7 +170,7 @@
 
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+             MetaGWASToolKit: Meta-Analysis of Genome-Wide Association Studies          +\n";
-print STDOUT "+                                 version 2.1 | 09-06-2023                               +\n";
+print STDOUT "+                                 version 2.0 | 11-05-2017                               +\n";
 print STDOUT "+                              (formely known as [ MANTEL ])                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
@@ -573,19 +573,12 @@ print STDOUT "Checking existence in the Variant Annotation File of variants list
 print STDOUT "\n";
 
 my $not_on_reference = 0;
-my %reference_present = ();
-
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my $variant = $variant_name[$nvariant];
   if ( ! defined( $skip_list{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) && ! defined( $dbsnp_chr{$variant} ) ) {
     print STDERR "* $variant in [ $variantFile ] is not present in the Variant Annotation File  -- skipping it.\n";
-    #$skip_list{$variant} = 1;
-    $caveat{$variant} .= "not_in_reference";
-    $reference_present{$variant} = 0;
+    $skip_list{$variant} = 1;
     $not_on_reference++;
-  }
-  else {
-  	$reference_present{$variant} = 1;
   }
 }
 
@@ -848,6 +841,7 @@ print STDOUT "Meta-analyzing this shizzle...\n";
 my $nvariants_in_meta = 0;
 my $skip = 0;
 my $n_skipped_uninformative = 0;
+my %reference_present = ();
 
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
 
@@ -950,7 +944,9 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
     $reference_present{$variant} = 0;
     $caveat{$variant} .= "not_in_reference";
   }
-
+  else {
+      $reference_present{$variant} = 1;
+  }
   
   ###
   ### walk through studies to see who's present
