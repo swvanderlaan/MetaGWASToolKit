@@ -136,7 +136,7 @@ else
 	echo "Cohort name...................: "${COHORTNAME}
 	echo "Data style....................: "${DATAFORMAT}
 	echo "Plotting format...............: "${IMAGEFORMAT}
-	echo "Title of plots...............: "${TITLEPLOT}
+	echo "Title of plots................: "${TITLEPLOT}
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -168,6 +168,11 @@ else
 		echo ""
 		script_copyright_message
 		exit 1
+	fi
+
+	if [ -z "${TITLEPLOT}" ]; then
+		echo "* No title given for Manhattan plot, setting to default..."
+		TITLEPLOT="${COHORTNAME}\ ${DATAPLOTID}"
 	fi
 	
 	### HEADER .pdat-file
@@ -294,7 +299,7 @@ else
 		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col VariantID,EAF > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt \n" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
 		printf "python3 $SCRIPTS/mergeTables.py --in_file1 ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt --in_file2 ${REFAFFILE} --indexID VariantID --out_file ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt \n" >> ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
 		printf "cat ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt | ${SCRIPTS}/parseTable.pl --col EAF,AF | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt" >> ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
-		EAF_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.EAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh)
+		EAF_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.EAF_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh)
 
 		printf "#!/bin/bash\nRscript ${SCRIPTS}/plotter.caf_plot.R --projectdir ${PROJECTDIR} --resultfile ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt --outputdir ${PROJECTDIR} --imageformat ${IMAGEFORMAT} --studyname ${COHORTNAME}_${DATAPLOTID}" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.sh
 		## qsub -S /bin/bash -N ${COHORTNAME}.${DATAPLOTID}.EAF -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.log -e ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.errors -l h_vmem=${QMEMPLOTTER} -l h_rt=${QRUNTIMEPLOTTER} -wd ${PROJECTDIR} ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.sh

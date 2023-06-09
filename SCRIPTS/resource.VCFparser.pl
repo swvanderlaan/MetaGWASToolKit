@@ -433,6 +433,12 @@ if ( $reference eq "1Gp1" ) {
 		$ALT = $vareach[4]; # alternate allele
 		$INFO = $vareach[7]; # info column -- refer to below for information
 	
+
+	### get rid of copy number variants 
+	if ( $REF =~ /<CN\d>/ or $ALT =~ /<CN\d>/ ){
+		next; 
+	}
+
 	### get allele frequencies
 	if ( $INFO =~ m/(?:^|;)AF=([^;]*)/ ){
 # 	print " ***DEBUG*** allele frequency = $1 for  [ $vareach[2] ].\n";
