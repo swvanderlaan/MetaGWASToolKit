@@ -4,11 +4,12 @@
 #
 # Version               : 2.1.3"
 #
-# Last update			: 2023-05-03"
+# Last update			: 2023-06-08"
 # Updated by			: Sander W. van der Laan | s.w.vanderlaan@gmail.com;
 #						  Emma Smulders;
 #						  Jacco Schaap;
-#						  Jessica van Setten.
+#						  Jessica van Setten;
+#							Mike Puijk.
 # Originally written by	: Paul I.W. de Bakker; 
 #						  Sara L. Pulit;
 #						  Jessica van Setten.
@@ -571,11 +572,13 @@ print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 print STDOUT "Checking existence in the Variant Annotation File of variants listed in this meta-analysis.\n";
 print STDOUT "\n";
 
+my $not_on_reference = 0;
 for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   my $variant = $variant_name[$nvariant];
   if ( ! defined( $skip_list{$variant} ) && ( ( ! $extractFile ) || defined( $extract{$variant} ) ) && ! defined( $dbsnp_chr{$variant} ) ) {
     print STDERR "* $variant in [ $variantFile ] is not present in the Variant Annotation File  -- skipping it.\n";
     $skip_list{$variant} = 1;
+    $not_on_reference++;
   }
 }
 
@@ -836,7 +839,6 @@ print OUT "DIRECTIONS GENES_" . $gene_dist . "KB NEAREST_GENE NEAREST_GENE_ENSEM
 
 print STDOUT "Meta-analyzing this shizzle...\n";
 my $nvariants_in_meta = 0;
-my $not_on_reference = 0;
 my $skip = 0;
 my $n_skipped_uninformative = 0;
 my %reference_present = ();
