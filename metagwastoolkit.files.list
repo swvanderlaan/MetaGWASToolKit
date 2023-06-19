@@ -1,3 +1,3 @@
-COHORT1 COHORT1/COHORT1.rawdata.txt.gz VariantID correlationfactor
-COHORT2 COHORT2/COHORT2.rawdata.txt.gz VariantID correlationfactor
-COHORT3 COHORT3/COHORT3.rawdata.txt.gz VariantID correlationfactor
+COHORT1 COHORT1/COHORT1.rawdata.txt.gz VariantID correctionfactor
+COHORT2 COHORT2/COHORT2.rawdata.txt.gz VariantID correctionfactor
+COHORT3 COHORT3/COHORT3.rawdata.txt.gz VariantID correctionfactor
