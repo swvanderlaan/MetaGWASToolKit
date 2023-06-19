@@ -422,6 +422,17 @@ else
 		
 	done < ${GWASFILES}
 
+	echobold "#========================================================================================================"
+	echobold "#== MAKE PARAMS FILE"
+	echobold "#========================================================================================================"
+	echobold "#"
+	
+	### SLURM version
+	printf "#!/bin/bash\nperl ${SCRIPTS}/meta.params.sh ${GWASFILES} ${PROJECTDIR}/SUBPROJECTDIRNAME.params ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/meta.params.sh
+	META_PREPARATOR_ID=$(sbatch --parsable --job-name=meta.params --dependency=afterany:${META_PREPARATOR_ID} -o ${METARESULTDIR}/meta.params.log --error ${METARESULTDIR}/meta.params.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/meta.params.sh)
+	
+	
+
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 
 
