@@ -69,25 +69,25 @@ if not hasattr(os.path, 'commonpath'):
 
 
 # case insensitive
-GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['chr_pos_(b36)']
-GWAS_H_CHR_OPTIONS =             ['chr', 'chromosome', 'Chromosome', 'CHR', 'Chr', 'Chr(GCF1405.25)', 'Chrom']
-GWAS_H_BP_OPTIONS =              ['bp_hg18', 'bp_hg19', 'bp', 'pos', 'position', 'Position', 'BP', 'POS', 'Pos', 'Start(GCF1405.25)', 'genpos']
-GWAS_H_EFF_OPTIONS =             ['A1', 'Allele1', 'reference_allele', 'effect_allele', 'riskallele', 'CODEDALLELE', 'EA']
-GWAS_H_OTH_OPTIONS =             ['A2', 'Allele2', 'other_allele', 'noneffect_allele', 'nonriskallele', 'OTHERALLELE', 'NEA']
-GWAS_H_FREQ_OPTIONS =            ['ref_allele_frequency', 'effect_allele_freq', 'eaf', 'raf', 'CAF', 'EAF', 'Freq1', 'freq(A1)', 'Freq.A1.1000G.EUR']
-GWAS_H_BETA_OPTIONS =            ['log_odds', 'logOR', 'beta', 'effect', 'BETA_FIXED', 'BETA', 'Beta', 'b', 'Effect', 'effectsize']
-GWAS_H_SE_OPTIONS =              ['log_odds_se', 'se_gc', 'se', 'stderr', 'SE_FIXED', 'SE']
-GWAS_H_PVALUE_OPTIONS =          ['pvalue', 'p-value_gc', 'p-value', 'p.value', 'pval', 'p', 'P_FIXED', 'P', 'Pvalue', 'P-value']
-GWAS_H_NTOTAL_OPTIONS =          ['n_samples', 'TotalSampleSize', 'n_eff', 'N_EFF', 'N', 'neff', 'Neff']
-GWAS_H_NCONTROL_OPTIONS =        ['N_control', 'N_controls', 'controls', 'TotalControls']
-GWAS_H_NCASE_OPTIONS =           ['N_case', 'N_cases', 'cases', 'TotalCases']
-GWAS_H_VARIANT_OPTIONS =         ['marker', 'SNP', 'rsid', 'snpid', 'id']
-GWAS_H_STRAND_OPTIONS =          ['Strand']
-GWAS_H_IMPUTED_OPTIONS =         ['Imputed']
-GWAS_H_HWE_OPTIONS =             ['hwe', 'hwe_p', 'hwe.value', 'hwe.val']
-GWAS_H_INFO_OPTIONS =            ['Info', 'qual_score']
-GWAS_HG18_HINTS =                ['hg18', 'b36']
-GWAS_HG19_HINTS =                ['hg19', 'GCF1405.25']
+GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
+GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHROMOSOME', 'CHR', 'CHR', 'CHR(GCF1405.25)', 'CHROM']
+GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'POSITION', 'BP', 'POS', 'POS', 'START(GCF1405.25)', 'GENPOS']
+GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'EFFECT_ALLELE', 'RISKALLELE', 'CODEDALLELE', 'EA', 'EFFECT', 'EFFECTALLELE']
+GWAS_H_OTH_OPTIONS =             ['A2', 'ALLELE2', 'OTHER_ALLELE', 'NONEFFECT_ALLELE', 'NONRISKALLELE', 'OTHERALLELE', 'NEA', 'OTHER', 'NONEFFECTALLELE']
+GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'EAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR']
+GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'BETA', 'BETA', 'B', 'EFFECT', 'EFFECTSIZE']
+GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED', 'SE']
+GWAS_H_PVALUE_OPTIONS =          ['PVALUE', 'P-VALUE_GC', 'P-VALUE', 'P.VALUE', 'PVAL', 'P', 'P_FIXED', 'P', 'PVALUE', 'P-VALUE']
+GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N_EFF', 'N', 'NEFF', 'NEFF']
+GWAS_H_NCONTROL_OPTIONS =        ['N_CONTROL', 'N_CONTROLS', 'CONTROLS', 'TOTALCONTROLS']
+GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES']
+GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID']
+GWAS_H_STRAND_OPTIONS =          ['STRAND']
+GWAS_H_IMPUTED_OPTIONS =         ['IMPUTED']
+GWAS_H_HWE_OPTIONS =             ['HWE', 'HWE_P', 'HWE.VALUE', 'HWE.VAL']
+GWAS_H_INFO_OPTIONS =            ['INFO', 'QUAL_SCORE', 'RSQ']
+GWAS_HG18_HINTS =                ['HG18', 'B36']
+GWAS_HG19_HINTS =                ['HG19', 'GCF1405.25']
 
 
 def build_parser():
@@ -303,6 +303,22 @@ def fopen(filename):
     else:
         return open(filename)
 
+# import csv
+# def detect_delimiter(in_file):
+#     # Read first 10KB of the file to determine the delimiter
+#     sniffer = csv.Sniffer()
+#     lines = in_file.read(10000)
+#     delimiter = str(sniffer.sniff(lines).delimiter)
+#     return delimiter
+
+
+# This is a very blunt delimiter tester. The above function is more sophisticated but requires testing and some work to make it work for this script.
+def bluntDelimiterTest(line): 
+    seperators = [',', ';', '\t', '\s']
+    for sep in seperators:
+        if sep in line:
+            return sep
+
 
 def read_gwas(args, filename, report=None):
     liftover = None
@@ -351,7 +367,11 @@ def read_gwas(args, filename, report=None):
                         line = line[garbage_end+1:]
                     if args['gwas:header:remove']:
                         line = line.replace(args['gwas:header:remove'], '')
-                    header = line.split(args['gwas:sep'])
+                    if args['gwas:sep'] is None:
+                        separator = bluntDelimiterTest(line)
+                    else:
+                        separator = args['gwas:sep']
+                    header = line.split(separator)
                     hpos = select('chr_bp', GWAS_H_CHR_AND_BP_COMB_OPTIONS, fail=False)
                     if hpos is None:
                         postype_combined = False
@@ -376,30 +396,33 @@ def read_gwas(args, filename, report=None):
                         hor = select('or', [])
                     else:
                         hb = select('beta', GWAS_H_BETA_OPTIONS) # select default or fail
+                    header_upper = list(map(str.upper, header))
                     if not args['gwas:n'] is None:
-                        hn = [header.index(col) for col in args['gwas:n'].split(',')]
+                        hn = [header_upper.index(col.upper()) for col in args['gwas:n'].split(',')]
                         desc['n'] = '+'.join(args['gwas:n'].split(','))
-                    elif any(col in header for col in GWAS_H_NTOTAL_OPTIONS):
-                        ncol = next(col_ for col_ in GWAS_H_NTOTAL_OPTIONS if col_ in header)
+                    elif any(col.upper() in header_upper for col in GWAS_H_NTOTAL_OPTIONS):
+                        ncol = next(col_ for col_ in GWAS_H_NTOTAL_OPTIONS if col_.upper() in header_upper)
                         desc['n'] = ncol
-                        hn = [header.index(ncol)]
-                    elif (any(col in header for col in GWAS_H_NCASE_OPTIONS) and
-                          any(col in header for col in GWAS_H_NCONTROL_OPTIONS)):
-                        ncol_a = next(col_ for col_ in GWAS_H_NCASE_OPTIONS if col_ in header)
-                        ncol_b = next(col_ for col_ in GWAS_H_NCONTROL_OPTIONS if col_ in header)
+                        hn = [header_upper.index(ncol)]
+                    elif (any(col.upper() in header_upper for col in GWAS_H_NCASE_OPTIONS) and
+                          any(col.upper() in header_upper for col in GWAS_H_NCONTROL_OPTIONS)):
+                        ncol_a = next(col_ for col_ in GWAS_H_NCASE_OPTIONS if col_.upper() in header_upper)
+                        ncol_b = next(col_ for col_ in GWAS_H_NCONTROL_OPTIONS if col_.upper() in header_upper)
                         desc['n'] = ncol_a + '+' + ncol_b
-                        hn = [header.index(ncol_a), header.index(ncol_b)]
+                        hn = [header_upper.index(ncol_a), header_upper.index(ncol_b)]
                     elif not args['gwas:default:n']:
                         print('Could not find a header in GWAS for the number of samples, or the number of cases and controls.')
                         exit(1)
                     else: # Can this be reached?
                         hn = None
-                    if (any(col in header for col in GWAS_H_NCASE_OPTIONS) and
-                        any(col in header for col in GWAS_H_NCONTROL_OPTIONS)): 
-                        optionals['ncases'] = next(col_ for col_ in GWAS_H_NCASE_OPTIONS if col_ in header)
-                        optionals ['ncontrols'] = next(col_ for col_ in GWAS_H_NCONTROL_OPTIONS if col_ in header)
+                    if (any(col.upper() in header_upper for col in GWAS_H_NCASE_OPTIONS) and
+                        any(col.upper() in header_upper for col in GWAS_H_NCONTROL_OPTIONS)): 
+                        optionals['ncases'] = next(col_ for col_ in GWAS_H_NCASE_OPTIONS if col_.upper() in header_upper)
+                        optionals ['ncontrols'] = next(col_ for col_ in GWAS_H_NCONTROL_OPTIONS if col_.upper() in header_upper)
                         desc['ncases'] = optionals['ncases']
                         desc['ncontrols'] = optionals['ncontrols']
+                        optionals['ncases'] = header_upper.index(desc['ncases'])
+                        optionals ['ncontrols'] = header_upper.index(desc['ncontrols'])
                     else:
                         optionals['ncases'] = 'defaulted'
                         optionals['ncontrols'] = 'defaulted'
@@ -420,7 +443,7 @@ def read_gwas(args, filename, report=None):
                     print('= Converting =')
                     reporter = ReporterLine('Reading gwas data.')
                     continue
-                parts = line.split(args['gwas:sep'])
+                parts = line.split(separator)
                 if len(parts) != len(header):
                     # MDD switches halfway to a different format for a small number of non-significant SNPs
                     if report:
@@ -467,7 +490,6 @@ def read_gwas(args, filename, report=None):
                         gwas_beta = float(parts[hb])
                     gwas_freq = float(gwas_freq)
                 except ValueError:
-                    # 'marker ch bp strand ref oth f hwe info b se p lineno n n_cases n_controls imputed'
                     row = GWASRow(optionalPrints['variant'], ch, bp, optionalPrints['strand'],
                             parts[href].upper(), parts[hoth].upper(),
                             gwas_freq, optionalPrints['hwe'], optionalPrints['info'], gwas_beta,
@@ -532,6 +554,7 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
     converted = discarded = 0
     stopped = False
     rsids_seen = set() # some summary stat files have duplicate rsids...
+    marked_for_deletion = []
     def select(name, options, can_fail=False):
         option_name = 'gen:' + name
         option_val = getattr(args, option_name)
@@ -624,29 +647,31 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                     elif act is ACT_REM:
                         counts['report:ambiguous_ambivalent'] += 1
-                        del gwas[row_pos]
                         if report: log_error(report, 'ambiguous_ambivalent', gwas=gwas_row, gen=parts)
+                        if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                         discarded += 1
-                        continue
+                        # continue # This is turned off
                     elif act is ACT_SKIP:
                         counts['report:allele_mismatch'] += 1
                         if report: log_error(report, 'allele_mismatch', gwas=gwas_row, gen=parts)
                         discarded += 1
+                        marked_for_deletion.append(row_pos)
                         continue
                     elif act is ACT_INDEL_SKIP:
                         counts['report:indel_ignored'] += 1
                         if report: log_error(report, 'indel_ignored', gwas=gwas_row, gen=parts)
                         discarded += 1
+                        marked_for_deletion.append(row_pos)
                         continue
                     elif act is ACT_REPORT_FREQ:
                         counts['report:frequency_mismatch'] += 1
                         if report: log_error(report, 'frequency_mismatch', gwas=gwas_row, gen=parts)
                         discarded += 1
+                        marked_for_deletion.append(row_pos)
                         continue
                     else:
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                         counts['ok'] += 1
-                    # 'marker ch bp strand ref oth f hwe info b se p lineno n n_cases n_controls imputed'
                     if freq < 0.50:
                         minor = parts[heff]
                         major = parts[hoth]
@@ -691,11 +716,30 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
         print(' ', '{:6}'.format(v), k)
     print('leftover gwas row count', len(gwas))
     if report:
-        if stopped and len(gwas) > 1000:
-            print('Not writing leftover rows due to early stop.')
-        else:
-            for gwas_row in gwas.values():
-                log_error(report, 'leftover', gwas=gwas_row)
+        for marked in marked_for_deletion:
+            if marked in gwas:
+                del gwas[marked]
+        for gwas_row in gwas.values():
+            if output:
+                ch = gwas_row.ch.lstrip('0')
+                if gwas_row.f < 0.50:
+                    minor = gwas_row.ref
+                    major = gwas_row.oth
+                    maf = gwas_row.f
+                    betaMinor = gwas_row.b
+                else:
+                    minor = gwas_row.oth
+                    major = gwas_row.ref
+                    maf = 1-gwas_row.f
+                    betaMinor = 0 - gwas_row.b
+                variantid = 'chr' + str(ch) + ':' + str(gwas_row.bp) + ':' + gwas_row.ref + '_' + gwas_row.oth
+                marker = 'chr' + str(ch) + ':' + str(gwas_row.bp) + ':' + minor + '_' + major
+                mac = maf * int(gwas_row.n) * 2
+                print(variantid, marker, gwas_row.marker, ch, gwas_row.bp, gwas_row.strand, gwas_row.ref, gwas_row.oth, 
+                    minor, major, gwas_row.f, maf, mac, gwas_row.hwe, gwas_row.info, gwas_row.b, betaMinor,
+                    gwas_row.se, gwas_row.p, gwas_row.n, gwas_row.n_cases, gwas_row.n_controls, 
+                    gwas_row.imputed, "no", file=output, sep='\t')
+            log_error(report, 'leftover', gwas=gwas_row)
     yield
 
 
