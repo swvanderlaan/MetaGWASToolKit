@@ -83,13 +83,13 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "               --- ARRAY JOB TO REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL GWAS DATA ---"
 echobold ""
-echobold "* Version:      v1.0.2" # Needs change
+echobold "* Version:      v1.0.3"
 echobold ""
-echobold "* Last update:  2023-01-01" # Needs change
+echobold "* Last update:  2023-06-23"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Moezammin Baksi"
-echobold "* Testers:      Sander W. van der Laan; Emma J.A. Smulders; Moezammin Baksi."
+echobold "* Testers:      Sander W. van der Laan; Emma J.A. Smulders; Moezammin Baksi; Mike Puijk."
 echobold "* Description:  This script will use the splitted individual cohort-files and create array-jobs"
 echobold "                to perform a meta-analysis of genome-wide association studies. "
 echobold "                It will do the following:"
@@ -144,6 +144,8 @@ else
 	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
 	BASEFILE=$(basename ${FILE} .txt.gz)
 	REFERENCE=${REFERENCE}
+	FREQFLIP=${FREQFLIP}
+	FREQWARNING=${FREQWARNING}
 
 	echobold "#========================================================================================================"
 	echobold "#== ADDING HEADERS"
@@ -152,11 +154,11 @@ else
 	### Adding headers -- this is ABSOLUTELY required for the 'gwas.parser.R'.
 	### determine basename of the splitfile
 	### SLURM version -- ARRAY JOB
-	BASESPLITFILE=$(basename ${SPLITFILE} .pdat)
+	BASESPLITFILE=$(basename ${SPLITFILE} .rdat)
 
 	echo ""
 	echobold "#========================================================================================================"
-	echobold "#== PARSING THE GWAS DATA"
+	echobold "#== PARSING AND HARMONIZING THE GWAS DATA"
 	echobold "#========================================================================================================"
 	echobold "#"
 	echo ""
@@ -164,40 +166,16 @@ else
 
 	### FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Parsing
-	### Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} 
+	### python3 python3 ${SCRIPTS}/gwas.parser.harmonizer.py --gwas ${SPLITFILE} --gen ${REFFREQFILE} -o ${SPLITFILE}.rdat -r ${SPLITFILE}.ref.report --fclose ${FREQFLIP} --fmid ${FREQWARNING} --gwas:build hg19 --gen:chr CHR_REF --gen:bp BP_REF --gen:effect ALT --gen:other REF --gen:eaf AF
 
 	### OLD QSUB version
-	### echo "Rscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT} " > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
-	### qsub -S /bin/bash -N gwas.parser.${BASESPLITFILE} -hold_jid metagwastoolkit -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEPARSER} -l h_vmem=${QMEMPARSER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
+	### echo "python3 ${SCRIPTS}/gwas.parser.harmonizer.py --gwas ${SPLITFILE} --gen ${REFFREQFILE} -o ${SPLITFILE}.rdat -r ${SPLITFILE}.ref.report --gwas:build hg19 --gen:chr CHR_REF --gen:bp BP_REF --gen:effect ALT --gen:other REF --gen:eaf AF" > ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh
+	### qsub -S /bin/bash -N gwas.parser.harmonizer.${BASESPLITFILE} -hold_jid metagwastoolkit -o ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh
 
 	### SLURM version -- ARRAY JOB
 	### Call the parser script
-	printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.parser.R -p ${PROJECTDIR} -d ${SPLITFILE} -o ${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}" > ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh
-	PARSER_ID=$(sbatch --parsable --job-name=gwas.parser.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.errors --time=${QRUNTIMEPARSER} --mem=${QMEMPARSER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.${BASESPLITFILE}.sh)
-	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
-	
-	echobold "#========================================================================================================"
-	echobold "#== HARMONIZING THE PARSED GWAS DATA"
-	echobold "#========================================================================================================"
-	echobold "#"
-	echo ""
-	echo "* Harmonising parsed [ ${BASESPLITFILE} ] file for cohort ${COHORT} with ${REFERENCE}..."
-
-	### FOR DEBUGGING LOCALLY -- SLURM/Mac OS X
-	### Call the GWAS Harmonizer
-	### module load python
-	### python ${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat
-
-	### OLD QSUB version
-	### echo "module load python" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-	### echo "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-	### qsub -S /bin/bash -N gwas2ref.harmonizer.${BASESPLITFILE} -hold_jid gwas.parser.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMEHARMONIZE} -l h_vmem=${QMEMHARMONIZE} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-
-	### SLURM version -- ARRAY JOB
-	### Call the harmonizer
-	printf "#!/bin/bash\nmodule load python/3.6.1\n" > ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-	printf "${SCRIPTS}/gwas2ref.harmonizer.py -g ${SPLITFILE}.pdat -r ${VINFOFILE} -i ${VARIANTYPE} -o ${SPLITFILE}.ref.pdat" >> ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh
-	HARMONIZER_ID=$(sbatch --parsable --job-name=gwas2ref.harmonizer.${BASESPLITFILE} --dependency=afterany:${PARSER_ID} -o ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas2ref.harmonizer.${BASESPLITFILE}.sh)
+	printf "#!/bin/bash\npython3 ${SCRIPTS}/gwas.parser.harmonizer.py --gwas ${SPLITFILE} --gen ${REFFREQFILE} -o ${SPLITFILE}.rdat -r ${SPLITFILE}.rdat.report --fclose ${FREQFLIP} --fmid ${FREQWARNING} --gwas:build hg19 --gen:chr CHR_REF --gen:bp BP_REF --gen:effect ALT --gen:other REF --gen:eaf AF" > ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh
+	HARMONIZER_ID=$(sbatch --parsable --job-name=gwas.parser.harmonizer.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh
 	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 
 	echobold "#========================================================================================================"
@@ -216,19 +194,19 @@ else
 
 	### FOR DEBUGGING LOCALLY -- Mac OS X
 	### Call the GWAS Cleaner
-	### Rscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
+	### Rscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
 
-	## echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+	## echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 	## qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 
 	### SLURM version -- ARRAY JOB
 	### Call the cleaner
 	### The --wait flag will cause this array to wait until each script is finished before moving to the next step
-	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.ref.pdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 	CLEANER_ID=$(sbatch --parsable --wait --job-name=gwas.cleaner.${BASESPLITFILE} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
 	
 	echo ""
-	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
+	# wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 	
 	echo ""
 	echo "All done for this array."

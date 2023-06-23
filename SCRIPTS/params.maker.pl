@@ -46,7 +46,7 @@ while(<COHORT>){
 	    chomp;
 	    my @fields = split;
 	    $studyname[$nstudies] = $fields[0];
-	    $correctionfactor[$nstudies] = $fields[3];
+	    $correctionfactor[$nstudies] = $fields[2];
 	    $filename[$nstudies] = "$cdat_input/$studyname[$nstudies]/$studyname[$nstudies].cdat.gz";
 	    $splitfile[$nstudies] = "$split_input/$studyname[$nstudies]/$studyname[$nstudies].reorder.split";
 

@@ -68,7 +68,9 @@ if not hasattr(os.path, 'commonpath'):
     os.path.commonpath = os.path.commonprefix
 
 
-# case insensitive
+
+
+# Make all options upper case for easier comparison later
 GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
 GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHROMOSOME', 'CHR', 'CHR', 'CHR(GCF1405.25)', 'CHROM']
 GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'POSITION', 'BP', 'POS', 'POS', 'START(GCF1405.25)', 'GENPOS']
@@ -92,8 +94,8 @@ GWAS_HG19_HINTS =                ['HG19', 'GCF1405.25']
 
 def build_parser():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-o', '--out', dest='outfile', metavar='cojo',
-            type=os.path.abspath, help='Output .cojo file.')
+    parser.add_argument('-o', '--out', dest='outfile', metavar='rdat',
+            type=os.path.abspath, help='Output ref.pdat file.')
     parser.add_argument('-r', '--report', dest='report', metavar='txt',
             type=os.path.abspath, help='Report discarded variantss here.')
     parser.add_argument('-rr', '--report-ok', dest='report_ok', action='store_true',
@@ -109,8 +111,8 @@ def build_parser():
     filter_parser.add_argument('--fmid', dest='fmid', metavar='MID',
             help='Ambivalent variants are ambiguous when effect frequency ' +
                  'is between 0.5-MID and 0.5+MID. ' +
-                 'Set to 0 to prevent discarding. Default is 0.05.',
-            default='0.05', type=float)
+                 'Set to 0 to prevent discarding. Default is 0.45.',
+            default='0.45', type=float)
     filter_parser.add_argument('--fclose', dest='fclose', metavar='CLOSE',
             help='Fequencies are considered close when their difference is less than CLOSE. ' +
                  'Default is 0.3',
@@ -170,7 +172,6 @@ def conv_chr_letter(ch, full=False):
         ch = ch.upper()
         if ch.startswith('CHR'):
             ch = ch[3:]
-        # ch = ch.zfill(2)
     # else: asumme ch = ch.upper() and not chr_
     if ch == '23': return 'X'
     elif ch == '24': return 'Y'
@@ -226,7 +227,8 @@ def select_action(args,
          gwas_ref_freq):
     freq_close = abs(gen_eaf - gwas_ref_freq) < args.fclose
     freq_inv_close = abs((1-gen_eaf) - gwas_ref_freq) < args.fclose
-    freq_mid = abs(gen_eaf - 0.5) < args.fmid
+    freq_warning = 0.5 - args.fmid # Converts the parameter METAGWAS.pl expects to the one this script expects.
+    freq_mid = abs(gen_eaf - 0.5) < freq_warning
     ambivalent = gen_eff == inv(gen_oth)
     if gen_eff in 'IDR' or gen_oth in 'IDR':
         if len(gwas_ref) < len(gwas_oth):
@@ -523,7 +525,6 @@ def read_gwas(args, filename, report=None):
                         if report:
                             log_error(report, 'gwas_build_conv_failed', gwas=row)
                         continue
-                # ch = ch.zfill(2)
                 yield (ch, bp), row
                 if lineno % 40000 == 0:
                     reporter.update(lineno, f.fileno())
@@ -546,7 +547,6 @@ def read_gwas(args, filename, report=None):
 def update_read_stats(args, gwas, stats_filename, output=None, report=None):
     reporter = ReporterLine('genetic:')
     if output:
-        # print('SNP A1 A2 freq b se p n', file=output)
         print('VariantID\tMarker\tMarkerOriginal\tCHR\tBP\tStrand\tEffectAllele\tOtherAllele\tMinorAllele\tMajorAllele\tEAF\tMAF\tMAC\tHWE_P\tInfo\tBeta\tBetaMinor\tSE\tP\tN\tN_cases\tN_controls\tImputed\tReference', file=output)
     report_ok = args.report_ok
     counts = collections.defaultdict(int)
@@ -618,6 +618,7 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                 ch = conv_chr_letter(parts[hch], full=True)
                 row_pos = ch, parts[hbp]
                 if row_pos in gwas:
+                    in_reference = 'yes'
                     gwas_row = gwas[row_pos]
                     parts = line.split()
                     if hmaf is not None:
@@ -647,10 +648,12 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                     elif act is ACT_REM:
                         counts['report:ambiguous_ambivalent'] += 1
-                        if report: log_error(report, 'ambiguous_ambivalent', gwas=gwas_row, gen=parts)
+                        in_reference = 'yes_but_ATCG_variant_with_0.45<EAF<0.55'
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
-                        discarded += 1
-                        # continue # This is turned off
+                        ### The above line would need to be commented out and the 3 lines below this uncommented, to once again remove ambiguous ACTG variants.
+                        # if report: log_error(report, 'ambiguous_ambivalent', gwas=gwas_row, gen=parts)
+                        # discarded += 1
+                        # continue
                     elif act is ACT_SKIP:
                         counts['report:allele_mismatch'] += 1
                         if report: log_error(report, 'allele_mismatch', gwas=gwas_row, gen=parts)
@@ -697,9 +700,10 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                     rsids_seen.add(rsid)
                     if output:
                         print(rsid, marker, gwas_row.marker, ch, parts[hbp], gwas_row.strand, parts[heff], parts[hoth], 
-                              minor, major, freq, maf, mac, gwas_row.hwe, gwas_row.info, beta, betaMinor,
+                              minor, major, ('%.8f' % freq).rstrip('0').rstrip('.'), ('%.8f' % maf).rstrip('0').rstrip('.'), 
+                              ('%.11f' % mac).rstrip('0').rstrip('.'), gwas_row.hwe, gwas_row.info, beta, betaMinor,
                               gwas_row.se, gwas_row.p, gwas_row.n, gwas_row.n_cases, gwas_row.n_controls, 
-                              gwas_row.imputed, "yes", file=output, sep='\t')
+                              gwas_row.imputed, in_reference, file=output, sep='\t')
                 if lineno % 100000 == 0:
                     message = '#{0}+{1}'.format(converted,discarded)
                     if np and converted > freq_comp.shape[0]:
@@ -714,11 +718,11 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
     print('gwas allele conversions:')
     for k, v in counts.items():
         print(' ', '{:6}'.format(v), k)
+    for marked in marked_for_deletion:
+        if marked in gwas:
+            del gwas[marked]
     print('leftover gwas row count', len(gwas))
     if report:
-        for marked in marked_for_deletion:
-            if marked in gwas:
-                del gwas[marked]
         for gwas_row in gwas.values():
             if output:
                 ch = gwas_row.ch.lstrip('0')
@@ -736,9 +740,10 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                 marker = 'chr' + str(ch) + ':' + str(gwas_row.bp) + ':' + minor + '_' + major
                 mac = maf * int(gwas_row.n) * 2
                 print(variantid, marker, gwas_row.marker, ch, gwas_row.bp, gwas_row.strand, gwas_row.ref, gwas_row.oth, 
-                    minor, major, gwas_row.f, maf, mac, gwas_row.hwe, gwas_row.info, gwas_row.b, betaMinor,
-                    gwas_row.se, gwas_row.p, gwas_row.n, gwas_row.n_cases, gwas_row.n_controls, 
-                    gwas_row.imputed, "no", file=output, sep='\t')
+                      minor, major, ('%.8f' % gwas_row.f).rstrip('0').rstrip('.'), ('%.8f' % maf).rstrip('0').rstrip('.'), 
+                      ('%.11f' % mac).rstrip('0').rstrip('.'), gwas_row.hwe, gwas_row.info, gwas_row.b, betaMinor,
+                      gwas_row.se, gwas_row.p, gwas_row.n, gwas_row.n_cases, gwas_row.n_controls, 
+                      gwas_row.imputed, 'no', file=output, sep='\t')
             log_error(report, 'leftover', gwas=gwas_row)
     yield
 
@@ -820,9 +825,9 @@ def prolog():
     print('* Written by         : Lennart Landsmeer | l.p.l.landsmeer@umcutrecht.nl')
     print('* Edited by          : Mike Puijk | m.v.puijk-2@umcutrecht.nl')
     print('* Suggested for by   : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl')
-    print('* Last update        : 2023-06-20')
+    print('* Last update        : 2023-06-23')
     print('* Name               : gwas.parser.harmonizer.py')
-    print('* Version            : v1.0.0')
+    print('* Version            : v1.0.1')
     print('')
     print('* Description        : Parses and harmonizes summary statistics from genome-wide association studies ')
     print('                       (GWAS) to a given genetic reference.')
@@ -831,6 +836,9 @@ def prolog():
 #    print('Start: {}'.format(datetime.datetime.now()))
 
 def epilog():
+    print('')
+    print('\t' + time.strftime('%a, %H:%M:%S') + ": All done parsing and harmonizing. Let's have a non-alcoholic beverage, buddy!")
+    print('')
     print('+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++')
     print('+ The MIT License (MIT)                                                                                 +')
     print('+ Copyright (c) 1979-2020 Lennart P.L. Landsmeer & Sander W. van der Laan                               +')
