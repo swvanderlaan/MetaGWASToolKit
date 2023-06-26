@@ -93,11 +93,11 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##########################################################################################
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 4 ]]; then 
+if [[ $# -lt 3 ]]; then 
 	echo ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
-	echoerror "You must supply [4] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
+	echoerror "You must supply [3] arguments when running *** GWASWRAPPER -- MetaGWASToolKit ***!"
 	script_arguments_error
 else
 	echo ""

@@ -494,7 +494,7 @@ def read_gwas(args, filename, report=None):
                 except ValueError:
                     row = GWASRow(optionalPrints['variant'], ch, bp, optionalPrints['strand'],
                             parts[href].upper(), parts[hoth].upper(),
-                            gwas_freq, optionalPrints['hwe'], optionalPrints['info'], gwas_beta,
+                            gwas_freq, optionalPrints['hwe'], optionalPrints['info'], parts[hb],
                             default_std or parts[hse],
                             default_p or parts[hp],
                             lineno, n, optionalPrints['ncases'], optionalPrints['ncontrols'], optionalPrints['imputed'])

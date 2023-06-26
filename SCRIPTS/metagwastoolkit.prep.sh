@@ -84,7 +84,7 @@ echobold "                      --- REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL G
 echobold ""
 echobold "* Version:      v1.6.5"
 echobold ""
-echobold "* Last update:  2023-06-23"
+echobold "* Last update:  2023-06-26"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -446,7 +446,7 @@ else
 
 		### SLURM version
  		printf "#!/bin/bash\n${SCRIPTS}/gwas.wrapper.sh ${RAWDATACOHORT} ${COHORT} ${BASEFILE}" > ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh
-		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.wrapper.${BASEFILE} --dependency=afterany:${splitfiles_parser_harm_cleaner_ID} -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
+		WRAPPER_ID=$(sbatch --parsable --job-name=gwas.cleaner.wrapper.${OUTPUTDIRNAME} --dependency=singleton -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log --error ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors --time=${QRUNTIMEWRAPPER} --mem=${QMEMWRAPPER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.sh)
 
 		echobold "#========================================================================================================"
 		echobold "#== PLOTTING THE REFORMATTED & WRAPPED GWAS DATA: [ ${COHORT} ]"

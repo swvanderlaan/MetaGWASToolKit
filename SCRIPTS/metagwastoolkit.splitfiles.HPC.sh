@@ -175,8 +175,8 @@ else
 	### SLURM version -- ARRAY JOB
 	### Call the parser script
 	printf "#!/bin/bash\npython3 ${SCRIPTS}/gwas.parser.harmonizer.py --gwas ${SPLITFILE} --gen ${REFFREQFILE} -o ${SPLITFILE}.rdat -r ${SPLITFILE}.rdat.report --fclose ${FREQFLIP} --fmid ${FREQWARNING} --gwas:build hg19 --gen:chr CHR_REF --gen:bp BP_REF --gen:effect ALT --gen:other REF --gen:eaf AF" > ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh
-	HARMONIZER_ID=$(sbatch --parsable --job-name=gwas.parser.harmonizer.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh
-	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
+	HARMONIZER_ID=$(sbatch --parsable --job-name=gwas.parser.harmonizer.${BASESPLITFILE} --dependency=afterany:${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.errors --time=${QRUNTIMEHARMONIZE} --mem=${QMEMHARMONIZE} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.parser.harmonizer.${BASESPLITFILE}.sh)
+	# wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 
 	echobold "#========================================================================================================"
 	echobold "#== CLEANING UP THE REFORMATTED GWAS DATA"
@@ -202,8 +202,8 @@ else
 	### SLURM version -- ARRAY JOB
 	### Call the cleaner
 	### The --wait flag will cause this array to wait until each script is finished before moving to the next step
-	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-	CLEANER_ID=$(sbatch --parsable --wait --job-name=gwas.cleaner.${BASESPLITFILE} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
+	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" > ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.wrapper.${OUTPUTDIRNAME} --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
 	
 	echo ""
 	# wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
