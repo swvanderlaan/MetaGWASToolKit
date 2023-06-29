@@ -324,7 +324,7 @@ def bluntDelimiterTest(line):
 
 def read_gwas(args, filename, report=None):
     liftover = None
-    wrong_column_count = float_conv_failed = yes = no = 0
+    wrong_column_count = float_conv_failed = invalid_chromosome = yes = no = 0
     desc = {}
     default_p, default_std = args['gwas:default:p'], args['gwas:default:se']
     default_n, default_chr = args['gwas:default:n'], args['gwas:default:chr']
@@ -460,6 +460,12 @@ def read_gwas(args, filename, report=None):
                 else:
                     ch = default_chr or parts[hpos_ch]
                     bp = parts[hpos_bp]
+                if ch == "0":
+                    # This could be expanded to include more unhelpful chromosome notations.
+                    if report:
+                        log_error(report, 'invalid_chromosome', gwas=parts)
+                    invalid_chromosome += 1
+                    continue
                 try:
                     if default_n:
                         n = default_n
@@ -540,7 +546,8 @@ def read_gwas(args, filename, report=None):
         print('Numeric conversion failed for', float_conv_failed, 'rows (reported as gwas_float_conv_failed).')
     if wrong_column_count:
         print('Invalid number of columns for', wrong_column_count, 'rows (reported as wrong_column_count).')
-        print()
+    if invalid_chromosome:
+        print('Invalid chromosome notation for', invalid_chromosome, 'rows (reported as invalid_chromosome).')
     print()
 
 
@@ -647,7 +654,7 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                         beta = -beta
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                     elif act is ACT_REM:
-                        counts['report:ambiguous_ambivalent'] += 1
+                        counts['ambiguous_ambivalent'] += 1
                         in_reference = 'yes_but_ATCG_variant_with_0.45<EAF<0.55'
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                         ### The above line would need to be commented out and the 3 lines below this uncommented, to once again remove ambiguous ACTG variants.

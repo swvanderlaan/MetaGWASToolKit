@@ -913,7 +913,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
   # print STDERR " ***DEBUG***  A column with a measure of imputation quality exists for [ $variant ] in [ $study_name[$study] ]; checking contents and setting to 1 if needed (genotyped and NA only).\n";
   if ( $#fields == 9 ) {
     if ( $fields[9] == "NA" ) {
-      print STDERR " - Imputation quality = [ $fields[9] ] for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ]. Setting to 1.\n";
+      # print STDERR " - Imputation quality = [ $fields[9] ] for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ]. Setting to 1.\n";
       $ratio[$study] = 1;
       # print STDERR " ***DEBUG***  ratio = $ratio[$study].\n";
     }
@@ -923,7 +923,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
       # print STDERR " ***DEBUG***  ratio = $ratio[$study].\n";
     } 
     else {
-      print STDERR " - Imputation quality = [ $fields[9] ] for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ].\n";
+      # print STDERR " - Imputation quality = [ $fields[9] ] for variant [ $variant ] on chromosome [ $fields[1] ] in [ $study_name[$study] ].\n";
       $ratio[$study] = $fields[9];
       # print STDERR " ***DEBUG***  ratio = $ratio[$study].\n";
     }
@@ -1045,7 +1045,7 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
       ## START CHECK #7
       elsif ( ( $a1[$study] eq "R" && $a2[$study] eq "D" && length($ref1) < length($ref2) ) || ( $a1[$study] eq "D" && $a2[$study] eq "R" && length($ref1) > length($ref2) ) ) {
         print STDERR "* In $study_name[$study], $variant has alleles [ $a1[$study]/$a2[$study] ], while the Reference has alleles [ $ref1/$ref2 ]. Flipping these.\n";
-        flip_indels[$study] = 1;
+        $flip_indels[$study] = 1;
       } ### END CHECK #7
 
       ### START CHECK #8
