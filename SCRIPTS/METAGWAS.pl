@@ -722,7 +722,7 @@ while(my $c = <REFFREQ>){
         $dbsnp_a1{$variant} = $dbsnp_a2{$variant};
         $dbsnp_a2{$variant} = $tmp;
       }
-      print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
+      # print STDOUT " *** DEBUG *** The $variant has allele frequency = $reference_a1_freq{$variant} and allele A/A1/ALT = $a1; allele B/A2/REF = $a2.\n";
     }
     else {
       print STDERR "* For the $variant, we cannot determine the Reference Frequency for alleles [ $a1/$a2 ] and annotated alleles [ $dbsnp_a1{$variant}/$dbsnp_a2{$variant} ] -- skipping it. Reference: [ $reference ]; population: [ $population ].\n";
