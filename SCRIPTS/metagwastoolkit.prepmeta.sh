@@ -82,15 +82,15 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                                   --- PREPARATION META-ANALYSIS ---"
 echobold ""
-echobold "* Version:      v1.6.2"
+echobold "* Version:      v1.6.3"
 echobold ""
-echobold "* Last update:  2023-01-07"
+echobold "* Last update:  2023-06-23"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
 echobold "                Jessica van Setten; "
 echobold "                Paul I.W. de Bakker."
-echobold "* Testers:      Jessica van Setten."
+echobold "* Testers:      Jessica van Setten; Emma Smulders; Mike Puijk."
 echobold "* Description:  Perform a meta-analysis of genome-wide association studies. It will do the following:"
 echobold "                - Automatically parse the various cohort files."
 echobold "                - Harmonize GWAS datasets relative to a reference."
@@ -385,7 +385,6 @@ else
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 		FILE=$(echo "${LINE}" | awk '{ print $2 }')
-		VARIANTYPE=$(echo "${LINE}" | awk '{ print $3 }')
 	
 		BASEFILE=$(basename ${FILE} .txt.gz)
 	
@@ -421,6 +420,17 @@ else
 		wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
 		
 	done < ${GWASFILES}
+
+	echobold "#========================================================================================================"
+	echobold "#== MAKE PARAMS FILE"
+	echobold "#========================================================================================================"
+	echobold "#"
+	
+	### SLURM version
+	printf "#!/bin/bash\nperl ${SCRIPTS}/params.maker.pl ${GWASFILES} ${PROJECTDIR}/${OUTPUTDIRNAME}/metagwastoolkit.${SUBPROJECTDIRNAME}.params ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/meta.params.sh
+	META_PREPARATOR_ID=$(sbatch --parsable --job-name=meta.params --dependency=afterany:${META_PREPARATOR_ID} -o ${METARESULTDIR}/meta.params.log --error ${METARESULTDIR}/meta.params.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/meta.params.sh)
+	
+	
 
 	### END of if-else statement for the number of command-line arguments passed ###
 fi 

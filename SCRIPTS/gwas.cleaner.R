@@ -352,20 +352,16 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
   report.variants(GWASDATA_RAW_CLEANED)
   
   cat(paste0("\n* removing variants where imputation quality < ",opt$info,"..."))
-  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, Info > opt$info | !is.na(Info) )
+  GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, Info > opt$info | is.na(Info))
   report.variants(GWASDATA_RAW_CLEANED)
 
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"... (note: HWE p could potentially be 'NA'.)"))
   if(any(GWASDATA_RAW_CLEANED$CHR < 22) == TRUE) {
   	cat(paste0("\n  - processing autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P < opt$hwe_p | is.na(HWE_P) | HWE_P != 0 )
-  	report.variants(GWASDATA_RAW_CLEANED)
-  	} else {
-	cat(paste0("\n  - processing non-autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, is.na(HWE_P) | HWE_P != 0 )
+  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P))
   	report.variants(GWASDATA_RAW_CLEANED)
   	}
-  
+    
   cat("\nAll done cleaning the dataset.")
   ### SAVE NEW DATA ###
   cat("\n\nSaving cleaned data...\n")
