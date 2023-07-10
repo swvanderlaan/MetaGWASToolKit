@@ -250,8 +250,8 @@ print STDOUT "  --genes          : $genesFile\n"; # a gene-list
 print STDOUT "  --dist           : $gene_dist\n"; # distance to consider genes linked to variants (default = 2000kb)
 print STDOUT "  --ref            : $reference\n"; # reference to be used
 print STDOUT "  --pop            : $population\n"; # population within the reference
-print STDOUT "  --freq-flip       : $freq_flip\n"; # frequency at which alleles are flipped
-print STDOUT "  --freq-warning    : $freq_warning\n"; # frequency at which a warning is given
+print STDOUT "  --freq-flip      : $freq_flip\n"; # frequency at which alleles are flipped
+print STDOUT "  --freq-warning   : $freq_warning\n"; # frequency at which a warning is given
 print STDOUT "  --out            : $outFile\n"; # name of the output file
 
 if ( $extension ne "" ) {
