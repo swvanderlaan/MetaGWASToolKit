@@ -74,7 +74,10 @@ while(<COHORT>){
 				my @fields = split;
 				if ($fields[17] ne "NA") { # Checks to see if the SE column is NA. Might need expansion.
 					my $n_line = $fields[19];
-					push @n, $n_line;				}
+					my $z_line = abs($fields[16]/$fields[17]);
+					push @n, $n_line;	
+					push @z, $z_line;	
+					}
 			}
 	   	}
 	
@@ -85,10 +88,10 @@ while(<COHORT>){
 	    my $mean_n = sprintf("%.0f",(mean (@n))) ;
 	    my $lambda = sprintf("%.3f",(median (@z) * median (@z)) / 0.4549364) ;
 	    if ($lambda < 1.000) {
-	    $lambda = sprintf("%.3f",(1.000));
-	    }
+	    	$lambda = sprintf("%.3f",(1.000));
+	    	}
 	    print OUT join("\t",$studyname[$nstudies],$lambda,$mean_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
-	
+
 	### Reset parameters, go to next study
 	    $nstudies++;
 	    $parameterFound = 0;
