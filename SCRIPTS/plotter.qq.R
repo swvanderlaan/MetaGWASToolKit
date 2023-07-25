@@ -1,10 +1,10 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
+#!/hpc/local/Rocky8/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
 
 ### Linux version
-### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
+### #!/hpc/local/Rocky8/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     QQ Plotter -- MetaGWASToolKit

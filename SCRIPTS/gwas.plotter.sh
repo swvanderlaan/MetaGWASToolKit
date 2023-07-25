@@ -293,7 +293,7 @@ else
 		#------------------------------------#
 		echo "- producing a correlation plot of the observed effect allele frequency and the reference allele frequency ..." # VariantID, EAF
 		printf "#!/bin/bash\nzcat ${PROJECTDIR}/${COHORTNAME}.${DATAEXT} | ${SCRIPTS}/parseTable.pl --col VariantID,EAF > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt \n" > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
-		printf "python3 $SCRIPTS/mergeTables.py --in_file1 ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt --in_file2 ${REFAFFILE} --indexID VariantID --out_file ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt \n" >> ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
+		printf "$SCRIPTS/mergeTables.py --in_file1 ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_STUDY.txt --in_file2 ${REFAFFILE} --indexID VariantID --out_file ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt \n" >> ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
 		printf "cat ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF_ALMOSTMERGED.txt | ${SCRIPTS}/parseTable.pl --col EAF,AF | tail -n +2 > ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt" >> ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh
 		EAF_ID_TXT=$(sbatch --parsable --job-name=${COHORTNAME}.${DATAPLOTID}.EAF_TXT -o ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.log --error ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.errors --time=${QRUNTIMEPLOTTER} --mem=${QMEMPLOTTER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} --chdir=${PROJECTDIR}/ ${PROJECTDIR}/${COHORTNAME}.${DATAPLOTID}.EAF.txt.sh)
 

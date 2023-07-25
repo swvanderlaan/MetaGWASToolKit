@@ -1,4 +1,4 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.6.3/bin/Rscript 
+#!/hpc/local/Rocky8/dhl_ec/software/R-3.6.3/bin/Rscript 
 
 # SLURM settings
 #SBATCH --job-name=gwas.miami    # Job name

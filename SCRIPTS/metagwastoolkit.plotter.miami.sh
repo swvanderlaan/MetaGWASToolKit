@@ -12,7 +12,7 @@
 #SBATCH --output=metagwastoolkit.miami.plotter.log   # Standard output and error log
 
 
-SOFTWARE="/hpc/local/CentOS7/dhl_ec/software"
+SOFTWARE="/hpc/local/Rocky8/dhl_ec/software"
 METAGWASTOOLKIT="${SOFTWARE}/MetaGWASToolKit"
 SCRIPTS="${METAGWASTOOLKIT}/SCRIPTS"
 
@@ -20,13 +20,13 @@ PROJECT=""
 OUTPUT=""
 
 female=""
-make=""
+male=""
 
 zcat ${PROJECT}/${female}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED > ${PROJECT}/${female}.miami.txt
 zcat ${PROJECT}/${male}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,CHR,POS,P_FIXED > ${PROJECT}/${male}.miami.txt
 
 
-${SCRIPTS}/metagwastoolkit.plotter.miami.R --projectdir ${PROJECT} --top ${PROJECT}/${female}.miami.txt --bottom ${PROJECT}/${male}.miami.txtt --outputdir ${OUTPUT} --toptitle "Female Title" --bottomtitle "Male Title" --imageformat PNG 
+Rscript ${SCRIPTS}/metagwastoolkit.plotter.miami.R --projectdir ${PROJECT} --top ${PROJECT}/${female}.miami.txt --bottom ${PROJECT}/${male}.miami.txt --outputdir ${OUTPUT} --toptitle "Female Title" --bottomtitle "Male Title" --imageformat PNG 
 
 
 ####   *** Please ensure both inputs have the same metadata columns (SNP, CHR, POS, pvalue) *** 

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/hpc/local/Rocky8/dhl_ec/software/tempMiniconda3envs/gwas/bin/python
 #
 # Merge two files into one.
 #
