@@ -132,8 +132,8 @@ else
 	# Where MetaGWASToolKit resides
 	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
 	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
-	RESOURCES=${METAGWASTOOLKIT}/RESOURCES
-
+	#RESOURCES=${METAGWASTOOLKIT}/RESOURCES
+	RESOURCES=${RESOURCES}
 	PLINK=${PLINK} # depends on contents of arg1
 	METARESULTDIR="$2" # depends on arg2
 	REFERENCE=${REFERENCE} # depends on contents of arg1
@@ -273,7 +273,7 @@ else
 		
 	else
 		echo ""
-		importantnote "There are no clumped variants. We will not produce regional associations plots."
+		#importantnote "There are no clumped variants. We will not produce regional associations plots."
 	fi
 	
 	echo "* removing LocusZoom input-file..."

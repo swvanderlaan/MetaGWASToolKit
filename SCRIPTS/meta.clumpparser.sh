@@ -131,7 +131,8 @@ else
 	# Where MetaGWASToolKit resides
 	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
 	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
-	RESOURCES=${METAGWASTOOLKIT}/RESOURCES
+	#RESOURCES=${METAGWASTOOLKIT}/RESOURCES
+	RESOURCES=${RESOURCES}
 	
 	PLINK=${PLINK} # depends on contents of arg1
 	LOCUSZOOM=${LOCUSZOOM} # depends on contents of arg1
@@ -198,7 +199,7 @@ else
 		
 	else
 		echo ""
-		importantnote "There are no clumped variants, so nothing to parse too."
+		#importantnote "There are no clumped variants, so nothing to parse too."
 	fi
 
 

@@ -1,10 +1,10 @@
-#!/hpc/local/CentOS7/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
+#!/hpc/local/Rocky8/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 ### Mac OS X version
 ### #!/usr/local/bin/Rscript --vanilla
 
 ### Linux version
-### #!/hpc/local/CentOS7/dhl_ec/software/R-3.3.3/bin/Rscript --vanilla
+#!/hpc/local/Rocky8/dhl_ec/software/R-3.6.3/bin/Rscript --vanilla
 
 cat("++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 GWAS Cleaner -- MetaGWASToolKit
@@ -357,10 +357,10 @@ Cleaned results will be saved here.....: '", opt$outputdir, "'.\n",sep=''))
 
   cat(paste0("\n* removing variants where HWE p-value < ",opt$hwe_p,"... (note: HWE p could potentially be 'NA'.)"))
   if(any(GWASDATA_RAW_CLEANED$CHR < 22) == TRUE) {
-  	cat(paste0("\n  - processing autosomal chromosomes..."))
-  	GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P))
-  	report.variants(GWASDATA_RAW_CLEANED)
-  	}
+    cat(paste0("\n  - processing autosomal chromosomes..."))
+    GWASDATA_RAW_CLEANED <- filter(GWASDATA_RAW_CLEANED, HWE_P > opt$hwe_p | is.na(HWE_P))
+    report.variants(GWASDATA_RAW_CLEANED)
+  }
     
   cat("\nAll done cleaning the dataset.")
   ### SAVE NEW DATA ###

@@ -202,7 +202,7 @@ else
 	### SLURM version -- ARRAY JOB
 	### Call the cleaner
 	### The --wait flag will cause this array to wait until each script is finished before moving to the next step
-	printf "#!/bin/bash\n${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" > ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
+	printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" > ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASESPLITFILE} --wait --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
 	
 	echo ""
