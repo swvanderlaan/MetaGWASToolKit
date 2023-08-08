@@ -131,13 +131,6 @@ else
 	echo "The configuration file.................: "$(basename ${1}) # argument 1
 	echo "The list of GWAS files.................: "$(basename ${2}) # argument 2
 
-	### loading required modules
-	### Loading the GWAS-Anaconda3.8 environment
-	### You need to also have the conda init lines in your .bash_profile/.bashrc file
-	echo "..... > loading required anaconda environment containing the GWAS analyses data..."
-	eval "$(conda shell.bash hook)"
-	conda activate gwas
-	
 	### SETTING DIRECTORIES (from configuration file).
 	# Loading the configuration file (please refer to the MetaGWASToolKit-Manual for specifications of this file). 
 	source "$1" # Depends on arg1.
