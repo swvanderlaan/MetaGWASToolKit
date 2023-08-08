@@ -26,7 +26,7 @@
 #
 # It is good practice to properly name and annotate your script for future reference for
 # yourself and others. Trust me, you'll forget why and how you made this!!!
-METAGWASTOOLKIT="/hpc/local/CentOS7/dhl_ec/software/MetaGWASToolKit"
+METAGWASTOOLKIT="/hpc/local/Rocky8/dhl_ec/software/MetaGWASToolKit"
 RESOURCES="${METAGWASTOOLKIT}/RESOURCES"
 SCRIPTS="${METAGWASTOOLKIT}/SCRIPTS"
 PROJECTNAME="EXAMPLEPHENOTYPE"

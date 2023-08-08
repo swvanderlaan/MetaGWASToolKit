@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/hpc/local/Rocky8/dhl_ec/software/tempMiniconda3envs/gwas/bin/perl
 #
 ##########################################################################################
 #

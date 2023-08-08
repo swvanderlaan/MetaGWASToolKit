@@ -1,4 +1,6 @@
 #!/hpc/local/Rocky8/dhl_ec/software/tempMiniconda3envs/gwas/bin/python
+### #!/usr/bin/python
+
 #
 # Merge two files into one.
 #
@@ -30,6 +32,8 @@ import argparse
 import magic
 import gzip
 import time
+import csv
+
 
 # Check for required libraries and install them if not present
 # https://stackoverflow.com/questions/12332975/installing-python-module-within-code
@@ -42,14 +46,22 @@ from argparse import RawTextHelpFormatter
 start = time.time()
 
 # detect file delimiter
-def detect_delimiter(file_path):
-    with open(file_path, "rb") as f:
-        # Read first 10KB of the file to determine the delimiter
-        sample = f.read(10240)
-        if b" " in sample:
-            return " "
-        else:
-            return "\t"
+def detect_delimiter(in_file):
+    # Read first 10KB of the file to determine the delimiter
+    sniffer = csv.Sniffer()
+    lines = in_file.read(10000)
+    delimiter = str(sniffer.sniff(lines).delimiter)
+    return delimiter
+
+# detect file delimiter
+# def detect_delimiter(file_path):
+#     with open(file_path, "rb") as f:
+#         # Read first 10KB of the file to determine the delimiter
+#         sample = f.read(10240)
+#         if b" " in sample:
+#             return " "
+#         else:
+#             return "\t"
 
 # Parse arguments
 if __name__ == '__main__':
@@ -126,27 +138,27 @@ if verbose == "T":
     print(f"     > File2 gzipped? {mime_type_file2}")
 
 # Detect file delimiter 
-if mime_type_file1:
-    with gzip.open(in_file1) as f:
-        file1_delimiter = detect_delimiter(in_file1)
+if mime_type_file1 == "application/gzip" or mime_type_file1 == "application/x-gzip":
+    with gzip.open(in_file1, mode = 'rt') as f:
+        file1_delimiter = detect_delimiter(f)
         file1 = pl.read_csv(in_file1, separator=file1_delimiter)
 else:
     with open(in_file1) as f:
-        file1_delimiter = detect_delimiter(in_file1)
+        file1_delimiter = detect_delimiter(f)
         file1 = pl.read_csv(in_file1, separator=file1_delimiter)
 
 if verbose == "T":
     file1_delimiter_t = time.time()
     print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(file1_delimiter_t - is_gzip2_time))}")
 
-if mime_type_file2:
-    with gzip.open(in_file2) as f:
-        file2_delimiter = detect_delimiter(in_file2)
-        file2 = pl.read_csv(in_file1, separator=file2_delimiter)
+if mime_type_file2 == "application/gzip" or mime_type_file2 == "application/x-gzip":
+    with gzip.open(in_file2, mode = 'rt') as f:
+        file2_delimiter = detect_delimiter(f)
+        file2 = pl.read_csv(in_file2, separator=file2_delimiter)
 else:
     with open(in_file2) as f:
-        file2_delimiter = detect_delimiter(in_file2)
-        file2 = pl.read_csv(in_file1, separator=file2_delimiter)
+        file2_delimiter = detect_delimiter(f)
+        file2 = pl.read_csv(in_file2, separator=file2_delimiter)
 
 if verbose == "T":
     file2_delimiter_t = time.time()
@@ -171,7 +183,7 @@ if verbose == "T":
 # https://stackoverflow.com/questions/75690784/polars-for-python-how-to-get-rid-of-ensure-you-pass-a-path-to-the-file-instead
 
 print(f"\n   Opening file1...")
-if mime_type_file1 == "application/gzip":
+if mime_type_file1 == "application/gzip" or mime_type_file1 == "application/x-gzip":
     file1 = pl.read_csv(gzip.open(in_file1).read(), separator=str(file1_delimiter))
 else:
     file1 = pl.read_csv(in_file1, separator=str(file1_delimiter))
@@ -181,10 +193,10 @@ if verbose == "T":
     print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(file1_t - file2_delimiter_t))}")
 
 print(f"\n   Opening file2...")
-if mime_type_file2 == "application/gzip":
-    file2 = pl.read_csv(gzip.open(in_file2).read(), separator=str(file1_delimiter))
+if mime_type_file2 == "application/gzip" or mime_type_file2  == "application/x-gzip":
+    file2 = pl.read_csv(gzip.open(in_file2).read(), separator=str(file2_delimiter))
 else:
-    file2 = pl.read_csv(in_file2, separator=str(file1_delimiter))
+    file2 = pl.read_csv(in_file2, separator=str(file2_delimiter))
 
 if verbose == "T":
     file2_t = time.time()
