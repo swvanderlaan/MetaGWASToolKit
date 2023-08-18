@@ -32,7 +32,7 @@ SCRIPTS="${METAGWASTOOLKIT}/SCRIPTS"
 PROJECTNAME="EXAMPLEPHENOTYPE"
 PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 SUBPROJECTDIRNAME="MODEL1"
-PYTHON3="/hpc/local/CentOS7/common/lang/python/3.6.1/bin/python3"
+PYTHON3="/hpc/local/Rocky8/dhl_ec/software/tempMiniconda3envs/gwas/bin/python"
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -74,20 +74,20 @@ echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dir
 # 
 # echo ""
 # echo "> creating list of variants (only needs to be done once!)"
-# echo 'VARIANTID RSID' > ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
-# ### zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.INFO.txt.gz | awk '{ print $1, $2 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
-# zcat ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$5"_"$4, $3} else { print "chr"$1":"$2":"$4"_"$5, $3 } }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
-# gzip -fv ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt
+# echo 'VARIANTID RSID' > ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
+# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.INFO.txt.gz | awk '{ print $1, $2 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
+# ### zcat ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$5"_"$4, $3} else { print "chr"$1":"$2":"$4"_"$5, $3 } }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
+# gzip -fv ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
 # 
 # echo ""
 # echo "> counting list of variants"
-# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt.gz | wc -l
+# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt.gz | wc -l
 # 
 # echo ""
 # echo "> merging list of variants with summary statistics"
 # perl ${SCRIPTS}/mergeTables.pl \
 # --file1 ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz \
-# --file2 ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.EUR.EUR.VARIANTID2RSID.txt.gz \
+# --file2 ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt.gz \
 # --index VARIANTID --format GZIPB > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo
 # 
 # echo ""
@@ -95,7 +95,7 @@ echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dir
 # cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo | awk ' $3 != "NA" ' > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt
 # 
 # echo ""
-# echo "> removing intermediate file, getting a head, counting results, and gzipping"
+# echo "> removing intermediate file"
 # rm -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo
 # 
 # echo ""
