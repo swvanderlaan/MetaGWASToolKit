@@ -4,16 +4,18 @@
 #
 # Merge two files into one.
 #
-# Description: 	merges two files based on some key-column into one file. The lines do not 
+# Description:  merges two files based on some key-column into one file. The lines do not 
 #               have to be sorted.
 #
 # Original written and published by:
-# 		* Paul I.W. de Bakker, piwdebakker@mac.com
-#		* 4 July 2009
+#       * Paul I.W. de Bakker, piwdebakker@mac.com
+#       * 4 July 2009
 #
 # Written by: 	Bram van Es; Utrecht, the Netherlands
 #				bramiozo@gmail.com
-# Suggest by:	Sander W. van der Laan; Utrecht, the Netherlands; 
+# Edited by:    Mike Puijk;
+#               mikepuijk@hotmail.com
+# Suggested by:	Sander W. van der Laan; Utrecht, the Netherlands; 
 #               s.w.vanderlaan@gmail.com.
 # Version:		2.0 beta 1
 # Update date: 	2023-04-28
@@ -22,6 +24,11 @@
 
 # TO DO
 # (optional: --replace) add option to replace column contents
+#
+# (bug): If one of the input files only contains a single column the script will fail. This is due to the delimiter detection (it doens't know there shouldn't be one)
+# The fix to this bug would be 2 to create 2 extra options, so that you can specify per file what delimiter to use (or to use none). 
+# This would also circumvent any other issues the delimiter sniffer might have.
+
 
 # Import libraries
 import os
@@ -141,11 +148,11 @@ if verbose == "T":
 if mime_type_file1 == "application/gzip" or mime_type_file1 == "application/x-gzip":
     with gzip.open(in_file1, mode = 'rt') as f:
         file1_delimiter = detect_delimiter(f)
-        file1 = pl.read_csv(in_file1, separator=file1_delimiter)
+        file1 = pl.read_csv(in_file1, separator=file1_delimiter, infer_schema_length=0)
 else:
     with open(in_file1) as f:
         file1_delimiter = detect_delimiter(f)
-        file1 = pl.read_csv(in_file1, separator=file1_delimiter)
+        file1 = pl.read_csv(in_file1, separator=file1_delimiter, infer_schema_length=0)
 
 if verbose == "T":
     file1_delimiter_t = time.time()
@@ -154,11 +161,11 @@ if verbose == "T":
 if mime_type_file2 == "application/gzip" or mime_type_file2 == "application/x-gzip":
     with gzip.open(in_file2, mode = 'rt') as f:
         file2_delimiter = detect_delimiter(f)
-        file2 = pl.read_csv(in_file2, separator=file2_delimiter)
+        file2 = pl.read_csv(in_file2, separator=file2_delimiter, infer_schema_length=0)
 else:
     with open(in_file2) as f:
         file2_delimiter = detect_delimiter(f)
-        file2 = pl.read_csv(in_file2, separator=file2_delimiter)
+        file2 = pl.read_csv(in_file2, separator=file2_delimiter, infer_schema_length=0)
 
 if verbose == "T":
     file2_delimiter_t = time.time()
@@ -182,30 +189,10 @@ if verbose == "T":
 # How to get rid of 'Polars found a filename. Ensure you pass a path to the file instead of a python file object when possible for best performance.'
 # https://stackoverflow.com/questions/75690784/polars-for-python-how-to-get-rid-of-ensure-you-pass-a-path-to-the-file-instead
 
-print(f"\n   Opening file1...")
-if mime_type_file1 == "application/gzip" or mime_type_file1 == "application/x-gzip":
-    file1 = pl.read_csv(gzip.open(in_file1).read(), separator=str(file1_delimiter))
-else:
-    file1 = pl.read_csv(in_file1, separator=str(file1_delimiter))
-
-if verbose == "T":
-    file1_t = time.time()
-    print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(file1_t - file2_delimiter_t))}")
-
-print(f"\n   Opening file2...")
-if mime_type_file2 == "application/gzip" or mime_type_file2  == "application/x-gzip":
-    file2 = pl.read_csv(gzip.open(in_file2).read(), separator=str(file2_delimiter))
-else:
-    file2 = pl.read_csv(in_file2, separator=str(file2_delimiter))
-
-if verbose == "T":
-    file2_t = time.time()
-    print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(file2_t - file1_t))}")
-
 new_df = file1.join(file2, on=indexID, how='inner')
 if verbose == "T":
     new_df_t = time.time()
-    print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(new_df_t - file2_t))}")
+    print(f"Elapsed time: {time.strftime('%H:%M:%S', time.gmtime(new_df_t - file2_delimiter_t))}")
 
 if verbose == "T":
     print(f"\n   Detected the following heads and tails in the merge file:")
