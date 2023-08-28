@@ -117,7 +117,7 @@ echo "> include only relevant columns"
 echo "> include only variants with no caveats"
 
 ### already done !
-### mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
+# mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
 
 # zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt.gz | \
 # perl ${SCRIPTS}/parseTable.pl --col RSID,VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,P_FIXED,COCHRANS_Q,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DF,DIRECTIONS,GENES_250KB,NEAREST_GENE,VARIANT_FUNCTION,CAVEAT > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt
@@ -132,7 +132,7 @@ echo "> include only variants with no caveats"
 #
 # echo "Filtering on DF>0, meaning only 1 cohort was included in the meta-result; we require a minimum of 2."
 # cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt | head -1 > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
-# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt | awk '$19 > 0' | grep "rs" > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
+# cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt | awk '$19 > 0' | grep "rs" >> ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
 # cat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt | wc -l
 # 
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.badVariants.txt

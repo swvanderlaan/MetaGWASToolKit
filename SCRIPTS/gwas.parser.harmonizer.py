@@ -73,21 +73,21 @@ if not hasattr(os.path, 'commonpath'):
 # Make all options upper case for easier comparison later
 GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
 GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHR', 'CHR(GCF1405.25)', 'CHROM', 'CH']
-GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'BP', 'START(GCF1405.25)', 'GENPOS']
+GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'START(GCF1405.25)', 'GENPOS']
 GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE', 'CODED_ALLELE', 'EA', 'EFFECT']
 GWAS_H_OTH_OPTIONS =             ['A2', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NEA', 'OTHER']
 GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR']
 GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'BETA', 'BETA', 'B', 'EFFECTSIZE', 'EFFECT_SIZE']
-GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED']
+GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED', 'STANDARD_ERROR']
 GWAS_H_PVALUE_OPTIONS =          ['PVALUE', 'P-VALUE_GC', 'P-VALUE', 'P.VALUE', 'PVAL', 'P_FIXED', 'P', 'P_VALUE']
 GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES']
 GWAS_H_NCONTROL_OPTIONS =        ['N_CONTROL', 'N_CONTROLS', 'CONTROLS', 'TOTALCONTROLS', 'NCONTROLS']
-GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES', 'NCASES']
+GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES', 'NCASES', 'N_EVENT', 'N_EVENTS', 'NEVENT', 'N-EVENT']
 GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID']
 GWAS_H_STRAND_OPTIONS =          ['STRAND']
 GWAS_H_IMPUTED_OPTIONS =         ['IMPUTED']
 GWAS_H_HWE_OPTIONS =             ['HWE', 'HWE_P', 'HWE.VALUE', 'HWE.VAL']
-GWAS_H_INFO_OPTIONS =            ['INFO', 'QUAL_SCORE', 'RSQ']
+GWAS_H_INFO_OPTIONS =            ['INFO', 'QUAL_SCORE', 'RSQ', 'IMPUTATION']
 GWAS_HG18_HINTS =                ['HG18', 'B36']
 GWAS_HG19_HINTS =                ['HG19', 'GCF1405.25']
 
@@ -97,7 +97,7 @@ def build_parser():
     parser.add_argument('-o', '--out', dest='outfile', metavar='rdat',
             type=os.path.abspath, help='Output ref.pdat file.')
     parser.add_argument('-r', '--report', dest='report', metavar='txt',
-            type=os.path.abspath, help='Report discarded variantss here.')
+            type=os.path.abspath, help='Report discarded variants here.')
     parser.add_argument('-rr', '--report-ok', dest='report_ok', action='store_true',
             help='Report all decisions made. Warning: very verbose')
     parser.add_argument('-g', '--gen', dest='gen', metavar='file.stats.gz',
