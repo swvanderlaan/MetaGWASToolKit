@@ -84,13 +84,13 @@ while(<COHORT>){
 	    close IN;
 	    
 	    
-### Calculate mean of N and lambda 
-	    my $mean_n = sprintf("%.0f",(mean (@n))) ;
+### Calculate median of N and lambda 
+	    my $median_n = sprintf("%.0f",(median (@n))) ;
 	    my $lambda = sprintf("%.3f",(median (@z) * median (@z)) / 0.4549364) ;
 	    if ($lambda < 1.000) {
 	    	$lambda = sprintf("%.3f",(1.000));
 	    	}
-	    print OUT join("\t",$studyname[$nstudies],$lambda,$mean_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
+	    print OUT join("\t",$studyname[$nstudies],$lambda,$median_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
 
 	### Reset parameters, go to next study
 	    $nstudies++;
