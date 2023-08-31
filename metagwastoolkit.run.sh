@@ -33,6 +33,7 @@ PROJECTNAME="EXAMPLEPHENOTYPE"
 PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 SUBPROJECTDIRNAME="MODEL1"
 PYTHON3="/hpc/local/Rocky8/dhl_ec/software/tempMiniconda3envs/gwas/bin/python"
+METAMODEL="FIXED"
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -119,8 +120,40 @@ echo "> include only variants with no caveats"
 ### already done !
 # mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
 
+### Determining the type of data to parse depending on the chosen metamodel
+# if [[ ${METAMODEL} = "FIXED" ]]; then
+# 	BETA="BETA_FIXED"
+# 	SE="SE_FIXED"
+# 	BETA_LOWER="BETA_LOWER_FIXED"
+# 	BETA_UPPER="BETA_UPPER_FIXED"
+# 	ZSCORE="Z_FIXED"
+# 	PVALUE="P_FIXED"
+# elif [[ ${METAMODEL} = "SQRTN" ]]; then
+# 	BETA="BETA_FIXED"
+# 	SE="SE_FIXED"
+# 	BETA_LOWER="BETA_LOWER_FIXED"
+# 	BETA_UPPER="BETA_UPPER_FIXED"
+# 	ZSCORE="Z_SQRTN"
+# 	PVALUE="P_SQRTN"
+# elif [[ ${METAMODEL} = "RANDOM" ]]; then
+# 	BETA="BETA_RANDOM"
+# 	SE="SE_RANDOM"
+# 	BETA_LOWER="BETA_LOWER_RANDOM"
+# 	BETA_UPPER="BETA_UPPER_RANDOM"
+# 	ZSCORE="Z_RANDOM"
+# 	PVALUE="P_RANDOM"
+# else
+# 	echo "Incorrect or no METAMODEL variable specified, defaulting to a FIXED model."
+# 	BETA="BETA_FIXED"
+# 	SE="SE_FIXED"
+# 	BETA_LOWER="BETA_LOWER_FIXED"
+# 	BETA_UPPER="BETA_UPPER_FIXED"
+# 	ZSCORE="Z_FIXED"
+# 	PVALUE="P_FIXED"
+# fi
+
 # zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt.gz | \
-# perl ${SCRIPTS}/parseTable.pl --col RSID,VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,CAF,N_EFF,BETA_FIXED,SE_FIXED,BETA_LOWER_FIXED,BETA_UPPER_FIXED,Z_FIXED,P_FIXED,COCHRANS_Q,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DF,DIRECTIONS,GENES_250KB,NEAREST_GENE,VARIANT_FUNCTION,CAVEAT > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt
+# perl ${SCRIPTS}/parseTable.pl --col RSID,VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,CAF,N_EFF,${BETA},${SE},${BETA_LOWER},${BETA_UPPER},${ZSCORE},${PVALUE},COCHRANS_Q,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DF,DIRECTIONS,GENES_250KB,NEAREST_GENE,VARIANT_FUNCTION,CAVEAT > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt
 # 
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt
 # 
@@ -157,7 +190,7 @@ echo "Converting filtered meta-analysis summary results using [gwas2cojo]."
 # --gwas ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz \
 # --gen:ident ID --gen:chr CHROM --gen:bp POS --gen:other REF --gen:effect ALT --gen:eaf EUR_AF \
 # --gwas:chr CHR --gwas:bp POS --gwas:other OTHERALLELE --gwas:effect CODEDALLELE \
-# --gwas:beta BETA_FIXED --gwas:se SE_FIXED --gwas:p P_FIXED \
+# --gwas:beta ${BETA} --gwas:se ${SE} --gwas:p ${PVALUE} \
 # --gwas:freq CAF --gwas:n N_EFF --gwas:build hg19 \
 # --fmid 0 --fclose 0 \
 # --out ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.txt \

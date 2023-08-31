@@ -193,7 +193,7 @@ else
 			LINE=${VARIANTS}
 			VARIANT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "* Extracting clumped data for ${VARIANT}..."
-			${SCRIPTS}/parseClumps.pl --file ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.clumped.clumped --variant ${VARIANT} > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.${VARIANT}.txt
+			${SCRIPTS}/parseClumps.pl --file ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.clumped.clumped --variant ${VARIANT} --clumpfield ${CLUMP_FIELD} > ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.${CLUMP_R2}.${VARIANT}.txt
 			
 		done < ${VARIANTLIST}
 		
