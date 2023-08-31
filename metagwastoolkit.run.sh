@@ -33,7 +33,7 @@ PROJECTNAME="EXAMPLEPHENOTYPE"
 PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 SUBPROJECTDIRNAME="MODEL1"
 PYTHON3="/hpc/local/Rocky8/dhl_ec/software/tempMiniconda3envs/gwas/bin/python"
-METAMODEL="FIXED"
+METAMODEL="FIXED" # FIXED, SQRTN, or RANDOM. Should match "CLUMP_FIELD" variable from the .conf file.
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -75,20 +75,20 @@ echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dir
 # 
 # echo ""
 # echo "> creating list of variants (only needs to be done once!)"
-# echo 'VARIANTID RSID' > ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
-# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.INFO.txt.gz | awk '{ print $1, $2 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
-# ### zcat ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$5"_"$4, $3} else { print "chr"$1":"$2":"$4"_"$5, $3 } }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
-# gzip -fv ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt
+# echo 'VARIANTID RSID' > ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.VARIANTID2RSID.txt
+# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.INFO.txt.gz | awk '{ print $1, $2 }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.VARIANTID2RSID.txt
+# ### zcat ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$5"_"$4, $3} else { print "chr"$1":"$2":"$4"_"$5, $3 } }' | tail -n +2 >> ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.VARIANTID2RSID.txt
+# gzip -fv ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.VARIANTID2RSID.txt
 # 
 # echo ""
 # echo "> counting list of variants"
-# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt.gz | wc -l
+# zcat ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.VARIANTID2RSID.txt.gz | wc -l
 # 
 # echo ""
 # echo "> merging list of variants with summary statistics"
 # perl ${SCRIPTS}/mergeTables.pl \
 # --file1 ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz \
-# --file2 ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.no_multiallelic.EUR.VARIANTID2RSID.txt.gz \
+# --file2 ${RESOURCES}/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.EUR.VARIANTID2RSID.txt.gz \
 # --index VARIANTID --format GZIPB > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/foo
 # 
 # echo ""
@@ -120,37 +120,37 @@ echo "> include only variants with no caveats"
 ### already done !
 # mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
 
-### Determining the type of data to parse depending on the chosen metamodel
-# if [[ ${METAMODEL} = "FIXED" ]]; then
-# 	BETA="BETA_FIXED"
-# 	SE="SE_FIXED"
-# 	BETA_LOWER="BETA_LOWER_FIXED"
-# 	BETA_UPPER="BETA_UPPER_FIXED"
-# 	ZSCORE="Z_FIXED"
-# 	PVALUE="P_FIXED"
-# elif [[ ${METAMODEL} = "SQRTN" ]]; then
-# 	BETA="BETA_FIXED"
-# 	SE="SE_FIXED"
-# 	BETA_LOWER="BETA_LOWER_FIXED"
-# 	BETA_UPPER="BETA_UPPER_FIXED"
-# 	ZSCORE="Z_SQRTN"
-# 	PVALUE="P_SQRTN"
-# elif [[ ${METAMODEL} = "RANDOM" ]]; then
-# 	BETA="BETA_RANDOM"
-# 	SE="SE_RANDOM"
-# 	BETA_LOWER="BETA_LOWER_RANDOM"
-# 	BETA_UPPER="BETA_UPPER_RANDOM"
-# 	ZSCORE="Z_RANDOM"
-# 	PVALUE="P_RANDOM"
-# else
-# 	echo "Incorrect or no METAMODEL variable specified, defaulting to a FIXED model."
-# 	BETA="BETA_FIXED"
-# 	SE="SE_FIXED"
-# 	BETA_LOWER="BETA_LOWER_FIXED"
-# 	BETA_UPPER="BETA_UPPER_FIXED"
-# 	ZSCORE="Z_FIXED"
-# 	PVALUE="P_FIXED"
-# fi
+## Determining the type of data to parse depending on the chosen metamodel
+if [[ ${METAMODEL} = "FIXED" ]]; then
+	BETA="BETA_FIXED"
+	SE="SE_FIXED"
+	BETA_LOWER="BETA_LOWER_FIXED"
+	BETA_UPPER="BETA_UPPER_FIXED"
+	ZSCORE="Z_FIXED"
+	PVALUE="P_FIXED"
+elif [[ ${METAMODEL} = "SQRTN" ]]; then
+	BETA="BETA_FIXED"
+	SE="SE_FIXED"
+	BETA_LOWER="BETA_LOWER_FIXED"
+	BETA_UPPER="BETA_UPPER_FIXED"
+	ZSCORE="Z_SQRTN"
+	PVALUE="P_SQRTN"
+elif [[ ${METAMODEL} = "RANDOM" ]]; then
+	BETA="BETA_RANDOM"
+	SE="SE_RANDOM"
+	BETA_LOWER="BETA_LOWER_RANDOM"
+	BETA_UPPER="BETA_UPPER_RANDOM"
+	ZSCORE="Z_RANDOM"
+	PVALUE="P_RANDOM"
+else
+	echo "Incorrect or no METAMODEL variable specified, defaulting to a FIXED model."
+	BETA="BETA_FIXED"
+	SE="SE_FIXED"
+	BETA_LOWER="BETA_LOWER_FIXED"
+	BETA_UPPER="BETA_UPPER_FIXED"
+	ZSCORE="Z_FIXED"
+	PVALUE="P_FIXED"
+fi
 
 # zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt.gz | \
 # perl ${SCRIPTS}/parseTable.pl --col RSID,VARIANTID,CHR,POS,CODEDALLELE,OTHERALLELE,CAF,N_EFF,${BETA},${SE},${BETA_LOWER},${BETA_UPPER},${ZSCORE},${PVALUE},COCHRANS_Q,P_COCHRANS_Q,I_SQUARED,TAU_SQUARED,DF,DIRECTIONS,GENES_250KB,NEAREST_GENE,VARIANT_FUNCTION,CAVEAT > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsid.filter.txt

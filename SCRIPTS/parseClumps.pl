@@ -33,6 +33,7 @@ use Getopt::Long;
 
 my $index;
 my $clumpFile;
+my $metaModel;
 
 GetOptions(
 	   "file=s"       => \$clumpFile,
