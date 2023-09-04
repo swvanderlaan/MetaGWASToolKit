@@ -25,10 +25,10 @@
 # TO DO
 # (optional: --replace) add option to replace column contents
 #
-# (bug): If one of the input files only contains a single column the script will fail. This is due to the delimiter detection (it doens't know there shouldn't be one)
-# The fix to this bug would be 2 to create 2 extra options, so that you can specify per file what delimiter to use (or to use none). 
-# This would also circumvent any other issues the delimiter sniffer might have.
-
+# (bug): If one of the input files only contains a single column the script will fail. This is due to the delimiter detection (it doens't know there shouldn't be one).
+# The fix to this bug would be to create 2 extra options, so that you can specify per file what delimiter to use (or to use none). 
+# This would also circumvent any other issues the delimiter detection might have. 
+# Alternatively, use "grep -f" for this use-case.
 
 # Import libraries
 import os

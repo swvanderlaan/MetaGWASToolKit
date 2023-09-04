@@ -120,7 +120,7 @@ echo "> include only variants with no caveats"
 ### already done !
 # mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
 
-## Determining the type of data to parse depending on the chosen metamodel
+### Determining the type of data to parse depending on the chosen metamodel
 if [[ ${METAMODEL} = "FIXED" ]]; then
 	BETA="BETA_FIXED"
 	SE="SE_FIXED"
