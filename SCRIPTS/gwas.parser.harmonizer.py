@@ -315,11 +315,23 @@ def fopen(filename):
 
 
 # This is a very blunt delimiter tester. The above function is more sophisticated but requires testing and some work to make it work for this script.
-def bluntDelimiterTest(line): 
+def blunt_delimiter_test(line): 
     seperators = [',', ';', '\t', '\s']
     for sep in seperators:
         if sep in line:
             return sep
+
+
+def variant_summarize(variant):
+    if len(variant[2]) > 1 or len(variant[3]) > 1:
+        indel_variant = list(variant)
+        indel_variant[2] = "D"
+        indel_variant[3] = "I"
+        sorted_variant = sorted(indel_variant)
+        retupled_variant = tuple(sorted_variant)
+    else:
+        retupled_variant = tuple(sorted(variant))
+    return retupled_variant
 
 
 def read_gwas(args, filename, report=None):
@@ -370,7 +382,7 @@ def read_gwas(args, filename, report=None):
                     if args['gwas:header:remove']:
                         line = line.replace(args['gwas:header:remove'], '')
                     if args['gwas:sep'] is None:
-                        separator = bluntDelimiterTest(line)
+                        separator = blunt_delimiter_test(line)
                     else:
                         separator = args['gwas:sep']
                     header = line.split(separator)
@@ -531,7 +543,7 @@ def read_gwas(args, filename, report=None):
                         if report:
                             log_error(report, 'gwas_build_conv_failed', gwas=row)
                         continue
-                yield (ch, bp), row
+                yield variant_summarize((ch, bp, parts[href].upper(), parts[hoth].upper())), row
                 if lineno % 40000 == 0:
                     reporter.update(lineno, f.fileno())
     except KeyboardInterrupt:
@@ -615,18 +627,23 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                         print('Arguments --gen:hmaf and --gen:minor can only be used together')
                         print('to find effect allele frequency.')
                         exit(1)
-                    minsplit = max(hch, hbp) + 1
+                    #minsplit = max(hch, hbp) + 1
                     yield # really hacky, but allow for parsing header before processing
                           # to give user information if parsing is possible
                     continue
                 if not gwas:
                     break
-                parts = line.split(None, minsplit)
+                #parts = line.split(None, minsplit)
+                parts = line.split()
                 ch = conv_chr_letter(parts[hch], full=True)
-                row_pos = ch, parts[hbp]
+                row_tuple = ch, parts[hbp], parts[heff].upper(), parts[hoth].upper()
+                row_pos = variant_summarize(row_tuple)
                 if row_pos in gwas:
                     in_reference = 'yes'
                     gwas_row = gwas[row_pos]
+                    #print(row_pos)
+                    #print(gwas_row)
+                    #exit(1)
                     parts = line.split()
                     if hmaf is not None:
                         minor = parts[hminor]
