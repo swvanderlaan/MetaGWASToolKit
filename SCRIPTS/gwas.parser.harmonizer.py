@@ -323,7 +323,7 @@ def blunt_delimiter_test(line):
 
 
 def variant_summarize(variant):
-    if len(variant[2]) > 1 or len(variant[3]) > 1:
+    if len(variant[2]) > 1 or len(variant[3]) > 1 or variant[2] in 'IDR-' or variant[3] in 'IDR-':
         indel_variant = list(variant)
         indel_variant[2] = "D"
         indel_variant[3] = "I"
