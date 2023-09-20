@@ -32,7 +32,7 @@ SCRIPTS="${METAGWASTOOLKIT}/SCRIPTS"
 PROJECTNAME="EXAMPLEPHENOTYPE"
 PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 SUBPROJECTDIRNAME="MODEL1"
-PYTHON3="/hpc/local/CentOS7/common/lang/python/3.6.1/bin/python3"
+PYTHON3="/hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/python3"
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -62,12 +62,18 @@ echo ""
 echo "THIRD step: meta-analysis."
 # ${SCRIPTS}/metagwastoolkit.meta.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
 
-echo ""
-echo "FOURTH step: some intermediate mapping and cleaning of results."
 
-echo ""
-echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dirty method, we accept a few mistakes in the matching."
 
+
+
+
+### BELOW WILL LIKELY BE OBSOLETE AS EVERYTHING CAN BE DONE USING GWASLAB FUNCTIONS ###
+# echo ""
+# echo "FOURTH step: some intermediate mapping and cleaning of results."
+# 
+# echo ""
+# echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dirty method, we accept a few mistakes in the matching."
+# 
 # echo ""
 # echo "> first, count number of variants in meta-analysis results"
 # zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz | wc -l
@@ -110,11 +116,11 @@ echo "Matching rsID from 1000G phase 3 (5b) to summary statistics. Quick and dir
 # echo "> gzipping merged data"
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.rsids.txt
 # 
-echo ""
-echo "Filtering results to:"
-echo "> move original data to a new file, and rename the rsID-mapped results"
-echo "> include only relevant columns"
-echo "> include only variants with no caveats"
+# echo ""
+# echo "Filtering results to:"
+# echo "> move original data to a new file, and rename the rsID-mapped results"
+# echo "> include only relevant columns"
+# echo "> include only variants with no caveats"
 
 ### already done !
 ### mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
@@ -139,17 +145,17 @@ echo "> include only variants with no caveats"
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
 # 
-echo ""
-echo "FIFTH step: result clumping."
+# echo ""
+# echo "FIFTH step: result clumping."
 # ${SCRIPTS}/metagwastoolkit.clump.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list 
-
-echo ""
-echo "SIXTH step: prepare and perform downstream analyses."
+# 
+# echo ""
+# echo "SIXTH step: prepare and perform downstream analyses."
 # Note that rsIDs are expected!
 # ${SCRIPTS}/metagwastoolkit.downstream.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list
-
-echo ""
-echo "Converting filtered meta-analysis summary results using [gwas2cojo]."
+# 
+# echo ""
+# echo "Converting filtered meta-analysis summary results using [gwas2cojo]."
 
 # ${PYTHON3} /hpc/local/CentOS7/dhl_ec/software/gwas2cojo/gwas2cojo.py \
 # --gen:build hg19 \
