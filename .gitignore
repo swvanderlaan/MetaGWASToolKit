@@ -49,8 +49,8 @@ vignettes/*.pdf
 .Renviron
 
 # System files
-*.DS_Store
-RESOURCES/.DS_Store
+.DS_Store
+*/.DS_Store
 
 # vim files
 *~
@@ -75,12 +75,6 @@ _gsdata_/
 *.sas7bdat
 *.log
 *.csv
-
-
-# PolarMorphism
-# PolarMorphism/eur_w_ld_chr*
-# PolarMorphism/proxySearch_CAC_CAD*
-
 
 # RESOURCES
 # 1000G phase 1
@@ -196,5 +190,4 @@ resource.creator.log
 EXAMPLE/*
 EXAMPLE/SOMEGWAS_prepMETA/*
 EXAMPLE/SOMEGWAS*
-.DS_Store
 RESOURCES/_archive/
