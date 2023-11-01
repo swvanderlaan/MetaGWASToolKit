@@ -67,22 +67,21 @@ if not hasattr(time, 'monotonic'):
 if not hasattr(os.path, 'commonpath'):
     os.path.commonpath = os.path.commonprefix
 
-
 # Make all options upper case for easier comparison later
 # Potential bug? 'EFFECT' is present in 'GWAS_H_EFF_OPTIONS' and 'GWAS_H_BETA_OPTIONS'
 GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
 GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHR(GCF1405.25)', 'CHROM', 'CH']
-GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'POS', 'POSITION', 'BP', 'START(GCF1405.25)', 'GENPOS']
+GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'START(GCF1405.25)', 'GENPOS']
 GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE', 'CODED_ALLELE', 'CODED_ALL', 'EA', 'EFFECT']
-GWAS_H_OTH_OPTIONS =             ['A2', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL','NEA', 'OTHER']
-GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR', 'AF_CODEDALLELE', 'AF_CODED_ALLELE', 'AF_CODED_ALL']
+GWAS_H_OTH_OPTIONS =             ['A2', 'A0', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL', 'NEA', 'OTHER']
+GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR', 'AF_CODEDALLELE', 'AF_CODED_ALLELE', 'AF_CODED_ALL', 'IMPFREQA1']
 GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'B', 'EFFECTSIZE', 'EFFECT_SIZE']
 GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED', 'STANDARD_ERROR']
 GWAS_H_PVALUE_OPTIONS =          ['PVALUE', 'P-VALUE_GC', 'P-VALUE', 'P.VALUE', 'PVAL', 'P_FIXED', 'P', 'P_VALUE']
 GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES']
 GWAS_H_NCONTROL_OPTIONS =        ['N_CONTROL', 'N_CONTROLS', 'CONTROLS', 'TOTALCONTROLS', 'NCONTROLS']
 GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES', 'NCASES', 'N_EVENT', 'N_EVENTS', 'NEVENT', 'N-EVENT', 'NEVENTS']
-GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID']
+GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID', 'NAME', 'MARKERNAME']
 GWAS_H_STRAND_OPTIONS =          ['STRAND', 'STRAND_GENOME']
 GWAS_H_IMPUTED_OPTIONS =         ['IMPUTED']
 GWAS_H_HWE_OPTIONS =             ['HWE', 'HWE_P', 'HWE.VALUE', 'HWE.VAL']
@@ -90,13 +89,12 @@ GWAS_H_INFO_OPTIONS =            ['INFO', 'QUAL_SCORE', 'RSQ', 'IMPUTATION', 'OE
 GWAS_HG18_HINTS =                ['HG18', 'B36']
 GWAS_HG19_HINTS =                ['HG19', 'GCF1405.25']
 
-
 def build_parser():
     parser = argparse.ArgumentParser()
     parser.add_argument('-o', '--out', dest='outfile', metavar='rdat',
             type=os.path.abspath, help='Output ref.pdat file.')
     parser.add_argument('-r', '--report', dest='report', metavar='txt',
-            type=os.path.abspath, help='Report discarded variantss here.')
+            type=os.path.abspath, help='Report discarded variants here.')
     parser.add_argument('-rr', '--report-ok', dest='report_ok', action='store_true',
             help='Report all decisions made. Warning: very verbose')
     parser.add_argument('-g', '--gen', dest='gen', metavar='file.stats.gz',
@@ -314,11 +312,23 @@ def fopen(filename):
 
 
 # This is a very blunt delimiter tester. The above function is more sophisticated but requires testing and some work to make it work for this script.
-def bluntDelimiterTest(line): 
+def blunt_delimiter_test(line): 
     seperators = [',', ';', '\t', '\s']
     for sep in seperators:
         if sep in line:
             return sep
+
+
+def variant_summarize(variant):
+    if len(variant[2]) > 1 or len(variant[3]) > 1 or variant[2] in 'IDR-' or variant[3] in 'IDR-':
+        indel_variant = list(variant)
+        indel_variant[2] = "D"
+        indel_variant[3] = "I"
+        sorted_variant = sorted(indel_variant)
+        retupled_variant = tuple(sorted_variant)
+    else:
+        retupled_variant = tuple(sorted(variant))
+    return retupled_variant
 
 
 def read_gwas(args, filename, report=None):
@@ -369,7 +379,7 @@ def read_gwas(args, filename, report=None):
                     if args['gwas:header:remove']:
                         line = line.replace(args['gwas:header:remove'], '')
                     if args['gwas:sep'] is None:
-                        separator = bluntDelimiterTest(line)
+                        separator = blunt_delimiter_test(line)
                     else:
                         separator = args['gwas:sep']
                     header = line.split(separator)
@@ -530,7 +540,7 @@ def read_gwas(args, filename, report=None):
                         if report:
                             log_error(report, 'gwas_build_conv_failed', gwas=row)
                         continue
-                yield (ch, bp), row
+                yield variant_summarize((ch, bp, parts[href].upper(), parts[hoth].upper())), row
                 if lineno % 40000 == 0:
                     reporter.update(lineno, f.fileno())
     except KeyboardInterrupt:
@@ -614,18 +624,23 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                         print('Arguments --gen:hmaf and --gen:minor can only be used together')
                         print('to find effect allele frequency.')
                         exit(1)
-                    minsplit = max(hch, hbp) + 1
+                    #minsplit = max(hch, hbp) + 1
                     yield # really hacky, but allow for parsing header before processing
                           # to give user information if parsing is possible
                     continue
                 if not gwas:
                     break
-                parts = line.split(None, minsplit)
+                #parts = line.split(None, minsplit)
+                parts = line.split()
                 ch = conv_chr_letter(parts[hch], full=True)
-                row_pos = ch, parts[hbp]
+                row_tuple = ch, parts[hbp], parts[heff].upper(), parts[hoth].upper()
+                row_pos = variant_summarize(row_tuple)
                 if row_pos in gwas:
                     in_reference = 'yes'
                     gwas_row = gwas[row_pos]
+                    #print(row_pos)
+                    #print(gwas_row)
+                    #exit(1)
                     parts = line.split()
                     if hmaf is not None:
                         minor = parts[hminor]

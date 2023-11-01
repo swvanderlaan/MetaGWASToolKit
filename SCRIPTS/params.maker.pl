@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+                                        PARAMS_MAKER                                    +\n";
-print STDOUT "+                                 version 2.2.1 | 28-09-2023                             +\n";
+print STDOUT "+                                 version 2.2.2 | 01-11-2023                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
@@ -11,6 +11,7 @@ print STDOUT "\n";
 
 use strict;
 use FileHandle;
+use List::Util qw< min max >;
 
 # Description:
 # This script creates a file with parameters for MetaGWASToolKit.
@@ -84,14 +85,16 @@ while(<COHORT>){
 	   	}
 	
 	    close IN;
-	    
+
 ### Calculate mean of N and lambda 
-	    my $mean_n = sprintf("%.0f",(mean (@n))) ;
+#	    my $mean_n = sprintf("%.0f",(mean (@n))) ;
+### Calculate modus of N and lambda 
+	    my $mode_n = sprintf("%.0f",(mode (@n))) ;
 	    my $lambda = sprintf("%.3f",(median (@z) * median (@z)) / 0.4549364) ;
 	    if ($lambda < 1.000) {
 	    	$lambda = sprintf("%.3f",(1.000));
 	    	}
-	    print OUT join("\t",$studyname[$nstudies],$lambda,$mean_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
+	    print OUT join("\t",$studyname[$nstudies],$lambda,$mode_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
 
 	### Reset parameters, go to next study
 	    $nstudies++;
@@ -118,7 +121,21 @@ sub median { # median of values in an array
   {return $sorted[(@sorted-1)/2]}
   else                   # Even number of elements
   {return ($sorted[@sorted/2-1]+$sorted[@sorted/2]) / 2}
-}	 
+}
+
+sub mode { # mean of values in an array
+    my %seen = ();
+    foreach my $x (@_) {
+	$seen{$x}++;
+    }
+    my $max_seen_count = max values %seen;
+    my @modes = grep { $seen{$_} == $max_seen_count } keys %seen;
+    my $mode = @modes == 1 
+            ? $modes[0] 
+            : "(" . join(", ", @modes) . ")";
+    $mode .= ' @ ' . $max_seen_count;
+    return $mode ;
+}
 
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
@@ -150,3 +167,32 @@ print STDERR "+                                                                 
 print STDERR "+ Reference: http://opensource.org.                                                      +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 
+print STDERR "\n";
+print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
+my $newtime = localtime; # scalar context
+print STDERR "The current date and time is: $newtime.\n";
+print STDERR "\n";
+print STDERR "\n";
+print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
+print STDERR "+ The MIT License (MIT)                                                                  +\n";
+print STDERR "+ Copyright (c) 2009-2023 Paul I.W. de Bakker & Sander W. van der Laan                   +\n";
+print STDERR "+                                                                                        +\n";
+print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
+print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";
+print STDERR "+ Software without restriction, including without limitation the rights to use, copy,    +\n";
+print STDERR "+ modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,    +\n";
+print STDERR "+ and to permit persons to whom the Software is furnished to do so, subject to the       +\n";
+print STDERR "+ following conditions:                                                                  +\n";
+print STDERR "+                                                                                        +\n";
+print STDERR "+ The above copyright notice and this permission notice shall be included in all copies  +\n";
+print STDERR "+ or substantial portions of the Software.                                               +\n";
+print STDERR "+                                                                                        +\n";
+print STDERR "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  +\n";
+print STDERR "+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A          +\n";
+print STDERR "+ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT     +\n";
+print STDERR "+ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF   +\n";
+print STDERR "+ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE   +\n";
+print STDERR "+ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                          +\n";
+print STDERR "+                                                                                        +\n";
+print STDERR "+ Reference: http://opensource.org.                                                      +\n";
+print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";

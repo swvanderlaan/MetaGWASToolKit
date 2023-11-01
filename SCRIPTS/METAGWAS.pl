@@ -26,7 +26,7 @@
 # where for each study association statistics are computed for a predefined set of variantss. The
 # meta-analysis is based on Beta and SE statistics from a linear or logistic regression analysis
 # for each study. The meta-analysis statistic is based on inverse-variance weighting
-# as well as a sample-size weighting (correted for imputation qualtiy) under a fixed-effects model.   
+# as well as a sample-size weighting (corrected for imputation qualtiy) under a fixed-effects model.   
 # Tests for heterogeneity (Cochran's Q and I-squared) and random-effects statistics are optional.
 #
 ##########################################################################################
