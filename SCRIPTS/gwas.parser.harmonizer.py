@@ -67,30 +67,27 @@ if not hasattr(time, 'monotonic'):
 if not hasattr(os.path, 'commonpath'):
     os.path.commonpath = os.path.commonprefix
 
-
-
-
 # Make all options upper case for easier comparison later
+# Potential bug? 'EFFECT' is present in 'GWAS_H_EFF_OPTIONS' and 'GWAS_H_BETA_OPTIONS'
 GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
-GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHR', 'CHR(GCF1405.25)', 'CHROM', 'CH']
+GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHR(GCF1405.25)', 'CHROM', 'CH']
 GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'START(GCF1405.25)', 'GENPOS']
 GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE', 'CODED_ALLELE', 'CODED_ALL', 'EA', 'EFFECT']
 GWAS_H_OTH_OPTIONS =             ['A2', 'A0', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL', 'NEA', 'OTHER']
 GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR', 'AF_CODEDALLELE', 'AF_CODED_ALLELE', 'AF_CODED_ALL', 'IMPFREQA1']
-GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'BETA', 'BETA', 'B', 'EFFECTSIZE', 'EFFECT_SIZE']
+GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'B', 'EFFECTSIZE', 'EFFECT_SIZE']
 GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED', 'STANDARD_ERROR']
 GWAS_H_PVALUE_OPTIONS =          ['PVALUE', 'P-VALUE_GC', 'P-VALUE', 'P.VALUE', 'PVAL', 'P_FIXED', 'P', 'P_VALUE']
 GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES']
 GWAS_H_NCONTROL_OPTIONS =        ['N_CONTROL', 'N_CONTROLS', 'CONTROLS', 'TOTALCONTROLS', 'NCONTROLS']
 GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES', 'NCASES', 'N_EVENT', 'N_EVENTS', 'NEVENT', 'N-EVENT', 'NEVENTS']
-GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID', 'NAME']
+GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID', 'NAME', 'MARKERNAME']
 GWAS_H_STRAND_OPTIONS =          ['STRAND', 'STRAND_GENOME']
 GWAS_H_IMPUTED_OPTIONS =         ['IMPUTED']
 GWAS_H_HWE_OPTIONS =             ['HWE', 'HWE_P', 'HWE.VALUE', 'HWE.VAL']
 GWAS_H_INFO_OPTIONS =            ['INFO', 'QUAL_SCORE', 'RSQ', 'IMPUTATION', 'OEVAR_IMP']
 GWAS_HG18_HINTS =                ['HG18', 'B36']
 GWAS_HG19_HINTS =                ['HG19', 'GCF1405.25']
-
 
 def build_parser():
     parser = argparse.ArgumentParser()
@@ -849,9 +846,9 @@ def prolog():
     print('* Written by         : Lennart Landsmeer | l.p.l.landsmeer@umcutrecht.nl')
     print('* Edited by          : Mike Puijk | m.v.puijk-2@umcutrecht.nl')
     print('* Suggested for by   : Sander W. van der Laan | s.w.vanderlaan-2@umcutrecht.nl')
-    print('* Last update        : 2023-06-23')
+    print('* Last update        : 2023-10-03')
     print('* Name               : gwas.parser.harmonizer.py')
-    print('* Version            : v1.0.1')
+    print('* Version            : v1.0.2')
     print('')
     print('* Description        : Parses and harmonizes summary statistics from genome-wide association studies ')
     print('                       (GWAS) to a given genetic reference.')
