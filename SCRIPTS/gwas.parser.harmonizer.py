@@ -74,13 +74,13 @@ if not hasattr(os.path, 'commonpath'):
 GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
 GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHR', 'CHR(GCF1405.25)', 'CHROM', 'CH']
 GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'START(GCF1405.25)', 'GENPOS']
-GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE', 'CODED_ALLELE', 'CODED_ALL', 'EA', 'EFFECT']
-GWAS_H_OTH_OPTIONS =             ['A2', 'A0', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL', 'NEA', 'OTHER']
+GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE' 'CODEDALLELEB', 'CODED_ALLELE', 'CODED_ALL', 'EA', 'EFFECT']
+GWAS_H_OTH_OPTIONS =             ['A2', 'A0', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE' 'OTHERALLELEA', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL', 'NEA', 'OTHER']
 GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR', 'AF_CODEDALLELE', 'AF_CODED_ALLELE', 'AF_CODED_ALL', 'IMPFREQA1']
 GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'BETA', 'BETA', 'B', 'EFFECTSIZE', 'EFFECT_SIZE']
 GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED', 'STANDARD_ERROR']
 GWAS_H_PVALUE_OPTIONS =          ['PVALUE', 'P-VALUE_GC', 'P-VALUE', 'P.VALUE', 'PVAL', 'P_FIXED', 'P', 'P_VALUE']
-GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES']
+GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES' 'TOTALN']
 GWAS_H_NCONTROL_OPTIONS =        ['N_CONTROL', 'N_CONTROLS', 'CONTROLS', 'TOTALCONTROLS', 'NCONTROLS']
 GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES', 'NCASES', 'N_EVENT', 'N_EVENTS', 'NEVENT', 'N-EVENT', 'NEVENTS']
 GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID', 'NAME']
@@ -385,7 +385,7 @@ def read_gwas(args, filename, report=None):
                         separator = blunt_delimiter_test(line)
                     else:
                         separator = args['gwas:sep']
-                    header = line.split(separator)
+                    header = line.rstrip().split(separator)
                     hpos = select('chr_bp', GWAS_H_CHR_AND_BP_COMB_OPTIONS, fail=False)
                     if hpos is None:
                         postype_combined = False
@@ -641,9 +641,6 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                 if row_pos in gwas:
                     in_reference = 'yes'
                     gwas_row = gwas[row_pos]
-                    #print(row_pos)
-                    #print(gwas_row)
-                    #exit(1)
                     parts = line.split()
                     if hmaf is not None:
                         minor = parts[hminor]
