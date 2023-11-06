@@ -82,9 +82,9 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
 echobold "                      --- REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL GWAS DATA ---"
 echobold ""
-echobold "* Version:      v1.6.5"
+echobold "* Version:      v1.6.6"
 echobold ""
-echobold "* Last update:  2023-06-26"
+echobold "* Last update:  2023-09-22"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
@@ -275,7 +275,7 @@ else
 	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
 	  	echo "Original data directory........................: "${ORIGINALS}
 	  	echo "We are processing these cohort(s)..............:"
-		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do # -n check is included in the loop condition, the loop will terminate when it encounters this empty line because -n checks if a string is not empty
 			LINE=${GWASCOHORT}
 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "     * ${COHORT}"
@@ -351,7 +351,7 @@ else
 	fi
 	REFAFFILE="${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz"
 		
-	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do # -n check is included in the loop condition, the loop will terminate when it encounters this empty line because -n checks if a string is not empty
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 		FILE=$(echo "${LINE}" | awk '{ print $2 }')
