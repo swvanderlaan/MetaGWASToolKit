@@ -237,21 +237,28 @@ def select_action(args,
     indel = gwas_ref in 'IDR' or gwas_oth in 'IDR' or (gen_eff == '<DEL>' and gwas_ref == '-')
     if args.ignore_indels and (indel or len(gwas_ref) != 1 or len(gwas_oth) != 1):
         return ACT_INDEL_SKIP
+    act = "skip"
     if indel:
         if gen_eff == '<DEL>' and gwas_ref == '-':
-            return ACT_NOP
+            act = ACT_NOP
         elif gwas_ref not in 'IDR' or gwas_oth not in 'IDR':
             return ACT_INDEL_SKIP
         elif gwas_ref == 'I' or gwas_oth == 'D':
             if (gen_eff == 'I' or gen_oth == 'D') or len(gen_eff) > len(gen_oth):
-                return ACT_NOP
+                act = ACT_NOP
             elif (gen_eff == 'D' or gen_oth == 'I') or len(gen_eff) < len(gen_oth):
-                return ACT_FLIP
+                act = ACT_FLIP
         elif gwas_ref == 'D' or gwas_oth == 'I':
             if (gen_eff == 'I' or gen_oth == 'D') or len(gen_eff) > len(gen_oth):
-                return ACT_FLIP
+                act = ACT_FLIP
             elif (gen_eff == 'D' or gen_oth == 'I') or len(gen_eff) < len(gen_oth):
-                return ACT_NOP
+                act = ACT_NOP
+        if act is ACT_NOP and not freq_close:
+            return ACT_REPORT_FREQ
+        if act is ACT_FLIP and not freq_inv_close:
+            return ACT_REPORT_FREQ
+        if act is not "skip":
+            return act
         return ACT_INDEL_SKIP
     elif not ambivalent:
         if gen_eff == gwas_ref and gen_oth == gwas_oth:
@@ -271,21 +278,20 @@ def select_action(args,
         return act
     else:
         if gen_eff == gwas_ref and gen_oth == gwas_oth:
-            pass # equal = True, if wanted equal could be used for statistics
+            act = ACT_NOP
         elif gen_oth == gwas_ref and gen_eff == gwas_oth:
-            pass # equal = False
+            act = ACT_FLIP
         else:
             return ACT_SKIP
-        if freq_mid and freq_close:
-            return ACT_REM
-        elif freq_mid and freq_inv_close:
-            return ACT_REM_FLIP
-        elif freq_close:
-            return ACT_NOP
-        elif freq_inv_close:
-            return ACT_FLIP
-        else:
+        if act is ACT_NOP and not freq_close:
             return ACT_REPORT_FREQ
+        if act is ACT_FLIP and not freq_inv_close:
+            return ACT_REPORT_FREQ
+        if act is ACT_NOP and freq_mid:
+            return ACT_REM
+        if act is ACT_FLIP and freq_mid:
+            return ACT_REM_FLIP
+        return act
 
 
 def log_error(report, name, gwas, gen=(), rest=()):
