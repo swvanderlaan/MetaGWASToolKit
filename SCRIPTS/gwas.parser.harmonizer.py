@@ -72,13 +72,13 @@ if not hasattr(os.path, 'commonpath'):
 GWAS_H_CHR_AND_BP_COMB_OPTIONS = ['CHR_POS_(B36)']
 GWAS_H_CHR_OPTIONS =             ['CHR', 'CHROMOSOME', 'CHR(GCF1405.25)', 'CHROM', 'CH']
 GWAS_H_BP_OPTIONS =              ['BP_HG18', 'BP_HG19', 'BP', 'POS', 'POSITION', 'START(GCF1405.25)', 'GENPOS']
-GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE', 'CODED_ALLELE', 'CODED_ALL', 'EA', 'EFFECT']
-GWAS_H_OTH_OPTIONS =             ['A2', 'A0', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL', 'NEA', 'OTHER']
+GWAS_H_EFF_OPTIONS =             ['A1', 'ALLELE1', 'REFERENCE_ALLELE', 'REFERENCEALLELE', 'EFFECT_ALLELE', 'EFFECTALLELE', 'RISKALLELE', 'RISK_ALLELE', 'CODEDALLELE', 'CODEDALLELEB', 'CODED_ALLELE', 'CODED_ALL', 'EA', 'EFFECT']
+GWAS_H_OTH_OPTIONS =             ['A2', 'A0', 'ALLELE2', 'OTHER_ALLELE', 'OTHERALLELE', 'OTHERALLELEA', 'NONEFFECT_ALLELE', 'NONEFFECTALLELE', 'NONRISK_ALLELE', 'NONRISKALLELE', 'NONCODEDALLELE', 'NONCODED_ALLELE', 'NONCODED_ALL', 'NEA', 'OTHER']
 GWAS_H_FREQ_OPTIONS =            ['REF_ALLELE_FREQUENCY', 'EFFECT_ALLELE_FREQ', 'EAF', 'RAF', 'CAF', 'FREQ1', 'FREQ(A1)', 'FREQ.A1.1000G.EUR', 'AF_CODEDALLELE', 'AF_CODED_ALLELE', 'AF_CODED_ALL', 'IMPFREQA1']
 GWAS_H_BETA_OPTIONS =            ['LOG_ODDS', 'LOGOR', 'BETA', 'EFFECT', 'BETA_FIXED', 'B', 'EFFECTSIZE', 'EFFECT_SIZE']
 GWAS_H_SE_OPTIONS =              ['LOG_ODDS_SE', 'SE_GC', 'SE', 'STDERR', 'SE_FIXED', 'STANDARD_ERROR']
 GWAS_H_PVALUE_OPTIONS =          ['PVALUE', 'P-VALUE_GC', 'P-VALUE', 'P.VALUE', 'PVAL', 'P_FIXED', 'P', 'P_VALUE']
-GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES']
+GWAS_H_NTOTAL_OPTIONS =          ['N_SAMPLES', 'TOTALSAMPLESIZE', 'N_EFF', 'N', 'NEFF', 'NSAMPLES', 'TOTALN']
 GWAS_H_NCONTROL_OPTIONS =        ['N_CONTROL', 'N_CONTROLS', 'CONTROLS', 'TOTALCONTROLS', 'NCONTROLS']
 GWAS_H_NCASE_OPTIONS =           ['N_CASE', 'N_CASES', 'CASES', 'TOTALCASES', 'NCASES', 'N_EVENT', 'N_EVENTS', 'NEVENT', 'N-EVENT', 'NEVENTS']
 GWAS_H_VARIANT_OPTIONS =         ['MARKER', 'SNP', 'RSID', 'SNPID', 'ID', 'NAME', 'MARKERNAME']
@@ -161,7 +161,7 @@ def build_parser():
 
 GWASRow = collections.namedtuple('GWASRow', 'marker ch bp strand ref oth f hwe info b se p lineno n n_cases n_controls imputed')
 INV = { 'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C' }
-ACT_NOP, ACT_SKIP, ACT_FLIP, ACT_REM, ACT_REPORT_FREQ, ACT_INDEL_SKIP = 1, 2, 3, 4, 5, 6
+ACT_NOP, ACT_SKIP, ACT_FLIP, ACT_REM, ACT_REM_FLIP, ACT_REPORT_FREQ, ACT_INDEL_SKIP = 1, 2, 3, 4, 5, 6, 7
 
 
 def conv_chr_letter(ch, full=False):
@@ -237,21 +237,28 @@ def select_action(args,
     indel = gwas_ref in 'IDR' or gwas_oth in 'IDR' or (gen_eff == '<DEL>' and gwas_ref == '-')
     if args.ignore_indels and (indel or len(gwas_ref) != 1 or len(gwas_oth) != 1):
         return ACT_INDEL_SKIP
+    act = "skip"
     if indel:
         if gen_eff == '<DEL>' and gwas_ref == '-':
-            return ACT_NOP
+            act = ACT_NOP
         elif gwas_ref not in 'IDR' or gwas_oth not in 'IDR':
             return ACT_INDEL_SKIP
         elif gwas_ref == 'I' or gwas_oth == 'D':
             if (gen_eff == 'I' or gen_oth == 'D') or len(gen_eff) > len(gen_oth):
-                return ACT_NOP
+                act = ACT_NOP
             elif (gen_eff == 'D' or gen_oth == 'I') or len(gen_eff) < len(gen_oth):
-                return ACT_FLIP
+                act = ACT_FLIP
         elif gwas_ref == 'D' or gwas_oth == 'I':
             if (gen_eff == 'I' or gen_oth == 'D') or len(gen_eff) > len(gen_oth):
-                return ACT_FLIP
+                act = ACT_FLIP
             elif (gen_eff == 'D' or gen_oth == 'I') or len(gen_eff) < len(gen_oth):
-                return ACT_NOP
+                act = ACT_NOP
+        if act is ACT_NOP and not freq_close:
+            return ACT_REPORT_FREQ
+        if act is ACT_FLIP and not freq_inv_close:
+            return ACT_REPORT_FREQ
+        if act is not "skip":
+            return act
         return ACT_INDEL_SKIP
     elif not ambivalent:
         if gen_eff == gwas_ref and gen_oth == gwas_oth:
@@ -271,19 +278,20 @@ def select_action(args,
         return act
     else:
         if gen_eff == gwas_ref and gen_oth == gwas_oth:
-            pass # equal = True, if wanted equal could be used for statistics
+            act = ACT_NOP
         elif gen_oth == gwas_ref and gen_eff == gwas_oth:
-            pass # equal = False
+            act = ACT_FLIP
         else:
             return ACT_SKIP
-        if freq_mid:
-            return ACT_REM
-        if freq_close:
-            return ACT_NOP
-        elif freq_inv_close:
-            return ACT_FLIP
-        else:
+        if act is ACT_NOP and not freq_close:
             return ACT_REPORT_FREQ
+        if act is ACT_FLIP and not freq_inv_close:
+            return ACT_REPORT_FREQ
+        if act is ACT_NOP and freq_mid:
+            return ACT_REM
+        if act is ACT_FLIP and freq_mid:
+            return ACT_REM_FLIP
+        return act
 
 
 def log_error(report, name, gwas, gen=(), rest=()):
@@ -349,8 +357,8 @@ def read_gwas(args, filename, report=None):
             except IndexError:
                 print('Specified header (--gwas:'+name, args[option_name] + ') not found.')
                 exit(1)
+        header_upper = list(map(str.upper, header))
         for option in options:
-            header_upper = list(map(str.upper, header))
             if option.upper() in header_upper:
                 desc[name] = option
                 return header_upper.index(option.upper())
@@ -382,7 +390,7 @@ def read_gwas(args, filename, report=None):
                         separator = blunt_delimiter_test(line)
                     else:
                         separator = args['gwas:sep']
-                    header = line.split(separator)
+                    header = line.rstrip().split(separator)
                     hpos = select('chr_bp', GWAS_H_CHR_AND_BP_COMB_OPTIONS, fail=False)
                     if hpos is None:
                         postype_combined = False
@@ -638,9 +646,6 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                 if row_pos in gwas:
                     in_reference = 'yes'
                     gwas_row = gwas[row_pos]
-                    #print(row_pos)
-                    #print(gwas_row)
-                    #exit(1)
                     parts = line.split()
                     if hmaf is not None:
                         minor = parts[hminor]
@@ -671,10 +676,12 @@ def update_read_stats(args, gwas, stats_filename, output=None, report=None):
                         counts['ambiguous_ambivalent'] += 1
                         in_reference = 'yes_but_ATCG_variant_with_0.45<EAF<0.55'
                         if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
-                        ### The above line would need to be commented out and the 3 lines below this uncommented, to once again remove ambiguous ACTG variants.
-                        # if report: log_error(report, 'ambiguous_ambivalent', gwas=gwas_row, gen=parts)
-                        # discarded += 1
-                        # continue
+                    elif act is ACT_REM_FLIP:
+                        counts['ambiguous_ambivalent_flip'] += 1
+                        in_reference = 'yes_but_ATCG_variant_with_0.45<EAF<0.55'
+                        freq = 1-freq
+                        beta = -beta
+                        if report and report_ok: log_error(report, 'ok', [ 'gwas', gwas_row.ref, gwas_row.oth, gwas_row.f, gwas_row.b, 'gen', parts[heff], parts[hoth], eaf, 'res', parts[heff], parts[hoth], freq, beta, act])
                     elif act is ACT_SKIP:
                         counts['report:allele_mismatch'] += 1
                         if report: log_error(report, 'allele_mismatch', gwas=gwas_row, gen=parts)

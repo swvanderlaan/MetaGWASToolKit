@@ -166,33 +166,3 @@ print STDERR "+ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                   
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Reference: http://opensource.org.                                                      +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-
-print STDERR "\n";
-print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
-my $newtime = localtime; # scalar context
-print STDERR "The current date and time is: $newtime.\n";
-print STDERR "\n";
-print STDERR "\n";
-print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-print STDERR "+ The MIT License (MIT)                                                                  +\n";
-print STDERR "+ Copyright (c) 2009-2023 Paul I.W. de Bakker & Sander W. van der Laan                   +\n";
-print STDERR "+                                                                                        +\n";
-print STDERR "+ Permission is hereby granted, free of charge, to any person obtaining a copy of this   +\n";
-print STDERR "+ software and associated documentation files (the \"Software\"), to deal in the         +\n";
-print STDERR "+ Software without restriction, including without limitation the rights to use, copy,    +\n";
-print STDERR "+ modify, merge, publish, distribute, sublicense, and/or sell copies of the Software,    +\n";
-print STDERR "+ and to permit persons to whom the Software is furnished to do so, subject to the       +\n";
-print STDERR "+ following conditions:                                                                  +\n";
-print STDERR "+                                                                                        +\n";
-print STDERR "+ The above copyright notice and this permission notice shall be included in all copies  +\n";
-print STDERR "+ or substantial portions of the Software.                                               +\n";
-print STDERR "+                                                                                        +\n";
-print STDERR "+ THE SOFTWARE IS PROVIDED \"AS IS\", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,  +\n";
-print STDERR "+ INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A          +\n";
-print STDERR "+ PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT     +\n";
-print STDERR "+ HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF   +\n";
-print STDERR "+ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE   +\n";
-print STDERR "+ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                                          +\n";
-print STDERR "+                                                                                        +\n";
-print STDERR "+ Reference: http://opensource.org.                                                      +\n";
-print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
