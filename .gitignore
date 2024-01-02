@@ -135,6 +135,8 @@ RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.no_multiallelic.*.FREQ.txt.g
 RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.no_multiallelic.*.FUNC.txt.gz
 RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5c.no_multiallelic.*.INFO.txt.gz
 
+RESOURCES/1000Gp3v5_20130502_mvncall_integrated_v5b.only_SNPS_INDELS.*
+
 # 1000G phase 3 plus GoNL5
 RESOURCES/1000Gp3v5_GoNL5/*
 
@@ -191,3 +193,4 @@ EXAMPLE/*
 EXAMPLE/SOMEGWAS_prepMETA/*
 EXAMPLE/SOMEGWAS*
 RESOURCES/_archive/
+
