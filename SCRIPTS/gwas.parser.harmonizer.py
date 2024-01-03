@@ -257,7 +257,7 @@ def select_action(args,
             return ACT_REPORT_FREQ
         if act is ACT_FLIP and not freq_inv_close:
             return ACT_REPORT_FREQ
-        if act is not "skip":
+        if act != "skip":
             return act
         return ACT_INDEL_SKIP
     elif not ambivalent:
@@ -462,7 +462,7 @@ def read_gwas(args, filename, report=None):
                     print('= Converting =')
                     reporter = ReporterLine('Reading gwas data.')
                     continue
-                parts = line.split(separator)
+                parts = line.rstrip().split(separator)
                 if len(parts) != len(header):
                     # MDD switches halfway to a different format for a small number of non-significant SNPs
                     if report:
