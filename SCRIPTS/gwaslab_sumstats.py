@@ -27,12 +27,14 @@ parser = argparse.ArgumentParser(description="Parser commands.")
 requiredNamed = parser.add_argument_group('required named arguments')
 
 requiredNamed.add_argument("-g", "--gwas", help="The name of the GWAS study.", type=str)
+requiredNamed.add_argument("-i", "--input", help="The path and name of the parsed input file.", type=str)
 requiredNamed.add_argument("-d", "--directory", help="The path to the results directory.", type=str)
 requiredNamed.add_argument("-r", "--reference", help="The path to the references directory.", type=str)
 requiredNamed.add_argument("-p", "--population", help="Population analysed.", type=str)
 requiredNamed.add_argument("-f", "--figures", help="Make plots or not?(YES or NO).", type=str)
 requiredNamed.add_argument("-q", "--qc", help="Perform Quality Control or not?(YES or NO).", type=str)
-
+requiredNamed.add_argument("-n", "--onlyqc", help="Perform ONLY Quality Control or not? pickle file has to exist! (YES or NO).", type=str)
+requiredNamed.add_argument("-l", "--leads", help="select lead SNPs and safe in file?(YES or NO).", type=str)
 #requiredNamed.add_argument("-o", "--output", help="File name for the output file to store the results.", type=str)
 args = parser.parse_args()
 
@@ -49,9 +51,11 @@ POPULATION = args.population
 
 perform_qc = args.qc
 
+select_leads= args.leads
+only_qc= args.onlyqc
 # Reference data directory
 REF_loc = args.reference
-gl.options.set_option("data_directory","${REF}")
+gl.options.set_option("data_directory",f"{REF_loc}")
 
 #REF_loc = "/hpc/dhl_ec/esmulders/references"
 print("Checking contents of the reference directory:")
@@ -87,7 +91,7 @@ print(check_output(
 
 # general plotting directory
 
-PLOTTER=args.figures
+make_plots=args.figures
 # Check if the directory exists
 if not (os.path.join(GWAS_RES_loc, "PLOTS")):
     # If it doesn't exist, create it
@@ -102,13 +106,16 @@ if not os.path.exists(REG_PLOTS_loc):
     # If it doesn't exist, create it
     os.makedirs(REG_PLOTS_loc)
 
-gwas_data_sumstats = gl.load_pickle(
+if only_qc=="YES":
+	gwas_data_sumstats = gl.load_pickle(
     os.path.join(
-        GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.pkl",
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.pkl"),
     )
 )
-
-temp = pl.read_csv(
+	gwas_data_sumstats.data
+### Load data
+if only_qc=="NO":
+	temp = pl.read_csv(
     source=os.path.join(
         GWAS_RES_loc
         + "/meta.results." + PHENOTYPE + ".1Gp3." + POPULATION + ".summary.txt.gz",
@@ -128,34 +135,16 @@ temp = pl.read_csv(
     dtypes={"CHR": pl.Utf8},
 )
 
-# ### Load data
-# temp = pl.read_csv(
-#     source=os.path.join(
-#         GWAS_RES_loc + SUBSTUDY_PHENO + "/META_" + PHENOTYPE + ".all.clean.txt.gz",
-#     ),
-#     has_header=True,
-#     separator=" ",
-#     ignore_errors=False,
-#     # n_rows=1000, # for debugging
-#     quote_char=None,
-#     # necessary to fix issues with missing values when reading data
-#     null_values=["NA"],
-#     # There is an error at import (from temp to pandas()):
-#     # Could not parse `X` as dtype `i64` at column 'CHR' (column number 2)
-#     # https://stackoverflow.com/questions/75797640/how-to-specify-column-types-in-python-polars-read-csv
-#     # https://stackoverflow.com/questions/71790235/switching-between-dtypes-within-a-dataframe
-#     # https://pola-rs.github.io/polars/user-guide/concepts/data-types/
-#     dtypes={"CHR": pl.Utf8},
-# )
+
 # change polars dataframe to pandas dataframe
-gwas_data = temp.to_pandas()
-del temp
+	gwas_data = temp.to_pandas()
+	del temp
 
 
-if PLOTTER == "YES":
+	if make_plots == "YES":
     # CAF plot
-    plt.figure()
-    sns.histplot(
+		plt.figure()
+		sns.histplot(
         data=gwas_data,
         x="CAF",
         bins=25,
@@ -163,18 +152,18 @@ if PLOTTER == "YES":
         stat="frequency",
         color="#1290D9",
     )
-    plt.title("Histogram of Coded Allele Frequency")
-    plt.savefig(
+		plt.title("Histogram of Coded Allele Frequency")
+		plt.savefig(
         os.path.join(PLOTS_loc, f"histogram.EAF.{PHENOTYPE}.png"),
         dpi=300,
         bbox_inches="tight",
         format="png",
     )
-    plt.close()
+		plt.close()
 
     # BETA plot
-    plt.figure()
-    sns.histplot(
+		plt.figure()
+		sns.histplot(
         data=gwas_data,
         x="BETA_FIXED",
         bins=25,
@@ -182,38 +171,38 @@ if PLOTTER == "YES":
         stat="frequency",
         color="#E55738",
     )
-    plt.title("Histogram of Beta Fixed")
-    plt.savefig(
+		plt.title("Histogram of Beta Fixed")
+		plt.savefig(
         os.path.join(PLOTS_loc, f"histogram.effect.{PHENOTYPE}.png"),
         dpi=300,
         bbox_inches="tight",
         format="png",
     )
-    plt.close()
+		plt.close()
     
     
 ### FIX COLUMNS
 # Convert CHR column to string type to handle non-numeric chromosomes
-gwas_data["CHR"] = gwas_data["CHR"].astype(str)
+	gwas_data["CHR"] = gwas_data["CHR"].astype(str)
 
 # Optionally map non-numeric chromosomes to integers if required
-chromosome_mapping = {
+	chromosome_mapping = {
     'X': '23',
     'Y': '24',
     'MT': '25'
 }
 
-gwas_data["CHR"] = gwas_data["CHR"].replace(chromosome_mapping)
+	gwas_data["CHR"] = gwas_data["CHR"].replace(chromosome_mapping)
 
 # Now you can convert it to an integer type
-gwas_data["CHR"] = gwas_data["CHR"].astype("Int64")
+	gwas_data["CHR"] = gwas_data["CHR"].astype("Int64")
 
 
-gwas_data[["POS"]] = gwas_data[["POS"]].astype("Int64")
+	gwas_data[["POS"]] = gwas_data[["POS"]].astype("Int64")
 
 # create new SNPID column based on chromosome, position, and alleles
 # down the road we need an SNPID column to merge with the reference data and which does not contain 'ID' because this is not correctly interpreted by GWASLab
-gwas_data["SNPID"] = (
+	gwas_data["SNPID"] = (
     gwas_data["CHR"].astype(str)
     + ":"
     + gwas_data["POS"].astype(str)
@@ -223,16 +212,16 @@ gwas_data["SNPID"] = (
     + gwas_data["CODEDALLELE"].astype(str)
 )
 
-gwas_data.rename(columns={"SNP": "VariantID"}, inplace=True)
+	gwas_data.rename(columns={"SNP": "VariantID"}, inplace=True)
 
 # Create CAVEAT column
-gwas_data['CAVEAT'].fillna('None', inplace=True)
+	gwas_data['CAVEAT'].fillna('None', inplace=True)
 
 
 
 ### GWASLAB - create variable
 # Specify the columns:
-gwas_data_sumstats = gl.Sumstats(
+	gwas_data_sumstats = gl.Sumstats(
     gwas_data,
     snpid="VARIANTID",
     # rsid="RSID", # not available
@@ -258,15 +247,15 @@ gwas_data_sumstats = gl.Sumstats(
     verbose=True,
 )
 # clean up
-del gwas_data
+	del gwas_data
 
 
 # Execute `basic_check` function - first we just make sure the data has the expected format, columns, and datatypes.
 # full data
-gwas_data_sumstats.basic_check(verbose=True)
+	gwas_data_sumstats.basic_check(verbose=True)
 
 # Remove duplicates
-gwas_data_sumstats.remove_dup(
+	gwas_data_sumstats.remove_dup(
     mode="md",  # remove multi-allelic and duplicate variants
     remove=False,  # remove NAs
     keep_col="P",
@@ -279,27 +268,33 @@ gwas_data_sumstats.remove_dup(
 # .check_ref(): Check if NEA is aligned with the reference sequence. After checking, the tracking status code will be changed accordingly.
 
 # full dataset
-gwas_data_sumstats.check_ref(
-    ref_seq=REF_loc + "/gwaslab/hg19.fa",
+	gwas_data_sumstats.check_ref(
+    ref_seq=REF_loc + "hg19.fa",
     #   chr_dict=gl.get_number_to_NC(build="19")
 )
 
+# # full dataset
+# gwas_data_sumstats.check_ref(
+#     ref_seq=REF_loc + "hg19.fa",
+#     #   chr_dict=gl.get_number_to_NC(build="19")
+# )
+
 # we make sure to flip the alleles based on the status code
-gwas_data_sumstats.flip_allele_stats()
+	gwas_data_sumstats.flip_allele_stats()
 # infer strand for palindromic SNPs/align indistinguishable indels
-gwas_data_sumstats.infer_strand(
-    ref_infer=REF_loc + f"/gwaslab/{POPULATION}.ALL.split_norm_af.1kgp3v5.hg19.vcf.gz",
+	gwas_data_sumstats.infer_strand(
+    ref_infer= REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg19.vcf.gz",
     ref_alt_freq="AF",
     n_cores=8
 )
-gwas_data_sumstats.flip_allele_stats()
+	gwas_data_sumstats.flip_allele_stats()
 
 
 # Assign rsID by matching SNPID with CHR:POS:REF:ALT in the reference
-gwas_data_sumstats.assign_rsid(
+	gwas_data_sumstats.assign_rsid(
     n_cores=8,
     # this works for common variants
-    ref_rsid_tsv=REF_loc + "/gwaslab/1kg_dbsnp151_hg19_auto.txt.gz",
+    ref_rsid_tsv=REF_loc + "/1kg_dbsnp151_hg19_auto.txt.gz",
     # ref_rsid_vcf=gl.get_path("dbsnp_v156_hg19"),
     chr_dict=gl.get_number_to_NC(
         build="19"
@@ -307,32 +302,32 @@ gwas_data_sumstats.assign_rsid(
 )
 
 # Check if SNPIDs are correct
-gwas_data_sumstats.fix_id(
+	gwas_data_sumstats.fix_id(
     fixid=True,
     forcefixid=True,
     overwrite=True,
 )
 
-gwas_data_sumstats.check_af(
-    ref_infer=REF_loc + f"/gwaslab/{POPULATION}.ALL.split_norm_af.1kgp3v5.hg19.vcf.gz",
+	gwas_data_sumstats.check_af(
+    ref_infer=REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg19.vcf.gz",
     ref_alt_freq="AF",
     n_cores=8,
 )
 #plot allele frequency comparison plot against reference
-gwas_data_sumstats.plot_daf(threshold=0.12)
+	gwas_data_sumstats.plot_daf(threshold=0.12)
 
 
 # select caveats in dataset
-temp = gwas_data_sumstats.data["CAVEAT"].value_counts()
+	temp = gwas_data_sumstats.data["CAVEAT"].value_counts()
 
-temp.to_csv(
+	temp.to_csv(
     os.path.join(
         GWASCatalog_loc + PHENOTYPE + ".b37.counts_caveats.csv",
     )
 )
-del temp
+	del temp
 
-gl.dump_pickle(
+	gl.dump_pickle(
     gwas_data_sumstats,
     os.path.join(
         GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.pkl",
@@ -340,15 +335,15 @@ gl.dump_pickle(
     overwrite=True,
 )
 
-gwas_data_sumstats.log.show()
+	gwas_data_sumstats.log.show()
 
-gwas_data_sumstats.log.save(
+	gwas_data_sumstats.log.save(
     os.path.join(
         GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.log",
     )
 )
 
-gwas_data_sumstats.to_format(
+	gwas_data_sumstats.to_format(
     os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab"),
     fmt="ssf",
     build="19",
@@ -356,9 +351,10 @@ gwas_data_sumstats.to_format(
 
 
 # manhattan and qq plot
-if PLOTTER == "YES":
+if make_plots == "YES":
+	gwas_data_sumstats.plot_daf(threshold=0.12)
     # Manhattan and QQ plot
-    gwas_data_sumstats.plot_mqq(
+	gwas_data_sumstats.plot_mqq(
         skip=2,
         cut=10,
         sig_line=True,
@@ -373,38 +369,37 @@ if PLOTTER == "YES":
         stratified=True,
         drop_chr_start=True,
         title=f"{PHENOTYPE}",
-        save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.pdf"),
+        save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.png"),
         saveargs={"dpi": 300},
         verbose=True,
     )
 
 # Perform Quality Control if required
-if perform_qc == "YES":
-    gwas_data_sumstats_qc = gwas_data_sumstats.filter_value(
+if perform_qc == "YES" or only_qc == "YES":
+	    gwas_data_sumstats_qc = gwas_data_sumstats.filter_value(
         '(EAF>=0.01 & EAF<0.99 & DF>=1) & (DAF<0.12 & DAF>-0.12) & (CAVEAT=="None")'
-    )
-
-    gl.dump_pickle(
+        )
+	    gl.dump_pickle(
         gwas_data_sumstats_qc,
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.qc.pkl"),
         overwrite=True,
     )
 
-    gwas_data_sumstats_qc.log.show()
+	    gwas_data_sumstats_qc.log.show()
 
-    gwas_data_sumstats_qc.log.save(
+	    gwas_data_sumstats_qc.log.save(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.qc.log")
     )
 
-    gwas_data_sumstats_qc.to_format(
+	    gwas_data_sumstats_qc.to_format(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.qc"),
         fmt="ssf",
         build="19",
     )
 
     # Generate plots if required
-    if PLOTTER == "YES":
-        gwas_data_sumstats_qc.plot_mqq(
+	    if make_plots == "YES":
+		        gwas_data_sumstats_qc.plot_mqq(
             skip=2,
             cut=10,
             sig_line=True,
@@ -418,15 +413,14 @@ if perform_qc == "YES":
             build="19",
             stratified=True,
             drop_chr_start=True,
-            save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.qc.pdf"),
+            save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.qc.png"),
             saveargs={"dpi": 300},
             verbose=True,
         )
 
-gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
-
-
-gwas_data_sumstats_leads.to_format(
+if select_leads=="YES":
+	gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
+	gwas_data_sumstats_leads.to_format(
     os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.significant_snps"),
     fmt="ssf",
     build="19",

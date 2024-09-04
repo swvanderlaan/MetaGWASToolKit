@@ -342,7 +342,7 @@ else
 
 	if [ "$PERFORM_LDSC" == "YES" ]; then
 	    # LDSC
-	    mkdir -p "${METARESULTDIR}/LDSC"
+	    mkdir -p "${METARESULTDIR}/ldsc"
 	
 	    # Initialize variables
 	    TRAIT_JOB_IDS=()
@@ -389,7 +389,7 @@ else
 	
 		    # Phenotype analysis
 	if [ "$PERFORM_LDSC" == "YES" ]; then
-	mkdir -p "${METARESULTDIR}/LDSC"
+	mkdir -p "${METARESULTDIR}/ldsc"
 	    data_analysed="PHENOTYPE"
 	    #if [ "$data_analysed" == "PHENOTYPE" ]; then
 	        if [ -n "$PHENOTYPE_FILE" ]; then
@@ -491,7 +491,7 @@ else
 	            PHENOTYPE="${PHENOTYPES[i]}"
 	            SAMPLESIZE="${SAMPLESIZES[i]}"
 	            #echo "${PHENOTYPE}"
-	            sbatch ${SCRIPTS}/polyfun/polyfun.run.sh \
+	            bash ${SCRIPTS}/polyfun/polyfun.run.sh \
 	                -p "${PHENOTYPE}" \
 	                -s "${SAMPLESIZE}" \
 	                -d "${METARESULTDIR}" \

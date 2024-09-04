@@ -285,29 +285,31 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Selecting the columns we want
   cat("\n* Selecting required columns, and creating them if not present...")
 
-  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", "^snpid$", "^id$", # variant ID
+   VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", "^snpid$", "^id$", # variant ID
                              "^chr$", "^chrom$", "^chromosome$", # chromosome
                              "^position$", "^bp$", "^genpos$","^pos$", # Variant position on chromosomes
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", # Effect/Minor allele
                              "^effectallele$", "^minorallele$", "^riskallele$", "^codedallele$", "^allele1$", # Effect/Minor allele
                              "^other[_]allele$", "^major[_]allele$", "^non[_]effect[_]allele$", "^non[_]coded[_]allele$", # Other/Major allele
-                             "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", "^allele0$", # Other/Major allele
+                             "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", "^noncoded_allele$", "^allele0$", # Other/Major allele
                              "^strand$", # chromosomal strand
-                             "^beta$", "^effect[_]size$", "^effectsize$", # effect size estimates, should be beta
-                             "^se.$", "^se$", # Standard error
-                             "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$", "^p_bolt_lmm_inf$", # p-value 
-                             "^[remc]af$", "^a1freq$", # effect/minor allele frequency
+                             "^beta$", "^effect[_]size$", "^effectsize$", "^beta_fixed$", # effect size estimates, should be beta
+                             "^se.$", "^se$", "^se_fixed$", # Standard error
+                             "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$", "^p_bolt_lmm_inf$", "^p_fixed$", # p-value 
+                             "^[remc]af$", "^a1freq$", "^coded_allele_freq$", "^eaf$", # effect/minor allele frequency
                              "^hwe.value$", "^hwe$", "^hwe.val$", # Hardy-Weinberg Equilibrium p-value
-                             "^n$", "^samplesize$", # Number of samples analysed
-                             "^n_case.$", "^n_control.$", "^n_cntrl.$", # Number of samples analysed in GWAS in case-control set up
+                             "^n$", "^samplesize$", "^n_eff$", # Number of samples analysed
+                             "^n[_]case.$", "^ncase$", "^n[_]control.$","^ncontrol$", "^n_cntrl.$", # Number of samples analysed in GWAS in case-control set up
                              "^imputed$", # Imputed or genotyped?
-                             "^info$", "^qual[_]score$") # Imputation quality
+                             "^info$", "^qual[_]score$", # Imputation quality
+                             "^df$", #degrees of freedom
+                             "^caveat$") #caveat
   matchExpression <- paste(VectorOfColumnsWeWant, collapse = "|")
-  # print(head(GWASDATA_RAW))
-  # str(GWASDATA_RAW)
-
-  GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
-
+ # print(head(GWASDATA_RAW))
+  str(GWASDATA_RAW)
+# 
+   GWASDATA_RAWSELECTION <- GWASDATA_RAW %>% select(matches(matchExpression, ignore.case = TRUE))
+# 
   # print(names(GWASDATA_RAWSELECTION))
 
   cat("\n* Renaming columns where necessary...")
@@ -325,6 +327,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ###   - noncoded = noneffect = nonrisk = other -- will be coded as "OtherAllele"
   ###   Set these three accordingly, other wise set these to CAF/coded/other
   ###
+#   
+
   
   ### Rename columns -- strand
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Strand = matches("^strand$"), everything())
@@ -336,9 +340,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   
   ### Rename columns -- n cases and controls
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_controls = matches("^n_control.$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_controls = matches("^ncontrol$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_controls = matches("^n_ctrl.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_cases = matches("^n_case.$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N_cases = matches("^ncase$"), everything())
   
+
   ### Rename columns -- sample size
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^n$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^samplesize$"), everything())

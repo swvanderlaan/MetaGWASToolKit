@@ -80,7 +80,7 @@ while getopts ":p:t:w:d:j:i:l:h:r:n:a:b:v:f:c:" opt; do
         \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
     esac
 done
-LDSC="/hpc/dhl_ec/esmulders/ldsc"
+LDSC="/hpc/dhl_ec/esmulders/MetaGWASToolKit/SCRIPTS/ldsc"
 #LDSC="${DATA}/ldsc"
 
 #echo "${path}"
@@ -161,12 +161,11 @@ if [ "$data_analysed" == "PHENOTYPE" ]; then
         if [ ${#TRAITS[@]} -eq 0 ]; then
             echo "Trait file is empty or not properly formatted."
             exit 1
-        fi
+    	fi
     else
         echo "Trait file (-t) is required for genetic correlation analysis."
         exit 1
     fi
-
     echo "Analyzing PHENOTYPE: ${PHENOTYPE}"
     echo "Making sumstats file..."
     bash ${LDSC}/ldsc.sumstats.sh -d ${DATA} -h ${SNPLIST} -p ${PHENOTYPE} -i ${DATA}/input/${PHENOTYPE}.cojo.gz -r ${r} -n ${n} -a ${a} -b ${b} -v ${v} -f ${f} -c ${CHUNKSIZE}

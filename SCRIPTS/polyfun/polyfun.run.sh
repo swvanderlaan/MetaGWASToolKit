@@ -75,7 +75,7 @@ while getopts ":p:s:d:j:l:m:x:c:" opt; do
 done
 #cd /hpc/dhl_ec/esmulders/polyfun
 
-POLYFUN="/hpc/dhl_ec/esmulders/polyfun"
+POLYFUN="/hpc/dhl_ec/esmulders/MetaGWASToolKit/SCRIPTS/polyfun"
 cd ${POLYFUN}
 
 
@@ -91,19 +91,63 @@ mkdir -p ${DATA}/polyfun/finemapping
 mkdir -p ${DATA}/polyfun/annotations
 
 
-# # # #    # File formatting
+# Step 1: Create header
 echo "CHR BP A1 A2 BETA SE MAF P RSID N" > ${DATA}/input/${PHENOTYPE}.qc.polyfun.txt
 
-gzip -dc ${FILE} | awk '
-NR == 1 {next} 
-{
-  if ($2 == "X") 
-    $2 = 23
-  if ($2 ~ /^[0-9]+$/) 
-    print $2, $3, $4, $5, $13, $14, $6, $15, $1, $10
-}' >> ${DATA}/input/${PHENOTYPE}.qc.polyfun.txt
+# # Step 2: Process data
+# gzip -dc ${FILE} | awk '
+# NR == 1 {next}
+# {
+#   if ($1 == "X") 
+#     $1 = 23
+#   else if ($1 == "Y")
+#     $1 = 24
+#   else if ($1 == "MT")
+#     $1 = 25
+#   else if ($1 ~ /^[0-9]+$/) 
+#     $1 = $1
+#   else
+#     next
+#   if ($1 ~ /^[0-9]+$/) 
+#     print $1, $2, $3, $4, $5, $6, $7, $8, $9, $11
+# }' >> ${DATA}/${PROJECTNAME}/${PHENOTYPE}/input/${PHENOTYPE}.qc.polyfun.txt
+# 
+# # Step 3: Append remaining data
+# gzip -dc ${FILE} | awk 'NR > 1 { 
+#   if ($1 == "X") 
+#     $1 = 23
+#   else if ($1 == "Y") 
+#     $1 = 24
+#   else if ($1 == "MT")
+#     $1 = 25
+#   else if ($1 ~ /^[0-9]+$/) 
+#     $1 = $1
+#   else
+#     next
+#   if ($1 ~ /^[0-9]+$/) 
+#     print $1, $2, $3, $4, $5, $6, $7, $8, $9, $11 
+# }' >> ${DATA}/${PROJECTNAME}/${PHENOTYPE}/input/${PHENOTYPE}.qc.polyfun.txt
 
-gzip -dc ${FILE} | awk '{ print $1, $2, $3, $4, $5, $6, $7, $8, $9, $11}' | tail -n +2 >> ${DATA}/input/${PHENOTYPE}.qc.polyfun.txt
+# Step 2: Process data, handle chromosome integers, and remove duplicates
+gzip -dc ${FILE} | awk '
+NR == 1 {next}
+{
+  if ($1 == "X") 
+    $1 = 23
+  else if ($1 == "Y")
+    $1 = 24
+  else if ($1 == "MT")
+    $1 = 25
+  else if ($1 ~ /^[0-9]+$/) 
+    $1 = $1
+  else
+    next
+  key = $1 "\t" $2 "\t" $3 "\t" $4 "\t" $5 "\t" $6 "\t" $7 "\t" $8 "\t" $9 "\t" $11
+  if (!seen[key]++) {
+    print $1, $2, $3, $4, $5, $6, $7, $8, $9, $11
+  }
+}' >> ${DATA}/input/${PHENOTYPE}.qc.polyfun.txt
+# Step 5: Compress the final file
 gzip -vf ${DATA}/input/${PHENOTYPE}.qc.polyfun.txt
 # 
 #     # 1. lead snps make parquet
@@ -136,7 +180,7 @@ fi
 # #     # 5. Aggregate results if there are files in the finemap folder
 finemap_folder=${DATA}/polyfun/finemapping
 if [ -d "$finemap_folder" ] && [ "$(ls -A $finemap_folder)" ]; then
-	$python3_exe ${POLYFUN}/polyfun/aggregate_finemapper_results.py \
+	$python3_exe ${POLYFUN}/aggregate_finemapper_results.py \
 	 --out-prefix ${DATA}/polyfun/finemapping/${PHENOTYPE} \
 	 --sumstats ${DATA}/polyfun/data/${PHENOTYPE}.snps_with_var.gz \
 	 --out ${DATA}/polyfun/data/${PHENOTYPE}.polyfun_agg.txt.gz \
@@ -146,7 +190,7 @@ else
 fi
 
 # # #     # 6. Extract annotations for each significant locus
-finemap_folder=${DATA}/polyfun/output/finemap
+finemap_folder=${DATA}/polyfun/finemapping
 if [ -d "$finemap_folder" ] && [ "$(ls -A $finemap_folder)" ]; then
 	for file in ${DATA}/polyfun/finemapping/*.gz; do
 		if [[ $file =~ ${PHENOTYPE}.chr([0-9]+).([0-9]+)_([0-9]+).gz ]]; then
@@ -155,7 +199,7 @@ if [ -d "$finemap_folder" ] && [ "$(ls -A $finemap_folder)" ]; then
 			end=${BASH_REMATCH[3]}
 			annot_file=${REF}/baselineLF2.2.UKB/baselineLF2.2.UKB.${chr}.annot.parquet
 			output_file=${DATA}/polyfun/annotations/top_annot.${chr}.${start}_${end}.txt.gz
-			$python3_exe ${POLYFUN}/polyfun/extract_annotations.py \
+			$python3_exe ${POLYFUN}/extract_annotations.py \
 			 --pips $file \
 			 --annot $annot_file \
 			 --pip-cutoff ${pip_cutoff} \

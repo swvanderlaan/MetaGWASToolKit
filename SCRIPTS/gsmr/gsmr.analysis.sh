@@ -20,10 +20,10 @@ if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
 fi
 
 
-GSMR="/hpc/dhl_ec/esmulders/gsmr"
+GSMR="/hpc/dhl_ec/esmulders/MetaGWASToolKit/SCRIPTS/gsmr"
 GCTA="/hpc/local/Rocky8/dhl_ec/software/gcta_v1.94.1"
 DIRECTION=0
-REF="${GSMR}/gsmr_ref_data.txt"
+REF="${GSMR}/gsmr_ref_data.EUR.txt"
 
 PHENOTYPE=""
 TRAIT_FILE=""

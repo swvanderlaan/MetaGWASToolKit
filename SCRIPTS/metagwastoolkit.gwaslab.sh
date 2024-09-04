@@ -153,18 +153,18 @@ else
 	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
 	REFERENCE=${REFERENCE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	PLOTTER=${GWASLABPLOT}
-	GWASLABQC=${GWASLABQC}
-	CAVEATREMOVE=${CAVEATREMOVE}
+	MAKE_FIGURES=${GWASLABPLOT}
+	PERFORM_QC=${PERFORM_QC}
+	ONLY_QC=${ONLY_QC}
+	SELECT_LEADS=${SELECT_LEADS}
 	EAF=${MAF}
 	DF=${DF}
 	DAF=${DAF}
 	# Needed for pipeline
 	METARESULTDIR="${PROJECTDIR}/${OUTPUTDIRNAME}/${SUBPROJECTDIRNAME}/META"
-	REF="/hpc/dhl_ec/esmulders/references"
+	# has to contain / at the end, otherwise files will be downloaded in the previous folder
+	REF="/hpc/dhl_ec/esmulders/references/gwaslab/"
 	
-	gl.options.set_option("data_directory","${REF}")
-
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
@@ -328,5 +328,5 @@ else
 	fi
 	
 	source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-	python3 ${SCRIPTS}/gwaslab_sumstats.py -g ${PROJECTNAME} -d ${METARESULTDIR} -p ${POPULATION} -r ${REF} -f ${PLOTTER} -q ${GWASLABQC}
+	python3 ${SCRIPTS}/gwaslab_sumstats.py -g ${PROJECTNAME} -d ${METARESULTDIR} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc {ONLY_QC} --leads ${SELECT_LEADS}
 fi
