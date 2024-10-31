@@ -19,5 +19,5 @@ Scripts to execute fine-mapping, create regional (MIAME) plots to compare trait-
 --------------
 
 #### The MIT License (MIT)
-[Copyright (c)](copyright.md) 2015-2022 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | [vanderlaanand.science](vanderlaanand.science).
+[Copyright (c)](copyright.md) 2015-2024 Sander W. van der Laan | s.w.vanderlaan [at] gmail [dot] com | [vanderlaanand.science](vanderlaanand.science).
 
