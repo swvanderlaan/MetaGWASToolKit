@@ -1,6 +1,7 @@
 MetaGWASToolKit
 ============
 [![DOI](https://zenodo.org/badge/75635714.svg)](https://zenodo.org/badge/latestdoi/75635714)
+
 [![Languages](https://skillicons.dev/icons?i=bash,r,py)](https://skillicons.dev) 
 
 > A ToolKit to perform a Meta-analysis of Genome-Wide Association Studies (GWAS). Check out the [wiki for more details](https://github.com/swvanderlaan/MetaGWASToolKit/wiki). 
