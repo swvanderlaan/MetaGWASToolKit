@@ -153,18 +153,17 @@ else
 	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
 	REFERENCE=${REFERENCE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	MAKE_FIGURES=${GWASLABPLOT}
-	PERFORM_QC=${PERFORM_QC}
-	ONLY_QC=${ONLY_QC}
-	SELECT_LEADS=${SELECT_LEADS}
-	EAF=${MAF}
-	DF=${DF}
-	DAF=${DAF}
 	# Needed for pipeline
 	METARESULTDIR="${PROJECTDIR}/${OUTPUTDIRNAME}/${SUBPROJECTDIRNAME}/META"
 	# has to contain / at the end, otherwise files will be downloaded in the previous folder
-	REF="/hpc/dhl_ec/esmulders/references/gwaslab/"
-	
+	#REF="/hpc/dhl_ec/data/references/1000G/Phase3/PLINK_format/1000Gp3v5.20130502.${POPULATION}"
+	REF="/hpc/dhl_ec/data/references/1000G/Phase3/PLINK_format/1000Gp3v5.20130502.ALL"
+	#REF="${RESOURCES}/1000Gp1v3.20101123.EUR.bed"
+	#echo "SNPID chromosome base_pair_location effect_allele other_allele beta standard_error effect_allele_frequency minor_allele major_allele maf p_value rsid variant_id n" > ${METARESULTDIR}/input/${PROJECTNAME}.b37.gwaslab.txt
+# 	zcat ${METARESULTDIR}/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$3":"$4, $1, $2, $3, $4, $5, $6, $7, $3, $4, $7, $8, $9, $10, $11 } else { print "chr"$1":"$2":"$4":"$3, $1, $2, $3, $4, $5, $6, $7, $4, $3, 1-$7, $8, $9, $10, $11 }}'  | tail -n +2 >> ${METARESULTDIR}/input/${PROJECTNAME}.b37.gwaslab.txt
+# 	gzip ${METARESULTDIR}/input/${PROJECTNAME}.b37.gwaslab.txt
+	INPUT="${METARESULTDIR}/input/${PROJECTNAME}.b37.gwaslab.txt.gz"
+	OUT="${METARESULTDIR}/${PROJECTNAME}.clump"
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
@@ -326,7 +325,13 @@ else
 		script_copyright_message
 		exit 1
 	fi
-	echo "${ONLY_QC}"
-	source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-	python3 ${SCRIPTS}/gwaslab_sumstats.py -g ${PROJECTNAME} -d ${METARESULTDIR} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
+	# clumping settings
+	CLUMP_P1=${CLUMP_P1}
+	CLUMP_P2=${CLUMP_P2}
+	CLUMP_R2=${CLUMP_R2}
+	CLUMP_KB=${CLUMP_KB}
+	CLUMP_FIELD=${CLUMP_FIELD}
+	CLUMP_SNP_FIELD=${CLUMP_SNP_FIELD}
+	
+	${PLINK} --bfile ${REF} --memory 58065819840 --allow-extra-chr --clump ${INPUT} --clump-snp-field ${CLUMP_SNP_FIELD} --clump-field ${CLUMP_FIELD} --clump-p1 ${CLUMP_P1} --clump-p2 ${CLUMP_P2} --clump-r2 ${CLUMP_R2} --clump-kb ${CLUMP_KB} --out ${OUT} --clump-verbose  --clump-annotate SNPID,chromosome,base_pair_location,effect_allele,other_allele,beta,standard_error,effect_allele_frequency,n
 fi

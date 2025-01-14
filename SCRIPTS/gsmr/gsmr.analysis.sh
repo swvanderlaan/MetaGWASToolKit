@@ -12,6 +12,11 @@
 #SBATCH --output=gsmr.out   # Standard output and error log
 
 echo "Starting task" $SLURM_ARRAY_TASK_ID
+# Ensure that SLURM_ARRAY_TASK_ID is set
+if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
+  echo "SLURM_ARRAY_TASK_ID is not set."
+  exit 1
+fi
 
 # Ensure that SLURM_ARRAY_TASK_ID is set
 if [ -z "$SLURM_ARRAY_TASK_ID" ]; then
@@ -57,14 +62,12 @@ echo "${REF}"
 
 mkdir -p "${DATA}/gsmr"
 OUTCOME_FILE="${DATA}/gsmr/gsmr_${PHENOTYPE}_outcome.txt"
-#echo "$TRAIT_FILE"
-#echo "$OUTCOME_FILE"
+
 # Write the outcome to the outcome file
 echo "$PHENOTYPE ${DATA}/input/${PHENOTYPE}.cojo.gz" > "$OUTCOME_FILE"
 
 # Step 1: Process each trait file for GSMR analysis
 echo "Starting GSMR analysis for each trait..."
-#mkdir -p "$GSMR/gsmr_$PHENOTYPE"
 
 # Get the line corresponding to the current SLURM_ARRAY_TASK_ID
 line=$(sed -n "${SLURM_ARRAY_TASK_ID}p" "$TRAIT_FILE")
@@ -90,7 +93,6 @@ echo "Exposure file content:"
 cat "$EXPOSURE_FILE"
 
 # Define the output file name
-#output_file="${GSMR}/gsmr_${PHENOTYPE}/gsmr_result_${trait}.out"
 output_file="${DATA}/gsmr/${trait}.out"
 echo "output file: ${output_file}"
 # Run GSMR analysis directly with the trait line

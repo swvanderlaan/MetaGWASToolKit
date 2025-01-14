@@ -81,66 +81,12 @@ while getopts ":p:t:w:d:j:i:l:h:r:n:a:b:v:f:c:" opt; do
     esac
 done
 LDSC="/hpc/dhl_ec/esmulders/MetaGWASToolKit/SCRIPTS/ldsc"
-#LDSC="${DATA}/ldsc"
-
-#echo "${path}"
 
 # Validate input for data_analysed
 if [ "$data_analysed" != "PHENOTYPE" ] && [ "$data_analysed" != "TRAIT" ]; then
     echo "Invalid value for -w option. Please specify either 'PHENOTYPE' or 'TRAIT'."
     exit 1
 fi
-
-# Check if phenotype file is provided and read the contents
-# if [ "$data_analysed" == "PHENOTYPE" ]; then
-#     if [ -n "$PHENOTYPE_FILE" ]; then
-#         PHENOTYPES=()
-#         SAMPLESIZES=()
-#         while IFS=',' read -r phenotype sample_size; do
-#             PHENOTYPES+=("$phenotype")
-#             SAMPLESIZES+=("$sample_size")
-#         done < "$PHENOTYPE_FILE"
-#         if [ ${#PHENOTYPES[@]} -eq 0 ]; then
-#             echo "Phenotype file is empty or not properly formatted."
-#             exit 1
-#         fi
-#     else
-#         echo "Phenotype file (-p) is required."
-#         exit 1
-#     fi
-
-#     # Also read the trait file for genetic correlation analysis
-#     if [ -n "$TRAIT_FILE" ]; then
-#         TRAITS=()
-#         while read -r line; do
-#             trait=$(echo $line | awk '{print $1}')
-#             TRAITS+=("$trait")
-#         done < "$TRAIT_FILE"
-#         if [ ${#TRAITS[@]} -eq 0 ]; then
-#             echo "Trait file is empty or not properly formatted."
-#             exit 1
-#         fi
-#     else
-#         echo "Trait file (-t) is required for genetic correlation analysis."
-#         exit 1
-#     fi
-# fi
-
-
-# # Check if trait file is provided and read the contents if data_analysed is TRAIT
-# if [ "$data_analysed" == "TRAIT" ] && [ -n "$TRAIT_FILE" ]; then
-#     TRAITS=()
-#     while read -r line; do
-#         trait=$(echo $line | awk '{print $1}')
-#         TRAITS+=("$trait")
-#     done < "$TRAIT_FILE"
-#     if [ ${#TRAITS[@]} -eq 0 ]; then
-#         echo "Trait file is empty or not properly formatted."
-#         exit 1
-#     fi
-# fi
-
-
 
 # Check if phenotype file is provided and read the contents
 if [ "$data_analysed" == "PHENOTYPE" ]; then

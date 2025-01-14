@@ -81,22 +81,6 @@ if [ -z "$PHENOTYPE" ] && [ -z "$TRAIT" ]; then
     usage
 fi
 
-
-## path to phenotypes input file for sumstats conversion
-
-# echo "PHENOTYPE: ${PHENOTYPE}"
-# echo "TRAIT: ${TRAIT}"
-# echo "DATA: ${DATA}"
-# echo "INPUT: ${INPUT}"
-# echo "snp: ${snp}"
-# echo "N: ${N}"
-# echo "a1: ${a1}"
-# echo "a2: ${a2}"
-# echo "p: ${p}"
-# echo "frq: ${frq}"
-# SUMSTATS_INPUT="${DATA}/input/${PHENOTYPE}.b37.gwaslab.ssf.tsv.gz"
-
-
 # Determine output file based on PHENOTYPE or TRAIT
 if [ -n "$PHENOTYPE" ]; then
     SUMSTATS_INPUT="${INPUT}"
@@ -116,7 +100,19 @@ elif [ -n "$TRAIT" ]; then
     #SUMSTATS_OUTPUT="/hpc/dhl_ec/esmulders/MetaGWASToolKit/RESOURCES/traits/sumstats/${TRAIT}"
 fi
 
-### sumstats conversion for later testing
+# ### sumstats conversion for later testing
+# ./munge_sumstats.py \
+# --sumstats ${SUMSTATS_INPUT} \
+# --snp ${snp} \
+# --N-col ${N} \
+# --a1 ${a1} \
+# --a2 ${a2} \
+# --p ${p} \
+# --frq ${frq} \
+# --out ${SUMSTATS_OUTPUT} \
+# --merge-alleles ${SNPLIST} \
+# --chunksize ${CHUNKSIZE}
+
 ./munge_sumstats.py \
 --sumstats ${SUMSTATS_INPUT} \
 --snp ${snp} \
@@ -126,6 +122,4 @@ fi
 --p ${p} \
 --frq ${frq} \
 --out ${SUMSTATS_OUTPUT} \
---merge-alleles ${SNPLIST} \
 --chunksize ${CHUNKSIZE}
-

@@ -47,8 +47,6 @@ SUBSTUDY_PHENO = f"META_{PHENOTYPE}"
 
 POPULATION = args.population
 
-#POPULATION = "EUR" # option
-
 perform_qc = args.qc
 
 select_leads= args.leads
@@ -60,6 +58,8 @@ gl.options.set_option("data_directory",f"{REF_loc}")
 #REF_loc = "/hpc/dhl_ec/esmulders/references"
 print("Checking contents of the reference directory:")
 print(check_output(["ls", os.path.join(REF_loc)]).decode("utf8"))
+
+#DAF = args.daf
 
 # GWAS data directory
 
@@ -113,6 +113,7 @@ if only_qc=="YES":
     )
 )
 	gwas_data_sumstats.data
+
 ### Load data
 if only_qc=="NO":
 	temp = pl.read_csv(
@@ -273,12 +274,6 @@ if only_qc=="NO":
     #   chr_dict=gl.get_number_to_NC(build="19")
 )
 
-# # full dataset
-# gwas_data_sumstats.check_ref(
-#     ref_seq=REF_loc + "hg19.fa",
-#     #   chr_dict=gl.get_number_to_NC(build="19")
-# )
-
 # we make sure to flip the alleles based on the status code
 	gwas_data_sumstats.flip_allele_stats()
 # infer strand for palindromic SNPs/align indistinguishable indels
@@ -290,12 +285,20 @@ if only_qc=="NO":
 	gwas_data_sumstats.flip_allele_stats()
 
 
-# Assign rsID by matching SNPID with CHR:POS:REF:ALT in the reference
+# # Assign rsID by matching SNPID with CHR:POS:REF:ALT in the reference
+# 	gwas_data_sumstats.assign_rsid(
+#     n_cores=8,
+#     # this works for common variants
+#     ref_rsid_tsv=REF_loc + "1kg_dbsnp151_hg19_auto.txt.gz",
+#     # ref_rsid_vcf=gl.get_path("dbsnp_v156_hg19"),
+#     chr_dict=gl.get_number_to_NC(
+#         build="19"
+#     ),  # this is needed as in the VCF file, the chromosome is in NC format
+# )
 	gwas_data_sumstats.assign_rsid(
     n_cores=8,
-    # this works for common variants
-    ref_rsid_tsv=REF_loc + "/1kg_dbsnp151_hg19_auto.txt.gz",
-    # ref_rsid_vcf=gl.get_path("dbsnp_v156_hg19"),
+    # ref_rsid_tsv = gl.get_path("1kg_dbsnp151_hg19_auto"),
+    ref_rsid_vcf= REF_loc + "GCF_000001405.25.gz",  # this works when SNPID is in the format chr:pos
     chr_dict=gl.get_number_to_NC(
         build="19"
     ),  # this is needed as in the VCF file, the chromosome is in NC format
@@ -314,7 +317,8 @@ if only_qc=="NO":
     n_cores=8,
 )
 #plot allele frequency comparison plot against reference
-	gwas_data_sumstats.plot_daf(threshold=0.12)
+if make_plots == "YES":
+	gwas_data_sumstats.plot_daf(threshold=0.12, save=os.path.join(PLOTS_loc, f"EAF.{PHENOTYPE}.png"))
 
 
 # select caveats in dataset
@@ -351,8 +355,8 @@ if only_qc=="NO":
 
 
 # manhattan and qq plot
-if make_plots == "YES":
-	gwas_data_sumstats.plot_daf(threshold=0.12)
+	if make_plots == "YES":
+		gwas_data_sumstats.plot_daf(threshold=0.12)
     # Manhattan and QQ plot
 	gwas_data_sumstats.plot_mqq(
         skip=2,
@@ -375,7 +379,7 @@ if make_plots == "YES":
     )
 
 # Perform Quality Control if required
-if perform_qc == "YES" or only_qc == "YES":
+	if perform_qc == "YES" or only_qc == "YES":
 	    gwas_data_sumstats_qc = gwas_data_sumstats.filter_value(
         '(EAF>=0.01 & EAF<0.99 & DF>=1) & (DAF<0.12 & DAF>-0.12) & (CAVEAT=="None")'
         )
@@ -418,9 +422,9 @@ if perform_qc == "YES" or only_qc == "YES":
             verbose=True,
         )
 
-if select_leads=="YES":
-	gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
-	gwas_data_sumstats_leads.to_format(
+	if select_leads=="YES":
+		gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
+		gwas_data_sumstats_leads.to_format(
     os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.significant_snps"),
     fmt="ssf",
     build="19",

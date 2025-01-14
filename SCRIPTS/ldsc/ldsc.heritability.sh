@@ -6,24 +6,14 @@
 
 # activate ldsc conda environment
 source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate ldsc
-# set up paths
-# path to ldsc scripts
-#ROOT="/Users/esmulde2"
 
 #data folder
-#DATA="/Volumes/MacExtern/UMC/Werk/GENIUS-CHD/ldsc"
 DATA=""
-#
-## path to map with ld
-#REF_LD="${LDSC}/eur_w_ld_chr/"
-## path to merge allele snplist
-#SNPLIST="${LDSC}/w_hm3.snplist"
 
 # Default values
 PHENOTYPE=""
 TRAIT=""
 REF_LD=""
-#REF_LD="${LDSC}/eur_w_ld_chr/"
 
 # Function to display usage information
 usage() {
@@ -61,11 +51,8 @@ fi
 # Perform actions based on PHENOTYPE
 if [ -n "$PHENOTYPE" ]; then
     echo "PHENOTYPE: ${PHENOTYPE}"
-    #H2_INPUT="${DATA}/${PROJECTNAME}/${PHENOTYPE}/ldsc/sumstats/${PHENOTYPE}.sumstats.gz"
     H2_INPUT="${DATA}/ldsc/sumstats/${PHENOTYPE}.sumstats.gz"
-    #mkdir -p "${DATA}/${PROJECTNAME}/${PHENOTYPE}/ldsc/heritability/"
     mkdir -p "${DATA}/ldsc/heritability/"
-    #H2_OUTPUT="${DATA}/${PROJECTNAME}/${PHENOTYPE}/ldsc/heritability/${PHENOTYPE}_h2"
     H2_OUTPUT="${DATA}/ldsc/heritability/${PHENOTYPE}_h2"
 
     # Ensure input file exists

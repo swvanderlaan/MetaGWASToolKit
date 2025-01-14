@@ -25,16 +25,11 @@
 # change env location accordingly
 source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate polyfun
 
-#ROOT="/Users/esmulde2"
-
-
 python3_exe="/hpc/local/Rocky8/dhl_ec/software/mambaforge3/envs/polyfun/bin/python3"
 
 DATA=""
 REF=""
-#DATA="/Volumes/MacExtern/UMC/Werk/GENIUS-CHD"
-# DATA="/Volumes/MacExtern/UMC/Werk/cIMT/polyfun"
-#REF="/Volumes/MacExtern/UMC/Werk/references"
+
 # Define PHENOTYPES and their respective max sample sizes
 PHENOTYPE=""
 SAMPLESIZE=
@@ -73,7 +68,6 @@ while getopts ":p:s:d:j:l:m:x:c:" opt; do
         \?) echo "Invalid option: -$OPTARG" >&2; exit 1 ;;
     esac
 done
-#cd /hpc/dhl_ec/esmulders/polyfun
 
 POLYFUN="/hpc/dhl_ec/esmulders/MetaGWASToolKit/SCRIPTS/polyfun"
 cd ${POLYFUN}
@@ -93,40 +87,6 @@ mkdir -p ${DATA}/polyfun/annotations
 
 # Step 1: Create header
 echo "CHR BP A1 A2 BETA SE MAF P RSID N" > ${DATA}/input/${PHENOTYPE}.qc.polyfun.txt
-
-# # Step 2: Process data
-# gzip -dc ${FILE} | awk '
-# NR == 1 {next}
-# {
-#   if ($1 == "X") 
-#     $1 = 23
-#   else if ($1 == "Y")
-#     $1 = 24
-#   else if ($1 == "MT")
-#     $1 = 25
-#   else if ($1 ~ /^[0-9]+$/) 
-#     $1 = $1
-#   else
-#     next
-#   if ($1 ~ /^[0-9]+$/) 
-#     print $1, $2, $3, $4, $5, $6, $7, $8, $9, $11
-# }' >> ${DATA}/${PROJECTNAME}/${PHENOTYPE}/input/${PHENOTYPE}.qc.polyfun.txt
-# 
-# # Step 3: Append remaining data
-# gzip -dc ${FILE} | awk 'NR > 1 { 
-#   if ($1 == "X") 
-#     $1 = 23
-#   else if ($1 == "Y") 
-#     $1 = 24
-#   else if ($1 == "MT")
-#     $1 = 25
-#   else if ($1 ~ /^[0-9]+$/) 
-#     $1 = $1
-#   else
-#     next
-#   if ($1 ~ /^[0-9]+$/) 
-#     print $1, $2, $3, $4, $5, $6, $7, $8, $9, $11 
-# }' >> ${DATA}/${PROJECTNAME}/${PHENOTYPE}/input/${PHENOTYPE}.qc.polyfun.txt
 
 # Step 2: Process data, handle chromosome integers, and remove duplicates
 gzip -dc ${FILE} | awk '

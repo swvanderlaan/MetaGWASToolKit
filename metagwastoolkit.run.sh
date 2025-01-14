@@ -36,9 +36,12 @@ PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 SUBPROJECTDIRNAME="MODEL1"
 PYTHON3="/hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/python3"
 METAMODEL="FIXED" # FIXED, SQRTN, or RANDOM. Should match "CLUMP_FIELD" variable from the .conf file.
+<<<<<<< HEAD
 CONFILE"${PROJECTDIR}/metagwastoolkit.conf"
 FILESLIST="${PROJECTDIR}/metagwastoolkit.files.list"
 POP="POPULATION"
+=======
+>>>>>>> e975f3bed34933118b7d8f3e6db825d1e3b9ff11
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -53,7 +56,7 @@ echo ""
 echo "FIRST step: prepare GWAS."
 ### DEBUGGING
 ### ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list.test
-${SCRIPTS}/metagwastoolkit.prep.sh ${CONFILE} ${FILESLIST}
+#${SCRIPTS}/metagwastoolkit.prep.sh ${CONFILE} ${FILESLIST}
 
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
 ###       steps can be uncommented and executed one-by-one. It is advisable to always 
@@ -127,7 +130,10 @@ echo "THIRD step: meta-analysis."
 ### already done !
 # mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> e975f3bed34933118b7d8f3e6db825d1e3b9ff11
 ### Determining the type of data to parse depending on the chosen metamodel
 if [[ ${METAMODEL} = "FIXED" ]]; then
 	BETA="BETA_FIXED"
@@ -192,55 +198,41 @@ fi
 
 #### GWASLAB
 
-echo "SEVENTH step: perform downstream analysis and QC in GWASLAB."
-
-
-bash ${SCRIPTS}/metagwastoolkit.gwaslab.sh ${CONFILE} ${FILESLIST}
-
-
-echo "EIGHT step: prepare and perform downstream analyses tools - GWAS2COJO, LDSC, PolyFun, GSMR."
-
-### GWAS2COJO
-MAX_VALUE=$(zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz | awk 'NR > 1 { if ($11 > max) max = $11 } END { print int(max) }')
-echo "${PROJECTNAME} ${MAX_VALUE}" > ${PROJECTDIR}/${PROJECTNAME}.PHENOTYPES.txt
-
-mkdir -p ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input 
- ${PYTHON3} /hpc/local/Rocky8/dhl_ec/software/gwas2cojo/gwas2cojo.py \
- --gen:build hg19 \
- --gen ${RESOURCES}/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz \
- --gwas ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz \
- --gen:ident ID --gen:chr CHROM --gen:bp POS --gen:other REF --gen:effect ALT --gen:eaf ${POP}_AF \
---gwas:chr chromosome --gwas:bp base_pair_location --gwas:other other_allele --gwas:effect effect_allele \
- --gwas:beta beta --gwas:se standard_error --gwas:p p_value \
- --gwas:freq effect_allele_frequency --gwas:n n --gwas:build hg19 \
- --out ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.cojo \
- --report ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.report
- ${PYTHON3} /hpc/local/Rocky8/dhl_ec/software/gwas2cojo/gwas2cojo-verify.py ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.cojo
- gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.cojo
- gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.report
-
-### LDSC, POLYFUN and GSMR
-bash ${SCRIPTS}/metagwastoolkit.downstream.analysis.sh ${CONFILE} ${FILESLIST}
-
-
-# echo ""
-# echo "Converting filtered meta-analysis summary results using [gwas2cojo]."
-
-# ${PYTHON3} /hpc/local/CentOS7/dhl_ec/software/gwas2cojo/gwas2cojo.py \
-# --gen:build hg19 \
-# --gen ${RESOURCES}/1000Gp3v5_EUR/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz \
-# --gwas ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz \
-# --gen:ident ID --gen:chr CHROM --gen:bp POS --gen:other REF --gen:effect ALT --gen:eaf EUR_AF \
-# --gwas:chr CHR --gwas:bp POS --gwas:other OTHERALLELE --gwas:effect CODEDALLELE \
-# --gwas:beta ${BETA} --gwas:se ${SE} --gwas:p ${PVALUE} \
-# --gwas:freq CAF --gwas:n N_EFF --gwas:build hg19 \
-# --fmid 0 --fclose 0 \
-# --out ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.txt \
-# --report ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.report
+# echo "SEVENTH step: perform downstream analysis and QC in GWASLAB."
 # 
-# ${PYTHON3} /hpc/local/CentOS7/dhl_ec/software/gwas2cojo/gwas2cojo-verify.py ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.report
 # 
-# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.gwas2cojo.*
+# bash ${SCRIPTS}/metagwastoolkit.gwaslab.sh ${CONFILE} ${FILESLIST}
+# 
+# 
+# echo "EIGHT step: prepare and perform downstream analyses tools - GWAS2COJO, LDSC, PolyFun, GSMR."
+# 
+# ### GWAS2COJO
+# MAX_VALUE=$(zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz | awk 'NR > 1 { if ($11 > max) max = $11 } END { print int(max) }')
+# echo "${PROJECTNAME} ${MAX_VALUE}" > ${PROJECTDIR}/${PROJECTNAME}.PHENOTYPES.txt
+# 
+# mkdir -p ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input 
+#  ${PYTHON3} /hpc/local/Rocky8/dhl_ec/software/gwas2cojo/gwas2cojo.py \
+#  --gen:build hg19 \
+#  --gen ${RESOURCES}/1kGp3v5b.ref.allfreq.noCN_noINS_noSS_noESV_noMultiAllelic.sumstats.txt.gz \
+#  --gwas ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz \
+#  --gen:ident ID --gen:chr CHROM --gen:bp POS --gen:other REF --gen:effect ALT --gen:eaf ${POP}_AF \
+# --gwas:chr chromosome --gwas:bp base_pair_location --gwas:other other_allele --gwas:effect effect_allele \
+#  --gwas:beta beta --gwas:se standard_error --gwas:p p_value \
+#  --gwas:freq effect_allele_frequency --gwas:n n --gwas:build hg19 \
+#  --out ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.cojo \
+#  --report ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.report
+#  ${PYTHON3} /hpc/local/Rocky8/dhl_ec/software/gwas2cojo/gwas2cojo-verify.py ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.cojo
+#  gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.cojo
+#  gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.report
+# 
+# ### LDSC, POLYFUN and GSMR
+# bash ${SCRIPTS}/metagwastoolkit.downstream.analysis.sh ${CONFILE} ${FILESLIST}
+
+###CLUMP
+# echo "SNPID chromosome base_pair_location effect_allele other_allele beta standard_error effect_allele_frequency minor_allele major_allele maf p_value rsid variant_id n" > ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.b37.gwaslab.txt
+# zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$3":"$4, $1, $2, $3, $4, $5, $6, $7, $3, $4, $7, $8, $9, $10, $11 } else { print "chr"$1":"$2":"$4":"$3, $1, $2, $3, $4, $5, $6, $7, $4, $3, 1-$7, $8, $9, $10, $11 }}'  | tail -n +2 >> ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.b37.gwaslab.txt
+# gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.b37.gwaslab.txt
+#bash ${SCRIPTS}/metagwastoolkit.clumper.sh ${CONFILE} ${FILESLIST}
 
 # Clean the Dependencies files
 # TODO

@@ -7,13 +7,9 @@
 # activate ldsc conda environment
 source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate ldsc
 
-# set up paths
-# path to ldsc scripts
-#ROOT="/Users/esmulde2"
 
 #data folder
 DATA=""
-#DATA="/Volumes/MacExtern/UMC/Werk/GENIUS-CHD"
 
 # Default values
 PHENOTYPE=""
@@ -43,9 +39,6 @@ while getopts ":p:t:d:j:l:" opt; do
     esac
 done
 
-#echo "$DATA"
-#echo "$REF_LD"
-#LDSC="${DATA}/ldsc"
 LDSC="/hpc/dhl_ec/esmulders/ldsc"
 
 cd ${LDSC}
@@ -76,7 +69,3 @@ PHENOTYPE_TRAIT="${DATA}/ldsc/heritability/${PHENOTYPE}_${TRAIT}"
 --ref-ld-chr ${REF_LD} \
 --w-ld-chr ${REF_LD} \
 --out ${PHENOTYPE_TRAIT}
-
-
-#rm ${DATA}/ldsc/sumstats/${PHENOTYPE}.sumstats.gz
-#rm /hpc/dhl_ec/esmulders/MetaGWASToolKit/RESOURCES/traits/sumstats/${TRAIT}.sumstats.gz
