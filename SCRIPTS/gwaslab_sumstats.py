@@ -429,3 +429,11 @@ if make_plots == "YES":
     fmt="ssf",
     build="19",
 )
+
+	if select_leads=="YES":
+		gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, sig_level=5e-8, verbose=True)
+		gwas_data_sumstats_leads.to_format(
+    os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.leads"),
+    fmt="ssf",
+    build="19",
+)
