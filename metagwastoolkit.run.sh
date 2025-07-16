@@ -36,12 +36,9 @@ PROJECTDIR="${METAGWASTOOLKIT}/EXAMPLE"
 SUBPROJECTDIRNAME="MODEL1"
 PYTHON3="/hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/python3"
 METAMODEL="FIXED" # FIXED, SQRTN, or RANDOM. Should match "CLUMP_FIELD" variable from the .conf file.
-<<<<<<< HEAD
 CONFILE"${PROJECTDIR}/metagwastoolkit.conf"
 FILESLIST="${PROJECTDIR}/metagwastoolkit.files.list"
 POP="POPULATION"
-=======
->>>>>>> e975f3bed34933118b7d8f3e6db825d1e3b9ff11
 
 echo ""
 echo "                 PERFORM META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
@@ -57,6 +54,8 @@ echo "FIRST step: prepare GWAS."
 ### DEBUGGING
 ### ${SCRIPTS}/metagwastoolkit.prep.sh ${PROJECTDIR}/metagwastoolkit.conf ${PROJECTDIR}/metagwastoolkit.files.list.test
 #${SCRIPTS}/metagwastoolkit.prep.sh ${CONFILE} ${FILESLIST}
+#${SCRIPTS}/metagwastoolkit.gwaslab.prep.sh ${CONFILE} ${FILESLIST}
+
 
 ### Note: After visual inspection of diagnostic plots per cohort (see note above), the next
 ###       steps can be uncommented and executed one-by-one. It is advisable to always 
@@ -130,10 +129,6 @@ echo "THIRD step: meta-analysis."
 ### already done !
 # mv -v ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt.gz ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.originalID.txt.gz 
 
-<<<<<<< HEAD
-
-=======
->>>>>>> e975f3bed34933118b7d8f3e6db825d1e3b9ff11
 ### Determining the type of data to parse depending on the chosen metamodel
 if [[ ${METAMODEL} = "FIXED" ]]; then
 	BETA="BETA_FIXED"
@@ -186,9 +181,7 @@ fi
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.filtered_incl_non_rsID.txt
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/meta.results.${PROJECTNAME}.1Gp3.EUR.summary.txt
 # 
-# echo ""
-# echo "FIFTH step: result clumping."
-# ${SCRIPTS}/metagwastoolkit.clump.sh ${CONFILE} ${FILESLIST}
+
 # echo ""
 # echo "SIXTH step: prepare and perform downstream analyses."
 # Note that rsIDs are expected!
