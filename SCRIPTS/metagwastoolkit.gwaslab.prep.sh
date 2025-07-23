@@ -155,9 +155,15 @@ else
 	REF=${GWASLAB_REF}
 	ONLY_QC=${ONLY_QC}
 	SELECT_LEADS=${SELECT_LEADS}
-	MAKE_FIGURES=${GWASLABPLOT}
+	MAKE_FIGURES=${MAKE_FIGURES}
 	PERFORM_QC=${PERFORM_QC}
-	
+	DAF=${DAF}
+	MAF=${MAF}
+	MAC=${MAC}
+	HWE=${HWE}
+	INFO=${INFO}
+	BETA=${BETA}
+	SE=${SE}
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
@@ -359,6 +365,8 @@ else
 			echo "Directory for ${COHORT} already there."
 		fi
 		RAWDATACOHORT=${RAWDATA}/${COHORT}
+		mkdir -v ${RAWDATACOHORT}/PLOTS
+		mkdir -v ${RAWDATACOHORT}/GWASCatalog
 		
 		echobold "#========================================================================================================"
 		echobold "#== REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA: [ ${COHORT} ]"
@@ -366,12 +374,48 @@ else
 		echobold "#"
 		echo ""
 		### Safely store the ID of the start job
-		INIT_ID=$SLURM_JOB_ID
-		if [ "$ONLY_QC" == "NO" ]; then
-			Rscript ${SCRIPTS}/pipeline.parser.R -p ${ORIGINALS} -d ${FILE} -o ${COHORT}
-		fi
 		source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-		python3 ${SCRIPTS}/gwaslab_cohort.py -g ${COHORT} -d ${ORIGINALS} -i ${FILE} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} -o ${RAWDATA}/${COHORT} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
+# 		INIT_ID=$SLURM_JOB_ID
+# 		if [ "$ONLY_QC" == "NO" ]; then
+# 			Rscript ${SCRIPTS}/pipeline.parser.R -p ${ORIGINALS} -d ${FILE} -o ${COHORT}
+# 		fi
+		# Submit the R parsing job first
+		if [ "$ONLY_QC" == "NO" ]; then
+			PARSE_JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_parser \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err \
+        --mem=128G \
+        --gres=tmpspace:128G \
+        --time=1:00:00 \
+        --cpus-per-task=1 \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS} \
+        ${SCRIPTS}/pipeline.parser.sh)
+			echo "Submitted parser for ${COHORT} as job ${PARSE_JOBID}"
+			JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_GWAS \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+        --time=72:00:00 \
+        --mem=128G \
+        --cpus-per-task=2 \
+        --dependency=afterany:${PARSE_JOBID} \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${MAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        ${SCRIPTS}/gwaslab.cohort.sh)
+			echo "Submitted GWASLab for ${COHORT} as job ${JOBID}, dependent on ${PARSE_JOBID}"    
+		else
+			JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_GWAS \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+        --time=72:00:00 \
+        --mem=128G \
+        --cpus-per-task=2 \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF} \
+        ${SCRIPTS}/gwaslab.cohort.sh)
+ 			echo "Submitted GWASLab for ${COHORT} as job ${JOBID} (no parser dependency)"
+		fi
+		#python3 ${SCRIPTS}/gwaslab_cohort.py -g ${COHORT} -d ${ORIGINALS} -i ${FILE} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} -o ${RAWDATA}/${COHORT} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
 		
 	done < ${GWASFILES}
 
