@@ -49,6 +49,7 @@ requiredNamed.add_argument("-m", "--mac", help="MAC filtering.", type=float, def
 
 
 args = parser.parse_args()
+gl.check_downloaded_ref()
 
 #reference_identifier = args.identifier
 #### set some general defaults
@@ -180,7 +181,14 @@ if only_qc=="NO":
 	gwas_data["CHR"] = gwas_data["CHR"].astype("Int64")
 
 
-	gwas_data[["BP"]] = gwas_data[["BP"]].astype("Int64")
+	gwas_data["BP"] = gwas_data[["BP"]].astype("Int64")
+	
+	gwas_data["EffectAllele"] = gwas_data["EffectAllele"].astype(str)
+	gwas_data["OtherAllele"] = gwas_data["OtherAllele"].astype(str)
+	
+	# Filter out rows with very long alleles (likely structural variants or parsing errors)
+	gwas_data = gwas_data[gwas_data["EffectAllele"].str.len() < 10]
+	gwas_data = gwas_data[gwas_data["OtherAllele"].str.len() < 10]
 
 # create new SNPID column based on chromosome, position, and alleles
 # down the road we need an SNPID column to merge with the reference data and which does not contain 'ID' because this is not correctly interpreted by GWASLab
@@ -195,6 +203,45 @@ if only_qc=="NO":
 )
 
 	gwas_data.rename(columns={"SNP": "VariantID"}, inplace=True)
+	
+	if make_plots == "YES":
+    # CAF plot
+		plt.figure()
+		sns.histplot(
+        data=gwas_data,
+        x="EAF",
+        bins=25,
+        kde=False,
+        stat="frequency",
+        color="#1290D9",
+    )
+		plt.title("Histogram of Effect Allele Frequency")
+		plt.savefig(
+        os.path.join(PLOTS_loc, f"histogram.EAF.{PHENOTYPE}.png"),
+        dpi=300,
+        bbox_inches="tight",
+        format="png",
+    )
+		plt.close()
+
+    # BETA plot
+		plt.figure()
+		sns.histplot(
+        data=gwas_data,
+        x="Beta",
+        bins=25,
+        kde=False,
+        stat="frequency",
+        color="#E55738",
+    )
+		plt.title("Histogram of Effect-Sizes")
+		plt.savefig(
+        os.path.join(PLOTS_loc, f"histogram.effect.{PHENOTYPE}.png"),
+        dpi=300,
+        bbox_inches="tight",
+        format="png",
+    )
+		plt.close()
 
 
 # Create CAVEAT column
@@ -202,6 +249,7 @@ if 'CAVEAT' not in gwas_data.columns:
     gwas_data['CAVEAT'] = 'None'
 
 gwas_data['CAVEAT'].fillna('None', inplace=True)
+
 
 
 
@@ -284,44 +332,7 @@ gwas_data_cohort = gl.Sumstats(
     verbose=True,
 )
 
-	if make_plots == "YES":
-    # CAF plot
-		plt.figure()
-		sns.histplot(
-        data=gwas_data_cohort,
-        x="EAF",
-        bins=25,
-        kde=False,
-        stat="frequency",
-        color="#1290D9",
-    )
-		plt.title("Histogram of Coded Allele Frequency")
-		plt.savefig(
-        os.path.join(PLOTS_loc, f"histogram.EAF.{PHENOTYPE}.png"),
-        dpi=300,
-        bbox_inches="tight",
-        format="png",
-    )
-		plt.close()
 
-    # BETA plot
-		plt.figure()
-		sns.histplot(
-        data=gwas_data_cohort,
-        x="BETA",
-        bins=25,
-        kde=False,
-        stat="frequency",
-        color="#E55738",
-    )
-		plt.title("Histogram of Beta Fixed")
-		plt.savefig(
-        os.path.join(PLOTS_loc, f"histogram.effect.{PHENOTYPE}.png"),
-        dpi=300,
-        bbox_inches="tight",
-        format="png",
-    )
-		plt.close()
 # clean up
 del gwas_data
 
@@ -403,7 +414,7 @@ gl.dump_pickle(
     overwrite=True,
 )
 
-gwas_data_cohort.log.show()
+# gwas_data_cohort.log.show()
 
 # gwas_data_cohort.log.save(
 #     os.path.join(
@@ -491,11 +502,11 @@ if perform_qc == "YES" or only_qc == "YES":
         os.path.join(OUTPUT_loc, f"{PHENOTYPE}.b37.gwaslab.qc.pkl"),
         overwrite=True,
     )
-	gwas_data_cohort_qc.log.show()
-
-	gwas_data_cohort_qc.log.save(
-        os.path.join(OUTPUT_loc, f"{PHENOTYPE}.b37.gwaslab.qc.log")
-    )
+# 	gwas_data_cohort_qc.log.show()
+# 
+# 	gwas_data_cohort_qc.log.save(
+#         os.path.join(OUTPUT_loc, f"{PHENOTYPE}.b37.gwaslab.qc.log")
+#     )
 
 	gwas_data_cohort_qc.to_format(
         os.path.join(OUTPUT_loc, f"{PHENOTYPE}.b37.gwaslab.qc"),
@@ -744,16 +755,16 @@ if make_plots == "YES":
         )
 
 if select_leads=="YES":
-		gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
-		gwas_data_cohort_leads.to_format(
+	gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
+	gwas_data_cohort_leads.to_format(
     os.path.join(OUTPUT_loc + "/" + PHENOTYPE + ".b37.gwaslab.significant_snps"),
     fmt="ssf",
     build="19",
 )
 
 if select_leads=="YES":
-		gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, sig_level=5e-8, verbose=True)
-		gwas_data_cohort_leads.to_format(
+	gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, sig_level=5e-8, verbose=True)
+	gwas_data_cohort_leads.to_format(
     os.path.join(OUTPUT_loc + "/" + PHENOTYPE + ".b37.gwaslab.leads"),
     fmt="ssf",
     build="19",
