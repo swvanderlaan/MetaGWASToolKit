@@ -258,41 +258,41 @@ gwas_data['CAVEAT'].fillna('None', inplace=True)
 import gwaslab as gl
 
 
-# Specify the columns:
-gwas_data_cohort = gl.Sumstats(
-    gwas_data,
-    snpid="Marker",
-    # rsid="RSID", # not available
-    chrom="CHR",
-    pos="BP",
-    ea="MinorAllele",
-    nea="MajorAllele",
-   # ref="MajorAllele",
-   # alt="MinorAllele",
-    #eaf="EAF",
-    eaf="EAF",
-    #beta="Beta",
-    beta="BetaMinor",
-    se="SE",
-    p="P",
-    # direction="Direction",  # only for meta-GWAS
-    n="N",
-    info="Info", # not available
-     other=[
-         "DF",
-         "CAVEAT",
-         "HWE_P",
-         "N_cases",
-         "N_controls",
-         "MAF",
-         "MAC",
-         "Strand",
-         "MarkerOriginal",
-         "Beta"
-     ],
-    build="19",
-    verbose=True,
-)
+# # Specify the columns:
+# gwas_data_cohort = gl.Sumstats(
+#     gwas_data,
+#     snpid="Marker",
+#     # rsid="RSID", # not available
+#     chrom="CHR",
+#     pos="BP",
+#     ea="MinorAllele",
+#     nea="MajorAllele",
+#    # ref="MajorAllele",
+#    # alt="MinorAllele",
+#     #eaf="EAF",
+#     eaf="EAF",
+#     beta="Beta",
+#     #beta="BetaMinor",
+#     se="SE",
+#     p="P",
+#     # direction="Direction",  # only for meta-GWAS
+#     n="N",
+#     info="Info", # not available
+#      other=[
+#          "DF",
+#          "CAVEAT",
+#          "HWE_P",
+#          "N_cases",
+#          "N_controls",
+#          "MAF",
+#          "MAC",
+#          "Strand",
+#          "MarkerOriginal",
+#          "BetaMinor"
+#      ],
+#     build="19",
+#     verbose=True,
+# )
 # Specify the columns:
 gwas_data_cohort = gl.Sumstats(
     gwas_data,

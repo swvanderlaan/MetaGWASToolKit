@@ -160,6 +160,7 @@ else
 	POPULATION=${POPULATION} # from configuration file
 	REF=${GWASLAB_REF}
 	ONLY_QC=${ONLY_QC}
+	PARSING=${PARSING}
 	SELECT_LEADS=${SELECT_LEADS}
 	MAKE_FIGURES=${MAKE_FIGURES}
 	PERFORM_QC=${PERFORM_QC}
@@ -386,7 +387,7 @@ else
 # 			Rscript ${SCRIPTS}/pipeline.parser.R -p ${ORIGINALS} -d ${FILE} -o ${COHORT}
 # 		fi
 		# Submit the R parsing job first
-		if [ "$ONLY_QC" == "NO" ]; then
+		if [ "$PARSING" == "YES" ]; then
 			PARSE_JOBID=$(sbatch --parsable \
         --job-name=${COHORT}_parser \
         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.out \
@@ -420,7 +421,7 @@ else
         --mem=${GWASLABMEM} \
         --cpus-per-task=2 \
         --mail-user=${QMAIL} \
-        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF} \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${MAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
         ${SCRIPTS}/gwaslab.cohort.sh)
  			echo "Submitted GWASLab for ${COHORT} as job ${JOBID} (no parser dependency)"
 		fi
