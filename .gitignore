@@ -188,6 +188,17 @@ RESOURCES/resource.VCFplusdbSNP.1kGp3.log
 resource.creator.errors
 resource.creator.log
 
+RESOURCES/AFR_w_ld_chr/
+RESOURCES/AMR_w_ld_chr/
+RESOURCES/EAS_w_ld_chr/
+RESOURCES/EUR_w_ld_chr/
+RESOURCES/SAS_w_ld_chr/
+RESOURCES/baselineLF2.2.UKB/
+RESOURCES/gwaslab/
+RESOURCES/traits/
+RESOURCES/w_hm3.snplist
+
+
 # EXAMPLE DATA
 EXAMPLE/*
 EXAMPLE/SOMEGWAS_prepMETA/*

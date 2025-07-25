@@ -1,0 +1,30 @@
+name: polyfun
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - tqdm
+  - r-wavethresh
+  - pyarrow>=3.0
+  - python=3.8
+  - scikit-learn
+  - r-lattice
+  - r-ckmeans.1d.dp
+  - r-stringi
+  - bitarray
+  - r-base
+  - r
+  - r-matrixstats
+  - networkx
+  - rpy2<3.5.7|>=3.5.9
+  - scipy
+  - r-devtools
+  - numpy>=1.20
+  - pandas
+  - r-expm
+  - pandas-plink
+  - pip
+  - r-susier==0.11.92
+  - packaging
+  - pip:
+    - bgen==1.2.10
