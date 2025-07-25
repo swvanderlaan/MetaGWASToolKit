@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "+                                        PARAMS_MAKER                                    +\n";
-print STDOUT "+                                 version 2.2.1 | 28-09-2023                             +\n";
+print STDOUT "+                                 version 2.2.2 | 01-11-2023                             +\n";
 print STDOUT "+                                                                                        +\n";
 print STDOUT "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print STDOUT "\n";
@@ -11,6 +11,7 @@ print STDOUT "\n";
 
 use strict;
 use FileHandle;
+use List::Util qw< min max >;
 
 # Description:
 # This script creates a file with parameters for MetaGWASToolKit.
@@ -84,14 +85,16 @@ while(<COHORT>){
 	   	}
 	
 	    close IN;
-	    
+
 ### Calculate mean of N and lambda 
-	    my $mean_n = sprintf("%.0f",(mean (@n))) ;
+#	    my $mean_n = sprintf("%.0f",(mean (@n))) ;
+### Calculate modus of N and lambda 
+	    my $mode_n = sprintf("%.0f",(mode (@n))) ;
 	    my $lambda = sprintf("%.3f",(median (@z) * median (@z)) / 0.4549364) ;
 	    if ($lambda < 1.000) {
 	    	$lambda = sprintf("%.3f",(1.000));
 	    	}
-	    print OUT join("\t",$studyname[$nstudies],$lambda,$mean_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
+	    print OUT join("\t",$studyname[$nstudies],$lambda,$mode_n,$correctionfactor[$nstudies],$splitfile[$nstudies])."\n";
 
 	### Reset parameters, go to next study
 	    $nstudies++;
@@ -118,7 +121,21 @@ sub median { # median of values in an array
   {return $sorted[(@sorted-1)/2]}
   else                   # Even number of elements
   {return ($sorted[@sorted/2-1]+$sorted[@sorted/2]) / 2}
-}	 
+}
+
+sub mode { # mean of values in an array
+    my %seen = ();
+    foreach my $x (@_) {
+	$seen{$x}++;
+    }
+    my $max_seen_count = max values %seen;
+    my @modes = grep { $seen{$_} == $max_seen_count } keys %seen;
+    my $mode = @modes == 1 
+            ? $modes[0] 
+            : "(" . join(", ", @modes) . ")";
+    $mode .= ' @ ' . $max_seen_count;
+    return $mode ;
+}
 
 print STDERR "\n";
 print STDERR "Wow. That was a lot of work. I'm glad it's done. Let's have beer, buddy!\n";
@@ -149,4 +166,3 @@ print STDERR "+ OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.                   
 print STDERR "+                                                                                        +\n";
 print STDERR "+ Reference: http://opensource.org.                                                      +\n";
 print STDERR "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
-

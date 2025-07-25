@@ -192,12 +192,12 @@ else
 		### ls -lh ${REFERENCE_1kGp1v3}/1000Gp1v3.20101123.EUR*
 		### REFERENCE_1kGp3v5GoNL5 # 1000Gp3v5.20130502.EUR
 		### ls -lh ${REFERENCE_1kGp3v5GoNL5}/1000Gp3v5.20130502.EUR*
-		zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,P_FIXED | grep "rs" | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+		zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col VARIANTID,${CLUMP_FIELD} | grep "rs" | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
 	elif [[ ${REFERENCE} = "1Gp3" ]]; then
 		echo "The reference is ${REFERENCE}."
 		### REFERENCE_1kGp3v5 # 1000Gp3v5.20130502.EUR
 		### ls -lh ${REFERENCE_1kGp3v5}/1000Gp3v5.20130502.EUR*
-		zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col RSID,P_FIXED | grep "rs" | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
+		zcat ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.summary.txt.gz | ${SCRIPTS}/parseTable.pl --col RSID,${CLUMP_FIELD} | grep "rs" | tail -n +2 >> ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.locuszoom
 	elif [[ ${REFERENCE} = "GoNL4" ]]; then
 		echo "Apologies: currently it is not possible to plot based on ${REFERENCE}."
 	elif [[ ${REFERENCE} = "GoNL5" ]]; then

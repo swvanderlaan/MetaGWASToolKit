@@ -193,7 +193,6 @@ fi
 
 # echo "SEVENTH step: perform downstream analysis and QC in GWASLAB."
 # 
-# 
 # bash ${SCRIPTS}/metagwastoolkit.gwaslab.sh ${CONFILE} ${FILESLIST}
 # 
 # 
@@ -226,6 +225,7 @@ fi
 # zcat ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/GWASCatalog/${PROJECTNAME}.b37.gwaslab.qc.ssf.tsv.gz | awk '{ if($7<0.5) { print "chr"$1":"$2":"$3":"$4, $1, $2, $3, $4, $5, $6, $7, $3, $4, $7, $8, $9, $10, $11 } else { print "chr"$1":"$2":"$4":"$3, $1, $2, $3, $4, $5, $6, $7, $4, $3, 1-$7, $8, $9, $10, $11 }}'  | tail -n +2 >> ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.b37.gwaslab.txt
 # gzip -vf ${PROJECTDIR}/${SUBPROJECTDIRNAME}/META/input/${PROJECTNAME}.b37.gwaslab.txt
 #bash ${SCRIPTS}/metagwastoolkit.clumper.sh ${CONFILE} ${FILESLIST}
+
 
 # Clean the Dependencies files
 # TODO
