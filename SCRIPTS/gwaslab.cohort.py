@@ -118,13 +118,13 @@ if not (os.path.join(OUTPUT_loc, "PLOTS")):
     os.makedirs(os.path.join(OUTPUT_loc, "PLOTS"))
 PLOTS_loc = os.path.join(OUTPUT_loc, "PLOTS/")
 
-# regional association plots directory
-REG_PLOTS_loc = PLOTS_loc + "/Regional_Association_Plots"
+# # regional association plots directory
+# REG_PLOTS_loc = PLOTS_loc + "/Regional_Association_Plots"
 
-# Check if the directory exists
-if not os.path.exists(REG_PLOTS_loc):
-    # If it doesn't exist, create it
-    os.makedirs(REG_PLOTS_loc)
+# # Check if the directory exists
+# if not os.path.exists(REG_PLOTS_loc):
+#     # If it doesn't exist, create it
+#     os.makedirs(REG_PLOTS_loc)
 
 if only_qc=="YES":
 	gwas_data_cohort = gl.load_pickle(

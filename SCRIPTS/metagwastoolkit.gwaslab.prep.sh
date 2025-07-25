@@ -138,6 +138,12 @@ else
 	CONFIGURATIONFILE="$1" # Depends on arg1 -- but also on where it resides!!!
 	SOFTWARE=${SOFTWARE} # from configuration file
 	
+	# Time & Memory
+	QMEMPARSER=${QMEMPARSER}
+	QRUNTIMEPARSER=${QRUNTIMEPARSER}
+	GWASLABTIME=${GWASLABTIME}
+	GWASLABMEM=${GWASLABMEM}
+	QMAIL=${QMAIL}
 	# Where MetaGWASToolKit resides
 	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
 	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
@@ -385,10 +391,11 @@ else
         --job-name=${COHORT}_parser \
         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.out \
         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err \
-        --mem=128G \
+        --mem=${QMEMPARSER} \
         --gres=tmpspace:128G \
-        --time=1:00:00 \
+        --time=${QRUNTIMEPARSER} \
         --cpus-per-task=1 \
+        --mail-user=${QMAIL} \
         --export=ALL,COHORT=${COHORT},FILE=${FILE},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS} \
         ${SCRIPTS}/pipeline.parser.sh)
 			echo "Submitted parser for ${COHORT} as job ${PARSE_JOBID}"
@@ -396,10 +403,11 @@ else
         --job-name=${COHORT}_GWAS \
         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
-        --time=72:00:00 \
-        --mem=128G \
+        --time=${GWASLABTIME} \
+        --mem=${GWASLABMEM} \
         --cpus-per-task=2 \
         --dependency=afterany:${PARSE_JOBID} \
+        --mail-user=${QMAIL} \
         --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${MAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
         ${SCRIPTS}/gwaslab.cohort.sh)
 			echo "Submitted GWASLab for ${COHORT} as job ${JOBID}, dependent on ${PARSE_JOBID}"    
@@ -408,9 +416,10 @@ else
         --job-name=${COHORT}_GWAS \
         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
-        --time=72:00:00 \
-        --mem=128G \
+        --time=${GWASLABTIME} \
+        --mem=${GWASLABMEM} \
         --cpus-per-task=2 \
+        --mail-user=${QMAIL} \
         --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF} \
         ${SCRIPTS}/gwaslab.cohort.sh)
  			echo "Submitted GWASLab for ${COHORT} as job ${JOBID} (no parser dependency)"

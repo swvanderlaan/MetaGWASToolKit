@@ -35,6 +35,7 @@ requiredNamed.add_argument("-f", "--figures", help="Make plots or not?(YES or NO
 requiredNamed.add_argument("-q", "--qc", help="Perform Quality Control or not?(YES or NO).", type=str)
 requiredNamed.add_argument("-n", "--onlyqc", help="Perform ONLY Quality Control or not? pickle file has to exist! (YES or NO).", type=str)
 requiredNamed.add_argument("-l", "--leads", help="select lead SNPs and safe in file?(YES or NO).", type=str)
+requiredNamed.add_argument("-e", "--df", help="degrees of freedom (DF), for filtering.", type=int)
 #requiredNamed.add_argument("-o", "--output", help="File name for the output file to store the results.", type=str)
 args = parser.parse_args()
 
@@ -48,7 +49,7 @@ SUBSTUDY_PHENO = f"META_{PHENOTYPE}"
 POPULATION = args.population
 
 perform_qc = args.qc
-
+DF = args.df
 select_leads= args.leads
 only_qc= args.onlyqc
 # Reference data directory
@@ -381,7 +382,7 @@ if make_plots == "YES":
 # Perform Quality Control if required
 	if perform_qc == "YES" or only_qc == "YES":
 	    gwas_data_sumstats_qc = gwas_data_sumstats.filter_value(
-        '(EAF>=0.01 & EAF<0.99 & DF>=1) & (DAF<0.12 & DAF>-0.12) & (CAVEAT=="None")'
+        '(EAF>=0.01 & EAF<0.99 & DF>={DF}) & (DAF<0.12 & DAF>-0.12) & (CAVEAT=="None")'
         )
 	    gl.dump_pickle(
         gwas_data_sumstats_qc,

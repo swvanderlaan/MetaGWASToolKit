@@ -292,7 +292,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Selecting the columns we want
   cat("\n* Selecting required columns, and creating them if not present...")
 
-  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^rsid$", "^snpid$", "^id$", # variant ID
+  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^snpid$", "^id$", "^variantid$",# variant ID
                              "^chr$", "^chrom$", "^chromosome$", # chromosome
                              "^position$", "^bp$", "^genpos$","^pos$", # Variant position on chromosomes
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", # Effect/Minor allele
@@ -444,10 +444,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Rename columns -- marker name
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^marker$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snp$"), everything())
-  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^rsid$"), everything())
+  #GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^rsid$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snpid$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^id$"), everything())
-  
+    GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^variantid$"), everything())
+
   
   ### Rename columns -- caveats
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, DF = matches("^df$"), everything())

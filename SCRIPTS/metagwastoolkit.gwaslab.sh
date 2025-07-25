@@ -328,5 +328,5 @@ else
 	fi
 	echo "${ONLY_QC}"
 	source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-	python3 ${SCRIPTS}/gwaslab_sumstats.py -g ${PROJECTNAME} -d ${METARESULTDIR} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
+	python3 ${SCRIPTS}/gwaslab_sumstats.py -g ${PROJECTNAME} -d ${METARESULTDIR} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS} --df ${DF}
 fi
