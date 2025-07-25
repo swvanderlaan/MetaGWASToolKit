@@ -26,7 +26,7 @@
 # where for each study association statistics are computed for a predefined set of variantss. The
 # meta-analysis is based on Beta and SE statistics from a linear or logistic regression analysis
 # for each study. The meta-analysis statistic is based on inverse-variance weighting
-# as well as a sample-size weighting (correted for imputation qualtiy) under a fixed-effects model.   
+# as well as a sample-size weighting (corrected for imputation qualtiy) under a fixed-effects model.   
 # Tests for heterogeneity (Cochran's Q and I-squared) and random-effects statistics are optional.
 #
 ##########################################################################################
@@ -998,7 +998,9 @@ for (my $nvariant; $nvariant < $n_total_variants; $nvariant++) {
         }
         ### Warning for allele frequencies between $low_freq_warning and $hifreq_warning for A/T and C/G SNPs
         if ( ( ( $a1[$study] eq "A" && $a2[$study] eq "T" ) || ( $a1[$study] eq "T" && $a2[$study] eq "A" ) || ( $a1[$study] eq "C" && $a2[$study] eq "G" ) || ( $a1[$study] eq "G" && $a2[$study] eq "C" ) ) && ( ( $af1[$study] > $freq_warning && $af1[$study] < 1-$freq_warning ) || ( $reference_a1_freq{$variant} > $freq_warning && $reference_a1_freq{$variant} < 1-$freq_warning ) ) ) {
-          $caveat{$variant} .= "ATCG_variant_with_$low_freq_warning<EAF<$hifreq_warning";
+          # $caveat{$variant} .= "ATCG_variant_with_$low_freq_warning<EAF<$hifreq_warning";
+          print STDERR "* In $study_name[$study], $variant is an ATCG variant with $low_freq_warning < EAF < $hifreq_warning -- skipping this variant for this study.\n";
+          $study_okay[$study] = 0;
         }
       } ### END CHECK #1
       ### START CHECK #2: allele a1 and allele a2 do NOT match the two reference alleles

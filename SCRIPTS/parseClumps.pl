@@ -33,16 +33,18 @@ use Getopt::Long;
 
 my $index;
 my $clumpFile;
+my $metaModel;
 
 GetOptions(
 	   "file=s"       => \$clumpFile,
 	   "variant=s"         => \$index,
+     "clumpfield=s"       => \$metaModel,
            );
 
 if ( $clumpFile eq "" || $index eq "" ) { 
 print "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++\n";
 print "Usage: 
-parse_clumps.pl --file clump_file --variant index_snp\n";
+parse_clumps.pl --file clump_file --variant index_snp --clumpfield meta_model (FIXED, SQRTN, RANDOM)\n";
 print "\n";
 print "Parses a PLINK v1.05+ or PLINK v1.9 generated 'clumped'-file and extracts the 
 relevant data for a given variant.\n";
@@ -85,6 +87,37 @@ my $toggle = 0;
 
 # Column #
 #	   0         1  2    5       6   7 	 8     9     10    	11       12          13   14       15        16          17            18               19     20       21		  22		  23		 24			 25			  26		27					 28				  29             30            31
+
+if ( $metaModel == "P_FIXED" ) {
+  my $BETA = "BETA_FIXED";
+  my $SE = "SE_FIXED";
+  my $BETA_LOWER = "BETA_LOWER_FIXED";
+  my $BETA_UPPER = "BETA_UPPER_FIXED";
+  my $ZSCORE = "Z_FIXED";
+  my $PVALUE = "P_FIXED";
+} elsif ( $metaModel == "P_SQRTN" ) {
+  my $BETA = "BETA_FIXED";
+  my $SE = "SE_FIXED";
+  my $BETA_LOWER = "BETA_LOWER_FIXED";
+  my $BETA_UPPER = "BETA_UPPER_FIXED";
+  my $ZSCORE = "Z_SQRTN";
+  my $PVALUE = "P_SQRTN";
+} elsif ( $metaModel == "P_RANDOM" ) {
+  my $BETA = "BETA_RANDOM";
+  my $SE = "SE_RANDOM";
+  my $BETA_LOWER = "BETA_LOWER_RANDOM";
+  my $BETA_UPPER = "BETA_UPPER_RANDOM";
+  my $ZSCORE = "Z_RANDOM";
+  my $PVALUE = "P_RANDOM";
+} else {
+  print STDERR "Incorrect or no clumpfield option supplied, defaulting to a FIXED model.\n";
+  my $BETA = "BETA_FIXED";
+  my $SE = "SE_FIXED";
+  my $BETA_LOWER = "BETA_LOWER_FIXED";
+  my $BETA_UPPER = "BETA_UPPER_FIXED";
+  my $ZSCORE = "Z_FIXED";
+}
+
 print "VARIANTID KB RSQR P_FIXED CHR POS MINOR MAJOR MAF CODEDALLELE OTHERALLELE CAF N_EFF BETA_FIXED SE_FIXED BETA_LOWER_FIXED BETA_UPPER_FIXED Z_FIXED COCHRANS_Q DF P_COCHRANS_Q I_SQUARED TAU_SQUARED DIRECTIONS GENES_250KB NEAREST_GENE NEAREST_GENE_ENSEMBLID NEAREST_GENE_STRAND VARIANT_FUNCTION CAVEAT\n"; 
 
 open (CLUMP, $clumpFile) or die " *** ERROR *** Cannot open open [ $clumpFile ]!\n";
