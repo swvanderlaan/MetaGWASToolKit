@@ -56,10 +56,13 @@ script_copyright_message() {
 script_arguments_error() {
 	echoerror "$1" # Additional message
 	echoerror "- Argument #1 is path_to/ the configuration file."
-	echoerror "- Argument #2 is path_to/ the cleaned, parsed, harmonized GWAS data."
-	echoerror "- Argument #3 is path_to/ main meta-analysis results directory."
+	echoerror "- Argument #2 is path_to/ parameter file."
+	echoerror "- Argument #3 is path_to/ variantsfile."
+	echoerror "- Argument #4 is the reference used."
+	echoerror "- Argument #5 is path_to/ main meta-analysis results directory."
+	echoerror "- Argument #6 is the extension of the input/output file used."
 	echoerror ""
-	echoerror "An example command would be: gwas.variantcollector.sh [arg1] [arg2]"
+	echoerror "An example command would be: meta.analyzer.sh [arg1] [arg2] [arg3] [arg4] [arg5] [arg6]"
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   	# The wrong arguments are passed, so we'll exit the script now!
  	echo ""
@@ -68,13 +71,13 @@ script_arguments_error() {
 }
 
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-echobold "                                          GWASVARIANTCOLLECTOR"
+echobold "                                          META-ANALYZER OF GWAS"
 echobold ""
 echobold "* Version:      v1.0.4"
 echobold ""
-echobold "* Last update:  2017-05-30"
-echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
-echobold "* Description:  Collects all variants into one file."
+echobold "* Last update:  2017-05-08"
+echobold "* Written by:   Sander W. van der Laan | UMC Utrecht | s.w.vanderlaan-2@umcutrecht.nl."
+echobold "* Description:  Meta-analyses GWAS datasets."
 echobold ""
 echobold "* REQUIRED: "
 echobold "  - A high-performance computer cluster with a qsub system"
@@ -92,57 +95,82 @@ echobold "++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 ##########################################################################################
 
 ### START of if-else statement for the number of command-line arguments passed ###
-if [[ $# -lt 3 ]]; then 
+if [[ $# -lt 6 ]]; then 
 	echo ""
 	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echoerrorflash "               *** Oh, computer says no! Number of arguments found "$#". ***"
-	echoerror "You must supply [3] arguments when running *** GWASVARIANTCOLLECTOR -- MetaGWASToolKit ***!"
+	echoerror "You must supply [6] arguments when running *** META-ANALYZER OF GWAS -- MetaGWASToolKit ***!"
 	script_arguments_error
 else
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Processing arguments..."
 	source ${1} # depends on arg1
-	RAWDATA=${2} # depends on arg2
-	METARESULTDIR=${3} # depends on arg3
-	CHUNKSIZE=${CHUNKSIZE} # depends on contents of arg1
-	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS 
-	METATEMPRESULTDIR=${METARESULTDIR}/TEMP
+	GENESDISTANCE=${GENESDISTANCE} # depends on contents of arg1
+	FREQFLIP=${FREQFLIP} # depends on contents of arg1
+	FREQWARNING=${FREQWARNING} # depends on contents of arg1
+	POPULATION=${POPULATION} # depends on contents of arg1
+	METAMODEL=${METAMODEL} # depends on contents of arg1
+	VERBOSE=${VERBOSE} # depends on contents of arg1
+	DBSNPFILE=${DBSNPFILE} # depends on contents of arg1
+	REFFREQFILE=${REFFREQFILE} # depends on contents of arg1
+	GENESFILE=${GENESFILE} # depends on contents of arg1
+	
+	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS # depends on contents of arg1
+	
+	PARAMSFILE=${2} # depends on arg2 ### NOTE: FUTURE VERSION WILL MAKE THIS AUTOMATICALLY -- WILL BE REMOVED FROM CONF FILE
+	VARIANTSFILE=${3} # depends on arg3
+	
+	REFERENCE=${4} # depends on arg4
+	
+	METARESULTDIR=${5} # depends on arg5
+	
+	EXTENSION=${6} # depends on arg5
 	
 	echo ""
 	echo "All arguments are passed. These are the settings:"
-	echo "Cleaned, parsed, and harmonized data..................: "${RAWDATA}
 	echo "Main meta-analysis results directory..................: "${METARESULTDIR}
-	echo "Temporary meta-analysis results directory.............: "${METATEMPRESULTDIR}
+	echo "The reference used....................................: "${REFERENCE}
+	echo "The reference population..............................: "${POPULATION}
+	echo "The dbSNP data........................................: "${DBSNPFILE}
+	echo "The Reference frequency file..........................: "${REFFREQFILE}
+	echo "The genes file........................................: "${GENESFILE}
+	echo "The gene distance to variant .........................: "${GENESDISTANCE}
+	echo "Meta-analysis model (default: fixed)..................: "${METAMODEL}
+	echo "Frequency allele flipping (default: 0.30).............: "${FREQFLIP}
+	echo "Frequency allele warning (default: 0.45)..............: "${FREQWARNING}
+	echo "Verbose output (default: no)..........................: "${VERBOSE}
+	echo "The parameter file....................................: "${PARAMSFILE}
+	echo "The variant list file.................................: "${VARIANTSFILE}
+	echo "Processing chunk......................................: "${EXTENSION}
 	
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "We will collect all unique variants across all GWAS cohorts..."
-	echo "* Preparing a list of all variants across all GWAS cohorts..."
-	ls ${RAWDATA}/*/*.hg${REFERENCE}.gwaslab.qc.tsv.gz > ${METARESULTDIR}/meta.cohorts.cleaned.txt
-	cat ${METARESULTDIR}/meta.cohorts.cleaned.txt
-	zcat ${RAWDATA}/*/*.hg${REFERENCE}.gwaslab.qc.tsv.gz | awk ' { print $1 } ' | grep -v "VariantID" > ${METARESULTDIR}/foo 
-	echo "* Uniquefying..."
-	${SCRIPTS}/uniquefy.pl ${METARESULTDIR}/foo > ${METARESULTDIR}/bar
-	echo "* Adding headers..."
-	echo "  - for all variants..."
-	echo "VariantID" > ${METARESULTDIR}/meta.all.variants.txt
-	cat ${METARESULTDIR}/foo >> ${METARESULTDIR}/meta.all.variants.txt
-	echo "  - for unique variants..."
-	echo "VariantID" > ${METARESULTDIR}/meta.all.unique.variants.txt
-	cat ${METARESULTDIR}/bar >> ${METARESULTDIR}/meta.all.unique.variants.txt
-	echo "* Counting variants..."
-	TOTALVARIANTS=$(cat  ${METARESULTDIR}/meta.all.variants.txt | tail -n +2 | wc -l | awk ' { printf ("%'\''d\n", $0) } ')
-	TOTALUNIQUEVARIANTS=$(cat  ${METARESULTDIR}/meta.all.unique.variants.txt | tail -n +2 | wc -l | awk ' { printf ("%'\''d\n", $0) } ')
-	echo " - Total number of variants across all GWAS cohorts..........: ${TOTALVARIANTS}"
-	echo " - Total number of unique variants in this meta-analysis.....: ${TOTALUNIQUEVARIANTS}"
-	echo ""
-	echo "* Removing temporary files..."
-	rm -v ${METARESULTDIR}/foo ${METARESULTDIR}/bar
-	echo ""
-	echo "* Chopping up the unique variant list into chunks of ${CHUNKSIZE} -- for parallelization"
-	tail -n +2 ${METARESULTDIR}/meta.all.unique.variants.txt | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.
-	ls ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.a* > ${METATEMPRESULTDIR}/meta.all.unique.variants.reorder.split.list
+
+	METACOMMAND="${SCRIPTS}/METAGWAS.gwaslab.pl --params ${PARAMSFILE} --variants ${VARIANTSFILE} --dbsnp ${DBSNPFILE} --freq ${REFFREQFILE} --genes ${GENESFILE} --dist ${GENESDISTANCE} --out ${METARESULTDIR}/meta.results.${PROJECTNAME}.${REFERENCE}.${POPULATION}.${EXTENSION}.out --ext ${EXTENSION} --ref ${REFERENCE} --pop ${POPULATION} --freq-flip ${FREQFLIP} --freq-warning ${FREQWARNING} --no-header" 
+	
+	if [[ ${METAMODEL} == "RANDOM" && ${VERBOSE} == "VERBOSE" ]]; then
+		echo "Performing meta-analysis using Z-score and fixed-effects models; and in addition a random-effects model."
+		echo "Results will be verbose -- all per-cohort data are added to the output."
+		${METACOMMAND} --random --verbose
+	
+	elif [[ ${METAMODEL} == "RANDOM" && ${VERBOSE} == "DEFAULT" ]]; then
+		echo "Performing meta-analysis using Z-score and fixed-effects models; and in addition a random-effects model."
+		echo "Results will be summarized."
+		${METACOMMAND} --random
+	
+	elif [[ ${METAMODEL} == "DEFAULT" && ${VERBOSE} == "VERBOSE" ]]; then
+		echo "Performing meta-analysis using Z-score and fixed-effects models."
+		echo "Results will be verbose -- all per-cohort data are added to the output."
+		${METACOMMAND} --verbose
+	
+	else [[ ${METAMODEL} == "DEFAULT" && ${VERBOSE} == "DEFAULT" ]]
+		echo "Performing meta-analysis using Z-score and fixed-effects models."
+		echo "Results will be summarized."
+		${METACOMMAND}
+	
+	fi
 	echo ""
 	echo "All done! Let's have a beer, buddy."
 

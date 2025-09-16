@@ -114,7 +114,7 @@ while(<COHORT>){
 	    if ($calibrationfactor eq "HM2") {# constant factor for HapMap 2 (CEU) imputed data
 	    	print "* Reference is HM2, calibration factor is 1.75. Calculating inverse median(SE) for $studyname[$nstudies]...\n";
 	    	$median_se = sprintf("%.3f",1.75/(median (@se))) ;
-	    	} elsif ($calibrationfactor eq "1Gp1" || $calibrationfactor eq "1Gp3" || $calibrationfactor eq "GoNL4" || $calibrationfactor eq "GoNL5" || $calibrationfactor eq "1Gp3GONL5" ) {# constant factor for 1000G ('ALL') imputed data
+	    	} elsif ($calibrationfactor eq "19" || $calibrationfactor eq "38" || $calibrationfactor eq "1Gp1" || $calibrationfactor eq "1Gp3" || $calibrationfactor eq "GoNL4" || $calibrationfactor eq "GoNL5" || $calibrationfactor eq "1Gp3GONL5" ) {# constant factor for 1000G ('ALL') imputed data
 	    		print "* Reference is 1000G or GoNL, calibration factor is 8.86. Calculating inverse median(SE) for $studyname[$nstudies]...\n";
 	    		$median_se = sprintf("%.3f",8.86/(median (@se))) ;
 				} else {

@@ -801,7 +801,7 @@ if ( $reference eq "HM2") {
     print OUT "VARIANTID CHR POS MINOR MAJOR MAF"; # these are based on the reference!
 }
 elsif ( $reference eq "19" || $reference eq "38" || $reference eq "GoNL4" || $reference eq "GoNL5" || $reference eq "1Gp3GONL5" || $reference eq "1Gp1" || $reference eq "1Gp3" ) {
-    print OUT "VARIANTID CHR POS MINOR MAJOR MAF RSID"; # these are based on the reference/population!
+    print OUT "VARIANTID CHR POS MINOR MAJOR MAF"; # these are based on the reference/population!
 }
 else {
     die "*** ERROR *** You did not specify the reference (--ref); now we cannot properly print the header. Please double back.\n";
