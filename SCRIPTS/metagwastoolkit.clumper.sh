@@ -224,106 +224,144 @@ else
 	### Making raw METARESULTDIR directories, unless they already exist. Depends on arg2.
 	if [[ ${REFERENCE} = "1Gp1" ]]; then
 
-	  	echo ""
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	  	echo "The scene is properly set, and directories are created! 🖖"
-	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
-	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
-	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
-	  	echo "Reference used.................................: "${REFERENCE}
-	  	echo "Main directory.................................: "${PROJECTDIR}
-	  	echo "Main analysis output directory.................: "${METAOUTPUT}
-	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
-	  	echo "Original METARESULTDIR directory........................: "${ORIGINALS}
-	  	echo "We are processing these cohort(s)..............:"
-		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			LINE=${GWASCOHORT}
-			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-			echo "     * ${COHORT}"
-		done < ${GWASFILES}
-	  	echo "Raw METARESULTDIR directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	
+	    echo ""
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	    echo "The scene is properly set, and directories are created! 🖖"
+	    echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	    echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	    echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	    echo "Reference used.................................: "${REFERENCE}
+	    echo "Main directory.................................: "${PROJECTDIR}
+	    echo "Main analysis output directory.................: "${METAOUTPUT}
+	    echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	    echo "Original METARESULTDIR directory...............: "${ORIGINALS}
+	    echo "We are processing these cohort(s)..............:"
+	    while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	        LINE=${GWASCOHORT}
+	        COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	        echo "     * ${COHORT}"
+	    done < ${GWASFILES}
+	    echo "Raw METARESULTDIR directory....................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""	
 	elif [[ ${REFERENCE} = "1Gp3" ]]; then
-
-	  	echo ""
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	  	echo "The scene is properly set, and directories are created! 🖖"
-	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
-	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
-	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
-	  	echo "Reference used.................................: "${REFERENCE}
-	  	echo "Main directory.................................: "${PROJECTDIR}
-	  	echo "Main analysis output directory.................: "${METAOUTPUT}
-	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
-	  	echo "Original METARESULTDIR directory........................: "${ORIGINALS}
-	  	echo "We are processing these cohort(s)..............:"
-		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			LINE=${GWASCOHORT}
-			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-			echo "     * ${COHORT}"
-		done < ${GWASFILES}
-	  	echo "Raw METARESULTDIR directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	  	
+	    echo ""
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	    echo "The scene is properly set, and directories are created! 🖖"
+	    echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	    echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	    echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	    echo "Reference used.................................: "${REFERENCE}
+	    echo "Main directory.................................: "${PROJECTDIR}
+	    echo "Main analysis output directory.................: "${METAOUTPUT}
+	    echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	    echo "Original METARESULTDIR directory...............: "${ORIGINALS}
+	    echo "We are processing these cohort(s)..............:"
+	    while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	        LINE=${GWASCOHORT}
+	        COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	        echo "     * ${COHORT}"
+	    done < ${GWASFILES}
+	    echo "Raw METARESULTDIR directory....................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
 	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-
-	  	echo ""
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	  	echo "The scene is properly set, and directories are created! 🖖"
-	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
-	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
-	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
-	  	echo "Reference used.................................: "${REFERENCE}
-	  	echo "Main directory.................................: "${PROJECTDIR}
-	  	echo "Main analysis output directory.................: "${METAOUTPUT}
-	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
-	  	echo "Original METARESULTDIR directory........................: "${ORIGINALS}
-	  	echo "We are processing these cohort(s)..............:"
-		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			LINE=${GWASCOHORT}
-			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-			echo "     * ${COHORT}"
-		done < ${GWASFILES}
-	  	echo "Raw METARESULTDIR directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""	  		  	
-	
+	    echo ""
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	    echo "The scene is properly set, and directories are created! 🖖"
+	    echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	    echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	    echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	    echo "Reference used.................................: "${REFERENCE}
+	    echo "Main directory.................................: "${PROJECTDIR}
+	    echo "Main analysis output directory.................: "${METAOUTPUT}
+	    echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	    echo "Original METARESULTDIR directory...............: "${ORIGINALS}
+	    echo "We are processing these cohort(s)..............:"
+	    while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	        LINE=${GWASCOHORT}
+	        COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	        echo "     * ${COHORT}"
+	    done < ${GWASFILES}
+	    echo "Raw METARESULTDIR directory....................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
 	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
-		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echoerrornooption ""
-	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
-	  	echoerrornooption "Unfortunately using ${REFERENCE} as a reference is not possible yet. Currently only 1Gp1 is available."
-	  	echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		### The wrong arguments are passed, so we'll exit the script now!
-		echo ""
-		script_copyright_message
-		exit 1
+	    echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echoerrornooption ""
+	    echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
+	    echoerrornooption "Unfortunately using ${REFERENCE} as a reference is not possible yet. Currently only 1Gp1 is available."
+	    echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    # Wrong/unsupported arguments -> exit
+	    exit 1
 	
+	elif [[ ${REFERENCE} = "19" ]]; then
+	    echo ""
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	    echo "The scene is properly set, and directories are created! 🖖"
+	    echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	    echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	    echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	    echo "Reference used.................................: "${REFERENCE}
+	    echo "Main directory.................................: "${PROJECTDIR}
+	    echo "Main analysis output directory.................: "${METAOUTPUT}
+	    echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	    echo "Original data directory.......................: "${ORIGINALS}
+	    echo "We are processing these cohort(s)..............:"
+	    while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	        LINE=${GWASCOHORT}
+	        COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	        echo "     * ${COHORT}"
+	    done < ${GWASFILES}
+	    echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	elif [[ ${REFERENCE} = "38" ]]; then
+	    echo ""
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	    echo "The scene is properly set, and directories are created! 🖖"
+	    echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	    echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	    echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	    echo "Reference used.................................: "${REFERENCE}
+	    echo "Main directory.................................: "${PROJECTDIR}
+	    echo "Main analysis output directory.................: "${METAOUTPUT}
+	    echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	    echo "Original data directory.......................: "${ORIGINALS}
+	    echo "We are processing these cohort(s)..............:"
+	    while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	        LINE=${GWASCOHORT}
+	        COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+	        echo "     * ${COHORT}"
+	    done < ${GWASFILES}
+	    echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	    echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
 	else
-	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echoerror ""
-	  	echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
-	  	echoerror "You have the following options as reference for the quality control"
-	  	echoerror "and meta-analysis:"
-	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
-	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
-	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
-	  	echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
-	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
-	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
-	  	echoerror " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
-	  	echonooption "(Opaque: not an option yet)"
-	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		### The wrong arguments are passed, so we'll exit the script now!
-		echo ""
-		script_copyright_message
-		exit 1
+	    echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echoerror ""
+	    echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
+	    echoerror "You have the following options as reference for the quality control"
+	    echoerror "and meta-analysis:"
+	    echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
+	    echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521"
+	    echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
+	    echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
+	    echonooption " - [GONL4]        Genome of the Netherlands, version 4."
+	    echonooption " - [GONL5]        Genome of the Netherlands, version 5."
+	    echoerror  " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GONL5."
+	    echoerror  " - [19]           GRCh37/hg19."
+	    echoerror  " - [38]           GRCh38/hg38."
+	    echonooption "(Opaque: not an option yet)"
+	    echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	    echo ""
+	    script_copyright_message
+	    exit 1
 	fi
 	# clumping settings
 	CLUMP_P1=${CLUMP_P1}

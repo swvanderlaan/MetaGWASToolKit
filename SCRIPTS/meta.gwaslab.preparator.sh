@@ -114,6 +114,7 @@ else
 	CHUNKSIZE=${CHUNKSIZE} # depends on contents of arg1
 	SCRIPTS=${METAGWASTOOLKITDIR}/SCRIPTS
 	METATEMPRESULTDIR=${METARESULTDIR}/TEMP
+	REFERENCE=${REFERENCE}
 	echo ""
 	echo "All arguments are passed. These are the settings:"
 	echo "Cleaned, parsed, and harmonized data..................: "${RAWDATACOHORT}
@@ -136,18 +137,18 @@ else
 	echo ""
 	echo "* Reordering [ ${COHORT} ]..."
 	echo " - merging cleaned data with uniquefied variant list..." 
-	${SCRIPTS}/mergeTables.pl --file1 ${RAWDATACOHORT}/${COHORT}.b37.gwaslab.qc.tsv.gz --file2 ${METARESULTDIR}/meta.all.unique.variants.txt --index VariantID --format GZIP1 > ${METAPREPDIRCOHORT}/${COHORT}.reorder.b37.gwaslab.qc.tsv
+	${SCRIPTS}/mergeTables.pl --file1 ${RAWDATACOHORT}/${COHORT}.hg${REFERENCE}.gwaslab.qc.tsv.gz --file2 ${METARESULTDIR}/meta.all.unique.variants.txt --index VariantID --format GZIP1 > ${METAPREPDIRCOHORT}/${COHORT}.reorder.hg${REFERENCE}.gwaslab.qc.tsv
 	echo " - gzipping the shizzle..."
-	gzip -fv ${METAPREPDIRCOHORT}/${COHORT}.reorder.b37.gwaslab.qc.tsv
+	gzip -fv ${METAPREPDIRCOHORT}/${COHORT}.reorder.hg${REFERENCE}.gwaslab.qc.tsv
 	echo " - splitting cleaned, and re-ordered data into chunks of ${CHUNKSIZE} variants -- for parallelisation and speedgain..."
-	zcat ${METAPREPDIRCOHORT}/${COHORT}.reorder.b37.gwaslab.qc.tsv.gz | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/${COHORT}.reorder.split.
+	zcat ${METAPREPDIRCOHORT}/${COHORT}.reorder.hg${REFERENCE}.gwaslab.qc.tsv.gz | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${METATEMPRESULTDIR}/${COHORT}.reorder.split.
 	
 	### HEADER .cdat-file
 	### VariantID	Marker	MarkerOriginal	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	Reference
 	### 1		    2       3               4   5   6       7               8           9           10          11  12  13  14      15	    16	    17          18  19  20  21      22          23      24
 	### HEADER .tsv-file
-	### VariantID	MarkerOriginal	rsID	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed
-	### 1			2				3		4	5	6		7				8			9			10			11	12	13	14		15		16		17			18	19	20	21		22			23
+	### VariantID	MarkerOriginal	rsID	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed	DAF
+	### 1			2				3		4	5	6		7				8			9			10			11	12	13	14		15		16		17			18	19	20	21		22			23		24
 
 	for SPLITFILE in ${METATEMPRESULTDIR}/${COHORT}.reorder.split.*; do
 		### determine basename of the splitfile

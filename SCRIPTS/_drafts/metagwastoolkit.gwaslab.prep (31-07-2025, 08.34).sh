@@ -80,17 +80,18 @@ script_arguments_error() {
 
 echobold "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 echobold "          MetaGWASToolKit: A TOOLKIT FOR THE META-ANALYSIS OF GENOME-WIDE ASSOCIATION STUDIES"
-echobold "                                   --- PREPARATION META-ANALYSIS ---"
+echobold "                      --- REFORMAT, PARSE, HARMONIZE, CLEAN ORIGINAL GWAS DATA ---"
 echobold ""
-echobold "* Version:      v1.6.3"
+echobold "* Version:      v1.6.6"
 echobold ""
-echobold "* Last update:  2023-06-23"
+echobold "* Last update:  2023-09-22"
 echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, and Paul de Bakker."
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
 echobold "                Jessica van Setten; "
-echobold "                Paul I.W. de Bakker."
-echobold "* Testers:      Jessica van Setten; Emma Smulders; Mike Puijk."
+echobold "                Paul I.W. de Bakker; "
+echobold "                Emma J.A. Smulders."
+echobold "* Testers:      Jessica van Setten; Emma J.A. Smulders; M. Baksi; Mike Puijk."
 echobold "* Description:  Perform a meta-analysis of genome-wide association studies. It will do the following:"
 echobold "                - Automatically parse the various cohort files."
 echobold "                - Harmonize GWAS datasets relative to a reference."
@@ -104,7 +105,7 @@ echobold "                - Produce LocusZoom style regional plots for genome-wi
 echobold "                - Produce a ReadMe file."
 echobold ""
 echobold "* REQUIRED: "
-echobold "  - A high-performance computer cluster with a qsub system"
+echobold "  - A high-performance computer cluster with a SLURM system"
 echobold "  - R v3.2+, Python 2.7+, Perl."
 echobold "  - Required Python 2.7+ modules: [pandas], [scipy], [numpy]."
 echobold "  - Required Perl modules: [YAML], [Statistics::Distributions], [Getopt::Long]."
@@ -130,7 +131,7 @@ else
 	echo "These are the "$#" arguments that passed:"
 	echo "The configuration file.................: "$(basename ${1}) # argument 1
 	echo "The list of GWAS files.................: "$(basename ${2}) # argument 2
-	
+
 	### SETTING DIRECTORIES (from configuration file).
 	# Loading the configuration file (please refer to the MetaGWASToolKit-Manual for specifications of this file). 
 	source "$1" # Depends on arg1.
@@ -138,6 +139,12 @@ else
 	CONFIGURATIONFILE="$1" # Depends on arg1 -- but also on where it resides!!!
 	SOFTWARE=${SOFTWARE} # from configuration file
 	
+	# Time & Memory
+	QMEMPARSER=${QMEMPARSER}
+	QRUNTIMEPARSER=${QRUNTIMEPARSER}
+	GWASLABTIME=${GWASLABTIME}
+	GWASLABMEM=${GWASLABMEM}
+	QMAIL=${QMAIL}
 	# Where MetaGWASToolKit resides
 	METAGWASTOOLKIT=${METAGWASTOOLKITDIR} # from configuration file
 	SCRIPTS=${METAGWASTOOLKIT}/SCRIPTS
@@ -148,10 +155,24 @@ else
 	PROJECTDIR=${PROJECTDIR} # from configuration file
 	SUBPROJECTDIRNAME=${SUBPROJECTDIRNAME} # from configuration file
 	OUTPUTDIRNAME=${OUTPUTDIRNAME} # from configuration file
-	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
+	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information; e.g. metagwastoolkit.files.list
 	REFERENCE=${REFERENCE} # from configuration file
+	REFFREQFILE=${REFFREQFILE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	
+	REF=${GWASLAB_REF}
+	ONLY_QC=${ONLY_QC}
+	PARSING=${PARSING}
+	SELECT_LEADS=${SELECT_LEADS}
+	MAKE_FIGURES=${MAKE_FIGURES}
+	PERFORM_QC=${PERFORM_QC}
+	DAF=${DAF}
+	EAF=${MAF}
+	MAC=${MAC}
+	HWE=${HWE}
+	INFO=${INFO}
+	BETA=${BETA}
+	SE=${SE}
+	GWASLAB_ENV=${GWASLAB_ENV}
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
@@ -161,6 +182,7 @@ else
 		mkdir -v ${PROJECTDIR}/${OUTPUTDIRNAME}
 	else
 		echo "> Output directory already exists."
+		ls -lh ${PROJECTDIR}/${OUTPUTDIRNAME}
 	fi
 	METAOUTPUT=${OUTPUTDIRNAME}
 	
@@ -276,125 +298,96 @@ else
 		script_copyright_message
 		exit 1
 	fi
-
-					### !!! THIS PART STILL REQUIRES MANUAL START !!! ###
-							  ### can we make it automatic? ###
-
+		echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echo ""
+	
 	echobold "#########################################################################################################"
-	echobold "### PREPARATION META-ANALYSIS"
+	echobold "### REFORMAT, PARSE, HARMONIZE, CLEAN, AND PLOT ORIGINAL GWAS DATA"
 	echobold "#########################################################################################################"
-	echobold "#" 	 
+	echobold "#"
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	echo "Starting the meta-analysis. "
+	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
 	echo ""
-
-	echonooption "#========================================================================================================"
-	echonooption "#== CHECK INDIVIDUAL COHORTS PRE-META-ANALYSIS -- WILL BE ADDED TO FUTURE VERSION"
-	echonooption "#========================================================================================================"
-	echonooption "#"
-	echonooption "#### Add in functions that goes over each cohort and:" 
-	echonooption "#### - checks whether it should be included,"
-	echonooption "#### - changes the list of cohorts that should go forward into the meta-analysis,"
-	echonooption "#### - creates param-files automatically."
-
-	echobold "#========================================================================================================"
-	echobold "#== COLLECT ALL UNIQUE VARIANTS ACROSS ALL GWAS COHORTS"
-	echobold "#========================================================================================================"
-	echobold "#"
-
-	echo ""
-	echo "We will collect all unique variants across all GWAS cohorts."
-	### FOR DEBUGGING LOCALLY -- Mac OS X
-	### ${SCRIPTS}/gwas.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}
-	
-	### DEPRECATED:
-	### It is unwise to use this as it creates a lot of dependencies. It is better to check
-	### each raw/qc image for each cohort, and manually perform this step, rather than letting
-	### it be dependent on the plotter-ids.
-	### Get all the plotter ID's to set dependency, by looping over all lines in the file
-	### if [ -f ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt ]; then
-	### 	PLOTTER_IDS="" # Init a variable
-	### 	while read line; do    
-	### 		PLOTTER_IDS="${PLOTTER_IDS},${line}" # Add every ID with a comma
-	### 	done < ${METAOUTPUT}/${SUBPROJECTDIRNAME}/plotter_ids.txt
-	### 	PLOTTER_IDS="${PLOTTER_IDS:1}" # Remove the first character (',')
-	### 	PLOTTER_IDS_D="--dependency=afterany:${PLOTTER_IDS}" # Create a variable which can be used as dependency
-	### else 
-	### 	echo "Dependency file does not exist, assuming the PLOTTER jobs finished."
-	### 	PLOTTER_IDS_D="" # Empty variable so there is no dependency
-	### fi
-
-	### OLD QSUB version
-	### qsub -S /bin/bash -N gwas.variantcollector -hold_jid gwas.plotter -o ${METARESULTDIR}/gwas.variantcollector.log -e ${METARESULTDIR}/gwas.variantcollector.errors -l h_rt=${QRUNTIME} -l h_vmem=${QMEM} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/gwas.variantcollector.sh	
-
 	### SLURM version
-	### The --wait flag will cause this array to wait until each script is finished before moving to the next step
-	printf "#!/bin/bash\n${SCRIPTS}/gwaslab.variantcollector.sh ${CONFIGURATIONFILE} ${RAWDATA} ${METARESULTDIR}" > ${METARESULTDIR}/gwaslab.variantcollector.sh
-	### DEPRECATED: see remark above (line 300>)
-	### VARIANT_COLLECTOR_ID=$(sbatch --parsable --wait --job-name=gwas.variantcollector ${PLOTTER_IDS_D} -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwas.variantcollector.sh)
-	VARIANT_COLLECTOR_ID=$(sbatch --parsable --wait -o ${METARESULTDIR}/gwas.variantcollector.log --error ${METARESULTDIR}/gwas.variantcollector.errors --time=${QRUNTIME} --mem=${QMEM} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/gwaslab.variantcollector.sh)
+	### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
+	###This can be used as depenendancy down the road.
 	
-	echobold "#========================================================================================================"
-	echobold "#== ALIGN COHORTS AND SPLIT IN PREPARATION OF META-ANALYSIS"
-	echobold "#========================================================================================================"
-	echobold "#"
-
-	echo ""
-	echo "We will prepare each cleaned cohort for meta-analysis."
-	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+	
+	### Create a file with reference allele frequencies which is neccesary for plotting later.
+	### Creates slight bottleneck, this step could be changed to an sbatch command, while making the gwas.plotter.sh steps dependant on this.
+# 	if [ ! -f ${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz ]; then
+# 		echo "Create file with reference allele frequencies for plotting purposes..."
+# 		zcat ${REFFREQFILE} | ${SCRIPTS}/parseTable.pl --col VariantID,AF > ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
+# 		gzip -fv ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
+# 	fi
+#	REFAFFILE="${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz"
 		
+	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do # -n check is included in the loop condition, the loop will terminate when it encounters this empty line because -n checks if a string is not empty
 		LINE=${GWASCOHORT}
 		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 		FILE=$(echo "${LINE}" | awk '{ print $2 }')
-	
+		
 		BASEFILE=$(basename ${FILE} .txt.gz)
-	
-		echo ""
-		if [ ! -d ${METARESULTDIR}/${COHORT} ]; then
+		
+		if [ ! -d ${RAWDATA}/${COHORT} ]; then
 			echo "Making subdirectory for ${COHORT}..."
-			mkdir -v ${METARESULTDIR}/${COHORT}
+			mkdir -v ${RAWDATA}/${COHORT}
 		else
 			echo "Directory for ${COHORT} already there."
 		fi
-	
-		# Set the rawdata for the cohort
 		RAWDATACOHORT=${RAWDATA}/${COHORT}
-	
-		# Set the meta-analysis preparation-stage directory for the cohort
-		METAPREPDIRCOHORT=${METARESULTDIR}/${COHORT}
-
+		mkdir -v ${RAWDATACOHORT}/PLOTS
+		mkdir -v ${RAWDATACOHORT}/GWASCatalog
+		
+		echobold "#========================================================================================================"
+		echobold "#== REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA: [ ${COHORT} ]"
+		echobold "#========================================================================================================"
+		echobold "#"
 		echo ""
-		echo "* Reordering [ ${COHORT} ]..."
-		### FOR DEBUGGING LOCALLY -- Mac OS X
-		### ${SCRIPTS}/meta.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}
-
-		### OLD QSUB version
-		### qsub -S /bin/bash -N meta.preparator -hold_jid gwas.variantcollector -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.log -e ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.errors -l h_rt=${QRUNTIMEMETAPREP} -l h_vmem=${QMEMMETAPREP} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${METARESULTDIR}/${COHORT}/${COHORT}.meta.preparator.sh
-		
-		### SLURM version
-		printf "#!/bin/bash\n${SCRIPTS}/meta.gwaslab.preparator.sh ${CONFIGURATIONFILE} ${RAWDATACOHORT} ${METARESULTDIR} ${METAPREPDIRCOHORT} ${COHORT}" > ${METARESULTDIR}/${COHORT}/${COHORT}.meta.gwaslab.preparator.sh
-		META_PREPARATOR_ID=$(sbatch --parsable --job-name=gwaslab.preparator --dependency=afterany:${VARIANT_COLLECTOR_ID} -o ${METARESULTDIR}/${COHORT}/${COHORT}.meta.gwaslab.preparator.log --error ${METARESULTDIR}/${COHORT}/${COHORT}.meta.gwaslab.preparator.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/${COHORT}/${COHORT}.meta.gwaslab.preparator.sh)
-		
-		### DEPRECATED: see above
-		### Echo the ids to a file, so it can be used as depenendancy down the road
-		### echo "${META_PREPARATOR_ID}" >> ${METAOUTPUT}/${SUBPROJECTDIRNAME}/meta_prep_ids.txt
-		wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
-		
+		### Safely store the ID of the start job
+		source "${GWASLAB_ENV}" gwaslab_env
+		# Submit the R parsing job first
+		if [ "$PARSING" == "YES" ]; then
+			PARSE_JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_parser \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err \
+        --mem=${QMEMPARSER} \
+        --gres=tmpspace:128G \
+        --time=${QRUNTIMEPARSER} \
+        --cpus-per-task=1 \
+        --mail-user=${QMAIL} \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS} \
+        ${SCRIPTS}/pipeline.parser.sh)
+			echo "Submitted parser for ${COHORT} as job ${PARSE_JOBID}"
+			JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_GWAS \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+        --time=${GWASLABTIME} \
+        --mem=${GWASLABMEM} \
+        --cpus-per-task=2 \
+        --dependency=afterany:${PARSE_JOBID} \
+        --mail-user=${QMAIL} \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        ${SCRIPTS}/gwaslab.cohort.sh)
+			echo "Submitted GWASLab for ${COHORT} as job ${JOBID}, dependent on ${PARSE_JOBID}"    
+		else
+			JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_GWAS \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+        --time=${GWASLABTIME} \
+        --mem=${GWASLABMEM} \
+        --cpus-per-task=2 \
+        --mail-user=${QMAIL} \
+        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        ${SCRIPTS}/gwaslab.cohort.sh)
+ 			echo "Submitted GWASLab for ${COHORT} as job ${JOBID} (no parser dependency)"
+		fi
 	done < ${GWASFILES}
-
-	echobold "#========================================================================================================"
-	echobold "#== MAKE PARAMS FILE"
-	echobold "#========================================================================================================"
-	echobold "#"
-	
-	### SLURM version
-	printf "#!/bin/bash\nperl ${SCRIPTS}/params.maker.gwaslab.pl ${GWASFILES} ${PROJECTDIR}/${OUTPUTDIRNAME}/metagwastoolkit.${SUBPROJECTDIRNAME}.params ${RAWDATA} ${METARESULTDIR} ${REFERENCE}" > ${METARESULTDIR}/meta.gwaslab.params.sh
-	META_PREPARATOR_ID=$(sbatch --parsable --job-name=meta.gwaslab.params --dependency=afterany:${META_PREPARATOR_ID} -o ${METARESULTDIR}/meta.gwaslab.params.log --error ${METARESULTDIR}/meta.gwaslab.params.errors --time=${QRUNTIMEMETAPREP} --mem=${QMEMMETAPREP} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${METARESULTDIR}/meta.gwaslab.params.sh)
-	
-	
-
-	### END of if-else statement for the number of command-line arguments passed ###
+### END of if-else statement for the number of command-line arguments passed ###
 fi 
-
 script_copyright_message

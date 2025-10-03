@@ -89,7 +89,8 @@ echobold "* Based on:     MANTEL, as written by Sara Pulit, Jessica van Setten, 
 echobold "* Written by:   Sander W. van der Laan | s.w.vanderlaan@gmail.com."
 echobold "                Sara Pulit; "
 echobold "                Jessica van Setten; "
-echobold "                Paul I.W. de Bakker."
+echobold "                Paul I.W. de Bakker; "
+echobold "                Emma J.A. Smulders."
 echobold "* Testers:      Jessica van Setten; Emma J.A. Smulders; M. Baksi; Mike Puijk."
 echobold "* Description:  Perform a meta-analysis of genome-wide association studies. It will do the following:"
 echobold "                - Automatically parse the various cohort files."
@@ -158,19 +159,21 @@ else
 	REFERENCE=${REFERENCE} # from configuration file
 	REFFREQFILE=${REFFREQFILE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	REF=${GWASLAB_REF}
+	REF=${REF}
 	ONLY_QC=${ONLY_QC}
 	PARSING=${PARSING}
 	SELECT_LEADS=${SELECT_LEADS}
 	MAKE_FIGURES=${MAKE_FIGURES}
 	PERFORM_QC=${PERFORM_QC}
 	DAF=${DAF}
-	MAF=${MAF}
+	EAF=${EAF}
 	MAC=${MAC}
 	HWE=${HWE}
 	INFO=${INFO}
 	BETA=${BETA}
 	SE=${SE}
+	CHUNKSIZE=${CHUNKSIZE}
+	GWASLAB_ENV=${GWASLAB_ENV}
 	##########################################################################################
 	### CREATE THE OUTPUT DIRECTORIES
 	echo ""
@@ -230,7 +233,7 @@ else
 	### SETTING UP THE OUTPUT AND RAWDATA DIRECTORIES
 	echo ""
 	### Making raw data directories, unless they already exist. Depends on arg2.
-	if [[ ${REFERENCE} = "1Gp1" ]]; then
+	if [[ ${REFERENCE} = "19" ]]; then
 
 	  	echo ""
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -250,13 +253,12 @@ else
 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "     * ${COHORT}"
 		done < ${GWASFILES}
-	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	
-	elif [[ ${REFERENCE} = "1Gp3" ]]; then
-	
+		echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		echo ""
+	
+	elif [[ ${REFERENCE} = "38" ]]; then
+	  	echo ""
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""
 	  	echo "The scene is properly set, and directories are created! 🖖"
@@ -270,30 +272,6 @@ else
 	  	echo "Original data directory........................: "${ORIGINALS}
 	  	echo "We are processing these cohort(s)..............:"
 		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
-			LINE=${GWASCOHORT}
-			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-			echo "     * ${COHORT}"
-		done < ${GWASFILES}
-	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-
-	elif [[ ${REFERENCE} = "1Gp3GONL5" ]]; then
-	
-		echo ""
-	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echo ""
-	  	echo "The scene is properly set, and directories are created! 🖖"
-	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
-	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
-	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
-	  	echo "Reference used.................................: "${REFERENCE}
-	  	echo "Main directory.................................: "${PROJECTDIR}
-	  	echo "Main analysis output directory.................: "${METAOUTPUT}
-	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
-	  	echo "Original data directory........................: "${ORIGINALS}
-	  	echo "We are processing these cohort(s)..............:"
-		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do # -n check is included in the loop condition, the loop will terminate when it encounters this empty line because -n checks if a string is not empty
 			LINE=${GWASCOHORT}
 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "     * ${COHORT}"
@@ -301,48 +279,32 @@ else
 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echo ""	
-	
-	elif [[ ${REFERENCE} = "HM2" || ${REFERENCE} = "GONL4" || ${REFERENCE} = "GONL5" ]]; then
-		echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-	  	echoerrornooption ""
-	  	echoerrorflashnooption "               *** Oh, computer says no! This option is not available yet. ***"
-	  	echoerrornooption "Unfortunately using ${REFERENCE} as a reference is not possible yet. Currently only 1Gp1 is available."
-	  	echoerrornooption "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-		### The wrong arguments are passed, so we'll exit the script now!
-		echo ""
-		script_copyright_message
-		exit 1
-	
 	else
 	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	  	echoerror ""
 	  	echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
 	  	echoerror "You have the following options as reference for the quality control"
 	  	echoerror "and meta-analysis:"
-	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
-	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
-	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
-	  	echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
-	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
-	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
-	  	echoerror " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
-	  	echonooption "(Opaque: not an option yet)"
+	  	echoerror " - [19]          hg19 / build 37"
+	  	echoerror " - [38]         hg38 / build 38"
 	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		### The wrong arguments are passed, so we'll exit the script now!
 		echo ""
 		script_copyright_message
 		exit 1
 	fi
+		echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echo ""
 	
 	echobold "#########################################################################################################"
-	echobold "### REFORMAT, PARSE, HARMONIZE, CLEAN, AND PLOT ORIGINAL GWAS DATA"
+	echobold "### REFORMAT, PARSE, HARMONIZE, CLEAN, AND PLOT ORIGINAL GWAS DATA REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA: [ ${COHORT} ]" 
 	echobold "#########################################################################################################"
 	echobold "#"
 	echo ""
 	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 	echo "Start the reformatting, parsing, harmonizing, and cleaning of each cohort and dataset. "
 	echo ""
-
 	### SLURM version
 	### Create a file to put the SBATCH IDs for the raw and cleaned file plotting in.
 	###This can be used as depenendancy down the road.
@@ -350,86 +312,437 @@ else
 	
 	### Create a file with reference allele frequencies which is neccesary for plotting later.
 	### Creates slight bottleneck, this step could be changed to an sbatch command, while making the gwas.plotter.sh steps dependant on this.
-
-	if [ ! -f ${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz ]; then
-		echo "Create file with reference allele frequencies for plotting purposes..."
-		zcat ${REFFREQFILE} | ${SCRIPTS}/parseTable.pl --col VariantID,AF > ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
-		gzip -fv ${SUBPROJECTDIR}/${REFERENCE}.AF.txt
-	fi
-	REFAFFILE="${SUBPROJECTDIR}/${REFERENCE}.AF.txt.gz"
-		
-	while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do # -n check is included in the loop condition, the loop will terminate when it encounters this empty line because -n checks if a string is not empty
-		LINE=${GWASCOHORT}
-		COHORT=$(echo "${LINE}" | awk '{ print $1 }')
-		FILE=$(echo "${LINE}" | awk '{ print $2 }')
-		
-		BASEFILE=$(basename ${FILE} .txt.gz)
-		
-		if [ ! -d ${RAWDATA}/${COHORT} ]; then
-	  		echo "Making subdirectory for ${COHORT}..."
-	  		mkdir -v ${RAWDATA}/${COHORT}
-		else
-			echo "Directory for ${COHORT} already there."
-		fi
+	
+	while read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+		(
+		COHORT=$(echo "${GWASCOHORT}" | awk '{ print $1 }')
+		FILE=$(echo "${GWASCOHORT}" | awk '{ print $2 }')
+		#BASEFILE=$(basename ${FILE} .gz)
 		RAWDATACOHORT=${RAWDATA}/${COHORT}
-		mkdir -v ${RAWDATACOHORT}/PLOTS
-		mkdir -v ${RAWDATACOHORT}/GWASCatalog
-		
-		echobold "#========================================================================================================"
-		echobold "#== REFORMAT, PARSE, HARMONIZE, CLEANING ORIGINAL GWAS DATA: [ ${COHORT} ]"
-		echobold "#========================================================================================================"
-		echobold "#"
-		echo ""
-		### Safely store the ID of the start job
-		source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-# 		INIT_ID=$SLURM_JOB_ID
-# 		if [ "$ONLY_QC" == "NO" ]; then
-# 			Rscript ${SCRIPTS}/pipeline.parser.R -p ${ORIGINALS} -d ${FILE} -o ${COHORT}
-# 		fi
-		# Submit the R parsing job first
-		if [ "$PARSING" == "YES" ]; then
-			PARSE_JOBID=$(sbatch --parsable \
-        --job-name=${COHORT}_parser \
-        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.out \
-        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err \
-        --mem=${QMEMPARSER} \
-        --gres=tmpspace:128G \
-        --time=${QRUNTIMEPARSER} \
-        --cpus-per-task=1 \
-        --mail-user=${QMAIL} \
-        --export=ALL,COHORT=${COHORT},FILE=${FILE},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS} \
-        ${SCRIPTS}/pipeline.parser.sh)
-			echo "Submitted parser for ${COHORT} as job ${PARSE_JOBID}"
-			JOBID=$(sbatch --parsable \
+		mkdir -p ${RAWDATACOHORT}/{PLOTS,GWASCatalog}
+		# Smart basename stripping all known suffixes
+		# Extract filename without path
+		FILENAME="${FILE##*/}"
+		BASEFILE="${FILENAME%.txt.gz}"
+		BASEFILE="${BASEFILE%.tsv.gz}"
+		BASEFILE="${BASEFILE%.gz}"
+		BASEFILE="${BASEFILE%.txt}"
+		source "${GWASLAB_ENV}" gwaslab_env
+		if [ "$ONLY_QC" == "YES" ]; then
+		GWASLAB_JOBID=$(sbatch --parsable \
         --job-name=${COHORT}_GWAS \
         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
-        --time=${GWASLABTIME} \
-        --mem=${GWASLABMEM} \
-        --cpus-per-task=2 \
-        --dependency=afterany:${PARSE_JOBID} \
-        --mail-user=${QMAIL} \
-        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${MAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
-        ${SCRIPTS}/gwaslab.cohort.sh)
-			echo "Submitted GWASLab for ${COHORT} as job ${JOBID}, dependent on ${PARSE_JOBID}"    
-		else
-			JOBID=$(sbatch --parsable \
-        --job-name=${COHORT}_GWAS \
-        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
-        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
-        --time=${GWASLABTIME} \
-        --mem=${GWASLABMEM} \
+        --time=24:00:00 \
+        --mem=128G \
         --cpus-per-task=2 \
         --mail-user=${QMAIL} \
-        --export=ALL,COHORT=${COHORT},FILE=${FILE},RAWDATACOHORT=${RAWDATACOHORT},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${MAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
         ${SCRIPTS}/gwaslab.cohort.sh)
- 			echo "Submitted GWASLab for ${COHORT} as job ${JOBID} (no parser dependency)"
-		fi
-		#python3 ${SCRIPTS}/gwaslab_cohort.py -g ${COHORT} -d ${ORIGINALS} -i ${FILE} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} -o ${RAWDATA}/${COHORT} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
-		
-	done < ${GWASFILES}
+# 		CLEANUP_JOBID=$(sbatch --parsable \
+#     --job-name=cleanup.${COHORT} \
+#     --dependency=afterany:${GWASLAB_JOBID} \
+#     --time=01:00:00 \
+#     --mem=2G \
+#     --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.out \
+#     --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.err \
+#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},BASEFILE=${BASEFILE} \
+#     --wrap="rm -f ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z] ${RAWDATACOHORT}/splitfiles.txt ${RAWDATACOHORT}/split_after_parse.${COHORT}.sh ${RAWDATACOHORT}/*.parquet ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.* ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors ${RAWDATACOHORT}/split.${COHORT}.out ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err")
+		elif [ "$PARSING" == "YES" ]; then
+		# Submit the R parsing job
+		PARSE_JOBID=$(sbatch --parsable \
+            --job-name=${COHORT}_parser \
+            --output=${RAWDATACOHORT}/${COHORT}.parser.out \
+            --error=${RAWDATACOHORT}/${COHORT}.parser.err \
+            --mem=${QMEMPARSER} \
+            --gres=tmpspace:128G \
+            --time=${QRUNTIMEPARSER} \
+            --cpus-per-task=1 \
+            --mail-user=${QMAIL} \
+            --export=ALL,COHORT=${COHORT},FILE=${FILE},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS} \
+            ${SCRIPTS}/pipeline.parser.sh)
 
+		if ! [[ "$PARSE_JOBID" =~ ^[0-9]+$ ]]; then
+			echo "Parser job submission failed for ${COHORT}."
+			exit 1
+		fi
+		echo "Submitted parser for ${COHORT} as job ${PARSE_JOBID}"
+      # Prepare a splitting job dependent on the parser
+        SPLITSCRIPT=${RAWDATACOHORT}/split_after_parse.${COHORT}.sh
+        if [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.txt.gz ]]; then
+           PARSED_FILE=${ORIGINALS}/${COHORT}/${BASEFILE}.txt.gz
+        elif [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.tsv.gz ]]; then
+           PARSED_FILE=${ORIGINALS}/${COHORT}/${BASEFILE}.tsv.gz
+        elif [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.gz ]]; then
+           PARSED_FILE=${ORIGINALS}/${COHORT}/${BASEFILE}.gz
+        else
+           echo "Parsed file not found for ${COHORT} at expected locations."
+           exit 1
+         fi
+        echo "${PARSED_FILE}"
+
+        cat <<EOF > $SPLITSCRIPT
+#!/bin/bash
+zcat ${PARSED_FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
+zcat ${PARSED_FILE} | head -1 > ${RAWDATACOHORT}/header.tmp
+> ${RAWDATACOHORT}/splitfiles.txt
+for f in ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z]; do
+    cat ${RAWDATACOHORT}/header.tmp \$f > \$f.tmp && mv \$f.tmp \$f
+    echo \$f >> ${RAWDATACOHORT}/splitfiles.txt
+done
+rm ${RAWDATACOHORT}/header.tmp
+EOF
+        chmod +x $SPLITSCRIPT
+        SPLIT_LAUNCH_JOBID=$(sbatch --parsable \
+            --dependency=afterany:${PARSE_JOBID} \
+            --job-name=split.${COHORT} \
+            --mem=2G --time=00:30:00 \
+            --output=${RAWDATACOHORT}/split.${COHORT}.out \
+            --error=${RAWDATACOHORT}/split.${COHORT}.err \
+            $SPLITSCRIPT)
+
+        if ! [[ "$SPLIT_LAUNCH_JOBID" =~ ^[0-9]+$ ]]; then
+            echo "Split job submission failed for ${COHORT}."
+            exit 1
+        fi
+        echo "Submitted split job for ${COHORT} as job ${SPLIT_LAUNCH_JOBID}"
+        ARRAY_SUBMIT_SCRIPT=${RAWDATACOHORT}/submit_array_${COHORT}.sh
+cat <<'EOF' > $ARRAY_SUBMIT_SCRIPT
+#!/bin/bash
+# This script runs *as a job* after splitting, to submit the array job once splitfiles.txt exists
+
+SPLITFILELIST=${RAWDATACOHORT}/splitfiles.txt
+
+if [ ! -f $SPLITFILELIST ]; then
+  echo "ERROR: splitfiles.txt not found at $SPLITFILELIST"
+  exit 1
+fi
+
+NFILES=$(wc -l < $SPLITFILELIST)
+NFILES=$((NFILES - 1))
+
+if [ \$NFILES -lt 0 ]; then
+  echo "ERROR: No valid split files found."
+  exit 1
+fi
+
+# Submit the array job now that NFILES is known
+ARRAY_JOBID=$(sbatch --parsable \
+		--job-name=${COHORT}.splitfiles \
+		--array=0-${NFILES} \
+		--time=24:00:00 \
+		--mem=32G \
+		-c 1 \
+		-o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log \
+		--error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors \
+		--export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID} \
+		${SCRIPTS}/metagwastoolkit.gwaslab.splitfiles.HPC.sh ${CONFIGURATIONFILE})
+echo $ARRAY_JOBID > ${RAWDATACOHORT}/array_jobid.txt
+echo "Submitted array job for ${COHORT} as job $ARRAY_JOBID"
+EOF
+
+chmod +x $ARRAY_SUBMIT_SCRIPT
+
+# Submit this job script as a dependency of the split job
+ARRAY_LAUNCH_JOBID=$(sbatch --parsable \
+  --dependency=afterany:${SPLIT_LAUNCH_JOBID} \
+  --job-name=arraylauncher.${COHORT} \
+  --mem=32G \
+  --time=01:00:00 \
+  --output=${RAWDATACOHORT}/launch_array.${COHORT}.out \
+  --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID},SCRIPTS=${SCRIPTS},CONFIGURATIONFILE=${CONFIGURATIONFILE} \
+  --error=${RAWDATACOHORT}/launch_array.${COHORT}.err \
+  ${ARRAY_SUBMIT_SCRIPT})
+
+ARRAY_JOBID_FILE="${RAWDATACOHORT}/array_jobid.txt"
+MIN_WAIT=5
+MAX_WAIT=120
+COUNTER=0
+
+echo "⏳ Waiting at least $MIN_WAIT minutes, and up to $MAX_WAIT minutes, for array_jobid.txt..."
+
+while [ $COUNTER -lt $MIN_WAIT ]; do
+  sleep 60
+  ((COUNTER++))
+  echo "  → (Minimum wait) Minute $COUNTER..."
+done
+
+while [ ! -f "$ARRAY_JOBID_FILE" ] && [ $COUNTER -lt $MAX_WAIT ]; do
+  sleep 60
+  ((COUNTER++))
+  echo "  → (Checking) Minute $COUNTER... file not found yet."
+done
+
+if [ -f "$ARRAY_JOBID_FILE" ]; then
+  REAL_ARRAY_JOBID=$(cat "$ARRAY_JOBID_FILE")
+  echo "✅ Found array job ID: $REAL_ARRAY_JOBID"
+else
+  echo "❌ ERROR: array_jobid.txt was not created after $MAX_WAIT minutes."
+  exit 1
+fi
+
+
+# #         ### Call an array job for all the different splitfiles
+# 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
+# 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
+# 		echo "${NFILES}"
+# 		splitfiles_ID=$(sbatch --parsable \
+# 		--job-name=${COHORT}.splitfiles \
+# 		--dependency=afterany:${SPLIT_LAUNCH_JOBID} \
+# 		--array=0-${NFILES} \
+# 		--time=24:00:00 \
+# 		--mem=32G \
+# 		-c 1 \
+# 		-o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log \
+# 		--error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors \
+# 		--export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID} \
+# 		${SCRIPTS}/metagwastoolkit.gwaslab.splitfiles.HPC.sh ${CONFIGURATIONFILE})
+# 		
+		WRAP_JOBID=$(sbatch --parsable \
+    --job-name=wrap.${COHORT} \
+    --dependency=afterany:${REAL_ARRAY_JOBID} \
+    --mem=${QMEMWRAPPER} \
+    --time=${QRUNTIMEWRAPPER} \
+    --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},BASEFILE=${BASEFILE},SCRIPTS=${SCRIPTS} \
+    -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log \
+    --error=${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors \
+    ${SCRIPTS}/gwaslab.wrapper.sh)
+    source "${GWASLAB_ENV}" gwaslab_env
+		GWASLAB_JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_GWAS \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+        --dependency=afterany:${WRAP_JOBID} \
+        --time=24:00:00 \
+        --mem=128G \
+        --cpus-per-task=2 \
+        --mail-user=${QMAIL} \
+        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        ${SCRIPTS}/gwaslab.cohort.sh)
+# 		CLEANUP_JOBID=$(sbatch --parsable \
+#     --job-name=cleanup.${COHORT} \
+#     --dependency=afterany:${GWASLAB_JOBID} \
+#     --time=01:00:00 \
+#     --mem=2G \
+#     --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.out \
+#     --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.err \
+#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},BASEFILE=${BASEFILE} \
+#     --wrap="rm -f ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z] ${RAWDATACOHORT}/splitfiles.txt ${RAWDATACOHORT}/split_after_parse.${COHORT}.sh ${RAWDATACOHORT}/*.parquet ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.* ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors ${RAWDATACOHORT}/split.${COHORT}.out ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err")
+
+# 		if ! [[ "$CLEANUP_JOBID" =~ ^[0-9]+$ ]]; then
+# 			echo "Cleanup job submission failed for ${COHORT}."
+# 			exit 1
+# 		fi
+# 		echo "Submitted cleanup job for ${COHORT} as job ${CLEANUP_JOBID}"
+########################################################
+          # If PARSING != YES      
+########################################################
+		else
+        SPLITSCRIPT=${RAWDATACOHORT}/split_after_parse.${COHORT}.sh
+        if [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.txt.gz ]]; then
+           PARSED_FILE=${ORIGINALS}/${COHORT}/${BASEFILE}.txt.gz
+        elif [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.tsv.gz ]]; then
+           PARSED_FILE=${ORIGINALS}/${COHORT}/${BASEFILE}.tsv.gz
+        elif [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.gz ]]; then
+           PARSED_FILE=${ORIGINALS}/${COHORT}/${BASEFILE}.gz
+        else
+           echo "Parsed file not found for ${COHORT} at expected locations."
+           exit 1
+         fi
+        echo "${PARSED_FILE}"
+
+        cat <<EOF > $SPLITSCRIPT
+#!/bin/bash
+zcat ${PARSED_FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
+zcat ${PARSED_FILE} | head -1 > ${RAWDATACOHORT}/header.tmp
+> ${RAWDATACOHORT}/splitfiles.txt
+for f in ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z]; do
+    cat ${RAWDATACOHORT}/header.tmp \$f > \$f.tmp && mv \$f.tmp \$f
+    echo \$f >> ${RAWDATACOHORT}/splitfiles.txt
+done
+rm ${RAWDATACOHORT}/header.tmp
+EOF
+        chmod +x $SPLITSCRIPT
+        SPLIT_LAUNCH_JOBID=$(sbatch --parsable \
+            --job-name=split.${COHORT} \
+            --mem=2G --time=00:30:00 \
+            --output=${RAWDATACOHORT}/split.${COHORT}.out \
+            --error=${RAWDATACOHORT}/split.${COHORT}.err \
+            $SPLITSCRIPT)
+
+        if ! [[ "$SPLIT_LAUNCH_JOBID" =~ ^[0-9]+$ ]]; then
+            echo "Split job submission failed for ${COHORT}."
+            exit 1
+        fi
+        echo "Submitted split job for ${COHORT} as job ${SPLIT_LAUNCH_JOBID}"
+        ARRAY_SUBMIT_SCRIPT=${RAWDATACOHORT}/submit_array_${COHORT}.sh
+cat <<'EOF' > $ARRAY_SUBMIT_SCRIPT
+#!/bin/bash
+# This script runs *as a job* after splitting, to submit the array job once splitfiles.txt exists
+
+SPLITFILELIST=${RAWDATACOHORT}/splitfiles.txt
+
+if [ ! -f $SPLITFILELIST ]; then
+  echo "ERROR: splitfiles.txt not found at $SPLITFILELIST"
+  exit 1
+fi
+
+NFILES=$(wc -l < $SPLITFILELIST)
+NFILES=$((NFILES - 1))
+
+if [ \$NFILES -lt 0 ]; then
+  echo "ERROR: No valid split files found."
+  exit 1
+fi
+
+# Submit the array job now that NFILES is known
+ARRAY_JOBID=$(sbatch --parsable \
+		--job-name=${COHORT}.splitfiles \
+		--array=0-${NFILES} \
+		--time=24:00:00 \
+		--mem=32G \
+		-c 1 \
+		-o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log \
+		--error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors \
+		--export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID} \
+		${SCRIPTS}/metagwastoolkit.gwaslab.splitfiles.HPC.sh ${CONFIGURATIONFILE})
+echo $ARRAY_JOBID > ${RAWDATACOHORT}/array_jobid.txt
+echo "Submitted array job for ${COHORT} as job $ARRAY_JOBID"
+EOF
+
+chmod +x $ARRAY_SUBMIT_SCRIPT
+
+# Submit this job script as a dependency of the split job
+ARRAY_LAUNCH_JOBID=$(sbatch --parsable \
+  --dependency=afterany:${SPLIT_LAUNCH_JOBID} \
+  --job-name=arraylauncher.${COHORT} \
+  --mem=32G \
+  --time=01:00:00 \
+  --output=${RAWDATACOHORT}/launch_array.${COHORT}.out \
+  --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID},SCRIPTS=${SCRIPTS},CONFIGURATIONFILE=${CONFIGURATIONFILE} \
+  --error=${RAWDATACOHORT}/launch_array.${COHORT}.err \
+  ${ARRAY_SUBMIT_SCRIPT})
+
+ARRAY_JOBID_FILE="${RAWDATACOHORT}/array_jobid.txt"
+MIN_WAIT=1
+MAX_WAIT=3600
+COUNTER=0
+
+echo "⏳ Waiting at least $MIN_WAIT minutes, and up to $MAX_WAIT minutes, for array_jobid.txt..."
+
+while [ $COUNTER -lt $MIN_WAIT ]; do
+  sleep 60
+  ((COUNTER++))
+  echo "  → (Minimum wait) Minute $COUNTER..."
+done
+
+while [ ! -f "$ARRAY_JOBID_FILE" ] && [ $COUNTER -lt $MAX_WAIT ]; do
+  sleep 60
+  ((COUNTER++))
+  echo "  → (Checking) Minute $COUNTER... file not found yet."
+done
+
+if [ -f "$ARRAY_JOBID_FILE" ]; then
+  REAL_ARRAY_JOBID=$(cat "$ARRAY_JOBID_FILE")
+  echo "✅ Found array job ID: $REAL_ARRAY_JOBID"
+else
+  echo "❌ ERROR: array_jobid.txt was not created after $MAX_WAIT minutes."
+  exit 1
+fi
+		WRAP_JOBID=$(sbatch --parsable \
+    --job-name=wrap.${COHORT} \
+    --dependency=afterany:${REAL_ARRAY_JOBID} \
+    --mem=${QMEMWRAPPER} \
+    --time=${QRUNTIMEWRAPPER} \
+    --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},BASEFILE=${BASEFILE},SCRIPTS=${SCRIPTS} \
+    -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log \
+    --error=${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors \
+    ${SCRIPTS}/gwaslab.wrapper.sh)
+		GWASLAB_JOBID=$(sbatch --parsable \
+        --job-name=${COHORT}_GWAS \
+        --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+        --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+        --dependency=afterany:${WRAP_JOBID} \
+        --time=24:00:00 \
+        --mem=128G \
+        --cpus-per-task=2 \
+        --mail-user=${QMAIL} \
+        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        ${SCRIPTS}/gwaslab.cohort.sh)
+        #         cat <<EOF > $SPLITSCRIPT
+# #!/bin/bash
+# zcat ${PARSED_FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
+# zcat ${PARSED_FILE} | head -1 > ${RAWDATACOHORT}/header.tmp
+# > ${RAWDATACOHORT}/splitfiles.txt
+# for f in ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z]; do
+#     cat ${RAWDATACOHORT}/header.tmp \$f > \$f.tmp && mv \$f.tmp \$f
+#     echo \$f >> ${RAWDATACOHORT}/splitfiles.txt
+# done
+# rm ${RAWDATACOHORT}/header.tmp
+# EOF
+#         chmod +x $SPLITSCRIPT
+#         SPLIT_LAUNCH_JOBID=$(sbatch --parsable \
+#             --job-name=split.${COHORT} \
+#             --mem=2G --time=00:30:00 \
+#             --output=${RAWDATACOHORT}/split.${COHORT}.out \
+#             --error=${RAWDATACOHORT}/split.${COHORT}.err \
+#             $SPLITSCRIPT)
+#         if ! [[ "$SPLIT_LAUNCH_JOBID" =~ ^[0-9]+$ ]]; then
+#             echo "Split job submission failed for ${COHORT}."
+#             exit 1
+#         fi
+#         echo "Submitted split job for ${COHORT} as job ${SPLIT_LAUNCH_JOBID}"
+# 		if ! [[ "$SPLIT_LAUNCH_JOBID" =~ ^[0-9]+$ ]]; then
+# 			echo "Split job submission failed for ${COHORT}."
+# 			exit 1
+# 		fi
+# 		echo "Submitted split job for ${COHORT} as job ${SPLIT_LAUNCH_JOBID}" 
+# #         ### Call an array job for all the different splitfiles
+# 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
+# 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
+# 		echo "${PRINTFILES}"
+# 		splitfiles_ID=$(sbatch --parsable --job-name=splitfiles --dependency=afterany:${SPLIT_LAUNCH_JOBID} --array=0-${NFILES} --mem=128G -c 1 --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=24:00:00 --mem=32G --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.gwaslab.splitfiles.HPC.sh ${CONFIGURATIONFILE})
+# 		if ! [[ "$splitfiles_ID" =~ ^[0-9]+$ ]]; then
+#             echo "GWASLab job submission failed for ${COHORT}."
+#             exit 1
+#         fi
+#         echo "Submitted GWASLab for ${COHORT} as job ${splitfiles_ID} (no parser dependency)"
+# 		WRAP_JOBID=$(sbatch --parsable \
+#     --job-name=wrap.${COHORT} \
+#     --mem=${QMEMWRAPPER} \
+#     --time=${QRUNTIMEWRAPPER} \
+#     --dependency=afterok:${splitfiles_ID} \
+#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},BASEFILE=${BASEFILE},SCRIPTS=${SCRIPTS} \
+#     -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log \
+#     --error=${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors \
+#     ${SCRIPTS}/gwaslab.wrapper.sh)
+# 		GWASLAB_JOBID=$(sbatch --parsable \
+#         --job-name=${COHORT}_GWAS \
+#         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
+#         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
+#         --dependency=afterok:${WRAP_JOBID} \
+#         --time=${GWASLABTIME} \
+#         --mem=${GWASLABMEM} \
+#         --cpus-per-task=2 \
+#         --mail-user=${QMAIL} \
+#         --export=ALL,COHORT=${COHORT},FILE=${BASEFILE},RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+#         ${SCRIPTS}/gwaslab.cohort.sh)
+# 		CLEANUP_JOBID=$(sbatch --parsable \
+#     --job-name=cleanup.${COHORT} \
+#     --dependency=afterany:${GWASLAB_JOBID} \
+#     --time=01:00:00 \
+#     --mem=2G \
+#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},BASEFILE=${BASEFILE} \
+#     --wrap="rm -f ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z] ${RAWDATACOHORT}/split_after_parse.${COHORT}.sh ${RAWDATACOHORT}/*.parquet ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors ${RAWDATACOHORT}/split.${COHORT}.out")
+# 
+# 		if ! [[ "$CLEANUP_JOBID" =~ ^[0-9]+$ ]]; then
+# 			echo "Cleanup job submission failed for ${COHORT}."
+# 			exit 1
+# 		fi
+	fi
+	) &
+	done < ${GWASFILES}
+	wait
 ### END of if-else statement for the number of command-line arguments passed ###
 fi 
-
 script_copyright_message

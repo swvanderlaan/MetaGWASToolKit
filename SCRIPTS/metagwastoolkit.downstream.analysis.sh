@@ -299,6 +299,67 @@ else
 	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
 	  	echo "Original METARESULTDIR directory........................: "${ORIGINALS}
 	  	echo "We are processing these cohort(s)..............:"
+		if [[ ${REFERENCE} = "19" ]]; then
+
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+		echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+		echo ""
+	
+	elif [[ ${REFERENCE} = "38" ]]; then
+	  	echo ""
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""
+	  	echo "The scene is properly set, and directories are created! 🖖"
+	  	echo "MetaGWASToolKit program........................: "${METAGWASTOOLKIT}
+	  	echo "MetaGWASToolKit scripts........................: "${SCRIPTS}
+	  	echo "MetaGWASToolKit resources......................: "${RESOURCES}
+	  	echo "Reference used.................................: "${REFERENCE}
+	  	echo "Main directory.................................: "${PROJECTDIR}
+	  	echo "Main analysis output directory.................: "${METAOUTPUT}
+	  	echo "Subproject's analysis output directory.........: "${METAOUTPUT}/${SUBPROJECTDIRNAME}
+	  	echo "Original data directory........................: "${ORIGINALS}
+	  	echo "We are processing these cohort(s)..............:"
+		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
+			LINE=${GWASCOHORT}
+			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
+			echo "     * ${COHORT}"
+		done < ${GWASFILES}
+	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
+	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echo ""	
+	elif
+	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+	  	echoerror ""
+	  	echoerrorflash "                  *** Oh, computer says no! Argument not recognised. ***"
+	  	echoerror "You have the following options as reference for the quality control"
+	  	echoerror "and meta-analysis:"
+	  	echonooption " - [HM2]          HapMap2 (r27, b36, hg18)."
+	  	echoerror " - [1Gp1]         1000G (phase 1, release 3, 20101123 version, updated on 20110521 "
+	  	echoerror "                  and revised on Feb/Mar 2012, b37, hg19)."
+	  	echoerror " - [1Gp3]         1000G (phase 3, release 5c, 20130502 version, b37, hg19)."
+	  	echonooption " - [GoNL4]        Genome of the Netherlands, version 4."
+	  	echonooption " - [GONL5]        Genome of the Netherlands, version 5."
+	  	echoerror " - [1Gp3GONL5]    integrated 1000G phase 3, version 5 and GoNL5."
+	  	echonooption "(Opaque: not an option yet)"
+	  	echoerror "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		while IFS='' read -r GWASCOHORT || [[ -n "$GWASCOHORT" ]]; do
 			LINE=${GWASCOHORT}
 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')

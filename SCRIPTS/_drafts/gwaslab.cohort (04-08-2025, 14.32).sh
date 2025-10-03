@@ -10,7 +10,6 @@ echo "Running gwaslab.cohort.py with the following parameters:"
 echo "COHORT:         ${COHORT}"
 echo "FILE:           ${FILE}"
 echo "ORIGINALS:      ${ORIGINALS}"
-echo "RAWDATACOHORT:  ${RAWDATACOHORT}"
 echo "POPULATION:     ${POPULATION}"
 echo "REFERENCE DIR:  ${REF}"
 echo "PERFORM_QC:     ${PERFORM_QC}"
@@ -27,9 +26,9 @@ echo "MAC:            ${MAC}"
 echo "HWE:            ${HWE}"
 echo "REFERENCE:            hg${REFERENCE}"
 
-python3 ${SCRIPTS}/gwaslab.cohort2.py \
+python3 ${SCRIPTS}/gwaslab.cohort.py \
     -g ${COHORT} \
-    -d ${RAWDATACOHORT} \
+    -d ${ORIGINALS} \
     -i ${FILE} \
     -p ${POPULATION} \
     -z ${REFERENCE} \
@@ -47,7 +46,7 @@ python3 ${SCRIPTS}/gwaslab.cohort2.py \
     --mac ${MAC} \
     --hwe ${HWE} \
     
-rm -f ${RAWDATACOHORT}/array_jobid.txt
+        
 #VariantID	MarkerOriginal	rsID	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	
 #EAF	MAF	MAC	HWE_P	Info	Beta	BetaMinor	SE	P	N	N_cases	N_controls	Imputed
 # 1:54490:G:A	chr1:54490:A_G	rs141149254	1	54490	+	A	G	A	G	

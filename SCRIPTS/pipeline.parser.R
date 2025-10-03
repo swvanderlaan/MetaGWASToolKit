@@ -647,12 +647,20 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
     GWASDATA_PARSED$HWE_P <- "1" # this is not always present, hence we set it at "1"
   } 
   
-  if(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
-    GWASDATA_PARSED$Info <- ifelse(GWASDATA_RAWSELECTION$Info != "NA", GWASDATA_RAWSELECTION$Info, "1") # in case "NA" we set it to 1
+#   if(("Info" %in% colnames(GWASDATA_RAWSELECTION)) == TRUE){
+#     GWASDATA_PARSED$Info <- ifelse(GWASDATA_RAWSELECTION$Info != "NA", GWASDATA_RAWSELECTION$Info, "1") # in case "NA" we set it to 1
+#   } else {
+#     GWASDATA_PARSED$Info <- "1" # in case of genotyped data
+#   }
+  if ("Info" %in% colnames(GWASDATA_RAWSELECTION)) {
+  info_values <- as.numeric(GWASDATA_RAWSELECTION$Info)
+  info_values[is.na(info_values)] <- 1.0
+  GWASDATA_PARSED$Info <- info_values
   } else {
-    GWASDATA_PARSED$Info <- "1" # in case of genotyped data
+  GWASDATA_PARSED$Info <- rep(1.0, nrow(GWASDATA_PARSED))  # Fill with 1s if Info not present
   }
-  
+
+
   cat("\n  > adding test statistics...")  
   GWASDATA_PARSED$Beta <- ifelse(GWASDATA_RAWSELECTION$Beta != "NA", GWASDATA_RAWSELECTION$Beta, "NA") # Note that beta is relative to the EffectAllele
   GWASDATA_PARSED$BetaMinor <- ifelse(GWASDATA_RAWSELECTION$BetaMinor != "NA", GWASDATA_RAWSELECTION$BetaMinor, "NA") # Note that betaminor is relative to the MinorAllele
@@ -698,6 +706,16 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                      ),
               quote = FALSE , row.names = FALSE, col.names = TRUE, 
               sep = "\t", na = "NA", dec = ".")
+#    OUTFILE <- paste0(ROOT_loc, "/", OUT_loc, "/", tools::file_path_sans_ext(basename(opt$datagwas)))
+#    # Remove multiple .ext
+#    OUTFILE <- sub("\\.gz$", "", OUTFILE)
+#    OUTFILE <- sub("\\.txt$", "", OUTFILE)
+#    OUTFILE <- sub("\\.tsv$", "", OUTFILE)
+#    OUTFILE <- paste0(OUTFILE, ".parsed.txt.gz")
+#    fwrite(GWASDATA_PARSED, 
+#        OUTFILE,
+#        quote = FALSE, row.names = FALSE, col.names = TRUE, 
+#        sep = "\t", na = "NA", dec = ".")
   
   ### CLOSING MESSAGE
   cat(paste("\nAll done parsing [",file_path_sans_ext(basename(opt$datagwas), compression = TRUE),"].\n"))

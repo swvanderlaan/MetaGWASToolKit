@@ -30,7 +30,6 @@ requiredNamed.add_argument("-g", "--gwas", help="The name of the GWAS study.", t
 requiredNamed.add_argument("-i", "--input", help="The path and name of the parsed input file.", type=str)
 requiredNamed.add_argument("-d", "--directory", help="The path to the results directory.", type=str)
 requiredNamed.add_argument("-r", "--reference", help="The path to the references directory.", type=str)
-requiredNamed.add_argument("-b", "--build", help="The reference build", type=str)
 requiredNamed.add_argument("-p", "--population", help="Population analysed.", type=str)
 requiredNamed.add_argument("-f", "--figures", help="Make plots or not?(YES or NO).", type=str)
 requiredNamed.add_argument("-q", "--qc", help="Perform Quality Control or not?(YES or NO).", type=str)
@@ -55,7 +54,6 @@ select_leads= args.leads
 only_qc= args.onlyqc
 # Reference data directory
 REF_loc = args.reference
-BUILD= args.build
 gl.options.set_option("data_directory",f"{REF_loc}")
 
 #REF_loc = "/hpc/dhl_ec/esmulders/references"
@@ -112,7 +110,7 @@ if not os.path.exists(REG_PLOTS_loc):
 if only_qc=="YES":
 	gwas_data_sumstats = gl.load_pickle(
     os.path.join(
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.pkl"),
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.pkl"),
     )
 )
 	gwas_data_sumstats.data
@@ -122,7 +120,7 @@ if only_qc=="NO":
 	temp = pl.read_csv(
     source=os.path.join(
         GWAS_RES_loc
-        + "/meta.results." + PHENOTYPE + "." + BUILD + "." + POPULATION + ".summary.txt.gz",
+        + "/meta.results." + PHENOTYPE + ".1Gp3." + POPULATION + ".summary.txt.gz",
     ),
     has_header=True,
     separator=" ",
@@ -228,7 +226,7 @@ if only_qc=="NO":
 	gwas_data_sumstats = gl.Sumstats(
     gwas_data,
     snpid="VARIANTID",
-    rsid="RSID", # not available
+    # rsid="RSID", # not available
     chrom="CHR",
     pos="POS",
     ea="CODEDALLELE",
@@ -329,7 +327,7 @@ if make_plots == "YES":
 
 	temp.to_csv(
     os.path.join(
-        GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.counts_caveats.csv",
+        GWASCatalog_loc + PHENOTYPE + ".b37.counts_caveats.csv",
     )
 )
 	del temp
@@ -337,7 +335,7 @@ if make_plots == "YES":
 	gl.dump_pickle(
     gwas_data_sumstats,
     os.path.join(
-        GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.gwaslab.pkl",
+        GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.pkl",
     ),
     overwrite=True,
 )
@@ -346,12 +344,12 @@ if make_plots == "YES":
 
 	gwas_data_sumstats.log.save(
     os.path.join(
-        GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.gwaslab.log",
+        GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.log",
     )
 )
 
 	gwas_data_sumstats.to_format(
-    os.path.join(GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.gwaslab"),
+    os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab"),
     fmt="ssf",
     build="19",
 )
@@ -375,7 +373,7 @@ if make_plots == "YES":
         build="19",
         stratified=True,
         drop_chr_start=True,
-        #title=f"{PHENOTYPE}",
+        title=f"{PHENOTYPE}",
         save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.png"),
         saveargs={"dpi": 300},
         verbose=True,
@@ -388,18 +386,18 @@ if make_plots == "YES":
         )
 	    gl.dump_pickle(
         gwas_data_sumstats_qc,
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc.pkl"),
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.qc.pkl"),
         overwrite=True,
     )
 
 	    gwas_data_sumstats_qc.log.show()
 
 	    gwas_data_sumstats_qc.log.save(
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc.log")
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.qc.log")
     )
 
 	    gwas_data_sumstats_qc.to_format(
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc"),
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.b37.gwaslab.qc"),
         fmt="ssf",
         build="19",
     )
@@ -428,7 +426,7 @@ if make_plots == "YES":
 	if select_leads=="YES":
 		gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
 		gwas_data_sumstats_leads.to_format(
-    os.path.join(GWASCatalog_loc + PHENOTYPE + ".hg" + BUILD + ".gwaslab.significant_snps"),
+    os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.significant_snps"),
     fmt="ssf",
     build="19",
 )
@@ -436,7 +434,7 @@ if make_plots == "YES":
 	if select_leads=="YES":
 		gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, sig_level=5e-8, verbose=True)
 		gwas_data_sumstats_leads.to_format(
-    os.path.join(GWASCatalog_loc + PHENOTYPE + ".hg" + BUILD + ".gwaslab.leads"),
+    os.path.join(GWASCatalog_loc + PHENOTYPE + ".b37.gwaslab.leads"),
     fmt="ssf",
     build="19",
 )

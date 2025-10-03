@@ -26,6 +26,7 @@ my $cohort_file = $ARGV[0];
 my $output = $ARGV[1];
 my $cdat_input = $ARGV[2];
 my $split_input = $ARGV[3];
+my $reference = $ARGV[4];
 my @n =();
 my @z = ();
 my $parameterFound = 0;
@@ -49,7 +50,7 @@ while(<COHORT>){
 	    my @fields = split;
 	    $studyname[$nstudies] = $fields[0];
 	    $correctionfactor[$nstudies] = $fields[2];
-	    $filename[$nstudies] = "$cdat_input/$studyname[$nstudies]/$studyname[$nstudies].cdat.gz";
+	    $filename[$nstudies] = "$cdat_input/$studyname[$nstudies]/$studyname[$nstudies].hg$reference.gwaslab.qc.tsv.gz";
 	    $splitfile[$nstudies] = "$split_input/$studyname[$nstudies]/$studyname[$nstudies].reorder.split";
 
 	    my $file = $filename[$nstudies];
@@ -63,7 +64,7 @@ while(<COHORT>){
 		}
 		
  while( <IN> ){
-	    ### Head of CDAT file
+	    ### Head of TSV file
 	    # VariantID Marker MarkerOriginal CHR BP Strand EffectAllele OtherAllele MinorAllele MajorAllele EAF MAF MAC HWE_P Info Beta BetaMinor SE P 	N 	N_cases N_controls Imputed Reference VT
 	    # 0         1      2              3   4  5      6            7           8           9           10  11  12  13    14   15   16        17 18	19	20      21         22      23		 24
 		

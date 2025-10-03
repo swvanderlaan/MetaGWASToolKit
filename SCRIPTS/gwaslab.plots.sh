@@ -343,4 +343,4 @@ PHENOTYPE2=${PROJECTNAME_SEX}
 PERFORM_QC="YES"
 SELECT_LEADS="YES"
 source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-python3 ${SCRIPTS}/plotter.py --gwas1 ${PHENOTYPE1} --gwas2 ${PHENOTYPE2} --directory1 ${METARESULTDIR1} --directory2 ${METARESULTDIR2} -p ${POPULATION} --qc ${PERFORM_QC} --leads ${SELECT_LEADS}
+python3 ${SCRIPTS}/gwaslab.plotter.py --gwas1 ${PHENOTYPE1} --gwas2 ${PHENOTYPE2} --directory1 ${METARESULTDIR1} --directory2 ${METARESULTDIR2} -p ${POPULATION} --qc ${PERFORM_QC} --leads ${SELECT_LEADS}
