@@ -425,6 +425,32 @@ if make_plots == "YES":
             verbose=True,
         )
 
+	#other builds
+	gwas_data_sumstats_qc.to_format(
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc"),
+        fmt="plink",
+        build="19",
+    )
+	gwas_data_sumstats_qc.to_format(
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc"),
+        fmt="fuma",
+        build="19",
+    )
+	gwas_data_sumstats_qc.to_format(
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc"),
+        fmt="ldsc",
+        build="19",
+    )
+	gwas_data_sumstats_qc.to_format(
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc"),
+        fmt="cojo",
+        build="19",
+    )
+	gwas_data_sumstats_qc.to_format(
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab.qc"),
+        fmt="popcorn",
+        build="19",
+    )
 	if select_leads=="YES":
 		gwas_data_sumstats_leads = gwas_data_sumstats.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
 		gwas_data_sumstats_leads.to_format(

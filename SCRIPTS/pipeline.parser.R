@@ -498,75 +498,55 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   #print(head(GWASDATA_RAWSELECTION))
   
   ### Calculating general statistics if not available
-  cat("\n* Calculating 'allele frequencies'...")
-  ### calculate MAF -- *only* if MAF/minor allele/major allele *not* present
-  ###                  the effect size must be relative to the effect/coded allele and EAF
-  ### calculate EAF -- *only* if MAF/minor allele/major allele *is* present - 
-  ###                  if they are, the effect size must be relative to the minor
+  ### Calculating general statistics if not available
+  cat("\n* Calculating allele frequencies (robust)...")
   
-  if("MAF" %in% colnames(GWASDATA_RAWSELECTION)) {
-    cat("\n* Minor allele frequency is present, checking for minor/major allele...")
-    
-    if("MinorAllele" %in% colnames(GWASDATA_RAWSELECTION)) {
-      cat("\n- minor allele is present, checking for major allele...")
-      
-      if("MajorAllele" %in% colnames(GWASDATA_RAWSELECTION)) {
-        cat("\n- minor/major allele is also present, setting effect/other allele, 
-            and calculating effect allele frequency...") # we will only set the effect/other alleles here
-        GWASDATA_RAWSELECTION$EAF <- GWASDATA_RAWSELECTION$MAF
-        GWASDATA_RAWSELECTION$EffectAllele <- GWASDATA_RAWSELECTION$MinorAllele
-        GWASDATA_RAWSELECTION$OtherAllele <- GWASDATA_RAWSELECTION$MajorAllele
-        GWASDATA_RAWSELECTION$BetaMinor <- GWASDATA_RAWSELECTION$Beta
-        
-      } else {
-        cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. If there's a 'minor allele', 
-            a 'major allele' must be present as well.", file=stderr()) # print error messages to stder
-      } } } else if("OtherAllele" %in% colnames(GWASDATA_RAWSELECTION)) {
-        cat("\n* Other alleles are present, calculating minor allele frequency...") # we only care for MAF
-        
-        if("EAF" %in% colnames(GWASDATA_RAWSELECTION)) {
-          cat("\n- calculating 'MAF' using 'effect allele frequency'...")
-          GWASDATA_RAWSELECTION$MAF <- ifelse(GWASDATA_RAWSELECTION$EAF < 0.50, 
-                                              GWASDATA_RAWSELECTION$EAF, 1-GWASDATA_RAWSELECTION$EAF)
-          GWASDATA_RAWSELECTION$MinorAllele <- ifelse(GWASDATA_RAWSELECTION$EAF < 0.50, 
-                                                      GWASDATA_RAWSELECTION$EffectAllele, GWASDATA_RAWSELECTION$OtherAllele)
-          GWASDATA_RAWSELECTION$MajorAllele <- ifelse(GWASDATA_RAWSELECTION$EAF > 0.50, 
-                                                      GWASDATA_RAWSELECTION$EffectAllele, GWASDATA_RAWSELECTION$OtherAllele)
-          GWASDATA_RAWSELECTION$BetaMinor <- ifelse(GWASDATA_RAWSELECTION$EAF < 0.50, 
-                                                    GWASDATA_RAWSELECTION$Beta, -1*GWASDATA_RAWSELECTION$Beta)
-          
-        } else if("RAF" %in% colnames(GWASDATA_RAWSELECTION)) {
-          cat("\n- calculating 'MAF' using 'risk allele frequency'...")
-          GWASDATA_RAWSELECTION$MAF <- ifelse(GWASDATA_RAWSELECTION$RAF < 0.50, 
-                                              GWASDATA_RAWSELECTION$RAF, 1-GWASDATA_RAWSELECTION$RAF)
-          GWASDATA_RAWSELECTION$MinorAllele <- ifelse(GWASDATA_RAWSELECTION$RAF < 0.50, 
-                                                      GWASDATA_RAWSELECTION$RiskAllele, GWASDATA_RAWSELECTION$OtherAllele)
-          GWASDATA_RAWSELECTION$MajorAllele <- ifelse(GWASDATA_RAWSELECTION$RAF > 0.50, 
-                                                      GWASDATA_RAWSELECTION$RiskAllele, GWASDATA_RAWSELECTION$OtherAllele)
-          GWASDATA_RAWSELECTION$BetaMinor <- ifelse(GWASDATA_RAWSELECTION$RAF < 0.50, 
-                                                    GWASDATA_RAWSELECTION$Beta, -1*GWASDATA_RAWSELECTION$Beta)
-          colnames(GWASDATA_RAWSELECTION)[colnames(GWASDATA_RAWSELECTION) == "RAF"] <- "EAF"          
-          
-        } else if("CAF" %in% colnames(GWASDATA_RAWSELECTION)) {
-          cat("\n- calculating 'MAF' using 'coded allele frequency'...")
-          GWASDATA_RAWSELECTION$MAF <- ifelse(GWASDATA_RAWSELECTION$CAF < 0.50, 
-                                              GWASDATA_RAWSELECTION$CAF, 1-GWASDATA_RAWSELECTION$CAF)
-          GWASDATA_RAWSELECTION$MinorAllele <- ifelse(GWASDATA_RAWSELECTION$CAF < 0.50, 
-                                                      GWASDATA_RAWSELECTION$CodedAllele, GWASDATA_RAWSELECTION$OtherAllele)
-          GWASDATA_RAWSELECTION$MajorAllele <- ifelse(GWASDATA_RAWSELECTION$CAF > 0.50, 
-                                                      GWASDATA_RAWSELECTION$CodedAllele, GWASDATA_RAWSELECTION$OtherAllele)
-          GWASDATA_RAWSELECTION$BetaMinor <- ifelse(GWASDATA_RAWSELECTION$CAF < 0.50, 
-                                                    GWASDATA_RAWSELECTION$Beta, -1*GWASDATA_RAWSELECTION$Beta)
-          colnames(GWASDATA_RAWSELECTION)[colnames(GWASDATA_RAWSELECTION) == "CAF"] <- "EAF"
-          
-        } else {
-          cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. 'MAF', EAF', 'RAF', nor 'CAF' is present. Double back, please.", file=stderr()) # print error messages to stder
-        } 
-        
-      } else {
-        cat("\n\n*** ERROR *** Something is rotten in the City of Gotham. There's something wrong with the allele frequencies. Double back, please.", file=stderr()) # print error messages to stder
-        
-      } 
+  have <- function(x) x %in% colnames(GWASDATA_RAWSELECTION)
+
+# Helper to derive MAF etc. from EAF + EA/OA
+  set_from_EAF <- function(df) {
+  df$MAF <- ifelse(df$EAF < 0.5, df$EAF, 1 - df$EAF)
+  df$MinorAllele <- ifelse(df$EAF < 0.5, df$EffectAllele, df$OtherAllele)
+  df$MajorAllele <- ifelse(df$EAF > 0.5, df$EffectAllele, df$OtherAllele)
+  df$BetaMinor   <- ifelse(df$EAF < 0.5, df$Beta, -1 * df$Beta)
+  df
+  }
+
+  if (have("EAF") && have("EffectAllele") && have("OtherAllele")) {
+  cat("\n- Using EAF to derive MAF/Minor/Major/BetaMinor...")
+  GWASDATA_RAWSELECTION <- set_from_EAF(GWASDATA_RAWSELECTION)
+
+  } else if (have("RAF") && have("RiskAllele") && have("OtherAllele")) {
+  cat("\n- Using RAF (renamed to EAF) to derive fields...")
+  GWASDATA_RAWSELECTION$EAF <- GWASDATA_RAWSELECTION$RAF
+  GWASDATA_RAWSELECTION$EffectAllele <- GWASDATA_RAWSELECTION$RiskAllele
+  GWASDATA_RAWSELECTION <- set_from_EAF(GWASDATA_RAWSELECTION)
+  colnames(GWASDATA_RAWSELECTION)[colnames(GWASDATA_RAWSELECTION) == "RAF"] <- "EAF"
+
+  } else if (have("CAF") && have("CodedAllele") && have("OtherAllele")) {
+  cat("\n- Using CAF (renamed to EAF) to derive fields...")
+  GWASDATA_RAWSELECTION$EAF <- GWASDATA_RAWSELECTION$CAF
+  GWASDATA_RAWSELECTION$EffectAllele <- GWASDATA_RAWSELECTION$CodedAllele
+  GWASDATA_RAWSELECTION <- set_from_EAF(GWASDATA_RAWSELECTION)
+  colnames(GWASDATA_RAWSELECTION)[colnames(GWASDATA_RAWSELECTION) == "CAF"] <- "EAF"
+
+  } else if (have("MAF") && have("MinorAllele") && have("MajorAllele")) {
+  cat("\n- MAF with Minor/Major present -> setting Effect/Other/EAF/BetaMinor...")
+  GWASDATA_RAWSELECTION$EffectAllele <- GWASDATA_RAWSELECTION$MinorAllele
+  GWASDATA_RAWSELECTION$OtherAllele  <- GWASDATA_RAWSELECTION$MajorAllele
+  GWASDATA_RAWSELECTION$EAF          <- GWASDATA_RAWSELECTION$MAF
+  GWASDATA_RAWSELECTION$BetaMinor    <- GWASDATA_RAWSELECTION$Beta
+
+} else if (have("MAF") && have("EffectAllele") && have("OtherAllele")) {
+  cat("\n- WARNING: Only MAF + Effect/Other present; assuming EffectAllele is the minor.")
+  GWASDATA_RAWSELECTION$MinorAllele <- GWASDATA_RAWSELECTION$EffectAllele
+  GWASDATA_RAWSELECTION$MajorAllele <- GWASDATA_RAWSELECTION$OtherAllele
+  GWASDATA_RAWSELECTION$EAF         <- GWASDATA_RAWSELECTION$MAF
+  GWASDATA_RAWSELECTION$BetaMinor   <- GWASDATA_RAWSELECTION$Beta
+
+  } else {
+  cat("\n\n*** ERROR *** No usable allele frequency fields (EAF/RAF/CAF) and insufficient MAF context.", file=stderr())
+  }
   
   # print(head(GWASDATA_RAWSELECTION))
  #  

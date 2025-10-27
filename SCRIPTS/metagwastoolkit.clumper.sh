@@ -153,6 +153,7 @@ else
 	GWASFILES="$2" # Depends on arg2 -- all the GWAS dataset information
 	REFERENCE=${REFERENCE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
+	PLINK=${PLINK}
 	# Needed for pipeline
 	METARESULTDIR="${PROJECTDIR}/${OUTPUTDIRNAME}/${SUBPROJECTDIRNAME}/META"
 	# has to contain / at the end, otherwise files will be downloaded in the previous folder
