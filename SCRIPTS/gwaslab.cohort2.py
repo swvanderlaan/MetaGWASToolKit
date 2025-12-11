@@ -83,9 +83,6 @@ MAC = args.mac
 GWAS_RES_loc = args.directory
 INPUT = args.input
 
-# print("Checking contents of the GWAS results directory:")
-# print(check_output(["ls", os.path.join(GWAS_RES_loc)]).decode("utf8"))
-#GWAS_RES_loc = "/hpc/dhl_ec/svanderlaan/projects/consortia/CHARGE_cIMT_Sex/CHARGE_cIMT_EUR/cimt_eur/META/"
 print("Checking contents of the GWAS results directory:")
 print(check_output(["ls", os.path.join(GWAS_RES_loc)]).decode("utf8"))
 
@@ -100,12 +97,6 @@ OUTPUT_loc = args.output
 
 # List the files in the GWASCatalog directory
 files = os.listdir(OUTPUT_loc)
-# print("Files in GWASCatalog directory:", files)
-# 
-# print(check_output(
-#     ["ls", os.path.join(OUTPUT_loc)]).decode("utf8"))
-
-#general plotting directory
 
 make_plots=args.figures
 #Check if the directory exists
@@ -115,27 +106,6 @@ if not (os.path.join(OUTPUT_loc, "PLOTS")):
 PLOTS_loc = os.path.join(OUTPUT_loc, "PLOTS/")
 
 
-### Load data
-# if only_qc=="NO":
-# 	temp = pl.read_csv(
-#     source=os.path.join(
-#         GWAS_RES_loc
-#         + "/" + f"{INPUT}",
-#     ),
-#     has_header=True,
-#     separator="\t",
-#     ignore_errors=False,
-#     # n_rows=1000, # for debugging
-#     quote_char=None,
-#     # necessary to fix issues with missing values when reading data
-#     null_values=["NA"],
-#     # There is an error at import (from temp to pandas()):
-#     # Could not parse `X` as dtype `i64` at column 'CHR' (column number 2)
-#     # https://stackoverflow.com/questions/75797640/how-to-specify-column-types-in-python-polars-read-csv
-#     # https://stackoverflow.com/questions/71790235/switching-between-dtypes-within-a-dataframe
-#     # https://pola-rs.github.io/polars/user-guide/concepts/data-types/
-#     dtypes={"CHR": pl.Utf8},
-# )
 if only_qc == "NO":
 	gwas_data = pd.read_csv(
 	os.path.join(GWAS_RES_loc, INPUT),
@@ -313,12 +283,7 @@ if only_qc == "YES":
     gwas_data_cohort = gl.load_pickle(
         os.path.join(GWAS_RES_loc, f"{PHENOTYPE}.hg{REFERENCE}.gwaslab.pkl"),
     )
-#     # If it's a GWASLab object with .data attribute
-#     if hasattr(gwas_obj, "data"):
-#         gwas_data = gwas_obj.data
-#     else:
-#         gwas_data = gwas_obj  # fallback, just in case
-
+    
 # Perform Quality Control if required
 if perform_qc == "YES" or only_qc == "YES":
 	filters = []
@@ -334,10 +299,6 @@ if perform_qc == "YES" or only_qc == "YES":
 		filters.append(f'(SE <= {SE})')
 	if INFO is not None:
 		filters.append(f'(INFO >= {INFO})')
-# 	if MAC is not None:
-# 		filters.append(f'(MAC >= {MAC} & MAC.notna())')  # Exclude NA
-# 	if HWE is not None:
-# 		filters.append(f'(HWE_P <= {HWE} & HWE_P.notna())')  # Exclude NA
     # Join active filters
 	expr = ' & '.join(filters)
 	print("Applying filter with expression:")

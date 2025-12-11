@@ -343,6 +343,6 @@ else
 		fi
 		echo "${ONLY_QC}"
 		source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-		python3 ${SCRIPTS}/gwaslab_cohort.py -g ${COHORT} -d ${ORIGINALS} -i ${RAWDATACOHORT} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
+		python3 ${SCRIPTS}/gwaslab_cohort2.py -g ${COHORT} -d ${ORIGINALS} -i ${RAWDATACOHORT} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
 	#done # <- closes the while loop properly
 	fi   # <- closes the outer if-statement

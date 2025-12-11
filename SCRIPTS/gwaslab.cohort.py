@@ -53,8 +53,7 @@ gl.check_downloaded_ref()
 #reference_identifier = args.identifier
 #### set some general defaults
 PHENOTYPE = args.gwas
-#PHENOTYPE = args.gwas
-#PHENOTYPE = "cox_DEAD_ALL"  # option
+
 SUBSTUDY_PHENO = f"{PHENOTYPE}"
 
 POPULATION = args.population
@@ -67,9 +66,7 @@ only_qc= args.onlyqc
 REF_loc = args.ref
 gl.options.set_option("data_directory",f"{REF_loc}")
 
-#REF_loc = "/hpc/dhl_ec/esmulders/references"
-# print("Checking contents of the reference directory:")
-# print(check_output(["ls", os.path.join(REF_loc)]).decode("utf8"))
+
 REFERENCE = args.reference
 DAF = args.daf
 EAF = args.eaf
@@ -83,11 +80,6 @@ MAC = args.mac
 GWAS_RES_loc = args.directory
 INPUT = args.input
 
-# print("Checking contents of the GWAS results directory:")
-# print(check_output(["ls", os.path.join(GWAS_RES_loc)]).decode("utf8"))
-#GWAS_RES_loc = "/hpc/dhl_ec/svanderlaan/projects/consortia/CHARGE_cIMT_Sex/CHARGE_cIMT_EUR/cimt_eur/META/"
-
-
 #Check if the GWASCatalog directory exists within GWAS_RES_loc
 if not os.path.exists(os.path.join(GWAS_RES_loc, "GWASCatalog")):
     # If it doesn't exist, create it
@@ -98,12 +90,7 @@ OUTPUT_loc = args.output
 
 # List the files in the GWASCatalog directory
 files = os.listdir(OUTPUT_loc)
-# print("Files in GWASCatalog directory:", files)
-# 
-# print(check_output(
-#     ["ls", os.path.join(OUTPUT_loc)]).decode("utf8"))
 
-#general plotting directory
 
 make_plots=args.figures
 #Check if the directory exists
@@ -188,53 +175,6 @@ if only_qc=="NO":
 
 	gwas_data.rename(columns={"SNP": "VariantID"}, inplace=True)
 	
-# 	if make_plots == "YES":
-#     # CAF plot
-# 		plt.figure()
-# 		sns.histplot(
-#         data=gwas_data,
-#         x="EAF",
-#         bins=25,
-#         kde=False,
-#         stat="frequency",
-#         color="#1290D9",
-#     )
-# 		plt.title("Histogram of Effect Allele Frequency")
-# 		plt.savefig(
-#         os.path.join(PLOTS_loc, f"histogram.EAF.{PHENOTYPE}.png"),
-#         dpi=300,
-#         bbox_inches="tight",
-#         format="png",
-#     )
-# 		plt.close()
-#     # BETA plot
-# 		plt.figure()
-# 		sns.histplot(
-#         data=gwas_data,
-#         x="Beta",
-#         bins=25,
-#         kde=False,
-#         stat="frequency",
-#         color="#E55738",
-#     )
-# 		plt.title("Histogram of Effect-Sizes")
-# 		plt.savefig(
-#         os.path.join(PLOTS_loc, f"histogram.effect.{PHENOTYPE}.png"),
-#         dpi=300,
-#         bbox_inches="tight",
-#         format="png",
-#     )
-# 		plt.close()
-
-
-# # Create CAVEAT column
-# if 'CAVEAT' not in gwas_data.columns:
-#     gwas_data['CAVEAT'] = 'None'
-# 
-# gwas_data['CAVEAT'].fillna('None', inplace=True)
-
-
-
 
 ### GWASLAB - create variable
 # Specify the columns:
@@ -260,7 +200,7 @@ gwas_data_cohort = gl.Sumstats(
     info="Info", # not available
      other=[
          "DF",
-#         "CAVEAT",
+         "CAVEAT",
          "HWE_P",
          "N_cases",
          "N_controls",
@@ -287,9 +227,7 @@ del gwas_data
 gwas_data_cohort.basic_check(verbose=True)
 print(gwas_data_cohort.data.columns)
 print(gwas_data_cohort.data.head())
-# for col in ['CHR', 'POS', 'EA', 'NEA']:
-#     if col in gwas_data_cohort.data.columns:
-#         gwas_data_cohort.data[col] = gwas_data_cohort.data[col].astype(str)
+
 # Remove duplicates
 gwas_data_cohort.remove_dup(
     mode="md",  # remove multi-allelic and duplicate variants
@@ -354,121 +292,7 @@ gwas_data_cohort.check_af(
 )
 
 gwas_data_cohort.data
-#gwas_data_cohort.dtypes
-#gwas_data_cohort.summary()
-# gl.dump_pickle(
-#     gwas_data_cohort,
-#     os.path.join(
-#         OUTPUT_loc + "/" + f"{INPUT}.hg{REFERENCE}.gwaslab.pkl",
-#     ),
-#     overwrite=True,
-# )
-# 
-# gwas_data_cohort.to_format(
-#         os.path.join(OUTPUT_loc, f"{INPUT}.hg{REFERENCE}.gwaslab"),
-#         fmt="ssf",
-#         build="{REFERENCE}",
-#     )
 
-# #plot allele frequency comparison plot against reference
-# if make_plots == "YES":
-# 	gwas_data_cohort.plot_daf(threshold=DAF, save=os.path.join(PLOTS_loc, f"EAF.{PHENOTYPE}.png"))
-# 
-# # select caveats in dataset
-# 	temp = gwas_data_cohort.data["CAVEAT"].value_counts()
-# 
-# 	temp.to_csv(
-#     os.path.join(
-#         OUTPUT_loc + PHENOTYPE + f".hg{REFERENCE}.counts_caveats.csv",
-#     )
-# )
-# del temp
-# 
-# 
-# 
-# # manhattan and qq plot
-# if make_plots == "YES":
-# 	gwas_data_cohort.plot_daf(threshold=DAF)
-#     # Manhattan and QQ plot
-# 	gwas_data_cohort.plot_mqq(
-#         skip=2,
-#         cut=10,
-#         mode="m",
-#         sig_line=True,
-#         sig_level=5e-8,
-#         anno="GENENAME",
-#         anno_style="right",
-#         windowsizekb=500,
-#         arm_offset=2,
-#         repel_force=0.02,  # default 0.01
-#         use_rank=True,
-#         build=f"{REFERENCE}",
-#         stratified=True,
-#         drop_chr_start=True,
-#         title=f"{PHENOTYPE}",
-#         save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.png"),
-#         saveargs={"dpi": 300},
-#         verbose=True,
-#     )
-# 	gwas_data_cohort.plot_mqq(
-#         skip=2,
-#         cut=10,
-#         mode="qq",
-#         sig_line=True,
-#         sig_level=5e-8,
-# #        anno="GENENAME",
-# #        anno_style="right",
-# #        windowsizekb=500,
-#         arm_offset=2,
-#         repel_force=0.02,  # default 0.01
-#         use_rank=True,
-#         build="{REFERENCE}",
-#         stratified=True,
-#         drop_chr_start=True,
-#         title=f"{PHENOTYPE}",
-#         save=os.path.join(PLOTS_loc, f"qq.500kb.300dpi.{PHENOTYPE}.png"),
-#         saveargs={"dpi": 300},
-#         verbose=True,
-#     )
-
-# # Perform Quality Control if required
-# if perform_qc == "YES" or only_qc == "YES":
-# 	filters = []
-# 	if EAF is not None:
-# 		filters.append(f'(EAF >= {EAF} & EAF < {1 - EAF})')
-# 	else:
-# 		filters.append('(EAF >= 0.01 & EAF < 0.99)')  # default range if EAF is not specified
-# 	if DAF is not None:
-# 		filters.append(f'(DAF < {DAF} & DAF > {-DAF})')
-# 	if BETA is not None:
-# 		filters.append(f'(BETA <= {BETA})')
-# 	if SE is not None:
-# 		filters.append(f'(SE <= {SE})')
-# 	if INFO is not None:
-# 		filters.append(f'(INFO >= {INFO})')
-# 	if HWE is not None:
-# 		filters.append(f'(HWE_P <= {HWE})')
-# 	if MAC is not None:
-# 		filters.append(f'(MAC >= {MAC})')
-#     # Join active filters
-# 	expr = ' & '.join(filters)
-# 	print("Applying filter with expression:")
-# 	print(expr)
-#     # Apply filtering
-# 	gwas_data_cohort_qc = gwas_data_cohort.filter_value(expr=expr)
-# 
-# 	gl.dump_pickle(
-#         gwas_data_cohort_qc,
-#         os.path.join(OUTPUT_loc, f"{INPUT}.hg{REFERENCE}.gwaslab.qc.pkl"),
-#         overwrite=True,
-#     )
-# 
-# 	gwas_data_cohort_qc.to_format(
-#         os.path.join(OUTPUT_loc, f"{INPUT}.hg{REFERENCE}.gwaslab.qc"),
-#         fmt="ssf",
-#         build="{REFERENCE}",
-#     )
-# 
 # # Step 1: Load the pickled DataFrame using pandas
 temp_table = pa.Table.from_pandas(gwas_data_cohort.data)
 pq.write_table(
@@ -515,7 +339,7 @@ desired_columns = [
     "EffectAllele", "OtherAllele", "MinorAllele", "MajorAllele",
     "EAF", "MAF", "MAC", "HWE_P", "Info",
     "Beta", "BetaMinor", "SE", "P",
-    "N", "N_cases", "N_controls", "Imputed", "DAF"
+    "N", "N_cases", "N_controls", "Imputed"
 ]
 # 
 # Only keep columns that exist in your DataFrame
@@ -540,62 +364,3 @@ with open(output_file, 'rb') as f_in, gzip.open(gzipped_file, 'wb') as f_out:
     shutil.copyfileobj(f_in, f_out)         
 
 os.remove(output_file)
-
-# #     # Generate plots if required
-# if make_plots == "YES":
-#         gwas_data_cohort_qc.plot_mqq(
-#             skip=2,
-#             cut=10,
-#             mode="m",
-#             sig_line=True,
-#             sig_level=5e-8,
-#             anno="GENENAME",
-#             anno_style="right",
-#             windowsizekb=500,
-#             arm_offset=2,
-#             repel_force=0.02,  # default 0.01
-#             use_rank=True,
-#             build="{REFERENCE}",
-#             stratified=True,
-#             drop_chr_start=True,
-#             save=os.path.join(PLOTS_loc, f"manhattan.500kb.300dpi.{PHENOTYPE}.qc.png"),
-#             saveargs={"dpi": 300},
-#             verbose=True,
-#             )
-#         gwas_data_cohort_qc.plot_mqq(
-#             skip=2,
-#             cut=10,
-#             mode="qq",
-#             sig_line=True,
-#             sig_level=5e-8,
-#             anno="GENENAME",
-#             anno_style="right",
-#             windowsizekb=500,
-#             arm_offset=2,
-#             repel_force=0.02,  # default 0.01
-#             use_rank=True,
-#             build="{REFERENCE}",
-#             stratified=True,
-#             drop_chr_start=True,
-#             save=os.path.join(PLOTS_loc, f"qq.{PHENOTYPE}.qc.png"),
-#             saveargs={"dpi": 300},
-#             verbose=True,
-#             )
-# if select_leads=="YES":
-# 	gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
-# 	gwas_data_cohort_leads.to_format(
-#     os.path.join(OUTPUT_loc + "/" + PHENOTYPE + f".hg{REFERENCE}.gwaslab.significant_snps"),
-#     fmt="ssf",
-#     build="{REFERENCE}",
-# )
-# 
-# if select_leads == "YES":
-#     gwas_data_cohort_leads_df = gwas_data_cohort.get_lead(anno=True, sig_level=5e-8, verbose=True)
-# 
-#     # Wrap the DataFrame in a new Sumstats object
-#     gwas_data_cohort_leads = gl.Sumstats(sumstats=gwas_data_cohort_leads_df)
-#     gwas_data_cohort_leads.to_format(
-#         os.path.join(OUTPUT_loc, f"{PHENOTYPE}.hg{REFERENCE}.gwaslab.leads"),
-#         fmt="ssf",
-#         build=f"{REFERENCE}",
-#     )

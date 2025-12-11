@@ -481,23 +481,6 @@ else
   exit 1
 fi
 
-
-# #         ### Call an array job for all the different splitfiles
-# 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
-# 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
-# 		echo "${NFILES}"
-# 		splitfiles_ID=$(sbatch --parsable \
-# 		--job-name=${COHORT}.splitfiles \
-# 		--dependency=afterany:${SPLIT_LAUNCH_JOBID} \
-# 		--array=0-${NFILES} \
-# 		--time=24:00:00 \
-# 		--mem=32G \
-# 		-c 1 \
-# 		-o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log \
-# 		--error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors \
-# 		--export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID} \
-# 		${SCRIPTS}/metagwastoolkit.gwaslab.splitfiles.HPC.sh ${CONFIGURATIONFILE})
-# 		
 		WRAP_JOBID=$(sbatch --parsable \
     --job-name=wrap.${COHORT} \
     --dependency=afterany:${REAL_ARRAY_JOBID} \
@@ -519,24 +502,7 @@ fi
         --mail-user=${QMAIL} \
         --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
         ${SCRIPTS}/gwaslab.cohort.sh)
-# 		CLEANUP_JOBID=$(sbatch --parsable \
-#     --job-name=cleanup.${COHORT} \
-#     --dependency=afterany:${GWASLAB_JOBID} \
-#     --time=01:00:00 \
-#     --mem=2G \
-#     --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.out \
-#     --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.err \
-#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},BASEFILE=${BASEFILE} \
-#     --wrap="rm -f ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z] ${RAWDATACOHORT}/splitfiles.txt ${RAWDATACOHORT}/split_after_parse.${COHORT}.sh ${RAWDATACOHORT}/*.parquet ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.* ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors ${RAWDATACOHORT}/split.${COHORT}.out ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err")
 
-# 		if ! [[ "$CLEANUP_JOBID" =~ ^[0-9]+$ ]]; then
-# 			echo "Cleanup job submission failed for ${COHORT}."
-# 			exit 1
-# 		fi
-# 		echo "Submitted cleanup job for ${COHORT} as job ${CLEANUP_JOBID}"
-########################################################
-          # If PARSING != YES      
-########################################################
 		else
         SPLITSCRIPT=${RAWDATACOHORT}/split_after_parse.${COHORT}.sh
         if [[ -f ${ORIGINALS}/${COHORT}/${BASEFILE}.txt.gz ]]; then
@@ -669,76 +635,6 @@ fi
         --mail-user=${QMAIL} \
         --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
         ${SCRIPTS}/gwaslab.cohort.sh)
-        #         cat <<EOF > $SPLITSCRIPT
-# #!/bin/bash
-# zcat ${PARSED_FILE} | tail -n +2 | split -a 3 -l ${CHUNKSIZE} - ${RAWDATACOHORT}/${BASEFILE}.
-# zcat ${PARSED_FILE} | head -1 > ${RAWDATACOHORT}/header.tmp
-# > ${RAWDATACOHORT}/splitfiles.txt
-# for f in ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z]; do
-#     cat ${RAWDATACOHORT}/header.tmp \$f > \$f.tmp && mv \$f.tmp \$f
-#     echo \$f >> ${RAWDATACOHORT}/splitfiles.txt
-# done
-# rm ${RAWDATACOHORT}/header.tmp
-# EOF
-#         chmod +x $SPLITSCRIPT
-#         SPLIT_LAUNCH_JOBID=$(sbatch --parsable \
-#             --job-name=split.${COHORT} \
-#             --mem=2G --time=00:30:00 \
-#             --output=${RAWDATACOHORT}/split.${COHORT}.out \
-#             --error=${RAWDATACOHORT}/split.${COHORT}.err \
-#             $SPLITSCRIPT)
-#         if ! [[ "$SPLIT_LAUNCH_JOBID" =~ ^[0-9]+$ ]]; then
-#             echo "Split job submission failed for ${COHORT}."
-#             exit 1
-#         fi
-#         echo "Submitted split job for ${COHORT} as job ${SPLIT_LAUNCH_JOBID}"
-# 		if ! [[ "$SPLIT_LAUNCH_JOBID" =~ ^[0-9]+$ ]]; then
-# 			echo "Split job submission failed for ${COHORT}."
-# 			exit 1
-# 		fi
-# 		echo "Submitted split job for ${COHORT} as job ${SPLIT_LAUNCH_JOBID}" 
-# #         ### Call an array job for all the different splitfiles
-# 		NFILES=$(wc -l ${RAWDATACOHORT}/splitfiles.txt | awk '{ print $1 }') # Count the number of lines in the textfile
-# 		NFILES=$((NFILES-1)) # Decrement by one so the last emtpy line is not counted
-# 		echo "${PRINTFILES}"
-# 		splitfiles_ID=$(sbatch --parsable --job-name=splitfiles --dependency=afterany:${SPLIT_LAUNCH_JOBID} --array=0-${NFILES} --mem=128G -c 1 --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID} -o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log --time=24:00:00 --mem=32G --error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${SCRIPTS}/metagwastoolkit.gwaslab.splitfiles.HPC.sh ${CONFIGURATIONFILE})
-# 		if ! [[ "$splitfiles_ID" =~ ^[0-9]+$ ]]; then
-#             echo "GWASLab job submission failed for ${COHORT}."
-#             exit 1
-#         fi
-#         echo "Submitted GWASLab for ${COHORT} as job ${splitfiles_ID} (no parser dependency)"
-# 		WRAP_JOBID=$(sbatch --parsable \
-#     --job-name=wrap.${COHORT} \
-#     --mem=${QMEMWRAPPER} \
-#     --time=${QRUNTIMEWRAPPER} \
-#     --dependency=afterok:${splitfiles_ID} \
-#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},BASEFILE=${BASEFILE},SCRIPTS=${SCRIPTS} \
-#     -o ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log \
-#     --error=${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors \
-#     ${SCRIPTS}/gwaslab.wrapper.sh)
-# 		GWASLAB_JOBID=$(sbatch --parsable \
-#         --job-name=${COHORT}_GWAS \
-#         --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.out \
-#         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
-#         --dependency=afterok:${WRAP_JOBID} \
-#         --time=${GWASLABTIME} \
-#         --mem=${GWASLABMEM} \
-#         --cpus-per-task=2 \
-#         --mail-user=${QMAIL} \
-#         --export=ALL,COHORT=${COHORT},FILE=${BASEFILE},RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
-#         ${SCRIPTS}/gwaslab.cohort.sh)
-# 		CLEANUP_JOBID=$(sbatch --parsable \
-#     --job-name=cleanup.${COHORT} \
-#     --dependency=afterany:${GWASLAB_JOBID} \
-#     --time=01:00:00 \
-#     --mem=2G \
-#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},BASEFILE=${BASEFILE} \
-#     --wrap="rm -f ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z] ${RAWDATACOHORT}/split_after_parse.${COHORT}.sh ${RAWDATACOHORT}/*.parquet ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors ${RAWDATACOHORT}/split.${COHORT}.out")
-# 
-# 		if ! [[ "$CLEANUP_JOBID" =~ ^[0-9]+$ ]]; then
-# 			echo "Cleanup job submission failed for ${COHORT}."
-# 			exit 1
-# 		fi
 	fi
 	) &
 	done < ${GWASFILES}

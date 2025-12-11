@@ -229,7 +229,11 @@ else
 			LINE=${GWASCOHORT}
 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "     * ${COHORT}"
+			rm -v ${METARESULTDIR}/${COHORT}/*.sh
+			rm -v ${METARESULTDIR}/${COHORT}/*.log
+			rm -v ${METARESULTDIR}/${COHORT}/*.errors
 		done < ${GWASFILES}
+		
 		echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 		echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 		echo ""
@@ -252,6 +256,9 @@ else
 			LINE=${GWASCOHORT}
 			COHORT=$(echo "${LINE}" | awk '{ print $1 }')
 			echo "     * ${COHORT}"
+			rm -v ${METARESULTDIR}/${COHORT}/*.sh
+			rm -v ${METARESULTDIR}/${COHORT}/*.log
+			rm -v ${METARESULTDIR}/${COHORT}/*.errors
 		done < ${GWASFILES}
 	  	echo "Raw data directory.............................: "${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW
 	  	echo "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
