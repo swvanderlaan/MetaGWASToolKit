@@ -192,60 +192,32 @@ else
 # 	echo "  - BETA = ${BETA}"
 # 	echo "  - SE   = ${SE}"
 	source "${GWASLAB_ENV}" gwaslab_env
-echo "Running gwaslab.cohort.py with the following parameters:"
-echo "COHORT:         ${COHORT}"
-echo "FILE:           ${BASESPLITFILE}"
-echo "ORIGINALS:      ${ORIGINALS}"
-echo "POPULATION:     ${POPULATION}"
-echo "REFERENCE DIR:  ${REF}"
-echo "PERFORM_QC:     ${PERFORM_QC}"
-echo "OUTPUT FILE:    ${RAWDATACOHORT}"
-echo "MAKE_FIGURES:   ${MAKE_FIGURES}"
-echo "ONLY_QC:        ${ONLY_QC}"
-echo "SELECT_LEADS:   ${SELECT_LEADS}"
-echo "DAF:            ${DAF}"
-echo "EAF:            ${EAF}"
-echo "BETA:           ${BETA}"
-echo "SE:             ${SE}"
-echo "INFO:           ${INFO}"
-echo "MAC:            ${MAC}"
-echo "HWE:            ${HWE}"
-echo "REFERENCE:            hg${REFERENCE}"
+	echo "Running gwaslab.cohort.py with the following parameters:"
+	echo "COHORT:         ${COHORT}"
+	echo "FILE:           ${BASESPLITFILE}"
+	echo "ORIGINALS:      ${ORIGINALS}"
+	echo "POPULATION:     ${POPULATION}"
+	echo "REFERENCE DIR:  ${GWASLAB_REF}"
+	echo "PERFORM_QC:     ${PERFORM_QC}"
+	echo "OUTPUT FILE:    ${RAWDATACOHORT}"
+	echo "MAKE_FIGURES:   ${MAKE_FIGURES}"
+	echo "ONLY_QC:        ${ONLY_QC}"
+	echo "REFERENCE:            hg${REFERENCE}"
+	
 	python3 ${SCRIPTS}/gwaslab.cohort.py \
     -g ${COHORT} \
     -d ${RAWDATACOHORT} \
     -i ${BASESPLITFILE} \
     -p ${POPULATION} \
     -z ${REFERENCE} \
-    -r ${REF} \
+    -r ${GWASLAB_REF} \
     --qc ${PERFORM_QC} \
     -o ${RAWDATACOHORT} \
     --figures ${MAKE_FIGURES} \
-    --onlyqc ${ONLY_QC} \
-    --leads ${SELECT_LEADS} \
-    --daf ${DAF} \
-    --eaf ${EAF} \
-    --beta ${BETA} \
-    --se ${SE} \
-    --info ${INFO} \
-    --mac ${MAC} \
-    --hwe ${HWE} \
-	### FOR DEBUGGING LOCALLY -- Mac OS X
-	### Call the GWAS Cleaner
-	### Rscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}
+    --onlyqc ${ONLY_QC}
 
-	## echo "${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" >> ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-	## qsub -S /bin/bash -N gwas.cleaner.${BASEFILE} -hold_jid gwas2ref.harmonizer.${BASESPLITFILE} -o ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log -e ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors -l h_rt=${QRUNTIMECLEANER} -l h_vmem=${QMEMCLEANER} -M ${QMAIL} -m ${QMAILOPTIONS} -cwd ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
 
-	### SLURM version -- ARRAY JOB
-	### Call the cleaner
-	### The --wait flag will cause this array to wait until each script is finished before moving to the next step
-	# printf "#!/bin/bash\nRscript ${SCRIPTS}/gwas.cleaner.R -d ${SPLITFILE}.rdat -f ${BASESPLITFILE} -o ${RAWDATACOHORT} -e ${BETA} -s ${SE} -m ${MAF} -c ${MAC} -i ${INFO} -w ${HWE}" > ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh
-# 	CLEANER_ID=$(sbatch --parsable --job-name=gwas.cleaner.${BASESPLITFILE} --wait --dependency=afterany:${HARMONIZER_ID} -o  ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.log --error ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.errors --time=${QRUNTIMECLEANER} --mem=${QMEMCLEANER} --mail-user=${QMAIL} --mail-type=${QMAILOPTIONS} ${RAWDATACOHORT}/gwas.cleaner.${BASESPLITFILE}.sh)
-# 	
-	echo ""
-	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start
-	
+	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start	
 	echo ""
 	echo "All done for this array."
 	

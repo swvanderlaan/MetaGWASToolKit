@@ -159,7 +159,7 @@ else
 	REFERENCE=${REFERENCE} # from configuration file
 	REFFREQFILE=${REFFREQFILE} # from configuration file
 	POPULATION=${POPULATION} # from configuration file
-	REF=${REF}
+	REF=${GWASLAB_REF}
 	ONLY_QC=${ONLY_QC}
 	PARSING=${PARSING}
 	SELECT_LEADS=${SELECT_LEADS}
@@ -337,17 +337,9 @@ else
         --mem=128G \
         --cpus-per-task=2 \
         --mail-user=${QMAIL} \
-        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES}  \
         ${SCRIPTS}/gwaslab.cohort.sh)
-# 		CLEANUP_JOBID=$(sbatch --parsable \
-#     --job-name=cleanup.${COHORT} \
-#     --dependency=afterany:${GWASLAB_JOBID} \
-#     --time=01:00:00 \
-#     --mem=2G \
-#     --output=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.out \
-#     --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.cleanup.err \
-#     --export=ALL,RAWDATACOHORT=${RAWDATACOHORT},BASEFILE=${BASEFILE} \
-#     --wrap="rm -f ${RAWDATACOHORT}/${BASEFILE}.[a-z][a-z][a-z] ${RAWDATACOHORT}/splitfiles.txt ${RAWDATACOHORT}/split_after_parse.${COHORT}.sh ${RAWDATACOHORT}/*.parquet ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.* ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.log ${RAWDATACOHORT}/gwas.wrapper.${BASEFILE}.errors ${RAWDATACOHORT}/split.${COHORT}.out ${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.parser.err")
+
 		elif [ "$PARSING" == "YES" ]; then
 		# Submit the R parsing job
 		PARSE_JOBID=$(sbatch --parsable \
@@ -430,8 +422,8 @@ fi
 ARRAY_JOBID=$(sbatch --parsable \
 		--job-name=${COHORT}.splitfiles \
 		--array=0-${NFILES} \
-		--time=24:00:00 \
-		--mem=32G \
+		--time=1:00:00 \
+		--mem=10G \
 		-c 1 \
 		-o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log \
 		--error ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.errors \
@@ -447,7 +439,7 @@ chmod +x $ARRAY_SUBMIT_SCRIPT
 ARRAY_LAUNCH_JOBID=$(sbatch --parsable \
   --dependency=afterany:${SPLIT_LAUNCH_JOBID} \
   --job-name=arraylauncher.${COHORT} \
-  --mem=32G \
+  --mem=10G \
   --time=01:00:00 \
   --output=${RAWDATACOHORT}/launch_array.${COHORT}.out \
   --export=RAWDATACOHORT=${RAWDATACOHORT},COHORT=${COHORT},FILE=${FILE},INIT_ID=${INIT_ID},SCRIPTS=${SCRIPTS},CONFIGURATIONFILE=${CONFIGURATIONFILE} \
@@ -497,10 +489,10 @@ fi
         --error=${PROJECTDIR}/${METAOUTPUT}/${SUBPROJECTDIRNAME}/RAW/${COHORT}/${COHORT}.gwaslab.err \
         --dependency=afterany:${WRAP_JOBID} \
         --time=24:00:00 \
-        --mem=128G \
+        --mem=92G \
         --cpus-per-task=2 \
         --mail-user=${QMAIL} \
-        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES},SELECT_LEADS=${SELECT_LEADS},DAF=${DAF},EAF=${EAF},BETA=${BETA},SE=${SE},INFO=${INFO},MAC=${MAC},HWE=${HWE}  \
+        --export=ALL,COHORT=${COHORT},FILE=${BASEFILE}.merged.gwaslab.tsv.gz,RAWDATACOHORT=${RAWDATACOHORT},GWASLAB_ENV=${GWASLAB_ENV},ONLY_QC=${ONLY_QC},SCRIPTS=${SCRIPTS},ORIGINALS=${ORIGINALS},POPULATION=${POPULATION},REFERENCE=${REFERENCE},REF=${REF},PERFORM_QC=${PERFORM_QC},MAKE_FIGURES=${MAKE_FIGURES} \
         ${SCRIPTS}/gwaslab.cohort.sh)
 
 		else
@@ -565,7 +557,7 @@ fi
 ARRAY_JOBID=$(sbatch --parsable \
 		--job-name=${COHORT}.splitfiles \
 		--array=0-${NFILES} \
-		--time=24:00:00 \
+		--time=1:00:00 \
 		--mem=32G \
 		-c 1 \
 		-o ${RAWDATACOHORT}/gwas.parser_harm_cleaner.array.%a.log \

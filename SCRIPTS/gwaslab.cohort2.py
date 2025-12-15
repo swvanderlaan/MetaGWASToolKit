@@ -37,7 +37,7 @@ requiredNamed.add_argument("-q", "--qc", help="Perform Quality Control or not?(Y
 requiredNamed.add_argument("-n", "--onlyqc", help="Perform ONLY Quality Control or not? pickle file has to exist! (YES or NO).", type=str, default="YES")
 requiredNamed.add_argument("-l", "--leads", help="select lead SNPs and safe in file?(YES or NO).", type=str, default="YES")
 requiredNamed.add_argument("-o", "--output", help="File name for the output file to store the results.", type=str)
-requiredNamed.add_argument("-a", "--daf", help="DAF filtering.", type=float, default=0.12)
+#requiredNamed.add_argument("-a", "--daf", help="DAF filtering.", type=float, default=None)
 requiredNamed.add_argument("-e", "--eaf", help="EAF filtering.", type=float, default=0.005)
 requiredNamed.add_argument("-b", "--beta", help="BETA filtering.", type=float, default=5)
 requiredNamed.add_argument("-s", "--se", help="SE filtering.", type=float, default=5)
@@ -45,7 +45,7 @@ requiredNamed.add_argument("-u", "--info", help="INFO filtering.", type=float, d
 requiredNamed.add_argument("-w", "--hwe", help="HWE filtering.", type=float, default=1E-3)
 requiredNamed.add_argument("-m", "--mac", help="MAC filtering.", type=float, default=30)
 requiredNamed.add_argument("-z", "--reference", help="Reference genome (hg19 or hg38)", type=str, default="19")
-
+parser.add_argument("-a", "--daf",type=float,default=None,help="DAF filtering (optional).")
 
 args = parser.parse_args()
 gl.check_downloaded_ref()
@@ -60,7 +60,6 @@ SUBSTUDY_PHENO = f"{PHENOTYPE}"
 POPULATION = args.population
 
 perform_qc = args.qc
-
 select_leads= args.leads
 only_qc= args.onlyqc
 # Reference data directory
@@ -105,6 +104,12 @@ if not (os.path.join(OUTPUT_loc, "PLOTS")):
     os.makedirs(os.path.join(OUTPUT_loc, "PLOTS"))
 PLOTS_loc = os.path.join(OUTPUT_loc, "PLOTS/")
 
+if only_qc=="YES":
+	gwas_data_cohort = gl.load_pickle(
+    os.path.join(
+        os.path.join(OUTPUT_loc, f"{PHENOTYPE}.hg{REFERENCE}.gwaslab.pkl"),
+    )
+)
 
 if only_qc == "NO":
 	gwas_data = pd.read_csv(
@@ -116,9 +121,6 @@ if only_qc == "NO":
 	engine="pyarrow",          # faster if pyarrow is available; else drop this line
 	)
 	
-# # change polars dataframe to pandas dataframe
-# 	gwas_data = temp.to_pandas()
-# 	del temp
 	
 	if make_plots == "YES":
     # CAF plot
@@ -214,7 +216,7 @@ if only_qc == "NO":
 
 	gwas_data_cohort.data
 
-#if only_qc=="NO":
+if only_qc=="NO":
 	gl.dump_pickle(
 	gwas_data_cohort,
 	os.path.join(
@@ -278,11 +280,11 @@ if only_qc == "NO":
         saveargs={"dpi": 300},
         verbose=True,
     )
-################ END of no QC#####
-if only_qc == "YES":
-    gwas_data_cohort = gl.load_pickle(
-        os.path.join(GWAS_RES_loc, f"{PHENOTYPE}.hg{REFERENCE}.gwaslab.pkl"),
-    )
+# ################ END of no QC#####
+# if only_qc == "YES":
+#     gwas_data_cohort = gl.load_pickle(
+#         os.path.join(GWAS_RES_loc, f"{PHENOTYPE}.hg{REFERENCE}.gwaslab.pkl"),
+#     )
     
 # Perform Quality Control if required
 if perform_qc == "YES" or only_qc == "YES":
@@ -292,7 +294,7 @@ if perform_qc == "YES" or only_qc == "YES":
 	else:
 		filters.append('(EAF >= 0.01 & EAF < 0.99)')  # default range if EAF is not specified
 	if DAF is not None:
-		filters.append(f'(DAF < {DAF} & DAF > {-DAF})')
+		filters.append(f'(DAF == "NA" | (DAF < {DAF} & DAF > {-DAF}))')
 	if BETA is not None:
 		filters.append(f'(BETA <= {BETA})')
 	if SE is not None:
@@ -409,20 +411,10 @@ if perform_qc == "YES" or only_qc == "YES":
         saveargs={"dpi": 300},
         verbose=True,
     )
+    #plot allele frequency comparison plot against reference
+	if make_plots == "YES":
+		gwas_data_cohort_qc.plot_daf(threshold=DAF, save=os.path.join(PLOTS_loc, f"EAF.{PHENOTYPE}.qc.png"))
+
 	if select_leads=="YES":
-		gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, windowsizekb=0, sig_level=5e-8, verbose=True, gls=True)
-		gwas_data_cohort_leads.to_format(
-    os.path.join(OUTPUT_loc + "/" + PHENOTYPE + f".hg{REFERENCE}.gwaslab.significant_snps"),
-    fmt="ssf",
-    build="{REFERENCE}",
-	)
-
-	if select_leads == "YES":
-		gwas_data_cohort_leads_df = gwas_data_cohort.get_lead(anno=True, sig_level=5e-8, verbose=True)
-
-    # Wrap the DataFrame in a new Sumstats object
-		gwas_data_cohort_leads = gl.Sumstats(sumstats=gwas_data_cohort_leads_df)
-		gwas_data_cohort_leads.to_format(
-        os.path.join(OUTPUT_loc, f"{PHENOTYPE}.hg{REFERENCE}.gwaslab.leads"),
-        fmt="ssf",
-        build=f"{REFERENCE}",)
+		gwas_data_cohort_leads = gwas_data_cohort.get_lead(anno=True, build="19")
+		gwas_data_cohort_leads.to_csv(os.path.join(OUTPUT_loc + "/" + f".{PHENOTYPE}.lead_snps_with_genes.csv"), index=False)

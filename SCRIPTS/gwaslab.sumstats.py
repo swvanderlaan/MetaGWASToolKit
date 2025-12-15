@@ -289,13 +289,7 @@ if make_plots == "YES":
     overwrite=True,
 )
 
-	gwas_data_sumstats.log.show()
 
-	gwas_data_sumstats.log.save(
-    os.path.join(
-        GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.gwaslab.log",
-    )
-)
 
 	gwas_data_sumstats.to_format(
     os.path.join(GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.gwaslab"),
@@ -309,29 +303,38 @@ if make_plots == "YES":
         build="19",
     )
 
+
 	gwas_data_sumstats.to_format(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
-        fmt="fuma",
+        fmt="plink",
         build="19",
     )
 
 	gwas_data_sumstats.to_format(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
-        fmt="ldsc",
+        fmt="plink2",
         build="19",
     )
 
 	gwas_data_sumstats.to_format(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
-        fmt="cojo",
+        fmt="metal",
+        build="19",
+    )
+	gwas_data_sumstats.to_format(
+        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
+        fmt="mrmega",
         build="19",
     )
 
-	gwas_data_sumstats.to_format(
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
-        fmt="popcorn",
-        build="19",
+    
+	gwas_data_sumstats.log.show()
+
+	gwas_data_sumstats.log.save(
+    os.path.join(
+        GWASCatalog_loc + PHENOTYPE + f".hg{BUILD}.gwaslab.log",
     )
+)
 
 # manhattan and qq plot
 if make_plots == "YES":
@@ -430,3 +433,27 @@ if select_leads=="YES":
 #             saveargs={"dpi": 300},
 #             verbose=True,
 # 	)
+
+# 	gwas_data_sumstats.to_format(
+#         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
+#         fmt="fuma",
+#         build="19",
+#     )
+
+# 	gwas_data_sumstats.to_format(
+#         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
+#         fmt="ldsc",
+#         build="19",
+#     )
+
+# 	gwas_data_sumstats.to_format(
+#         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
+#         fmt="cojo",
+#         build="19",
+#     )
+# 
+# 	gwas_data_sumstats.to_format(
+#         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
+#         fmt="popcorn",
+#         build="19",
+#     )

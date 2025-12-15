@@ -342,7 +342,27 @@ else
 			exit 1
 		fi
 		echo "${ONLY_QC}"
+		echo "Running gwaslab.cohort.py with the following parameters:"
+		echo "COHORT:         ${COHORT}"
+		echo "FILE:           ${FILE}"
+		echo "ORIGINALS:      ${ORIGINALS}"
+		echo "RAWDATACOHORT:  ${RAWDATACOHORT}"
+		echo "POPULATION:     ${POPULATION}"
+		echo "REFERENCE DIR:  ${REF}"
+		echo "PERFORM_QC:     ${PERFORM_QC}"
+		echo "OUTPUT FILE:    ${RAWDATACOHORT}"
+		echo "MAKE_FIGURES:   ${MAKE_FIGURES}"
+		echo "ONLY_QC:        ${ONLY_QC}"
+		echo "SELECT_LEADS:   ${SELECT_LEADS}"
+		echo "DAF:            ${DAF}"
+		echo "EAF:            ${EAF}"
+		echo "BETA:           ${BETA}"
+		echo "SE:             ${SE}"
+		echo "INFO:           ${INFO}"
+		echo "MAC:            ${MAC}"
+		echo "HWE:            ${HWE}"
+		echo "REFERENCE:            hg${REFERENCE}"
 		source /hpc/local/Rocky8/dhl_ec/software/mambaforge3/bin/activate gwaslab_env
-		python3 ${SCRIPTS}/gwaslab_cohort2.py -g ${COHORT} -d ${ORIGINALS} -i ${RAWDATACOHORT} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
+		python3 ${SCRIPTS}/gwaslab.cohort2.py -g ${COHORT} -d ${ORIGINALS} -i ${RAWDATACOHORT} -p ${POPULATION} -r ${REF} --qc ${PERFORM_QC} --figures ${MAKE_FIGURES} --onlyqc ${ONLY_QC} --leads ${SELECT_LEADS}
 	#done # <- closes the while loop properly
 	fi   # <- closes the outer if-statement

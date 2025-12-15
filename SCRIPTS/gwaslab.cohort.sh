@@ -1,6 +1,9 @@
 #!/bin/bash
 #SBATCH --job-name=${COHORT}_gwaslab
 #SBATCH --cpus-per-task=2
+#SBATCH --time=24:00:00                                             														# the amount of time the job will take: -t [min] OR -t [days-hh:mm:ss]
+#SBATCH --mem=128G                                                    														# the amount of memory you think the script will consume, found on: https://wiki.bioinformatics.umcutrecht.nl/bin/view/HPC/SlurmScheduler
+#SBATCH --gres=tmpspace:128G                                        														# the amount of temporary diskspace per node
 
 
 
