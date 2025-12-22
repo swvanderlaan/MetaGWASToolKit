@@ -37,6 +37,15 @@ requiredNamed.add_argument("-q", "--qc", help="Perform Quality Control or not?(Y
 requiredNamed.add_argument("-n", "--onlyqc", help="Perform ONLY Quality Control or not? pickle file has to exist! (YES or NO).", type=str, default="YES")
 requiredNamed.add_argument("-o", "--output", help="File name for the output file to store the results.", type=str)
 requiredNamed.add_argument("-z", "--reference", help="Reference genome (hg19 or hg38)", type=str, default="19")
+requiredNamed.add_argument("-l", "--leads", help="select lead SNPs and safe in file?(YES or NO).", type=str, default="YES")
+#requiredNamed.add_argument("-a", "--daf", help="DAF filtering.", type=float, default=None)
+requiredNamed.add_argument("-e", "--eaf", help="EAF filtering.", type=float, default=0.005)
+requiredNamed.add_argument("-b", "--beta", help="BETA filtering.", type=float, default=5)
+requiredNamed.add_argument("-s", "--se", help="SE filtering.", type=float, default=5)
+requiredNamed.add_argument("-u", "--info", help="INFO filtering.", type=float, default=0.4)
+requiredNamed.add_argument("-w", "--hwe", help="HWE filtering.", type=float, default=1E-3)
+requiredNamed.add_argument("-m", "--mac", help="MAC filtering.", type=float, default=30)
+parser.add_argument("-a", "--daf",type=float, nargs="?",const=0.12, default=None,help="DAF filtering (optional).")
 
 
 args = parser.parse_args()
