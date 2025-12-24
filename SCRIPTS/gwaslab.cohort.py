@@ -45,6 +45,7 @@ requiredNamed.add_argument("-s", "--se", help="SE filtering.", type=float, defau
 requiredNamed.add_argument("-u", "--info", help="INFO filtering.", type=float, default=0.4)
 requiredNamed.add_argument("-w", "--hwe", help="HWE filtering.", type=float, default=1E-3)
 requiredNamed.add_argument("-m", "--mac", help="MAC filtering.", type=float, default=30)
+requiredNamed.add_argument("-t", "--liftover", help="liftover", type=str, default="NO")
 parser.add_argument("-a", "--daf",type=float, nargs="?",const=0.12, default=None,help="DAF filtering (optional).")
 
 
@@ -68,6 +69,7 @@ gl.options.set_option("data_directory",f"{REF_loc}")
 
 
 REFERENCE = args.reference
+LIFTOVER= args.liftover
 # DAF = args.daf
 # EAF = args.eaf
 # BETA = args.beta
@@ -175,6 +177,11 @@ if only_qc=="NO":
 
 	gwas_data.rename(columns={"SNP": "VariantID"}, inplace=True)
 	
+	if liftover =="YES":
+		mysumstats.liftover(n_cores=3, 
+		from_build="38", 
+		to_build="19",
+		remove=True)
 
 ### GWASLAB - create variable
 # Specify the columns:
@@ -248,11 +255,19 @@ if only_qc=="NO":
 # we make sure to flip the alleles based on the status code
 	gwas_data_cohort.flip_allele_stats()
 # infer strand for palindromic SNPs/align indistinguishable indels
-	gwas_data_cohort.infer_strand(
-    ref_infer= REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg{REFERENCE}.vcf.gz",
-    ref_alt_freq="AF",
-    n_cores=8
-	)
+	if REFERENCE == "19":
+		gwas_data_cohort.infer_strand(
+		ref_infer= REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg{REFERENCE}.vcf.gz",
+		ref_alt_freq="AF",
+		n_cores=8
+		)
+	
+	if REFERENCE == "38":
+		gwas_data_cohort.infer_strand(
+		ref_infer= REF_loc + f"{POPULATION}.ALL.split_norm_af.1kg_30x.hg{REFERENCE}.vcf.gz",
+		ref_alt_freq="AF",
+		n_cores=8
+		)
 	gwas_data_cohort.flip_allele_stats()
 
 
@@ -273,23 +288,25 @@ if only_qc=="NO":
 		build=f"{REFERENCE}"
 		),  # this is needed as in the VCF file, the chromosome is in NC format
 		)
-
-
-
 	# Check if SNPIDs are correct
 	gwas_data_cohort.fix_id(
     fixid=True,
     forcefixid=True,
     overwrite=True,
 	)
-
-	gwas_data_cohort.check_af(
-    ref_infer=REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg{REFERENCE}.vcf.gz",
-    ref_alt_freq="AF",
-    n_cores=8,
-	)
-
-	gwas_data_cohort.data
+	
+	if REFERENCE == "19":
+		gwas_data_cohort.check_af(
+		ref_infer=REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg{REFERENCE}.vcf.gz",
+		ref_alt_freq="AF",
+		n_cores=8,
+		)
+	if REFERENCE == "38":
+		gwas_data_cohort.check_af(
+		ref_infer=REF_loc + f"{POPULATION}.ALL.split_norm_af.1kg_30x.hg{REFERENCE}.vcf.gz",
+		ref_alt_freq="AF",
+		n_cores=8,
+		)
 
 # # Step 1: Load the pickled DataFrame using pandas
 	temp_table = pa.Table.from_pandas(gwas_data_cohort.data)
