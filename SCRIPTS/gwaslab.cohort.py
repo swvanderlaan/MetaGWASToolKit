@@ -177,11 +177,6 @@ if only_qc=="NO":
 
 	gwas_data.rename(columns={"SNP": "VariantID"}, inplace=True)
 	
-	if liftover =="YES":
-		mysumstats.liftover(n_cores=3, 
-		from_build="38", 
-		to_build="19",
-		remove=True)
 
 ### GWASLAB - create variable
 # Specify the columns:
@@ -242,8 +237,13 @@ if only_qc=="NO":
     # keep the first variant, with the lowest p-value (sorted by that column)
     keep="first",
 	)
-
-
+	
+	if LIFTOVER =="YES":
+		gwas_data_cohort.liftover(n_cores=3, 
+		from_build="38", 
+		to_build="19",
+		remove=True)
+		
 # .check_ref(): Check if NEA is aligned with the reference sequence. After checking, the tracking status code will be changed accordingly.
 
 # full dataset

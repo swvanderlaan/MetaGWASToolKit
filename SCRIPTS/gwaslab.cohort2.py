@@ -45,7 +45,8 @@ requiredNamed.add_argument("-u", "--info", help="INFO filtering.", type=float, d
 requiredNamed.add_argument("-w", "--hwe", help="HWE filtering.", type=float, default=1E-3)
 requiredNamed.add_argument("-m", "--mac", help="MAC filtering.", type=float, default=30)
 requiredNamed.add_argument("-z", "--reference", help="Reference genome (hg19 or hg38)", type=str, default="19")
-parser.add_argument("-a", "--daf",type=float,default=None,help="DAF filtering (optional).")
+requiredNamed.add_argument("-t", "--liftover", help="liftover", type=str, default="NO")
+parser.add_argument("-a", "--daf",type=float, nargs="?",const=0.12, default=None,help="DAF filtering (optional).")
 
 args = parser.parse_args()
 gl.check_downloaded_ref()
@@ -58,6 +59,7 @@ PHENOTYPE = args.gwas
 SUBSTUDY_PHENO = f"{PHENOTYPE}"
 
 POPULATION = args.population
+LIFTOVER= args.liftover
 
 perform_qc = args.qc
 select_leads= args.leads

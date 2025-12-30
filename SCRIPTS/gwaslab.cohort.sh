@@ -17,6 +17,7 @@ echo "RAWDATACOHORT:  ${RAWDATACOHORT}"
 echo "POPULATION:     ${POPULATION}"
 echo "REFERENCE DIR:  ${REF}"
 echo "PERFORM_QC:     ${PERFORM_QC}"
+echo "LIFTOVER:       ${LIFTOVER}"
 echo "OUTPUT FILE:    ${RAWDATACOHORT}"
 echo "MAKE_FIGURES:   ${MAKE_FIGURES}"
 echo "ONLY_QC:        ${ONLY_QC}"
@@ -29,7 +30,6 @@ echo "INFO:           ${INFO}"
 echo "MAC:            ${MAC}"
 echo "HWE:            ${HWE}"
 echo "REFERENCE:            hg${REFERENCE}"
-echo "LIFTOVER:            hg${LIFTOVER}"
 
 
 python3 ${SCRIPTS}/gwaslab.cohort2.py \
