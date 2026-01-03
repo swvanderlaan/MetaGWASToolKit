@@ -248,12 +248,18 @@ if only_qc=="NO":
 
 # full dataset
 	gwas_data_cohort.check_ref(
-    ref_seq=REF_loc + f"hg{REFERENCE}.fa",
-    #   chr_dict=gl.get_number_to_NC(build="19")
+	ref_seq=REF_loc + f"hg{REFERENCE}.fa",
 	)
 
 # we make sure to flip the alleles based on the status code
 	gwas_data_cohort.flip_allele_stats()
+	
+	# Check if SNPIDs are correct
+	gwas_data_cohort.fix_id(
+    fixid=True,
+    forcefixid=True,
+    overwrite=True,
+	)
 # infer strand for palindromic SNPs/align indistinguishable indels
 	if REFERENCE == "19":
 		gwas_data_cohort.infer_strand(
@@ -288,12 +294,7 @@ if only_qc=="NO":
 		build=f"{REFERENCE}"
 		),  # this is needed as in the VCF file, the chromosome is in NC format
 		)
-	# Check if SNPIDs are correct
-	gwas_data_cohort.fix_id(
-    fixid=True,
-    forcefixid=True,
-    overwrite=True,
-	)
+
 	
 	if REFERENCE == "19":
 		gwas_data_cohort.check_af(

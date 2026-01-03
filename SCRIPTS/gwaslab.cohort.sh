@@ -29,7 +29,7 @@ echo "SE:             ${SE}"
 echo "INFO:           ${INFO}"
 echo "MAC:            ${MAC}"
 echo "HWE:            ${HWE}"
-echo "REFERENCE:            hg${REFERENCE}"
+echo "REFERENCE:      hg${REFERENCE}"
 
 
 python3 ${SCRIPTS}/gwaslab.cohort2.py \
@@ -43,7 +43,7 @@ python3 ${SCRIPTS}/gwaslab.cohort2.py \
     -o ${RAWDATACOHORT} \
     --figures ${MAKE_FIGURES} \
     --onlyqc ${ONLY_QC} \
-    -l ${SELECT_LEADS} \
+    --leads ${SELECT_LEADS} \
     --daf ${DAF} \
     --eaf ${EAF} \
     --beta ${BETA} \
@@ -51,7 +51,7 @@ python3 ${SCRIPTS}/gwaslab.cohort2.py \
     --info ${INFO} \
     --mac ${MAC} \
     --hwe ${HWE} \
-    --liftover ${LIFTOVER} \
+    --liftover ${LIFTOVER}
     
 rm -f ${RAWDATACOHORT}/array_jobid.txt
 #VariantID	MarkerOriginal	rsID	CHR	BP	Strand	EffectAllele	OtherAllele	MinorAllele	MajorAllele	

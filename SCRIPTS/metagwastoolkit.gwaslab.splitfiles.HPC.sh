@@ -203,6 +203,7 @@ else
 	echo "MAKE_FIGURES:   ${MAKE_FIGURES}"
 	echo "ONLY_QC:        ${ONLY_QC}"
 	echo "REFERENCE:            hg${REFERENCE}"
+	echo "LIFTOVER:       ${LIFTOVER}"
 	
 	python3 ${SCRIPTS}/gwaslab.cohort.py \
     -g ${COHORT} \
@@ -214,7 +215,9 @@ else
     --qc ${PERFORM_QC} \
     -o ${RAWDATACOHORT} \
     --figures ${MAKE_FIGURES} \
-    --onlyqc ${ONLY_QC}
+    --onlyqc ${ONLY_QC} \
+    --liftover ${LIFTOVER}
+
 
 
 	wait # Wait till the scripts are finished; after that this script will be killed/stopped and the depending scripts will start	
