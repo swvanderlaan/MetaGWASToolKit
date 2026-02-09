@@ -292,7 +292,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Selecting the columns we want
   cat("\n* Selecting required columns, and creating them if not present...")
 
-  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^snpid$", "^id$", "^variantid$",# variant ID
+  VectorOfColumnsWeWant <- c("^marker$", "^snp$", "^snpid$", "^id$", "^variantid$", "^snpname$", # variant ID
                              "^chr$", "^chrom$", "^chromosome$", # chromosome
                              "^position$", "^bp$", "^genpos$","^pos$", # Variant position on chromosomes
                              "^effect[_]allele$", "^minor[_]allele$", "^risk[_]allele$", "^coded[_]allele$", # Effect/Minor allele
@@ -300,13 +300,13 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
                              "^other[_]allele$", "^major[_]allele$", "^non[_]effect[_]allele$", "^non[_]coded[_]allele$", # Other/Major allele
                              "^otherallele$", "^majorallele$", "^noneffectallele$", "^noncodedallele$", "^noncoded_allele$", "^allele0$", # Other/Major allele
                              "^strand$", # chromosomal strand
-                             "^beta$", "^effect[_]size$", "^effectsize$", "^beta_fixed$", # effect size estimates, should be beta
-                             "^se.$", "^se$", "^se_fixed$", # Standard error
-                             "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$", "^p_bolt_lmm_inf$", "^p_fixed$", # p-value 
-                             "^[remc]af$", "^a1freq$", "^coded_allele_freq$", # effect/minor allele frequency
+                             "^beta$", "^effect[_]size$", "^effectsize$", "^beta_fixed$","^beta_snp$", # effect size estimates, should be beta
+                             "^se.$", "^se$", "^se_fixed$","^se_snp$",  # Standard error
+                             "^p.value$", "^p$", "^p.val$", "^pvalue$", "^pval$", "^p_bolt_lmm_inf$", "^p_fixed$","^snp_tscore_pval$", # p-value 
+                             "^[remc]af$", "^a1freq$", "^coded_allele_freq$", "^effect_allele_freq$","^minor_cell_freq$", # effect/minor allele frequency
                              "^hwe.value$", "^hwe$", "^hwe.val$", # Hardy-Weinberg Equilibrium p-value
                              "^n$", "^samplesize$", "^n_eff$", # Number of samples analysed
-                             "^n[_]case.$", "^ncase$", "^n[_]control.$","^ncontrol$", "^n_cntrl.$", # Number of samples analysed in GWAS in case-control set up
+                             "^n[_]case.$", "^ncase$", "^n[_]control.$","^ncontrol$", "^n_cntrl.$", "^num_obs$",# Number of samples analysed in GWAS in case-control set up
                              "^imputed$", # Imputed or genotyped?
                              "^info$", "^qual[_]score$", # Imputation quality
                              "^df$", #degrees of freedom
@@ -356,7 +356,8 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^n$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^samplesize$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^n_eff$"), everything())
-  
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, N = matches("^num_obs$"), everything())
+
   ### Rename columns -- HWE p-value
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, HWE_P = matches("^hwe.value$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, HWE_P = matches("^hwe$"), everything())
@@ -369,17 +370,21 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pvalue$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^pval$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p_bolt_lmm_inf$"), everything())  
-    GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p_fixed$"), everything())  
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^p_fixed$"), everything())  
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, P = matches("^snp_tscore_pval$"), everything())  
 
   ### Rename columns -- standard error
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se.$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se$"), everything())
-    GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se_fixed$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se_fixed$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, SE = matches("^se_snp$"), everything())
+
 
   
   ### Rename columns -- beta/effect size
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^beta$"), everything())
-    GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^beta_fixed$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^beta_snp$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^beta_fixed$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^effect[_]size$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, Beta = matches("^effectsize$"), everything())
   
@@ -387,9 +392,12 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, RAF = matches("^raf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^eaf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MAF = matches("^maf$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MAF = matches("^minor_cell_freq$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^caf$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^a1freq$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^coded_allele_freq$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, EAF = matches("^effect_allele_freq$"), everything())
+
   
   ### Rename columns -- non effect allele
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, OtherAllele = matches("^non[_]effect[_]allele$"), everything())
@@ -444,10 +452,11 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   ### Rename columns -- marker name
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^marker$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snp$"), everything())
-  #GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^rsid$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snpid$"), everything())
   GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^id$"), everything())
-    GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^variantid$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^variantid$"), everything())
+  GWASDATA_RAWSELECTION <- select(GWASDATA_RAWSELECTION, MarkerOriginal = matches("^snpname$"), everything())
+
 
   
   ### Rename columns -- caveats
@@ -481,7 +490,7 @@ if(!is.na(opt$projectdir) & !is.na(opt$datagwas) & !is.na(opt$outputdir)) {
   #print(tail(GWASDATA_RAWSELECTION))
 
   # Manually calculate the N
-  # print(colnames(GWASDATA_RAWSELECTION))
+  print(colnames(GWASDATA_RAWSELECTION))
   if(!("N" %in% colnames(GWASDATA_RAWSELECTION))) {
     if("N_cases" %in% colnames(GWASDATA_RAWSELECTION)){
       if("N_controls" %in% colnames(GWASDATA_RAWSELECTION)){

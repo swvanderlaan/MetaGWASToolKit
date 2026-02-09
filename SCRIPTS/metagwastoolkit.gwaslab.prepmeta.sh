@@ -367,17 +367,17 @@ else
 		# Set the rawdata for the cohort
 		RAWDATACOHORT=${RAWDATA}/${COHORT}
 		echo "$RAWDATACOHORT"
-		rm -f ${RAWDATACOHORT}/*.readme
-		rm -f ${RAWDATACOHORT}/*.parquet
-		rm -f ${RAWDATACOHORT}/*.sh
-		rm -f ${RAWDATACOHORT}/gwas.parser*
-		rm -f ${RAWDATACOHORT}/*.log
-		rm -f ${RAWDATACOHORT}/*.err
-		rm -f ${RAWDATACOHORT}/*.errors
-		rm -f ${RAWDATACOHORT}/*.txt
-		rm -f ${RAWDATACOHORT}/*.out
-		rm -f ${RAWDATACOHORT}/$BASEFILE.[a-z][a-z][a-z]*
-		rm -f ${RAWDATACOHORT}/*b37*
+# 		rm -f ${RAWDATACOHORT}/*.readme
+# 		rm -f ${RAWDATACOHORT}/*.parquet
+# 		rm -f ${RAWDATACOHORT}/*.sh
+# 		rm -f ${RAWDATACOHORT}/gwas.parser*
+# 		rm -f ${RAWDATACOHORT}/*.log
+# 		rm -f ${RAWDATACOHORT}/*.err
+# 		rm -f ${RAWDATACOHORT}/*.errors
+# 		rm -f ${RAWDATACOHORT}/*.txt
+# 		rm -f ${RAWDATACOHORT}/*.out
+# 		rm -f ${RAWDATACOHORT}/$BASEFILE.[a-z][a-z][a-z]*
+# 		rm -f ${RAWDATACOHORT}/*b37*
 	
 		# Set the meta-analysis preparation-stage directory for the cohort
 		METAPREPDIRCOHORT=${METARESULTDIR}/${COHORT}

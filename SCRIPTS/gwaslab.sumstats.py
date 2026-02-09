@@ -303,24 +303,17 @@ if make_plots == "YES":
         build="19",
     )
 
-
-	gwas_data_sumstats.to_format(
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
-        fmt="plink",
-        build="19",
-    )
-
 	gwas_data_sumstats.to_format(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
         fmt="plink2",
         build="19",
     )
 
-	gwas_data_sumstats.to_format(
-        os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
-        fmt="metal",
-        build="19",
-    )
+# 	gwas_data_sumstats.to_format(
+#         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
+#         fmt="metal",
+#         build="19",
+#     )
 	gwas_data_sumstats.to_format(
         os.path.join(GWASCatalog_loc, f"{PHENOTYPE}.hg{BUILD}.gwaslab"),
         fmt="mrmega",

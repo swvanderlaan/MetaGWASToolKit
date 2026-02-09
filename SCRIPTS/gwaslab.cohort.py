@@ -246,6 +246,18 @@ if only_qc=="NO":
 		
 # .check_ref(): Check if NEA is aligned with the reference sequence. After checking, the tracking status code will be changed accordingly.
 
+# 	if REFERENCE == "19":
+# 		gwas_data_cohort.harmonize(
+# 		basic_check=True,
+# 		ref_seq=REF_loc + f"hg{REFERENCE}.fa",
+# 		ref_rsid_vcf=ref_rsid_vcf= REF_loc + "GCF_000001405.25.gz",
+# 		ref_infer=REF_loc + f"{POPULATION}.ALL.split_norm_af.1kgp3v5.hg{REFERENCE}.vcf.gz",
+# 		ref_alt_freq="AF",
+# 		n_cores=8,
+# 		build=f"{REFERENCE}",
+# 		maf_threshold=0.40,
+# 		)
+# 		
 # full dataset
 	gwas_data_cohort.check_ref(
 	ref_seq=REF_loc + f"hg{REFERENCE}.fa",
